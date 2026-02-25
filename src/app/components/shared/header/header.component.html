@@ -1,0 +1,66 @@
+
+<!-- Top Header -->
+<div class="container mx-auto px-4 py-4 md:py-6">
+    <div class="flex flex-col md:flex-row items-center justify-between gap-6">
+        <div class="text-[#1F2B6C] font-bold text-3xl tracking-wider uppercase cursor-pointer" routerLink="/">
+            Med<span class="text-[#159EEC]">dical</span>
+        </div>
+
+        <div class="flex flex-wrap justify-center md:justify-end gap-8">
+            <div class="flex items-center gap-3">
+                <div class="p-2 bg-[#BFD2F8]/20 rounded-full">
+                    <lucide-icon [img]="Phone" class="w-6 h-6 text-[#1F2B6C]"></lucide-icon>
+                </div>
+                <div>
+                    <div class="text-xs font-bold text-[#1F2B6C] uppercase">Emergency</div>
+                    <div class="text-sm font-semibold text-[#159EEC]">(237) 681-812-255</div>
+                </div>
+            </div>
+
+            <div class="flex items-center gap-3">
+                <div class="p-2 bg-[#BFD2F8]/20 rounded-full">
+                    <lucide-icon [img]="Clock" class="w-6 h-6 text-[#1F2B6C]"></lucide-icon>
+                </div>
+                <div>
+                    <div class="text-xs font-bold text-[#1F2B6C] uppercase">Work Hour</div>
+                    <div class="text-sm font-semibold text-[#159EEC]">09:00 - 20:00 Everyday</div>
+                </div>
+            </div>
+
+            <div class="flex items-center gap-3">
+                <div class="p-2 bg-[#BFD2F8]/20 rounded-full">
+                    <lucide-icon [img]="MapPin" class="w-6 h-6 text-[#1F2B6C]"></lucide-icon>
+                </div>
+                <div>
+                    <div class="text-xs font-bold text-[#1F2B6C] uppercase">Location</div>
+                    <div class="text-sm font-semibold text-[#159EEC]">0123 Some Place</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Navbar -->
+<nav class="bg-[#1F2B6C] text-white py-1 sticky top-0 z-50">
+    <div class="container mx-auto px-4">
+        <div class="flex items-center justify-between h-16">
+            <div class="hidden lg:flex items-center gap-8">
+                <a *ngFor="let item of navItems"
+                   [routerLink]="item.path"
+                   routerLinkActive="text-[#BFD2F8] font-bold"
+                   [routerLinkActiveOptions]="{exact: item.id === ''}"
+                   class="font-medium transition-colors cursor-pointer hover:text-[#BFD2F8]">
+                    {{ item.label }}
+                </a>
+            </div>
+
+            <div class="flex items-center gap-6">
+                <lucide-icon [img]="Search" class="w-5 h-5 cursor-pointer hover:text-[#BFD2F8] transition-colors"></lucide-icon>
+                <button routerLink="/appointments"
+                        class="bg-[#BFD2F8] text-[#1F2B6C] px-8 py-3 rounded-full font-bold hover:bg-white transition-all transform hover:scale-105 shadow-md text-sm cursor-pointer">
+                    Appointment
+                </button>
+            </div>
+        </div>
+    </div>
+</nav>
