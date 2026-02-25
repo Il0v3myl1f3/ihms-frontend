@@ -1,0 +1,24 @@
+<section class="relative h-[300px] flex items-center overflow-hidden">
+    <!-- Background with overlay -->
+    <div class="absolute inset-0 bg-[#1F2B6C]/20 z-0">
+        <div class="absolute inset-0 bg-white/40"></div>
+        <!-- Placeholder for background image -->
+        <div class="w-full h-full bg-[#1F2B6C]/10 flex items-center justify-center">
+            <span class="text-gray-400 font-bold uppercase tracking-widest opacity-20">Background Image
+                Placeholder</span>
+        </div>
+    </div>
+
+    <div class="container mx-auto px-4 relative z-10">
+        <div class="max-w-2xl">
+            <div class="text-m font-bold text-[#1F2B6C] mb-4 flex items-center gap-2">
+                <span>Home</span>
+                <span>/</span>
+                <span class="text-[#159EEC]">{{ subtitle || title }}</span>
+            </div>
+            <h1 class="text-5xl font-bold text-[#1F2B6C] leading-tight">
+                {{ title }}
+            </h1>
+        </div>
+    </div>
+</section>
