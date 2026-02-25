@@ -18,6 +18,7 @@ export class HeaderComponent {
   navItems = [
     { label: 'Home', id: '', path: '/' },
     { label: 'Services', id: 'services', path: '/services' },
-    { label: 'Doctors', id: 'doctors', path: '/doctors' }
+    { label: 'Doctors', id: 'doctors', path: '/doctors' },
+    { label: 'About us', id: 'about', path: '/about' }
   ];
 }
