@@ -16,6 +16,7 @@ export class HeaderComponent {
   readonly Search = Search;
 
   navItems = [
-    { label: 'Home', id: '', path: '/' }
+    { label: 'Home', id: '', path: '/' },
+    { label: 'Services', id: 'services', path: '/services' }
   ];
 }
