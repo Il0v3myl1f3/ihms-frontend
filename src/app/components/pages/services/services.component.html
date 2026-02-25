@@ -1,0 +1,105 @@
+<div class="font-sans">
+    <app-page-header [title]="currentService.name" subtitle="Services"></app-page-header>
+
+    <section class="py-24 bg-white">
+        <div class="container mx-auto px-4">
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-12">
+
+                <!-- Sidebar Navigation -->
+                <aside class="lg:col-span-3">
+                    <div class="flex flex-col border border-gray-100 rounded-xl overflow-hidden shadow-sm">
+                        <button *ngFor="let service of servicesList" (click)="setActiveService(service.id)"
+                            class="flex items-center gap-4 p-6 transition-all border-b border-gray-100 last:border-0 w-full text-left font-bold"
+                            [ngClass]="activeServiceId === service.id ? 'bg-[#1F2B6C] text-white' : 'bg-white text-[#1F2B6C] hover:bg-gray-50'">
+                            <span [ngClass]="activeServiceId === service.id ? 'text-[#BFD2F8]' : 'text-[#159EEC]'">
+                                <lucide-icon [img]="service.icon" class="w-5 h-5"></lucide-icon>
+                            </span>
+                            {{ service.name }}
+                        </button>
+                    </div>
+                </aside>
+
+                <!-- Main Content Area -->
+                <div class="lg:col-span-8 lg:col-start-5">
+                    <div
+                        class="bg-gray-100 rounded-2xl aspect-[16/9] mb-12 flex items-center justify-center overflow-hidden">
+                        <div
+                            class="w-full h-full bg-gray-200 flex flex-col items-center justify-center p-12 text-center">
+                            <span class="text-gray-400 font-bold opacity-30 text-3xl mb-4">Service Image
+                                Placeholder</span>
+                            <p class="text-gray-400 max-w-md">Healthcare professional providing medical assistance to a
+                                patient.</p>
+                        </div>
+                    </div>
+
+                    <h2 class="text-4xl font-bold text-[#1F2B6C] mb-8">A passion for putting patients first</h2>
+
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-y-4 gap-x-8 mb-12">
+                        <div *ngFor="let item of ['A Passion for Healing', '5-Star Care', 'A Legacy of Excellence', 'All our best', 'Believe in Us', 'Always Caring']"
+                            class="flex items-center gap-3">
+                            <div class="w-3 h-3 bg-[#159EEC] rounded-full"></div>
+                            <span class="font-medium text-[#1F2B6C]">{{ item }}</span>
+                        </div>
+                    </div>
+
+                    <div class="text-gray-500 leading-loose space-y-6 max-w-4xl">
+                        <p>
+                            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Quisque placerat scelerisque tortor
+                            ornare ornare.
+                            Convallis felis vitae tortor augue. Velit nascetur proin massa in. Consequat faucibus
+                            porttitor enim et.
+                        </p>
+                        <p>
+                            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Quisque placerat scelerisque tortor
+                            ornare ornare.
+                            Convallis felis vitae tortor augue. Velit nascetur proin massa in.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Team Section (Carousel) -->
+    <section class="py-24 bg-white border-t border-gray-100">
+        <div class="container mx-auto px-4">
+            <div class="text-center mb-16">
+                <h5 class="text-[#159EEC] font-bold text-sm tracking-[0.2em] uppercase mb-4">Meet the</h5>
+                <h2 class="text-5xl font-bold text-[#1F2B6C]">Team Members</h2>
+            </div>
+
+            <div class="relative px-12">
+                <!-- Previous Arrow -->
+                <button (click)="prev()" type="button"
+                    class="absolute left-0 top-1/2 -translate-y-1/2 w-10 h-10 bg-[#1F2B6C] text-white rounded-full flex items-center justify-center hover:bg-[#159EEC] transition-colors cursor-pointer shadow-lg z-10">
+                    <lucide-icon [img]="ChevronLeft" class="w-5 h-5"></lucide-icon>
+                </button>
+
+                <!-- Carousel Container -->
+                <div #carouselContainer class="flex gap-6 overflow-x-auto no-scrollbar select-none cursor-pointer"
+                    [class.snap-x]="!isDragging" [class.snap-mandatory]="!isDragging" (mousedown)="onMouseDown($event)"
+                    (scroll)="onScroll()" style="scroll-behavior: smooth;">
+                    <div *ngFor="let doc of carouselDoctors" class="flex-shrink-0 flex flex-col items-center snap-start"
+                        [style.width.px]="cardWidthPx">
+                        <div
+                            class="relative mb-0 overflow-hidden rounded-t-xl w-full bg-gray-100 aspect-square flex items-center justify-center">
+
+                        </div>
+                        <div class="w-full bg-[#1F2B6C] p-6 text-center rounded-b-xl border-b-[6px] border-[#1F2B6C]">
+                            <h3 class="text-lg font-bold text-white">{{ doc.name }}</h3>
+                            <p class="text-white font-bold uppercase text-xs tracking-widest mt-1 mb-4">
+                                {{ doc.role }}</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Next Arrow -->
+                <button (click)="next()" type="button"
+                    class="absolute right-0 top-1/2 -translate-y-1/2 w-10 h-10 bg-[#1F2B6C] text-white rounded-full flex items-center justify-center hover:bg-[#159EEC] transition-colors cursor-pointer shadow-lg z-10">
+                    <lucide-icon [img]="ChevronRight" class="w-5 h-5"></lucide-icon>
+                </button>
+            </div>
+        </div>
+    </section>
+
+</div>
