@@ -1,0 +1,43 @@
+/* Hamburger button */
+.hamburger {
+  flex-direction: column;
+  justify-content: space-between;
+  width: 26px;
+  height: 20px;
+  cursor: pointer;
+  background: none;
+  border: none;
+  padding: 0;
+}
+
+/* Only set display:flex on mobile — avoids overriding Tailwind's lg:hidden on desktop */
+@media (max-width: 1023px) {
+  .hamburger {
+    display: flex;
+  }
+}
+
+
+.hamburger span {
+  display: block;
+  width: 100%;
+  height: 2px;
+  background-color: white;
+  border-radius: 2px;
+  transition: transform 0.35s ease, opacity 0.25s ease;
+  transform-origin: center;
+}
+
+/* Open state — morph into X */
+.hamburger.is-open span:nth-child(1) {
+  transform: translateY(9px) rotate(45deg);
+}
+
+.hamburger.is-open span:nth-child(2) {
+  opacity: 0;
+  transform: scaleX(0);
+}
+
+.hamburger.is-open span:nth-child(3) {
+  transform: translateY(-9px) rotate(-45deg);
+}

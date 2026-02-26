@@ -1,9 +1,8 @@
-
 <!-- Top Header -->
 <div class="container mx-auto px-4 py-4 md:py-6">
     <div class="flex flex-col md:flex-row items-center justify-between gap-6">
         <div class="text-[#1F2B6C] font-bold text-3xl tracking-wider uppercase cursor-pointer" routerLink="/">
-            Med<span class="text-[#159EEC]">dical</span>
+            Med<span class="text-[#159EEC]">ical</span>
         </div>
 
         <div class="flex flex-wrap justify-center md:justify-end gap-8">
@@ -44,23 +43,56 @@
 <nav class="bg-[#1F2B6C] text-white py-1 sticky top-0 z-50">
     <div class="container mx-auto px-4">
         <div class="flex items-center justify-between h-16">
+
+            <!-- Brand logo (visible on mobile since desktop links are hidden) -->
+            <div class="lg:hidden text-white font-bold text-xl tracking-wider uppercase cursor-pointer" routerLink="/">
+                Med<span class="text-[#BFD2F8]">dical</span>
+            </div>
+
+            <!-- Desktop nav links -->
             <div class="hidden lg:flex items-center gap-8">
-                <a *ngFor="let item of navItems"
-                   [routerLink]="item.path"
-                   routerLinkActive="text-[#BFD2F8] font-bold"
-                   [routerLinkActiveOptions]="{exact: item.id === ''}"
-                   class="font-medium transition-colors cursor-pointer hover:text-[#BFD2F8]">
+                <a *ngFor="let item of navItems" [routerLink]="item.path" routerLinkActive="text-[#BFD2F8] font-bold"
+                    [routerLinkActiveOptions]="{exact: item.id === ''}"
+                    class="font-medium transition-colors cursor-pointer hover:text-[#BFD2F8]">
                     {{ item.label }}
                 </a>
             </div>
 
-            <div class="flex items-center gap-6">
-                <lucide-icon [img]="Search" class="w-5 h-5 cursor-pointer hover:text-[#BFD2F8] transition-colors"></lucide-icon>
+            <!-- Right side controls -->
+            <div class="flex items-center gap-4">
+                <lucide-icon [img]="Search"
+                    class="w-5 h-5 cursor-pointer hover:text-[#BFD2F8] transition-colors"></lucide-icon>
+
+                <!-- Appointment button — desktop only -->
                 <button routerLink="/appointments"
-                        class="bg-[#BFD2F8] text-[#1F2B6C] px-8 py-3 rounded-full font-bold hover:bg-white transition-all transform hover:scale-105 shadow-md text-sm cursor-pointer">
+                    class="hidden lg:block bg-[#BFD2F8] text-[#1F2B6C] px-8 py-3 rounded-full font-bold hover:bg-white transition-all transform hover:scale-105 shadow-md text-sm cursor-pointer">
                     Appointment
                 </button>
+
+                <!-- Hamburger / Close — mobile only (animated) -->
+                <button (click)="toggleMenu()" [class.is-open]="menuOpen" class="hamburger lg:hidden"
+                    aria-label="Toggle menu">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </button>
             </div>
+        </div>
+    </div>
+
+    <!-- Mobile dropdown -->
+    <div *ngIf="menuOpen" class="lg:hidden bg-[#1a2460] border-t border-white/10">
+        <div class="flex flex-col items-center gap-5 py-8">
+            <a *ngFor="let item of navItems" [routerLink]="item.path" routerLinkActive="text-[#BFD2F8] font-bold"
+                [routerLinkActiveOptions]="{exact: item.id === ''}" (click)="closeMenu()"
+                class="text-lg font-medium transition-colors cursor-pointer hover:text-[#BFD2F8]">
+                {{ item.label }}
+            </a>
+
+            <button routerLink="/appointments" (click)="closeMenu()"
+                class="mt-2 bg-[#BFD2F8] text-[#1F2B6C] px-10 py-3 rounded-full font-bold hover:bg-white transition-all shadow-md text-sm cursor-pointer">
+                Appointment
+            </button>
         </div>
     </div>
 </nav>
