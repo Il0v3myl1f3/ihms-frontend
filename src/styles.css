@@ -1,3 +1,67 @@
 /* You can add global styles to this file, and also import other style files */
 
 @import "tailwindcss";
+
+@theme {
+    --font-display: 'Yeseva One', serif;
+    --font-body: 'Work Sans', sans-serif;
+    --breakpoint-lg: 1024px;
+}
+
+/* Global base */
+body {
+    font-family: var(--font-body);
+    font-size: 16px;
+    font-weight: 400;
+}
+
+/* Semantic typography classes */
+.text-display-1 {
+    font-family: var(--font-display);
+    font-size: 48px;
+    line-height: 1.1;
+}
+
+.text-display-2 {
+    font-family: var(--font-display);
+    font-size: 36px;
+    line-height: 1.2;
+}
+
+.text-title {
+    font-family: var(--font-body);
+    font-size: 24px;
+    font-weight: 500;
+}
+
+.text-caption {
+    font-family: var(--font-body);
+    font-size: 14px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+}
+
+.text-body {
+    font-family: var(--font-body);
+    font-size: 16px;
+    font-weight: 400;
+}
+
+.text-body-2 {
+    font-family: var(--font-body);
+    font-size: 16px;
+    font-weight: 400;
+}
+
+.text-button {
+    font-family: var(--font-body);
+    font-size: 16px;
+    font-weight: 500;
+}
+
+.text-small {
+    font-family: var(--font-body);
+    font-size: 12px;
+    font-weight: 400;
+}

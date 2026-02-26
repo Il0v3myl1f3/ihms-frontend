@@ -4,15 +4,15 @@
         <div class="container mx-auto px-4 relative z-10">
             <div class="flex flex-col lg:flex-row items-center gap-12">
                 <div class="flex-1 text-center lg:text-left pt-12">
-                    <h5 class="text-[#159EEC] font-bold text-lg tracking-[0.2em] uppercase mb-4">Caring for Life</h5>
-                    <h1 class="text-5xl lg:text-7xl font-bold text-[#1F2B6C] leading-tight mb-8">
+                    <h5 class="text-[#159EEC] text-caption mb-4">Caring for Life</h5>
+                    <h1 class="text-display-1 font-bold text-[#1F2B6C] leading-tight mb-8">
                         Leading the Way <br /> in Medical Excellence
                     </h1>
                 </div>
 
                 <div class="flex-1 lg:self-end">
                     <div
-                        class="relative rounded-t-[40px] overflow-hidden bg-gray-200 aspect-[4/3] flex items-center justify-center">
+                        class="relative rounded-t-[40px] overflow-hidden bg-gray-200 aspect-4/3 flex items-center justify-center">
                         <span class="text-gray-400 font-bold opacity-30">Image Placeholder</span>
                     </div>
                 </div>
@@ -25,19 +25,19 @@
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
                     <div routerLink="/appointments"
                         class="bg-[#1F2B6C] p-8 flex items-center justify-between text-white hover:bg-[#152055] transition-all cursor-pointer group shadow-2xl rounded-xl">
-                        <span class="text-lg font-bold">Book an Appointment</span>
+                        <span class="text-body-2 font-bold">Book an Appointment</span>
                         <lucide-icon [img]="Calendar"
                             class="w-8 h-8 text-[#BFD2F8] group-hover:scale-110 transition-transform"></lucide-icon>
                     </div>
                     <div routerLink="/doctors"
                         class="bg-[#BFD2F8] p-8 flex items-center justify-between text-[#1F2B6C] hover:bg-[#a6bdff] transition-all cursor-pointer group shadow-2xl rounded-xl">
-                        <span class="text-lg font-bold">Team of Doctors</span>
+                        <span class="text-body-2 font-bold">Team of Doctors</span>
                         <lucide-icon [img]="Users"
                             class="w-8 h-8 text-[#1F2B6C] group-hover:scale-110 transition-transform"></lucide-icon>
                     </div>
                     <div routerLink="/services"
                         class="bg-[#159EEC] p-8 flex items-center justify-between text-white hover:bg-[#1286c9] transition-all cursor-pointer group shadow-2xl rounded-xl">
-                        <span class="text-lg font-bold">Our Services</span>
+                        <span class="text-body-2 font-bold">Our Services</span>
                         <lucide-icon [img]="SquareArrowOutUpRight"
                             class="w-8 h-8 text-[#BFD2F8] group-hover:scale-110 transition-transform"></lucide-icon>
                     </div>
@@ -49,15 +49,15 @@
     <!-- Welcome Section -->
     <section class="pt-32 pb-24 bg-white">
         <div class="container mx-auto px-4 text-center max-w-4xl">
-            <h5 class="text-[#159EEC] font-bold text-lg tracking-[0.2em] uppercase mb-4">Welcome to Meddical</h5>
-            <h2 class="text-4xl lg:text-5xl font-bold text-[#1F2B6C] mb-8">A Great Place to Receive Care</h2>
-            <p class="text-gray-500 text-lg leading-relaxed mb-6">
+            <h5 class="text-[#159EEC] text-caption mb-4">Welcome to Meddical</h5>
+            <h2 class="text-display-2 font-bold text-[#1F2B6C] mb-8">A Great Place to Receive Care</h2>
+            <p class="text-gray-500 text-body-2 leading-relaxed mb-6">
                 Lorem ipsum dolor sit amet, consectetur adipiscing elit. Quisque placerat scelerisque tortor ornare
                 ornare.
                 Convallis felis vitae tortor augue. Velit nascetur proin massa in. Consequat faucibus porttitor enim et.
             </p>
             <button routerLink="/about"
-                class="inline-flex items-center gap-2 text-[#159EEC] font-bold hover:gap-4 transition-all">
+                class="inline-flex items-center gap-2 text-[#159EEC] text-body font-bold hover:gap-4 transition-all">
                 Learn More <lucide-icon [img]="ChevronRight" class="w-5 h-5"></lucide-icon>
             </button>
 
@@ -72,9 +72,9 @@
     <section class="py-24 bg-white">
         <div class="container mx-auto px-4">
             <div class="text-center mb-16">
-                <h5 class="text-[#159EEC] font-bold text-lg tracking-[0.2em] uppercase mb-4">Care you can believe in
+                <h5 class="text-[#159EEC] text-caption mb-4">Care you can believe in
                 </h5>
-                <h2 class="text-4xl lg:text-5xl font-bold text-[#1F2B6C]">Our Services</h2>
+                <h2 class="text-display-2 font-bold text-[#1F2B6C]">Our Services</h2>
             </div>
 
             <div class="grid grid-cols-1 lg:grid-cols-12 gap-12">
@@ -84,24 +84,24 @@
                             class="flex items-center gap-4 p-5 cursor-pointer transition-all border-b border-gray-100 last:border-0"
                             [ngClass]="activeService.id === item.id ? 'bg-[#1F2B6C] text-white' : 'hover:bg-gray-50 text-[#1F2B6C]'">
                             <lucide-icon *ngIf="item.icon" [img]="item.icon" class="w-5 h-5"></lucide-icon>
-                            <span class="font-bold">{{ item.name }}</span>
+                            <span class="text-body font-bold">{{ item.name }}</span>
                         </div>
                         <div routerLink="/services"
                             class="flex items-center gap-4 p-5 cursor-pointer transition-all hover:bg-gray-50 text-[#1F2B6C]">
-                            <span class="font-bold text-[#159EEC]">View All</span>
+                            <span class="text-body font-bold text-[#159EEC]">View All</span>
                         </div>
                     </div>
                 </div>
 
                 <div class="lg:col-span-6">
-                    <h3 class="text-3xl font-bold text-[#1F2B6C] mb-8">{{ activeService.title }}</h3>
+                    <h3 class="text-title font-bold text-[#1F2B6C] mb-8">{{ activeService.title }}</h3>
                     <div class="grid grid-cols-2 gap-4 mb-8">
                         <div *ngFor="let dot of activeService.bullets" class="flex items-center gap-3">
                             <div class="w-3 h-3 bg-[#159EEC] rounded-full"></div>
-                            <span class="font-medium text-gray-700">{{ dot }}</span>
+                            <span class="text-body font-medium text-gray-700">{{ dot }}</span>
                         </div>
                     </div>
-                    <p class="text-gray-500 leading-relaxed mb-6">
+                    <p class="text-gray-500 text-body leading-relaxed mb-6">
                         {{ activeService.description }}
                     </p>
                 </div>
@@ -126,8 +126,8 @@
     <section class="py-24 bg-white">
         <div class="container mx-auto px-4">
             <div class="text-center mb-16">
-                <h5 class="text-[#159EEC] font-bold text-lg tracking-[0.2em] uppercase mb-4">Always Caring</h5>
-                <h2 class="text-4xl lg:text-5xl font-bold text-[#1F2B6C]">Our Specialties</h2>
+                <h5 class="text-[#159EEC] text-caption mb-4">Always Caring</h5>
+                <h2 class="text-display-2 font-bold text-[#1F2B6C]">Our Specialties</h2>
             </div>
 
             <div
@@ -138,7 +138,7 @@
                         <div class="text[#BFD2F8] text-[#1F2B6C] group-hover:text-[#BFD2F8]">
                             <lucide-icon [img]="spec.icon" class="w-8 h-8"></lucide-icon>
                         </div>
-                        <span class="font-bold text-sm uppercase tracking-wide">{{ spec.name }}</span>
+                        <span class="text-small font-bold text-sm uppercase tracking-wide">{{ spec.name }}</span>
                     </div>
                 </div>
             </div>
