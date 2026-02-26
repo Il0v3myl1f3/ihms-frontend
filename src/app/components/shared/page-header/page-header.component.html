@@ -11,11 +11,17 @@
 
     <div class="container mx-auto px-4 relative z-10">
         <div class="max-w-2xl">
-            <div class="text-body font-bold text-[#1F2B6C] mb-4 flex items-center gap-2">
-                <span>Home</span>
-                <span>/</span>
-                <span class="text-[#159EEC]">{{ subtitle || title }}</span>
-            </div>
+            <nav aria-label="Breadcrumb" class="mb-4">
+                <ol class="flex items-center gap-2 text-body font-bold text-[#1F2B6C]">
+                    <li>
+                        <a routerLink="/" class="hover:text-[#159EEC] transition-colors">Home</a>
+                    </li>
+                    <li aria-hidden="true">/</li>
+                    <li>
+                        <span class="text-[#159EEC]" aria-current="page">{{ subtitle || title }}</span>
+                    </li>
+                </ol>
+            </nav>
             <h1 class="text-display-1 font-bold text-[#1F2B6C] leading-tight">
                 {{ title }}
             </h1>

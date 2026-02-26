@@ -2,9 +2,10 @@
     <div class="container mx-auto px-4">
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 mb-20 border-b border-white/10 pb-20">
             <div>
-                <div class="text-white text-display-2 tracking-wider mb-8 uppercase">
+                <a class="text-white text-display-2 tracking-wider mb-8 uppercase inline-block cursor-pointer"
+                    routerLink="/">
                     Med<span class="text-[#159EEC]">dical</span>
-                </div>
+                </a>
                 <p class="text-white/70 leading-relaxed mb-8 text-body-2">
                     Leading the Way in Medical Excellence. Trusted care, whenever you need it most.
                 </p>
@@ -12,53 +13,65 @@
 
             <div>
                 <h4 class="text-title mb-8">Important Links</h4>
-                <ul class="space-y-4 font-medium text-white/70">
-                    <li><a routerLink="/appointments" class="hover:text-[#BFD2F8] transition-colors">Appointment</a>
-                    </li>
-                    <li><a routerLink="/doctors" class="hover:text-[#BFD2F8] transition-colors">Doctors</a></li>
-                    <li><a routerLink="/services" class="hover:text-[#BFD2F8] transition-colors">Services</a></li>
-                    <li><a routerLink="/about" class="hover:text-[#BFD2F8] transition-colors">About Us</a></li>
-                </ul>
+                <nav aria-label="Footer Navigation">
+                    <ul class="space-y-4 font-medium text-white/70">
+                        <li><a routerLink="/appointments" class="hover:text-[#BFD2F8] transition-colors">Appointment</a>
+                        </li>
+                        <li><a routerLink="/doctors" class="hover:text-[#BFD2F8] transition-colors">Doctors</a></li>
+                        <li><a routerLink="/services" class="hover:text-[#BFD2F8] transition-colors">Services</a></li>
+                        <li><a routerLink="/about" class="hover:text-[#BFD2F8] transition-colors">About Us</a></li>
+                    </ul>
+                </nav>
             </div>
 
             <div>
                 <h4 class="text-title mb-8">Contact Us</h4>
-                <ul class="space-y-4 text-body-2 text-white/70">
-                    <li class="flex items-start gap-3">
-                        <lucide-icon [img]="Phone" class="w-5 h-5 text-[#BFD2F8]"></lucide-icon>
-                        <span>Call: (237) 681-812-255</span>
-                    </li>
-                    <li class="flex items-start gap-3">
-                        <lucide-icon [img]="Mail" class="w-5 h-5 text-[#BFD2F8]"></lucide-icon>
-                        <span>Email: [EMAIL_ADDRESS]</span>
-                    </li>
-                    <li class="flex items-start gap-3">
-                        <lucide-icon [img]="MapPin" class="w-5 h-5 text-[#BFD2F8]"></lucide-icon>
-                        <span>Address: 0123 Some Place</span>
-                    </li>
-                </ul>
+                <address class="not-italic">
+                    <ul class="space-y-4 text-body-2 text-white/70">
+                        <li class="flex items-start gap-3">
+                            <lucide-icon [img]="Phone" class="w-5 h-5 text-[#BFD2F8]"></lucide-icon>
+                            <span>Call: (237) 681-812-255</span>
+                        </li>
+                        <li class="flex items-start gap-3">
+                            <lucide-icon [img]="Mail" class="w-5 h-5 text-[#BFD2F8]"></lucide-icon>
+                            <span>Email: [EMAIL_ADDRESS]</span>
+                        </li>
+                        <li class="flex items-start gap-3">
+                            <lucide-icon [img]="MapPin" class="w-5 h-5 text-[#BFD2F8]"></lucide-icon>
+                            <span>Address: 0123 Some Place</span>
+                        </li>
+                    </ul>
+                </address>
             </div>
 
             <div>
                 <h4 class="text-title mb-8">Newsletter</h4>
                 <p class="text-white/70 mb-6 text-body-2">Subscribe to get latest updates.</p>
-                <div class="flex bg-[#BFD2F8]/10 rounded-xl overflow-hidden p-1 border border-white/10">
-                    <input type="email" placeholder="Enter your email"
+                <form class="flex bg-[#BFD2F8]/10 rounded-xl overflow-hidden p-1 border border-white/10"
+                    (submit)="$event.preventDefault()">
+                    <input type="email" placeholder="Enter your email" aria-label="Email address for newsletter"
                         class="bg-transparent border-none focus:ring-0 px-4 py-3 flex-1 text-white placeholder:text-white/50 focus:outline-none" />
-                    <button class="bg-[#159EEC] p-3 rounded-lg hover:bg-white transition-all text-[#1F2B6C]">
+                    <button type="submit" aria-label="Subscribe"
+                        class="bg-[#159EEC] p-3 rounded-lg hover:bg-white transition-all text-[#1F2B6C]">
                         <lucide-icon [img]="Send" class="w-5 h-5"></lucide-icon>
                     </button>
-                </div>
+                </form>
             </div>
         </div>
 
         <div class="flex flex-col md:flex-row items-center justify-between gap-6 text-white/70 text-small">
             <p>© 2026 Hospital's Name All Rights Reserved.</p>
-            <div class="flex gap-8">
-                <lucide-icon [img]="Facebook" class="hover:text-[#BFD2F8] cursor-pointer"></lucide-icon>
-                <lucide-icon [img]="Instagram" class="hover:text-[#BFD2F8] cursor-pointer"></lucide-icon>
-                <lucide-icon [img]="Linkedin" class="hover:text-[#BFD2F8] cursor-pointer"></lucide-icon>
-            </div>
+            <nav aria-label="Social Media links" class="flex gap-8">
+                <a href="#" aria-label="Follow us on Facebook" class="hover:text-[#BFD2F8] transition-colors">
+                    <lucide-icon [img]="Facebook"></lucide-icon>
+                </a>
+                <a href="#" aria-label="Follow us on Instagram" class="hover:text-[#BFD2F8] transition-colors">
+                    <lucide-icon [img]="Instagram"></lucide-icon>
+                </a>
+                <a href="#" aria-label="Follow us on LinkedIn" class="hover:text-[#BFD2F8] transition-colors">
+                    <lucide-icon [img]="Linkedin"></lucide-icon>
+                </a>
+            </nav>
         </div>
     </div>
 </footer>
