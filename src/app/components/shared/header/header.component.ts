@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink, RouterLinkActive } from '@angular/router';
-import { LucideAngularModule, Phone, Clock, MapPin, Search, Menu } from 'lucide-angular';
+import { LucideAngularModule, Phone, Clock, MapPin, Search, Menu, X } from 'lucide-angular';
 
 @Component({
   selector: 'app-header',
@@ -16,6 +16,7 @@ export class HeaderComponent {
   readonly MapPin = MapPin;
   readonly Search = Search;
   readonly Menu = Menu;
+  readonly X = X;
 
   menuOpen = false;
 

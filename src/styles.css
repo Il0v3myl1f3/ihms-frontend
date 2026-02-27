@@ -6,6 +6,7 @@
     --font-display: 'Yeseva One', serif;
     --font-body: 'Work Sans', sans-serif;
     --breakpoint-lg: 1024px;
+    --breakpoint-2xl: 1536px;
 }
 
 /* Global base */
@@ -15,22 +16,27 @@ body {
     font-weight: 400;
 }
 
-/* Semantic typography classes */
+/* Ultra-wide container constraint */
+.container {
+    max-width: 1250px;
+}
+
+/* Semantic typography classes — fluid with clamp() */
 .text-display-1 {
     font-family: var(--font-display);
-    font-size: 48px;
+    font-size: clamp(28px, 5vw, 48px);
     line-height: 1.1;
 }
 
 .text-display-2 {
     font-family: var(--font-display);
-    font-size: 36px;
+    font-size: clamp(22px, 4vw, 36px);
     line-height: 1.2;
 }
 
 .text-title {
     font-family: var(--font-body);
-    font-size: 24px;
+    font-size: clamp(18px, 2.5vw, 24px);
     font-weight: 500;
 }
 
@@ -64,4 +70,50 @@ body {
     font-family: var(--font-body);
     font-size: 12px;
     font-weight: 400;
+}
+
+/* Hide scrollbar (for horizontal service tabs) */
+.no-scrollbar::-webkit-scrollbar {
+    display: none;
+}
+
+.no-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+}
+
+
+/* Hamburger button — in @layer components so Tailwind utilities can override display */
+@layer components {
+    .hamburger {
+        display: flex;
+        flex-direction: column;
+        gap: 5px;
+        cursor: pointer;
+        background: none;
+        border: none;
+        padding: 4px;
+    }
+
+    .hamburger span {
+        display: block;
+        width: 22px;
+        height: 2px;
+        background: white;
+        transition: all 0.3s ease;
+        transform-origin: center;
+    }
+
+    .hamburger.is-open span:nth-child(1) {
+        transform: translateY(7px) rotate(45deg);
+    }
+
+    .hamburger.is-open span:nth-child(2) {
+        opacity: 0;
+        transform: scaleX(0);
+    }
+
+    .hamburger.is-open span:nth-child(3) {
+        transform: translateY(-7px) rotate(-45deg);
+    }
 }
