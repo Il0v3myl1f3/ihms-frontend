@@ -4,6 +4,7 @@ import { ServicesComponent } from './components/pages/services/services.componen
 import { DoctorsComponent } from './components/pages/doctors/doctors.component';
 import { AboutComponent } from './components/pages/about/about.component';
 import { ContactComponent } from './components/pages/contact/contact.component';
+import { DashboardComponent } from './components/pages/dashboard/dashboard.component';
 
 export const routes: Routes = [
   { path: '', component: HomeComponent },
@@ -11,5 +12,6 @@ export const routes: Routes = [
   { path: 'doctors', component: DoctorsComponent },
   { path: 'about', component: AboutComponent },
   { path: 'contact', component: ContactComponent },
+  { path: 'dashboard', component: DashboardComponent },
   { path: '**', redirectTo: '' }
 ];
