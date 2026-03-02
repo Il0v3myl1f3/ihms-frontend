@@ -1,0 +1,163 @@
+﻿﻿<!-- Modal Overlay -->
+<div *ngIf="isOpen" class="fixed inset-0 bg-black/50 z-[999] flex items-center justify-center" (click)="onClose()">
+  <!-- Modal Container with rounded corners -->
+  <div class="bg-white rounded-lg shadow-2xl w-full max-w-2xl mx-4 z-[1000] overflow-hidden" (click)="$event.stopPropagation()">
+    <!-- Scrollable content area -->
+    <div class="max-h-[90vh] overflow-y-auto modal-scroll">
+      <!-- Header -->
+      <div class="flex items-center justify-between p-6 border-b border-gray-200 sticky top-0 bg-white z-10">
+      <h2 class="text-2xl font-bold text-[#1F2B6C]">Book an Appointment</h2>
+      <button
+        (click)="onClose()"
+        class="text-gray-500 hover:text-gray-700 transition-colors p-1">
+        <lucide-icon [img]="X" class="w-6 h-6"></lucide-icon>
+      </button>
+    </div>
+
+    <!-- Body -->
+    <div class="p-6">
+      <!-- Success Message -->
+      <div *ngIf="successMessage" class="mb-4 p-4 bg-green-50 border border-green-200 rounded-lg">
+        <p class="text-sm text-green-600">✓ {{ successMessage }}</p>
+      </div>
+
+      <!-- Error Message -->
+      <div *ngIf="errorMessage" class="mb-4 p-4 bg-red-50 border border-red-200 rounded-lg">
+        <p class="text-sm text-red-600">{{ errorMessage }}</p>
+      </div>
+
+      <!-- Form -->
+      <form [formGroup]="appointmentForm" (ngSubmit)="onSubmit()" class="space-y-4">
+        <!-- Patient Name Field -->
+        <div>
+          <label class="block text-sm font-semibold text-[#1F2B6C] mb-2">Full Name *</label>
+          <input
+            type="text"
+            formControlName="patientName"
+            placeholder="Enter your full name"
+            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#159EEC] focus:border-transparent transition-all"
+            [class.border-red-500]="patientNameErrors && appointmentForm.get('patientName')?.touched">
+          <div *ngIf="patientNameErrors && appointmentForm.get('patientName')?.touched" class="mt-1 text-sm text-red-600">
+            <p *ngIf="patientNameErrors['required']">Name is required</p>
+            <p *ngIf="patientNameErrors['minlength']">Name must be at least 2 characters</p>
+          </div>
+        </div>
+
+        <!-- Email Field -->
+        <div>
+          <label class="block text-sm font-semibold text-[#1F2B6C] mb-2">Email Address *</label>
+          <input
+            type="email"
+            formControlName="email"
+            placeholder="Enter your email"
+            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#159EEC] focus:border-transparent transition-all"
+            [class.border-red-500]="emailErrors && appointmentForm.get('email')?.touched">
+          <div *ngIf="emailErrors && appointmentForm.get('email')?.touched" class="mt-1 text-sm text-red-600">
+            <p *ngIf="emailErrors['required']">Email is required</p>
+            <p *ngIf="emailErrors['email']">Please enter a valid email</p>
+          </div>
+        </div>
+
+        <!-- Phone Field -->
+        <div>
+          <label class="block text-sm font-semibold text-[#1F2B6C] mb-2">Phone Number *</label>
+          <input
+            type="tel"
+            formControlName="phone"
+            placeholder="Enter your phone number"
+            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#159EEC] focus:border-transparent transition-all"
+            [class.border-red-500]="phoneErrors && appointmentForm.get('phone')?.touched">
+          <div *ngIf="phoneErrors && appointmentForm.get('phone')?.touched" class="mt-1 text-sm text-red-600">
+            <p *ngIf="phoneErrors['required']">Phone number is required</p>
+            <p *ngIf="phoneErrors['pattern']">Please enter a valid phone number (9-15 digits)</p>
+          </div>
+        </div>
+
+        <!-- Specialty Field -->
+        <div>
+          <label class="block text-sm font-semibold text-[#1F2B6C] mb-2">Specialty *</label>
+          <select
+            formControlName="specialty"
+            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#159EEC] focus:border-transparent transition-all bg-white"
+            [class.border-red-500]="specialtyErrors && appointmentForm.get('specialty')?.touched">
+            <option value="">Select a specialty</option>
+            <option *ngFor="let specialty of specialties" [value]="specialty">{{ specialty }}</option>
+          </select>
+          <div *ngIf="specialtyErrors && appointmentForm.get('specialty')?.touched" class="mt-1 text-sm text-red-600">
+            <p *ngIf="specialtyErrors['required']">Please select a specialty</p>
+          </div>
+        </div>
+
+        <!-- Date and Time Row -->
+        <div class="grid grid-cols-2 gap-4">
+          <!-- Preferred Date Field -->
+          <div>
+            <label class="block text-sm font-semibold text-[#1F2B6C] mb-2">Preferred Date *</label>
+            <div class="relative">
+              <lucide-icon [img]="Calendar" class="absolute left-3 top-3 w-5 h-5 text-gray-400 pointer-events-none"></lucide-icon>
+              <input
+                type="date"
+                formControlName="preferredDate"
+                [min]="getMinDate()"
+                class="w-full px-4 py-2 pl-10 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#159EEC] focus:border-transparent transition-all"
+                [class.border-red-500]="preferredDateErrors && appointmentForm.get('preferredDate')?.touched">
+            </div>
+            <div *ngIf="preferredDateErrors && appointmentForm.get('preferredDate')?.touched" class="mt-1 text-sm text-red-600">
+              <p *ngIf="preferredDateErrors['required']">Date is required</p>
+            </div>
+          </div>
+
+          <!-- Preferred Time Field -->
+          <div>
+            <label class="block text-sm font-semibold text-[#1F2B6C] mb-2">Preferred Time *</label>
+            <div class="relative">
+              <lucide-icon [img]="Clock" class="absolute left-3 top-3 w-5 h-5 text-gray-400 pointer-events-none"></lucide-icon>
+              <input
+                type="time"
+                formControlName="preferredTime"
+                class="w-full px-4 py-2 pl-10 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#159EEC] focus:border-transparent transition-all"
+                [class.border-red-500]="preferredTimeErrors && appointmentForm.get('preferredTime')?.touched">
+            </div>
+            <div *ngIf="preferredTimeErrors && appointmentForm.get('preferredTime')?.touched" class="mt-1 text-sm text-red-600">
+              <p *ngIf="preferredTimeErrors['required']">Time is required</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Message Field -->
+        <div>
+          <label class="block text-sm font-semibold text-[#1F2B6C] mb-2">Additional Message</label>
+          <textarea
+            formControlName="message"
+            placeholder="Tell us more about your condition or any special requirements"
+            rows="4"
+            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#159EEC] focus:border-transparent transition-all resize-none"
+            [class.border-red-500]="appointmentForm.get('message')?.hasError('maxlength') && appointmentForm.get('message')?.touched">
+          </textarea>
+          <div class="mt-1 text-xs text-gray-500">
+            {{ appointmentForm.get('message')?.value?.length || 0 }}/500 characters
+          </div>
+        </div>
+
+        <!-- Buttons -->
+        <div class="flex gap-3 pt-4">
+          <button
+            type="button"
+            (click)="onClose()"
+            class="flex-1 px-6 py-3 border border-gray-300 text-gray-700 rounded-lg font-bold hover:bg-gray-50 transition-all">
+            Cancel
+          </button>
+          <button
+            type="submit"
+            [disabled]="!appointmentForm.valid || isLoading"
+            class="flex-1 px-6 py-3 bg-[#159EEC] text-white rounded-lg font-bold hover:bg-[#1282C4] transition-all disabled:opacity-50 disabled:cursor-not-allowed transform hover:scale-105">
+            {{ isLoading ? 'Booking...' : 'Book Appointment' }}
+          </button>
+        </div>
+      </form>
+    </div>
+    <!-- End scrollable content -->
+    </div>
+  </div>
+</div>
+

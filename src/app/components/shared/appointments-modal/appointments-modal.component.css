@@ -1,0 +1,96 @@
+﻿﻿﻿/* Appointments Modal Styles */
+
+/* Ensure modal overlay is on top */
+:host ::ng-deep .fixed {
+  position: fixed;
+  z-index: 999;
+  transition: opacity 0.2s ease-in-out;
+}
+
+/* Ensure modal container is above overlay */
+:host ::ng-deep .bg-white {
+  position: relative;
+  z-index: 1000;
+  border-radius: 0.5rem;
+  overflow: hidden;
+  transition: transform 0.3s ease-out, opacity 0.3s ease-out;
+}
+
+/* Form input focus animation */
+input:focus,
+select:focus,
+textarea:focus {
+  animation: none;
+}
+
+/* Smooth transitions for form elements */
+input,
+select,
+textarea {
+  transition: all 0.3s ease;
+}
+
+/* Error state styling */
+input.ng-invalid.ng-touched,
+select.ng-invalid.ng-touched,
+textarea.ng-invalid.ng-touched {
+  border-color: #ef4444;
+}
+
+/* Button hover state */
+button[type="submit"]:hover:not(:disabled) {
+  transform: scale(1.05);
+}
+
+/* Disabled button styling */
+button:disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+/* Success message styling */
+.bg-green-50 {
+  transition: all 0.3s ease-out;
+}
+
+/* Error message styling */
+.bg-red-50 {
+  transition: all 0.3s ease-out;
+}
+
+/* Icon styling inside input */
+input[type="date"],
+input[type="time"] {
+  padding-left: 2.5rem;
+}
+
+/* Calendar and clock icons positioning */
+.absolute.left-3 {
+  pointer-events: none;
+  user-select: none;
+}
+
+/* Scrollable content handling with rounded scrollbar corners */
+.modal-scroll {
+  scrollbar-width: thin;
+  scrollbar-color: #159EEC #f3f4f6;
+}
+
+.modal-scroll::-webkit-scrollbar {
+  width: 8px;
+}
+
+.modal-scroll::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.modal-scroll::-webkit-scrollbar-thumb {
+  background: #159EEC;
+  border-radius: 10px;
+  border: 2px solid white;
+}
+
+.modal-scroll::-webkit-scrollbar-thumb:hover {
+  background: #1282C4;
+}
+

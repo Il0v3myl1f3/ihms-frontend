@@ -1,0 +1,10 @@
+﻿<!-- Back to Top Button -->
+<button
+  *ngIf="isVisible"
+  (click)="scrollToTop()"
+  class="fixed bottom-6 right-6 bg-[#159EEC] text-white p-4 rounded-full shadow-lg hover:bg-[#1282C4] transition-all transform hover:scale-110 z-50"
+  title="Back to top"
+  aria-label="Back to top">
+  <lucide-icon [img]="ArrowUp" class="w-6 h-6"></lucide-icon>
+</button>
+

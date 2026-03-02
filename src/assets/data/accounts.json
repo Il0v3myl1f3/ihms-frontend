@@ -1,0 +1,26 @@
+﻿{
+  "accounts": [
+    {
+      "id": "1",
+      "email": "admin@example.com",
+      "password": "admin123",
+      "name": "Admin User",
+      "role": "admin"
+    },
+    {
+      "id": "2",
+      "email": "doctor@example.com",
+      "password": "doctor123",
+      "name": "Dr. Jane Smith",
+      "role": "doctor"
+    },
+    {
+      "id": "3",
+      "email": "user@example.com",
+      "password": "user123",
+      "name": "John Doe",
+      "role": "user"
+    }
+  ]
+}
+

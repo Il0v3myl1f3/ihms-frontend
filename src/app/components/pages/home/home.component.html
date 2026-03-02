@@ -28,6 +28,30 @@
         <!-- Mobile hero background image (placeholder) -->
         <div class="absolute inset-0 lg:hidden bg-gray-200 opacity-20 flex items-center justify-end pr-4">
             <div class="rounded-t-[40px] overflow-hidden h-full w-1/2 bg-gray-300"></div>
+        <!-- Feature Overlay -->
+        <div class="absolute bottom-0 left-0 w-full translate-y-1/2 z-40">
+            <div class="container mx-auto px-4">
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <div (click)="openAppointmentModal()"
+                        class="bg-[#1F2B6C] p-8 flex items-center justify-between text-white hover:bg-[#152055] transition-all cursor-pointer group shadow-2xl rounded-xl">
+                        <span class="text-lg font-bold">Book an Appointment</span>
+                        <lucide-icon [img]="Calendar"
+                            class="w-8 h-8 text-[#BFD2F8] group-hover:scale-110 transition-transform"></lucide-icon>
+                    </div>
+                    <div routerLink="/doctors"
+                        class="bg-[#BFD2F8] p-8 flex items-center justify-between text-[#1F2B6C] hover:bg-[#a6bdff] transition-all cursor-pointer group shadow-2xl rounded-xl">
+                        <span class="text-lg font-bold">Team of Doctors</span>
+                        <lucide-icon [img]="Users"
+                            class="w-8 h-8 text-[#1F2B6C] group-hover:scale-110 transition-transform"></lucide-icon>
+                    </div>
+                    <div routerLink="/services"
+                        class="bg-[#159EEC] p-8 flex items-center justify-between text-white hover:bg-[#1286c9] transition-all cursor-pointer group shadow-2xl rounded-xl">
+                        <span class="text-lg font-bold">Our Services</span>
+                        <lucide-icon [img]="SquareArrowOutUpRight"
+                            class="w-8 h-8 text-[#BFD2F8] group-hover:scale-110 transition-transform"></lucide-icon>
+                    </div>
+                </div>
+            </div>
         </div>
     </section>
 
@@ -163,4 +187,11 @@
             </div>
         </div>
     </section>
+
+    <!-- Appointments Modal Component -->
+    <app-appointments-modal
+      [isOpen]="isAppointmentModalOpen()"
+      (close)="closeAppointmentModal()"
+      (submit)="handleAppointmentSubmit($event)">
+    </app-appointments-modal>
 </div>
