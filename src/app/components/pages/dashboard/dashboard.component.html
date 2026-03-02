@@ -1,0 +1,261 @@
+﻿﻿﻿<!-- Back to Top Button -->
+<button
+  *ngIf="isScrollVisible"
+  (click)="scrollToTop()"
+  class="fixed bottom-6 right-6 bg-[#159EEC] text-white p-3 rounded-full shadow-lg hover:bg-[#1282C4] transition-all transform hover:scale-110 z-40"
+  title="Back to top"
+  aria-label="Back to top">
+  <lucide-icon [img]="ArrowUp" class="w-6 h-6"></lucide-icon>
+</button>
+
+<div class="min-h-screen bg-gradient-to-br from-[#F0F4FF] to-[#E8EFFF]">
+  <!-- Header -->
+  <div class="bg-white shadow-md sticky top-16 z-30">
+    <div class="container mx-auto px-4 py-6">
+      <div class="flex items-center justify-between">
+        <div>
+          <h1 class="text-3xl font-bold text-[#1F2B6C]">Dashboard</h1>
+          <p class="text-gray-600 text-sm">Welcome back, {{ getUserFirstName() }}! 👋</p>
+        </div>
+        <button
+          (click)="logout()"
+          class="flex items-center gap-2 bg-red-500 text-white px-6 py-2 rounded-full hover:bg-red-600 transition-all transform hover:scale-105 shadow-md">
+          <lucide-icon [img]="LogOut" class="w-5 h-5"></lucide-icon>
+          <span class="font-semibold">Logout</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Main Content -->
+  <div class="container mx-auto px-4 py-12">
+    <!-- Role Badge -->
+    <div class="mb-8 inline-block">
+      <span class="px-4 py-2 rounded-full text-white font-bold capitalize"
+            [style.backgroundColor]="getRoleColor()">
+        {{ currentUser?.role }}
+      </span>
+    </div>
+
+    <!-- User Role-Based Content -->
+    <ng-container [ngSwitch]="currentUser?.role">
+      <!-- ADMIN DASHBOARD -->
+      <ng-container *ngSwitchCase="'admin'">
+        <!-- Stats Cards -->
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-12">
+          <div class="bg-white rounded-lg shadow-lg p-6 hover:shadow-xl transition-shadow">
+            <div class="flex items-center justify-between">
+              <div>
+                <p class="text-gray-600 text-sm font-semibold">Total Appointments</p>
+                <p class="text-3xl font-bold text-[#1F2B6C]">{{ mockStats.totalAppointments }}</p>
+              </div>
+              <div class="bg-blue-100 p-3 rounded-full">
+                <lucide-icon [img]="Calendar" class="w-8 h-8 text-blue-600"></lucide-icon>
+              </div>
+            </div>
+          </div>
+
+          <div class="bg-white rounded-lg shadow-lg p-6 hover:shadow-xl transition-shadow">
+            <div class="flex items-center justify-between">
+              <div>
+                <p class="text-gray-600 text-sm font-semibold">Completed</p>
+                <p class="text-3xl font-bold text-green-600">{{ mockStats.completedAppointments }}</p>
+              </div>
+              <div class="bg-green-100 p-3 rounded-full">
+                <lucide-icon [img]="CheckCircle" class="w-8 h-8 text-green-600"></lucide-icon>
+              </div>
+            </div>
+          </div>
+
+          <div class="bg-white rounded-lg shadow-lg p-6 hover:shadow-xl transition-shadow">
+            <div class="flex items-center justify-between">
+              <div>
+                <p class="text-gray-600 text-sm font-semibold">Pending</p>
+                <p class="text-3xl font-bold text-orange-600">{{ mockStats.pendingAppointments }}</p>
+              </div>
+              <div class="bg-orange-100 p-3 rounded-full">
+                <lucide-icon [img]="Clock" class="w-8 h-8 text-orange-600"></lucide-icon>
+              </div>
+            </div>
+          </div>
+
+          <div class="bg-white rounded-lg shadow-lg p-6 hover:shadow-xl transition-shadow">
+            <div class="flex items-center justify-between">
+              <div>
+                <p class="text-gray-600 text-sm font-semibold">Cancelled</p>
+                <p class="text-3xl font-bold text-red-600">{{ mockStats.cancelledAppointments }}</p>
+              </div>
+              <div class="bg-red-100 p-3 rounded-full">
+                <lucide-icon [img]="AlertCircle" class="w-8 h-8 text-red-600"></lucide-icon>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Appointments Table -->
+        <div class="bg-white rounded-lg shadow-lg overflow-hidden">
+          <div class="p-6 border-b border-gray-200">
+            <h2 class="text-2xl font-bold text-[#1F2B6C]">Recent Appointments</h2>
+          </div>
+          <div class="overflow-x-auto">
+            <table class="w-full">
+              <thead class="bg-gray-50">
+                <tr>
+                  <th class="px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">Doctor</th>
+                  <th class="px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">Date</th>
+                  <th class="px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">Time</th>
+                  <th class="px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">Specialty</th>
+                  <th class="px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">Status</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-gray-200">
+                <tr *ngFor="let appointment of mockAppointments" class="hover:bg-gray-50 transition-colors">
+                  <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-[#1F2B6C]">{{ appointment.doctorName }}</td>
+                  <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600">{{ appointment.date }}</td>
+                  <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600">{{ appointment.time }}</td>
+                  <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600">{{ appointment.specialty }}</td>
+                  <td class="px-6 py-4 whitespace-nowrap">
+                    <span [ngClass]="getStatusClass(appointment.status)"
+                          class="px-3 py-1 inline-flex text-xs leading-5 font-semibold rounded-full capitalize">
+                      {{ appointment.status }}
+                    </span>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </ng-container>
+
+      <!-- DOCTOR DASHBOARD -->
+      <ng-container *ngSwitchCase="'doctor'">
+        <!-- Doctor Stats -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
+          <div class="bg-white rounded-lg shadow-lg p-6 hover:shadow-xl transition-shadow">
+            <div class="flex items-center justify-between">
+              <div>
+                <p class="text-gray-600 text-sm font-semibold">Total Patients</p>
+                <p class="text-3xl font-bold text-[#1F2B6C]">{{ mockPatients.length }}</p>
+              </div>
+              <div class="bg-blue-100 p-3 rounded-full">
+                <lucide-icon [img]="UserIcon" class="w-8 h-8 text-blue-600"></lucide-icon>
+              </div>
+            </div>
+          </div>
+
+          <div class="bg-white rounded-lg shadow-lg p-6 hover:shadow-xl transition-shadow">
+            <div class="flex items-center justify-between">
+              <div>
+                <p class="text-gray-600 text-sm font-semibold">Today's Appointments</p>
+                <p class="text-3xl font-bold text-[#159EEC]">3</p>
+              </div>
+              <div class="bg-blue-100 p-3 rounded-full">
+                <lucide-icon [img]="Calendar" class="w-8 h-8 text-blue-600"></lucide-icon>
+              </div>
+            </div>
+          </div>
+
+          <div class="bg-white rounded-lg shadow-lg p-6 hover:shadow-xl transition-shadow">
+            <div class="flex items-center justify-between">
+              <div>
+                <p class="text-gray-600 text-sm font-semibold">This Week</p>
+                <p class="text-3xl font-bold text-green-600">8</p>
+              </div>
+              <div class="bg-green-100 p-3 rounded-full">
+                <lucide-icon [img]="CheckCircle" class="w-8 h-8 text-green-600"></lucide-icon>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- My Patients -->
+        <div class="bg-white rounded-lg shadow-lg overflow-hidden">
+          <div class="p-6 border-b border-gray-200">
+            <h2 class="text-2xl font-bold text-[#1F2B6C]">My Patients</h2>
+          </div>
+          <div class="overflow-x-auto">
+            <table class="w-full">
+              <thead class="bg-gray-50">
+                <tr>
+                  <th class="px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">Patient Name</th>
+                  <th class="px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">Email</th>
+                  <th class="px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">Last Visit</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-gray-200">
+                <tr *ngFor="let patient of mockPatients" class="hover:bg-gray-50 transition-colors">
+                  <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-[#1F2B6C]">{{ patient.name }}</td>
+                  <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600">{{ patient.email }}</td>
+                  <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600">{{ patient.lastVisit }}</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </ng-container>
+
+      <!-- USER DASHBOARD -->
+      <ng-container *ngSwitchCase="'user'">
+        <!-- User Stats -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-12">
+          <div class="bg-white rounded-lg shadow-lg p-6 hover:shadow-xl transition-shadow">
+            <div class="flex items-center justify-between">
+              <div>
+                <p class="text-gray-600 text-sm font-semibold">Upcoming Appointments</p>
+                <p class="text-3xl font-bold text-[#159EEC]">2</p>
+              </div>
+              <div class="bg-blue-100 p-3 rounded-full">
+                <lucide-icon [img]="Calendar" class="w-8 h-8 text-blue-600"></lucide-icon>
+              </div>
+            </div>
+          </div>
+
+          <div class="bg-white rounded-lg shadow-lg p-6 hover:shadow-xl transition-shadow">
+            <div class="flex items-center justify-between">
+              <div>
+                <p class="text-gray-600 text-sm font-semibold">Total Visits</p>
+                <p class="text-3xl font-bold text-green-600">8</p>
+              </div>
+              <div class="bg-green-100 p-3 rounded-full">
+                <lucide-icon [img]="CheckCircle" class="w-8 h-8 text-green-600"></lucide-icon>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- My Appointments -->
+        <div class="bg-white rounded-lg shadow-lg overflow-hidden">
+          <div class="p-6 border-b border-gray-200">
+            <h2 class="text-2xl font-bold text-[#1F2B6C]">My Appointments</h2>
+          </div>
+          <div class="space-y-4 p-6">
+            <div *ngFor="let appointment of mockAppointments"
+                 class="border border-gray-200 rounded-lg p-4 hover:shadow-lg transition-shadow">
+              <div class="flex items-start justify-between mb-3">
+                <div>
+                  <h3 class="font-bold text-[#1F2B6C]">{{ appointment.doctorName }}</h3>
+                  <p class="text-sm text-gray-600">{{ appointment.specialty }}</p>
+                </div>
+                <span [ngClass]="getStatusClass(appointment.status)"
+                      class="px-3 py-1 text-xs font-semibold rounded-full capitalize">
+                  {{ appointment.status }}
+                </span>
+              </div>
+              <div class="flex items-center gap-6 text-sm text-gray-600">
+                <div class="flex items-center gap-2">
+                  <lucide-icon [img]="Calendar" class="w-4 h-4"></lucide-icon>
+                  <span>{{ appointment.date }}</span>
+                </div>
+                <div class="flex items-center gap-2">
+                  <lucide-icon [img]="Clock" class="w-4 h-4"></lucide-icon>
+                  <span>{{ appointment.time }}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </ng-container>
+    </ng-container>
+  </div>
+</div>
+
