@@ -71,7 +71,7 @@
                     </div>
                 </div>
 
-                <button routerLink="/appointments"
+                <button (click)="openAppointmentModal()"
                         class="bg-[#BFD2F8] text-[#1F2B6C] px-8 py-3 rounded-full font-bold hover:bg-white transition-all transform hover:scale-105 shadow-md text-sm cursor-pointer">
                     Appointment
                 </button>
@@ -86,3 +86,10 @@
   (close)="closeLoginModal()"
   (login)="handleLogin($event)">
 </app-login-modal>
+
+<!-- Appointments Modal Component -->
+<app-appointments-modal
+  [isOpen]="isAppointmentModalOpen()"
+  (close)="closeAppointmentModal()"
+  (submit)="handleAppointmentSubmit($event)">
+</app-appointments-modal>
