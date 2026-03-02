@@ -1,0 +1,70 @@
+﻿﻿<!-- Modal Overlay -->
+<div *ngIf="isOpen" class="fixed inset-0 bg-black/50 z-[999] flex items-center justify-center" (click)="onClose()">
+  <!-- Modal Container -->
+  <div class="bg-white rounded-lg shadow-2xl w-full max-w-md mx-4 z-[1000]" (click)="$event.stopPropagation()">
+    <!-- Header -->
+    <div class="flex items-center justify-between p-6 border-b border-gray-200">
+      <h2 class="text-2xl font-bold text-[#1F2B6C]">Login</h2>
+      <button
+        (click)="onClose()"
+        class="text-gray-500 hover:text-gray-700 transition-colors p-1">
+        <lucide-icon [img]="X" class="w-6 h-6"></lucide-icon>
+      </button>
+    </div>
+
+    <!-- Body -->
+    <div class="p-6">
+      <!-- Error Message -->
+      <div *ngIf="errorMessage" class="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg">
+        <p class="text-sm text-red-600">{{ errorMessage }}</p>
+      </div>
+
+      <!-- Form -->
+      <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
+        <!-- Email Field -->
+        <div class="mb-4">
+          <label class="block text-sm font-semibold text-[#1F2B6C] mb-2">Email Address</label>
+          <input
+            type="email"
+            formControlName="email"
+            placeholder="Enter your email"
+            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#159EEC] focus:border-transparent transition-all"
+            [class.border-red-500]="emailErrors && loginForm.get('email')?.touched">
+          <div *ngIf="emailErrors && loginForm.get('email')?.touched" class="mt-1 text-sm text-red-600">
+            <p *ngIf="emailErrors['required']">Email is required</p>
+            <p *ngIf="emailErrors['email']">Please enter a valid email</p>
+          </div>
+        </div>
+
+        <!-- Password Field -->
+        <div class="mb-6">
+          <label class="block text-sm font-semibold text-[#1F2B6C] mb-2">Password</label>
+          <input
+            type="password"
+            formControlName="password"
+            placeholder="Enter your password"
+            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#159EEC] focus:border-transparent transition-all"
+            [class.border-red-500]="passwordErrors && loginForm.get('password')?.touched">
+          <div *ngIf="passwordErrors && loginForm.get('password')?.touched" class="mt-1 text-sm text-red-600">
+            <p *ngIf="passwordErrors['required']">Password is required</p>
+            <p *ngIf="passwordErrors['minlength']">Password must be at least 6 characters</p>
+          </div>
+        </div>
+
+        <!-- Submit Button -->
+        <button
+          type="submit"
+          [disabled]="!loginForm.valid || isLoading"
+          class="w-full bg-[#159EEC] text-white py-3 rounded-lg font-bold hover:bg-[#1282C4] transition-all disabled:opacity-50 disabled:cursor-not-allowed transform hover:scale-105">
+          {{ isLoading ? 'Logging in...' : 'Login' }}
+        </button>
+      </form>
+    </div>
+
+    <!-- Footer -->
+    <div class="px-6 py-4 bg-gray-50 rounded-b-lg border-t border-gray-200 text-center text-sm text-gray-600">
+      <p>Don't have an account? <span class="text-[#159EEC] font-semibold cursor-pointer hover:underline">Sign up</span></p>
+    </div>
+  </div>
+</div>
+
