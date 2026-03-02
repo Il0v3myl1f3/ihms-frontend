@@ -28,6 +28,7 @@
         <!-- Mobile hero background image (placeholder) -->
         <div class="absolute inset-0 lg:hidden bg-gray-200 opacity-20 flex items-center justify-end pr-4">
             <div class="rounded-t-[40px] overflow-hidden h-full w-1/2 bg-gray-300"></div>
+        </div>
         <!-- Feature Overlay -->
         <div class="absolute bottom-0 left-0 w-full translate-y-1/2 z-40">
             <div class="container mx-auto px-4">
@@ -189,9 +190,7 @@
     </section>
 
     <!-- Appointments Modal Component -->
-    <app-appointments-modal
-      [isOpen]="isAppointmentModalOpen()"
-      (close)="closeAppointmentModal()"
-      (submit)="handleAppointmentSubmit($event)">
+    <app-appointments-modal [isOpen]="isAppointmentModalOpen()" (close)="closeAppointmentModal()"
+        (submit)="handleAppointmentSubmit($event)">
     </app-appointments-modal>
 </div>
