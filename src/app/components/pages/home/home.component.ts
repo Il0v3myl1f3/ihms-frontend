@@ -2,11 +2,13 @@ import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { LucideAngularModule, Calendar, Users, SquareArrowOutUpRight, ChevronRight, Brain, Activity, Microscope, Stethoscope, Eye, Heart, Baby, Thermometer, Database, Pill } from 'lucide-angular';
+import { AppointmentsModalComponent } from '../../shared/appointments-modal/appointments-modal.component';
+import { signal } from '@angular/core';
 
 @Component({
   selector: 'app-home',
   standalone: true,
-  imports: [CommonModule, RouterLink, LucideAngularModule],
+  imports: [CommonModule, RouterLink, LucideAngularModule, AppointmentsModalComponent],
   templateUrl: './home.component.html'
 })
 export class HomeComponent {
@@ -26,6 +28,8 @@ export class HomeComponent {
   readonly Thermometer = Thermometer;
   readonly Database = Database;
   readonly Pill = Pill;
+
+  isAppointmentModalOpen = signal(false);
 
   servicesData = [
     {
@@ -84,4 +88,16 @@ export class HomeComponent {
   ];
 
   passionDots = ['A Passion for Healing', 'All our best', 'Always Caring', 'Believe in Us', 'Always Trusting', 'Everyday Care'];
+
+  openAppointmentModal(): void {
+    this.isAppointmentModalOpen.set(true);
+  }
+
+  closeAppointmentModal(): void {
+    this.isAppointmentModalOpen.set(false);
+  }
+
+  handleAppointmentSubmit(appointmentData: any): void {
+    console.log('Appointment submitted from home:', appointmentData);
+  }
 }

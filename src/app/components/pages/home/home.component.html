@@ -23,7 +23,7 @@
         <div class="absolute bottom-0 left-0 w-full translate-y-1/2 z-40">
             <div class="container mx-auto px-4">
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                    <div routerLink="/appointments"
+                    <div (click)="openAppointmentModal()"
                         class="bg-[#1F2B6C] p-8 flex items-center justify-between text-white hover:bg-[#152055] transition-all cursor-pointer group shadow-2xl rounded-xl">
                         <span class="text-lg font-bold">Book an Appointment</span>
                         <lucide-icon [img]="Calendar"
@@ -144,4 +144,11 @@
             </div>
         </div>
     </section>
+
+    <!-- Appointments Modal Component -->
+    <app-appointments-modal
+      [isOpen]="isAppointmentModalOpen()"
+      (close)="closeAppointmentModal()"
+      (submit)="handleAppointmentSubmit($event)">
+    </app-appointments-modal>
 </div>
