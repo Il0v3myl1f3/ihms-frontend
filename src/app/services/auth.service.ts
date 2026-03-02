@@ -1,6 +1,5 @@
-﻿﻿import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
-import { BehaviorSubject, Observable, throwError } from 'rxjs';
+﻿﻿﻿import { Injectable } from '@angular/core';
+import { BehaviorSubject, Observable, throwError, of } from 'rxjs';
 import { map, catchError, tap } from 'rxjs/operators';
 
 export interface User {
@@ -27,13 +26,38 @@ export class AuthService {
   private readonly TOKEN_KEY = 'auth_token';
   private readonly USER_KEY = 'current_user';
 
+  // Mock accounts data - embedded for now, will be replaced with backend API later
+  private readonly MOCK_ACCOUNTS: Account[] = [
+    {
+      id: '1',
+      email: 'admin@example.com',
+      password: 'admin123',
+      name: 'Admin User',
+      role: 'admin'
+    },
+    {
+      id: '2',
+      email: 'doctor@example.com',
+      password: 'doctor123',
+      name: 'Dr. Jane Smith',
+      role: 'doctor'
+    },
+    {
+      id: '3',
+      email: 'user@example.com',
+      password: 'user123',
+      name: 'John Doe',
+      role: 'user'
+    }
+  ];
+
   private currentUserSubject = new BehaviorSubject<User | null>(this.getUserFromStorage());
   private isAuthenticatedSubject = new BehaviorSubject<boolean>(this.isStoredAuthValid());
 
   public readonly currentUser$: Observable<User | null> = this.currentUserSubject.asObservable();
   public readonly isAuthenticated$: Observable<boolean> = this.isAuthenticatedSubject.asObservable();
 
-  constructor(private http: HttpClient) {
+  constructor() {
     this.initializeAuthState();
   }
 
@@ -56,7 +80,8 @@ export class AuthService {
    * Login user with email and password
    */
   public login(email: string, password: string): Observable<AuthResponse> {
-    return this.http.get<{ accounts: Account[] }>('assets/data/accounts.json').pipe(
+    // Simulate async operation with of() and delay
+    return of({ accounts: this.MOCK_ACCOUNTS }).pipe(
       map((data) => {
         // Find account matching email and password
         const account = data.accounts.find(
