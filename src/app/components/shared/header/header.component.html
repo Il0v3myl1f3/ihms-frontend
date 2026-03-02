@@ -1,95 +1,185 @@
 <!-- Top Header -->
-<div class="container mx-auto px-4 py-4 md:py-6">
-    <div class="flex flex-col md:flex-row items-center justify-between gap-6">
-        <div class="text-[#1F2B6C] font-bold text-3xl tracking-wider uppercase cursor-pointer" routerLink="/">
-            Med<span class="text-[#159EEC]">dical</span>
-        </div>
+<header class="container mx-auto px-4 py-3 md:py-6">
 
-        <div class="flex flex-wrap justify-center md:justify-end gap-8">
-            <div class="flex items-center gap-3">
-                <div class="p-2 bg-[#BFD2F8]/20 rounded-full">
-                    <lucide-icon [img]="Phone" class="w-6 h-6 text-[#1F2B6C]"></lucide-icon>
-                </div>
-                <div>
-                    <div class="text-xs font-bold text-[#1F2B6C] uppercase">Emergency</div>
-                    <div class="text-sm font-semibold text-[#159EEC]">(237) 681-812-255</div>
-                </div>
-            </div>
+    <!-- Desktop: logo + contact row -->
+    <div class="hidden lg:flex items-center justify-between gap-6">
+        <a class="text-[#1F2B6C] text-display-2 tracking-wider uppercase cursor-pointer" routerLink="/">
+            Med<span class="text-[#159EEC]">ical</span>
+        </a>
 
-            <div class="flex items-center gap-3">
-                <div class="p-2 bg-[#BFD2F8]/20 rounded-full">
-                    <lucide-icon [img]="Clock" class="w-6 h-6 text-[#1F2B6C]"></lucide-icon>
-                </div>
-                <div>
-                    <div class="text-xs font-bold text-[#1F2B6C] uppercase">Work Hour</div>
-                    <div class="text-sm font-semibold text-[#159EEC]">09:00 - 20:00 Everyday</div>
-                </div>
-            </div>
+        <address class="not-italic">
+            <ul class="flex flex-wrap justify-end gap-8">
+                <li class="flex items-center gap-3">
+                    <div class="p-2 bg-[#BFD2F8]/20 rounded-full">
+                        <lucide-icon [img]="Phone" class="w-6 h-6 text-[#1F2B6C]"></lucide-icon>
+                    </div>
+                    <div>
+                        <div class="text-caption text-[#1F2B6C]">Emergency</div>
+                        <div class="text-body font-semibold text-[#159EEC]">(237) 681-812-255</div>
+                    </div>
+                </li>
 
-            <div class="flex items-center gap-3">
-                <div class="p-2 bg-[#BFD2F8]/20 rounded-full">
-                    <lucide-icon [img]="MapPin" class="w-6 h-6 text-[#1F2B6C]"></lucide-icon>
-                </div>
-                <div>
-                    <div class="text-xs font-bold text-[#1F2B6C] uppercase">Location</div>
-                    <div class="text-sm font-semibold text-[#159EEC]">0123 Some Place</div>
-                </div>
-            </div>
-        </div>
+                <li class="flex items-center gap-3">
+                    <div class="p-2 bg-[#BFD2F8]/20 rounded-full">
+                        <lucide-icon [img]="Clock" class="w-6 h-6 text-[#1F2B6C]"></lucide-icon>
+                    </div>
+                    <div>
+                        <div class="text-caption text-[#1F2B6C]">Work Hour</div>
+                        <div class="text-body font-semibold text-[#159EEC]">09:00 - 20:00 Everyday</div>
+                    </div>
+                </li>
+
+                <li class="flex items-center gap-3">
+                    <div class="p-2 bg-[#BFD2F8]/20 rounded-full">
+                        <lucide-icon [img]="MapPin" class="w-6 h-6 text-[#1F2B6C]"></lucide-icon>
+                    </div>
+                    <div>
+                        <div class="text-caption text-[#1F2B6C]">Location</div>
+                        <div class="text-body font-semibold text-[#159EEC]">0123 Some Place</div>
+                    </div>
+                </li>
+            </ul>
+        </address>
     </div>
-</div>
+
+    <!-- Mobile: contact info only -->
+    <address class="not-italic lg:hidden">
+        <ul class="grid grid-cols-2 gap-x-4 gap-y-2">
+            <li class="flex items-center gap-2">
+                <div class="p-1.5 bg-[#BFD2F8]/20 rounded-full shrink-0">
+                    <lucide-icon [img]="Phone" class="w-4 h-4 text-[#1F2B6C]"></lucide-icon>
+                </div>
+                <div>
+                    <div class="text-[10px] font-bold uppercase tracking-widest text-[#1F2B6C]">Emergency</div>
+                    <div class="text-xs font-semibold text-[#159EEC]">(237) 681-812-255</div>
+                </div>
+            </li>
+
+            <li class="flex items-center gap-2">
+                <div class="p-1.5 bg-[#BFD2F8]/20 rounded-full shrink-0">
+                    <lucide-icon [img]="MapPin" class="w-4 h-4 text-[#1F2B6C]"></lucide-icon>
+                </div>
+                <div>
+                    <div class="text-[10px] font-bold uppercase tracking-widest text-[#1F2B6C]">Location</div>
+                    <div class="text-xs font-semibold text-[#159EEC]">0123 Some Place</div>
+                </div>
+            </li>
+
+            <li class="col-span-2 flex items-center gap-2">
+                <div class="p-1.5 bg-[#BFD2F8]/20 rounded-full shrink-0">
+                    <lucide-icon [img]="Clock" class="w-4 h-4 text-[#1F2B6C]"></lucide-icon>
+                </div>
+                <div>
+                    <div class="text-[10px] font-bold uppercase tracking-widest text-[#1F2B6C]">Work Hour</div>
+                    <div class="text-xs font-semibold text-[#159EEC]">09:00 - 20:00 Everyday</div>
+                </div>
+            </li>
+        </ul>
+    </address>
+</header>
 
 <!-- Navbar -->
 <nav class="bg-[#1F2B6C] text-white py-1 sticky top-0 z-50">
     <div class="container mx-auto px-4">
         <div class="flex items-center justify-between h-16">
-            <div class="hidden lg:flex items-center gap-8">
-                <a *ngFor="let item of navItems"
-                   [routerLink]="item.path"
-                   routerLinkActive="text-[#BFD2F8] font-bold"
-                   [routerLinkActiveOptions]="{exact: item.id === ''}"
-                   class="font-medium transition-colors cursor-pointer hover:text-[#BFD2F8]">
-                    {{ item.label }}
-                </a>
-            </div>
 
-            <div class="flex items-center gap-6">
-                <lucide-icon [img]="Search" class="w-5 h-5 cursor-pointer hover:text-[#BFD2F8] transition-colors"></lucide-icon>
+            <!-- Brand logo (mobile only) -->
+            <a class="lg:hidden text-white text-display-2 tracking-wider uppercase cursor-pointer" routerLink="/">
+                Med<span class="text-[#BFD2F8]">dical</span>
+            </a>
+
+            <!-- Desktop nav links -->
+            <ul class="hidden lg:flex items-center gap-8">
+                <li *ngFor="let item of navItems">
+                    <a [routerLink]="item.path" routerLinkActive="text-[#BFD2F8] font-bold"
+                        [routerLinkActiveOptions]="{exact: item.id === ''}"
+                        class="text-button transition-colors cursor-pointer hover:text-[#BFD2F8]">
+                        {{ item.label }}
+                    </a>
+                </li>
+            </ul>
+
+            <!-- Right side controls -->
+            <div class="flex items-center gap-4">
+                <button aria-label="Search">
+                    <lucide-icon [img]="Search"
+                        class="w-5 h-5 cursor-pointer hover:text-[#BFD2F8] transition-colors"></lucide-icon>
+                </button>
 
                 <!-- Login Button - Show when user is NOT logged in -->
-                <button *ngIf="(currentUser$ | async) === null"
-                        (click)="openLoginModal()"
-                        class="bg-[#159EEC] text-white px-6 py-2 rounded-full font-bold hover:bg-[#1282C4] transition-all transform hover:scale-105 shadow-md text-sm cursor-pointer">
+                <button *ngIf="(currentUser$ | async) === null" (click)="openLoginModal()"
+                    class="hidden lg:block bg-[#159EEC] text-white px-6 py-2 rounded-full font-bold hover:bg-[#1282C4] transition-all transform hover:scale-105 shadow-md text-sm cursor-pointer">
                     Login
                 </button>
 
                 <!-- User Profile - Show when user IS logged in -->
-                <div *ngIf="(currentUser$ | async) as user" class="flex items-center gap-4">
+                <div *ngIf="(currentUser$ | async) as user" class="hidden lg:flex items-center gap-4">
                     <div class="text-right">
                         <div class="text-sm font-semibold text-white">{{ user.name }}</div>
                         <div class="text-xs text-[#BFD2F8]">{{ user.role }}</div>
                     </div>
                 </div>
 
+                <!-- Appointment button — desktop only -->
                 <button (click)="openAppointmentModal()"
-                        class="bg-[#BFD2F8] text-[#1F2B6C] px-8 py-3 rounded-full font-bold hover:bg-white transition-all transform hover:scale-105 shadow-md text-sm cursor-pointer">
+                    class="hidden lg:block bg-[#BFD2F8] text-[#1F2B6C] px-8 py-3 rounded-full font-bold hover:bg-white transition-all transform hover:scale-105 shadow-md text-sm cursor-pointer">
                     Appointment
+                </button>
+
+                <!-- Hamburger / Close — mobile only (animated) -->
+                <button (click)="toggleMenu()" [class.is-open]="menuOpen" class="hamburger lg:hidden"
+                    aria-label="Toggle menu">
+                    <span></span>
+                    <span></span>
+                    <span></span>
                 </button>
             </div>
         </div>
     </div>
 </nav>
 
+<!-- Full-screen mobile menu overlay -->
+<div *ngIf="menuOpen" class="fixed inset-0 z-100 lg:hidden flex flex-col bg-[#BFD2F8]">
+
+    <!-- Top bar -->
+    <div class="bg-[#1F2B6C] flex items-center justify-between px-5 h-14 shrink-0">
+        <a routerLink="/" (click)="closeMenu()"
+            class="text-white text-display-2 tracking-wider uppercase cursor-pointer">
+            Med<span class="text-[#BFD2F8]">dical</span>
+        </a>
+        <div class="flex items-center gap-5">
+            <button aria-label="Search">
+                <lucide-icon [img]="Search" class="w-5 h-5 text-white"></lucide-icon>
+            </button>
+            <button (click)="closeMenu()" aria-label="Close menu">
+                <lucide-icon [img]="X" class="w-6 h-6 text-white"></lucide-icon>
+            </button>
+        </div>
+    </div>
+
+    <!-- Nav links -->
+    <ul class="flex flex-col items-center justify-center flex-1 gap-5 px-8">
+        <li *ngFor="let item of navItems">
+            <a [routerLink]="item.path" routerLinkActive="font-bold" [routerLinkActiveOptions]="{exact: item.id === ''}"
+                (click)="closeMenu()"
+                class="text-xl text-[#1F2B6C] hover:text-[#159EEC] transition-colors cursor-pointer">
+                {{ item.label }}
+            </a>
+        </li>
+
+        <li class="w-full mt-2">
+            <button routerLink="/appointments" (click)="closeMenu()"
+                class="w-full bg-[#1F2B6C] text-white py-3.5 rounded-full font-semibold hover:bg-[#152055] transition-all cursor-pointer text-base">
+                Appointment
+            </button>
+        </li>
+    </ul>
+</div>
 <!-- Login Modal Component -->
-<app-login-modal
-  [isOpen]="isLoginModalOpen()"
-  (close)="closeLoginModal()"
-  (login)="handleLogin($event)">
+<app-login-modal [isOpen]="isLoginModalOpen()" (close)="closeLoginModal()" (login)="handleLogin($event)">
 </app-login-modal>
 
 <!-- Appointments Modal Component -->
-<app-appointments-modal
-  [isOpen]="isAppointmentModalOpen()"
-  (close)="closeAppointmentModal()"
-  (submit)="handleAppointmentSubmit($event)">
+<app-appointments-modal [isOpen]="isAppointmentModalOpen()" (close)="closeAppointmentModal()"
+    (submit)="handleAppointmentSubmit($event)">
 </app-appointments-modal>

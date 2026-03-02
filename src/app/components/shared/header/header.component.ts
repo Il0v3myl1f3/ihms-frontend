@@ -1,7 +1,7 @@
 import { Component, signal, ViewChild, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink, RouterLinkActive, Router } from '@angular/router';
-import { LucideAngularModule, Phone, Clock, MapPin, Search, LogOut } from 'lucide-angular';
+import { LucideAngularModule, Phone, Clock, MapPin, Search, LogOut, Menu, X } from 'lucide-angular';
 import { Observable } from 'rxjs';
 import { LoginModalComponent } from '../login-modal/login-modal.component';
 import { AppointmentsModalComponent } from '../appointments-modal/appointments-modal.component';
@@ -18,6 +18,18 @@ export class HeaderComponent implements OnInit {
   readonly Clock = Clock;
   readonly MapPin = MapPin;
   readonly Search = Search;
+  readonly Menu = Menu;
+  readonly X = X;
+
+  menuOpen = false;
+
+  toggleMenu(): void {
+    this.menuOpen = !this.menuOpen;
+  }
+
+  closeMenu(): void {
+    this.menuOpen = false;
+  }
   readonly LogOut = LogOut;
 
   @ViewChild(LoginModalComponent) loginModal!: LoginModalComponent;
@@ -40,7 +52,7 @@ export class HeaderComponent implements OnInit {
   constructor(
     private authService: AuthService,
     private router: Router
-  ) {}
+  ) { }
 
   ngOnInit(): void {
     // Subscribe to current user from auth service
