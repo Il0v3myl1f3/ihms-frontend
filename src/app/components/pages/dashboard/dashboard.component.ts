@@ -1,7 +1,7 @@
-﻿﻿﻿﻿import { Component, OnInit } from '@angular/core';
+﻿import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
-import { LucideAngularModule, LogOut, ArrowUp, Calendar, User as UserIcon, Clock, CheckCircle, AlertCircle } from 'lucide-angular';
+import { LucideAngularModule, LogOut, Calendar, User as UserIcon, Clock, CheckCircle, AlertCircle } from 'lucide-angular';
 import { AuthService, User } from '../../../services/auth.service';
 import { Observable } from 'rxjs';
 
@@ -23,7 +23,6 @@ interface Appointment {
 })
 export class DashboardComponent implements OnInit {
   readonly LogOut = LogOut;
-  readonly ArrowUp = ArrowUp;
   readonly Calendar = Calendar;
   readonly UserIcon = UserIcon;
   readonly Clock = Clock;
@@ -32,7 +31,6 @@ export class DashboardComponent implements OnInit {
 
   currentUser$!: Observable<User | null>;
   currentUser: User | null = null;
-  isScrollVisible = false;
 
   // Mock data for different roles
   mockAppointments: Appointment[] = [
@@ -89,17 +87,6 @@ export class DashboardComponent implements OnInit {
         this.router.navigate(['/']);
       }
     });
-
-    // Add scroll listener
-    window.addEventListener('scroll', this.onWindowScroll.bind(this));
-  }
-
-  onWindowScroll(): void {
-    this.isScrollVisible = window.pageYOffset > 300;
-  }
-
-  scrollToTop(): void {
-    window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 
   logout(): void {
