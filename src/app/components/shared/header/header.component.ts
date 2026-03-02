@@ -1,10 +1,11 @@
-import { Component, signal } from '@angular/core';
+import { Component, signal, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink, RouterLinkActive } from '@angular/router';
 import { LucideAngularModule, Phone, Clock, MapPin, Search, LogOut } from 'lucide-angular';
 import { Observable, of } from 'rxjs';
+import { LoginModalComponent } from '../login-modal/login-modal.component';
 
-// Temporary user interface for Step 1
+// Temporary user interface for Step 2
 interface User {
   id: string;
   email: string;
@@ -15,7 +16,7 @@ interface User {
 @Component({
   selector: 'app-header',
   standalone: true,
-  imports: [CommonModule, RouterLink, RouterLinkActive, LucideAngularModule],
+  imports: [CommonModule, RouterLink, RouterLinkActive, LucideAngularModule, LoginModalComponent],
   templateUrl: './header.component.html'
 })
 export class HeaderComponent {
@@ -25,8 +26,11 @@ export class HeaderComponent {
   readonly Search = Search;
   readonly LogOut = LogOut;
 
+  @ViewChild(LoginModalComponent) loginModal!: LoginModalComponent;
+
   isLoginModalOpen = signal(false);
   currentUser$: Observable<User | null> = of(null);
+  loginAttemptFailed = signal(false);
 
   navItems = [
     { label: 'Home', id: '', path: '/' },
@@ -42,5 +46,12 @@ export class HeaderComponent {
 
   closeLoginModal(): void {
     this.isLoginModalOpen.set(false);
+    this.loginAttemptFailed.set(false);
+  }
+
+  handleLogin(credentials: { email: string; password: string }): void {
+    // TODO: Connect to AuthService in Step 3
+    // For now, show error handling placeholder
+    console.log('Login attempt with:', credentials);
   }
 }
