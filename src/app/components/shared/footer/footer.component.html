@@ -1,20 +1,20 @@
-<footer class="bg-[#1F2B6C] text-white pt-16 pb-16">
+<footer class="bg-[#1F2B6C] text-white pt-10 pb-6">
     <div class="container mx-auto px-4">
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 mb-20 border-b border-white/10 pb-20">
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-8 border-b border-white/10 pb-8">
             <div>
-                <a class="text-white text-display-2 tracking-wider mb-8 uppercase inline-block cursor-pointer"
+                <a class="text-white text-display-2 tracking-wider mb-4 uppercase inline-block cursor-pointer"
                     routerLink="/">
                     Med<span class="text-[#159EEC]">dical</span>
                 </a>
-                <p class="text-white/70 leading-relaxed mb-8 text-body-2">
-                    Leading the Way in Medical Excellence. Trusted care, whenever you need it most.
+                <p class="text-white/70 leading-relaxed text-body-2">
+                    Leading the Way in Medical Execellence, Trusted Care.
                 </p>
             </div>
 
             <div>
-                <h4 class="text-title mb-8">Important Links</h4>
+                <h4 class="text-title mb-4">Important Links</h4>
                 <nav aria-label="Footer Navigation">
-                    <ul class="space-y-4 font-medium text-white/70">
+                    <ul class="space-y-2 font-medium text-white/70">
                         <li><a routerLink="/appointments" class="hover:text-[#BFD2F8] transition-colors">Appointment</a>
                         </li>
                         <li><a routerLink="/doctors" class="hover:text-[#BFD2F8] transition-colors">Doctors</a></li>
@@ -25,51 +25,42 @@
             </div>
 
             <div>
-                <h4 class="text-title mb-8">Contact Us</h4>
+                <h4 class="text-title mb-4">Contact Us</h4>
                 <address class="not-italic">
-                    <ul class="space-y-4 text-body-2 text-white/70">
-                        <li class="flex items-start gap-3">
-                            <lucide-icon [img]="Phone" class="w-5 h-5 text-[#BFD2F8]"></lucide-icon>
-                            <span>Call: (237) 681-812-255</span>
-                        </li>
-                        <li class="flex items-start gap-3">
-                            <lucide-icon [img]="Mail" class="w-5 h-5 text-[#BFD2F8]"></lucide-icon>
-                            <span>Email: [EMAIL_ADDRESS]</span>
-                        </li>
-                        <li class="flex items-start gap-3">
-                            <lucide-icon [img]="MapPin" class="w-5 h-5 text-[#BFD2F8]"></lucide-icon>
-                            <span>Address: 0123 Some Place</span>
-                        </li>
+                    <ul class="space-y-2 text-body-2 text-white/70">
+                        <li>Call: (237) 681-812-255</li>
+                        <li>Email: fildineesoe&#64;gmail.com</li>
+                        <li>Address: 0123 Some place</li>
+                        <li>Some country</li>
                     </ul>
                 </address>
             </div>
 
             <div>
-                <h4 class="text-title mb-8">Newsletter</h4>
-                <p class="text-white/70 mb-6 text-body-2">Subscribe to get latest updates.</p>
-                <form class="flex bg-[#BFD2F8]/10 rounded-xl overflow-hidden p-1 border border-white/10"
+                <h4 class="text-title mb-4">Newsletter</h4>
+                <form class="flex bg-[#BFD2F8]/10 rounded-lg overflow-hidden p-1 border border-white/10"
                     (submit)="$event.preventDefault()">
-                    <input type="email" placeholder="Enter your email" aria-label="Email address for newsletter"
-                        class="bg-transparent border-none focus:ring-0 px-4 py-3 flex-1 text-white placeholder:text-white/50 focus:outline-none" />
+                    <input type="email" placeholder="Enter your email address" aria-label="Email address for newsletter"
+                        class="bg-transparent border-none focus:ring-0 px-3 py-2 flex-1 text-white placeholder:text-white/50 focus:outline-none text-sm" />
                     <button type="submit" aria-label="Subscribe"
-                        class="bg-[#159EEC] p-3 rounded-lg hover:bg-white transition-all text-[#1F2B6C]">
-                        <lucide-icon [img]="Send" class="w-5 h-5"></lucide-icon>
+                        class="bg-[#159EEC] p-2 rounded-md hover:bg-white transition-all text-[#1F2B6C]">
+                        <lucide-icon [img]="Send" class="w-4 h-4"></lucide-icon>
                     </button>
                 </form>
             </div>
         </div>
 
-        <div class="flex flex-col md:flex-row items-center justify-between gap-6 text-white/70 text-small">
-            <p>© 2026 Hospital's Name All Rights Reserved.</p>
-            <nav aria-label="Social Media links" class="flex gap-8">
+        <div class="flex flex-col md:flex-row items-center justify-between gap-4 text-white/70 text-small">
+            <p>© 2021 Hospital's name All Rights Reserved by PNTEC-LTD</p>
+            <nav aria-label="Social Media links" class="flex gap-4">
+                <a href="#" aria-label="Follow us on LinkedIn" class="hover:text-[#BFD2F8] transition-colors">
+                    <lucide-icon [img]="Linkedin" class="w-5 h-5"></lucide-icon>
+                </a>
                 <a href="#" aria-label="Follow us on Facebook" class="hover:text-[#BFD2F8] transition-colors">
-                    <lucide-icon [img]="Facebook"></lucide-icon>
+                    <lucide-icon [img]="Facebook" class="w-5 h-5"></lucide-icon>
                 </a>
                 <a href="#" aria-label="Follow us on Instagram" class="hover:text-[#BFD2F8] transition-colors">
-                    <lucide-icon [img]="Instagram"></lucide-icon>
-                </a>
-                <a href="#" aria-label="Follow us on LinkedIn" class="hover:text-[#BFD2F8] transition-colors">
-                    <lucide-icon [img]="Linkedin"></lucide-icon>
+                    <lucide-icon [img]="Instagram" class="w-5 h-5"></lucide-icon>
                 </a>
             </nav>
         </div>
