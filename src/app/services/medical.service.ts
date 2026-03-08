@@ -76,4 +76,19 @@ export class MedicalService {
         return of(DOCTORS.find(d => d.id === id));
     }
 
+    addDoctor(doc: Omit<Doctor, 'id' | 'image' | 'role'>): Observable<Doctor> {
+        const newId = DOCTORS.length > 0 ? Math.max(...DOCTORS.map(d => d.id)) + 1 : 1;
+        const newDoctor: Doctor = {
+            id: newId,
+            name: doc.name,
+            role: doc.specialty, // Map specialty to role for now
+            specialty: doc.specialty,
+            image: '', // Avatar handled by UI generator
+            phone: doc.phone,
+            availability: doc.availability as any
+        };
+        DOCTORS.push(newDoctor);
+        return of(newDoctor);
+    }
+
 }

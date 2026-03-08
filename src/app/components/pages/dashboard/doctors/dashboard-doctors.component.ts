@@ -2,11 +2,12 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { LucideAngularModule, Search, Filter, MoreHorizontal, ChevronLeft, ChevronRight } from 'lucide-angular';
 import { MedicalService, Doctor } from '../../../../services/medical.service';
+import { AddDoctorComponent } from './add-doctor/add-doctor.component';
 
 @Component({
     selector: 'app-dashboard-doctors',
     standalone: true,
-    imports: [CommonModule, LucideAngularModule],
+    imports: [CommonModule, LucideAngularModule, AddDoctorComponent],
     templateUrl: './dashboard-doctors.component.html',
     styleUrls: ['./dashboard-doctors.component.css']
 })
@@ -19,6 +20,7 @@ export class DashboardDoctorsComponent implements OnInit {
     doctors: Doctor[] = [];
     currentPage = 1;
     readonly pageSize = 5;
+    isAddModalOpen = false;
 
     constructor(private medicalService: MedicalService) { }
 
@@ -73,5 +75,25 @@ export class DashboardDoctorsComponent implements OnInit {
     getAvatarInitialsName(name: string): string {
         // Return the name formatted for UI avatars, replace spaces with +
         return name.replace('Dr. ', '').replace(' ', '+');
+    }
+
+    openAddModal(): void {
+        this.isAddModalOpen = true;
+    }
+
+    closeAddModal(): void {
+        this.isAddModalOpen = false;
+    }
+
+    handleAddDoctor(doctorData: { name: string; specialty: string; phone: string; availability: string }): void {
+        this.medicalService.addDoctor(doctorData as any).subscribe(() => {
+            // Re-fetch list to update pagination correctly
+            this.medicalService.getDoctors().subscribe(data => {
+                this.doctors = data;
+                // Go to last page to see new entry potentially
+                this.currentPage = this.totalPages;
+            });
+            this.closeAddModal();
+        });
     }
 }
