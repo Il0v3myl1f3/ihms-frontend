@@ -1,36 +1,28 @@
 <div class="font-sans">
     <!-- Hero Section -->
-    <section class="relative bg-[#BFD2F8]/20 min-h-[500px] md:min-h-[600px] flex items-center overflow-hidden">
-        <div class="container mx-auto px-4 relative z-10">
-            <div class="flex flex-col lg:flex-row items-center gap-12">
-                <div class="flex-1 text-center lg:text-left pt-8 lg:pt-12">
-                    <h5 class="text-[#159EEC] text-caption mb-4">Caring for Life</h5>
-                    <h1 class="text-display-1 font-bold text-[#1F2B6C] leading-tight mb-6">
-                        Leading the Way <br /> in Medical Excellence
-                    </h1>
-                    <!-- CTA button: visible on mobile only -->
-                    <a routerLink="/services"
-                        class="inline-block lg:hidden bg-[#BFD2F8]/80 text-[#1F2B6C] px-8 py-3 rounded-full font-bold text-button hover:bg-[#BFD2F8] transition-all">
-                        Our Services
-                    </a>
-                </div>
+    <section class="relative h-[350px] md:h-[400px] lg:h-auto lg:min-h-[600px] flex items-center overflow-hidden">
+        <!-- Background Image -->
+        <div class="absolute inset-0">
+            <img src="assets/images/hero-doctor.jpg" alt="Doctor" class="w-full h-full object-cover object-top-right" />
+        </div>
+        <!-- Bottom gradient overlay (mobile/tablet) -->
+        <div class="absolute inset-0 bg-linear-to-t from-white/70 to-transparent lg:hidden z-1"></div>
 
-                <!-- Image: background on mobile, side-by-side on desktop -->
-                <div class="hidden lg:flex flex-1 lg:self-end">
-                    <div
-                        class="relative rounded-t-[40px] overflow-hidden bg-gray-200 aspect-4/3 flex items-center justify-center w-full">
-                        <span class="text-gray-400 font-bold opacity-30">Image Placeholder</span>
-                    </div>
-                </div>
+        <div class="container mx-auto px-4 relative z-10">
+            <div
+                class="flex flex-col items-center lg:items-start text-center lg:text-left pt-8 lg:pt-12 max-w-xl mx-auto lg:mx-0">
+                <h5 class="text-[#159EEC] text-caption mb-4">Caring for Life</h5>
+                <h1 class="text-display-1 font-bold text-[#1F2B6C] leading-tight mb-6">
+                    Leading the Way <br /> in Medical Excellence
+                </h1>
+                <a routerLink="/services"
+                    class="inline-block bg-[#BFD2F8]/80 text-[#1F2B6C] px-8 py-3 rounded-full font-bold text-button hover:bg-[#BFD2F8] transition-all">
+                    Our Services
+                </a>
             </div>
         </div>
-
-        <!-- Mobile hero background image (placeholder) -->
-        <div class="absolute inset-0 lg:hidden bg-gray-200 opacity-20 flex items-center justify-end pr-4">
-            <div class="rounded-t-[40px] overflow-hidden h-full w-1/2 bg-gray-300"></div>
-        </div>
         <!-- Feature Overlay -->
-        <div class="absolute bottom-0 left-0 w-full translate-y-1/2 z-40">
+        <div class="hidden lg:block absolute bottom-0 left-0 w-full translate-y-1/2 z-40">
             <div class="container mx-auto px-4">
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
                     <div (click)="openAppointmentModal()"
@@ -97,9 +89,13 @@
                 Learn More <lucide-icon [img]="ChevronRight" class="w-5 h-5"></lucide-icon>
             </button>
 
-            <div
-                class="mt-12 md:mt-20 rounded-[20px] overflow-hidden shadow-xl bg-gray-100 aspect-video flex items-center justify-center">
-                <span class="text-gray-400 font-bold opacity-30 text-xl">Main Video/Image Placeholder</span>
+            <div class="mt-12 md:mt-20 overflow-hidden">
+                <img src="assets/images/welcome-team.jpg" alt="Our medical team"
+                    class="w-full h-[150px] md:h-auto object-cover" />
+                <div class="flex">
+                    <div class="h-2 flex-1 bg-[#1F2B6C]"></div>
+                    <div class="h-2 flex-1 bg-[#159EEC]"></div>
+                </div>
             </div>
         </div>
     </section>
@@ -128,19 +124,19 @@
                     <!-- Desktop sidebar -->
                     <div class="hidden lg:flex flex-col border border-gray-100 rounded-xl overflow-hidden shadow-sm">
                         <div *ngFor="let item of servicesData" (click)="selectService(item)"
-                            class="flex items-center gap-4 p-5 cursor-pointer transition-all border-b border-gray-100 last:border-0"
+                            class="flex flex-col items-center gap-2 py-6 px-4 cursor-pointer transition-all border-b border-gray-100 last:border-0"
                             [ngClass]="activeService.id === item.id ? 'bg-[#1F2B6C] text-white' : 'hover:bg-gray-50 text-[#1F2B6C]'">
-                            <lucide-icon *ngIf="item.icon" [img]="item.icon" class="w-5 h-5"></lucide-icon>
-                            <span class="text-body font-bold">{{ item.name }}</span>
+                            <lucide-icon *ngIf="item.icon" [img]="item.icon" class="w-6 h-6"></lucide-icon>
+                            <span class="text-body font-bold text-center">{{ item.name }}</span>
                         </div>
                         <div routerLink="/services"
-                            class="flex items-center gap-4 p-5 cursor-pointer transition-all hover:bg-gray-50 text-[#1F2B6C]">
-                            <span class="text-body font-bold text-[#159EEC]">View All</span>
+                            class="flex items-center justify-center py-4 px-4 cursor-pointer transition-all bg-[#1F2B6C] hover:bg-[#152055] text-white">
+                            <span class="text-body font-bold">View All</span>
                         </div>
                     </div>
                 </div>
 
-                <div class="lg:col-span-6">
+                <div class="lg:col-span-9">
                     <h3 class="text-title font-bold text-[#1F2B6C] mb-6 md:mb-8">{{ activeService.title }}</h3>
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-8">
                         <div *ngFor="let dot of activeService.bullets" class="flex items-center gap-3">
@@ -153,16 +149,7 @@
                     </p>
                 </div>
 
-                <div class="lg:col-span-3 flex flex-row lg:flex-col gap-4 lg:gap-6">
-                    <div
-                        class="rounded-2xl shadow-lg flex-1 lg:flex-none lg:h-48 bg-gray-100 flex items-center justify-center p-4 text-center min-h-[100px]">
-                        <span class="text-gray-400 font-bold opacity-30 text-sm">{{ activeService.name }} Image 1</span>
-                    </div>
-                    <div
-                        class="rounded-2xl shadow-lg flex-1 lg:flex-none lg:h-48 bg-gray-100 flex items-center justify-center p-4 text-center min-h-[100px]">
-                        <span class="text-gray-400 font-bold opacity-30 text-sm">{{ activeService.name }} Image 2</span>
-                    </div>
-                </div>
+
             </div>
         </div>
     </section>
