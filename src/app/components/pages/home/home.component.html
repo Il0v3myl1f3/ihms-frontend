@@ -124,19 +124,19 @@
                     <!-- Desktop sidebar -->
                     <div class="hidden lg:flex flex-col border border-gray-100 rounded-xl overflow-hidden shadow-sm">
                         <div *ngFor="let item of servicesData" (click)="selectService(item)"
-                            class="flex items-center gap-4 p-5 cursor-pointer transition-all border-b border-gray-100 last:border-0"
+                            class="flex flex-col items-center gap-2 py-6 px-4 cursor-pointer transition-all border-b border-gray-100 last:border-0"
                             [ngClass]="activeService.id === item.id ? 'bg-[#1F2B6C] text-white' : 'hover:bg-gray-50 text-[#1F2B6C]'">
-                            <lucide-icon *ngIf="item.icon" [img]="item.icon" class="w-5 h-5"></lucide-icon>
-                            <span class="text-body font-bold">{{ item.name }}</span>
+                            <lucide-icon *ngIf="item.icon" [img]="item.icon" class="w-6 h-6"></lucide-icon>
+                            <span class="text-body font-bold text-center">{{ item.name }}</span>
                         </div>
                         <div routerLink="/services"
-                            class="flex items-center gap-4 p-5 cursor-pointer transition-all hover:bg-gray-50 text-[#1F2B6C]">
-                            <span class="text-body font-bold text-[#159EEC]">View All</span>
+                            class="flex items-center justify-center py-4 px-4 cursor-pointer transition-all bg-[#1F2B6C] hover:bg-[#152055] text-white">
+                            <span class="text-body font-bold">View All</span>
                         </div>
                     </div>
                 </div>
 
-                <div class="lg:col-span-6">
+                <div class="lg:col-span-9">
                     <h3 class="text-title font-bold text-[#1F2B6C] mb-6 md:mb-8">{{ activeService.title }}</h3>
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-8">
                         <div *ngFor="let dot of activeService.bullets" class="flex items-center gap-3">
@@ -149,16 +149,7 @@
                     </p>
                 </div>
 
-                <div class="lg:col-span-3 flex flex-row lg:flex-col gap-4 lg:gap-6">
-                    <div
-                        class="rounded-2xl shadow-lg flex-1 lg:flex-none lg:h-48 bg-gray-100 flex items-center justify-center p-4 text-center min-h-[100px]">
-                        <span class="text-gray-400 font-bold opacity-30 text-sm">{{ activeService.name }} Image 1</span>
-                    </div>
-                    <div
-                        class="rounded-2xl shadow-lg flex-1 lg:flex-none lg:h-48 bg-gray-100 flex items-center justify-center p-4 text-center min-h-[100px]">
-                        <span class="text-gray-400 font-bold opacity-30 text-sm">{{ activeService.name }} Image 2</span>
-                    </div>
-                </div>
+
             </div>
         </div>
     </section>

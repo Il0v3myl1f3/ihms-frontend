@@ -33,6 +33,14 @@ export class HomeComponent {
 
   servicesData = [
     {
+      id: 'checkup',
+      name: 'Free Checkup',
+      icon: Stethoscope,
+      title: 'Comprehensive Health Checkup',
+      description: 'Take advantage of our complimentary health checkup services. Our experienced medical professionals will conduct a thorough examination to assess your overall health and identify any potential concerns early.',
+      bullets: ['General Assessment', 'Vital Signs Check', 'Basic Lab Work', 'Health Consultation']
+    },
+    {
       id: 'cardiogram',
       name: 'Cardiogram',
       icon: Heart,
@@ -55,14 +63,6 @@ export class HomeComponent {
       title: 'Safe and Reliable Blood Supply',
       description: 'Our certified blood bank ensures a steady and completely safe supply of blood for all medical procedures. We adhere strictly to the highest international safety standards for blood collection and storage.',
       bullets: ['Blood Donation', 'Plasma Separation', 'Platelet Storage', 'Cross-matching']
-    },
-    {
-      id: 'dermatology',
-      name: 'Dermatology',
-      icon: Thermometer,
-      title: 'Expert Skin Care Solutions',
-      description: 'From routine skin checks to advanced treatments, our dermatology department offers comprehensive care for all your skin concerns. Let our specialists help you maintain healthy, glowing skin year-round.',
-      bullets: ['Skin Cancer Screening', 'Acne Treatment', 'Laser Therapy', 'Cosmetic Dermatology']
     }
   ];
 
