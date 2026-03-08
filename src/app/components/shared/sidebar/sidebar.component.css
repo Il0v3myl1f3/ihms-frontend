@@ -1,0 +1,49 @@
+/* Sidebar widths */
+.sidebar {
+  width: 250px;
+  box-shadow: 2px 0 12px rgba(31, 43, 108, 0.06);
+}
+
+.sidebar--collapsed {
+  width: 72px;
+}
+
+/* Menu item base */
+.sidebar-item {
+  padding: 10px 12px;
+  border-radius: 10px;
+  gap: 0;
+}
+
+.sidebar-item:hover {
+  background-color: rgba(21, 158, 236, 0.08);
+}
+
+/* Active state — matching the blue from design */
+.sidebar-item--active {
+  background-color: #159EEC !important;
+  box-shadow: 0 4px 12px rgba(21, 158, 236, 0.35);
+}
+
+.sidebar-item--active:hover {
+  background-color: #1282C4 !important;
+}
+
+/* Scrollbar styling */
+nav::-webkit-scrollbar {
+  width: 4px;
+}
+
+nav::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+nav::-webkit-scrollbar-thumb {
+  background-color: rgba(191, 210, 248, 0.5);
+  border-radius: 10px;
+}
+
+/* Smooth transition for host */
+:host {
+  display: block;
+}

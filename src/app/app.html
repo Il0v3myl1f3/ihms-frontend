@@ -1,10 +1,13 @@
 <div class="min-h-screen bg-white">
+  @if (!isDashboard()) {
   <app-header></app-header>
+  }
   <main>
     <router-outlet></router-outlet>
   </main>
+  @if (!isDashboard()) {
   <app-footer></app-footer>
-
   <!-- Global Back to Top Button -->
   <app-back-to-top></app-back-to-top>
+  }
 </div>
