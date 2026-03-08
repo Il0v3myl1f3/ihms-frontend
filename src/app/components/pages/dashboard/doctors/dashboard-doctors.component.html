@@ -54,7 +54,7 @@
                     </tr>
                 </thead>
                 <tbody class="divide-y divide-gray-100 text-sm">
-                    <tr *ngFor="let doc of doctors" class="hover:bg-gray-50/50 transition-colors group">
+                    <tr *ngFor="let doc of paginatedDoctors" class="hover:bg-gray-50/50 transition-colors group">
                         <td class="px-5 py-4">
                             <input type="checkbox"
                                 class="rounded border-gray-300 text-[#159EEC] shadow-sm focus:border-[#159EEC] focus:ring focus:ring-[#159EEC] focus:ring-opacity-50 cursor-pointer">
@@ -92,23 +92,33 @@
 
         <!-- Pagination Footer -->
         <div class="mt-auto px-5 py-4 border-t border-gray-100 flex items-center justify-between">
-            <span class="text-sm font-medium text-gray-700 block">Page 3 of 8</span>
+            <span class="text-sm font-medium text-gray-700 block">Page {{ currentPage }} of {{ totalPages }}</span>
             <div class="flex items-center gap-1.5">
-                <button
-                    class="w-8 h-8 flex items-center justify-center rounded-md border border-gray-200 text-gray-500 hover:bg-gray-50 hover:text-[#159EEC] transition-colors">
+                <!-- Previous Button -->
+                <button (click)="prevPage()" [disabled]="currentPage === 1"
+                    class="w-8 h-8 flex items-center justify-center rounded-md border border-gray-200 transition-colors"
+                    [ngClass]="currentPage === 1 ? 'text-gray-300 bg-gray-50 cursor-not-allowed' : 'text-gray-500 hover:bg-gray-50 hover:text-[#159EEC] cursor-pointer'">
                     <lucide-icon [img]="ChevronLeft" class="w-4 h-4"></lucide-icon>
                 </button>
-                <button
-                    class="w-8 h-8 flex items-center justify-center rounded-md border border-gray-200 text-sm font-medium text-gray-500 hover:bg-gray-50 transition-colors">1</button>
-                <button
-                    class="w-8 h-8 flex items-center justify-center rounded-md border border-gray-200 text-sm font-medium text-gray-500 hover:bg-gray-50 transition-colors">2</button>
-                <button
-                    class="w-8 h-8 flex items-center justify-center rounded-md bg-[#159EEC] text-white border border-[#159EEC] text-sm font-medium shadow-[0_2px_6px_rgba(21,158,236,0.3)]">3</button>
-                <div class="w-8 h-8 flex items-center justify-center text-gray-400 text-sm">...</div>
-                <button
-                    class="w-8 h-8 flex items-center justify-center rounded-md border border-gray-200 text-sm font-medium text-gray-500 hover:bg-gray-50 transition-colors">8</button>
-                <button
-                    class="w-8 h-8 flex items-center justify-center rounded-md border border-gray-200 text-gray-500 hover:bg-gray-50 hover:text-[#159EEC] transition-colors">
+
+                <!-- Page Numbers -->
+                <ng-container *ngFor="let page of visiblePages">
+                    <button *ngIf="page !== '...'" (click)="goToPage(page)"
+                        class="w-8 h-8 flex items-center justify-center rounded-md border text-sm font-medium transition-colors cursor-pointer"
+                        [ngClass]="page === currentPage 
+                            ? 'bg-[#159EEC] text-white border-[#159EEC] shadow-[0_2px_6px_rgba(21,158,236,0.3)]' 
+                            : 'border-gray-200 text-gray-500 hover:bg-gray-50'">
+                        {{ page }}
+                    </button>
+                    <div *ngIf="page === '...'" class="w-8 h-8 flex items-center justify-center text-gray-400 text-sm">
+                        ...
+                    </div>
+                </ng-container>
+
+                <!-- Next Button -->
+                <button (click)="nextPage()" [disabled]="currentPage === totalPages"
+                    class="w-8 h-8 flex items-center justify-center rounded-md border border-gray-200 transition-colors"
+                    [ngClass]="currentPage === totalPages ? 'text-gray-300 bg-gray-50 cursor-not-allowed' : 'text-gray-500 hover:bg-gray-50 hover:text-[#159EEC] cursor-pointer'">
                     <lucide-icon [img]="ChevronRight" class="w-4 h-4"></lucide-icon>
                 </button>
             </div>
