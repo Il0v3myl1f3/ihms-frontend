@@ -3,8 +3,49 @@
   <app-sidebar></app-sidebar>
 
   <!-- Main Content Area -->
-  <main class="dashboard-main transition-all duration-300 ml-[250px] min-h-screen">
-    <div class="p-8 lg:p-12">
+  <main class="dashboard-main transition-all duration-300 ml-[250px] min-h-screen flex flex-col">
+    <!-- Top Header Bar -->
+    <header
+      class="bg-white border-b border-gray-100 flex items-center justify-between px-8 py-3 w-full shrink-0 h-20 shadow-[0_2px_10px_rgba(0,0,0,0.02)]">
+      <!-- Search Bar -->
+      <div class="relative w-80">
+        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+          <lucide-icon [img]="Search" class="h-5 w-5 text-gray-400"></lucide-icon>
+        </div>
+        <input type="text" placeholder="Search"
+          class="block w-full pl-10 pr-4 py-2 border border-gray-200 rounded-lg text-sm placeholder-gray-400 focus:outline-none focus:ring-1 focus:ring-[#159EEC] focus:border-[#159EEC] transition-all bg-gray-50/50">
+      </div>
+
+      <!-- Right Side Tools -->
+      <div class="flex items-center gap-6">
+        <!-- Notification Bell -->
+        <button
+          class="relative p-2 text-black hover:text-[#159EEC] rounded-full hover:bg-gray-50 transition-colors cursor-pointer">
+          <lucide-icon [img]="Bell" class="w-6 h-6"></lucide-icon>
+        </button>
+
+        <!-- Divider -->
+        <div class="h-8 w-px bg-gray-200"></div>
+
+        <!-- User Profile -->
+        <div class="flex items-center gap-3 cursor-pointer group">
+          <img
+            src="https://ui-avatars.com/api/?name={{ currentUser?.name || 'User' }}&background=159EEC&color=fff&rounded=true"
+            alt="User avatar" class="w-10 h-10 rounded-full object-cover">
+          <div class="hidden md:block">
+            <p class="text-sm font-bold text-[#1F2B6C] group-hover:text-[#159EEC] transition-colors leading-tight">
+              {{ currentUser?.name }}
+            </p>
+            <p class="text-xs text-gray-400 capitalize">
+              {{ currentUser?.role === 'admin' ? 'Super Admin' : currentUser?.role }}
+            </p>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <!-- Rest of the Content -->
+    <div class="p-8 lg:p-12 flex-1 relative">
       <!-- Welcome Section -->
       <div class="mb-8">
         <h1 class="text-display-1 text-[#1F2B6C] mb-2">

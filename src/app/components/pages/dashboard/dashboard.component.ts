@@ -4,15 +4,18 @@ import { Router } from '@angular/router';
 import { AuthService, User } from '../../../services/auth.service';
 import { SidebarComponent } from '../../shared/sidebar/sidebar.component';
 import { Observable } from 'rxjs';
+import { LucideAngularModule, Search, Bell } from 'lucide-angular';
 
 @Component({
   selector: 'app-dashboard',
   standalone: true,
-  imports: [CommonModule, SidebarComponent],
+  imports: [CommonModule, SidebarComponent, LucideAngularModule],
   templateUrl: './dashboard.component.html',
   styleUrl: './dashboard.component.css',
 })
 export class DashboardComponent implements OnInit {
+  readonly Search = Search;
+  readonly Bell = Bell;
   currentUser$!: Observable<User | null>;
   currentUser: User | null = null;
 
