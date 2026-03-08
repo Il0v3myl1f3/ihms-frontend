@@ -25,6 +25,14 @@
   box-shadow: 0 4px 12px rgba(21, 158, 236, 0.35);
 }
 
+.sidebar-item--active lucide-icon {
+  color: white !important;
+}
+
+.sidebar-item--active span {
+  color: white !important;
+}
+
 .sidebar-item--active:hover {
   background-color: #1282C4 !important;
 }

@@ -30,19 +30,19 @@
             <!-- Section Items -->
             <ul class="space-y-1">
                 <li *ngFor="let item of section.items">
-                    <button (click)="setActive(item)"
+                    <a [routerLink]="item.route" routerLinkActive="sidebar-item--active"
+                        [routerLinkActiveOptions]="{exact: item.route === '/dashboard'}"
                         class="sidebar-item flex items-center w-full rounded-lg transition-all duration-200 cursor-pointer"
-                        [class.sidebar-item--active]="activeItem() === item.label" [class.justify-center]="collapsed()"
-                        [class.px-3]="!collapsed()" [class.py-2.5]="true" [title]="collapsed() ? item.label : ''">
-                        <lucide-icon [img]="item.icon" class="w-5 h-5 shrink-0"
-                            [class.text-white]="activeItem() === item.label"
-                            [class.text-gray-500]="activeItem() !== item.label"></lucide-icon>
-                        <span class="ml-3 text-sm font-medium whitespace-nowrap transition-all duration-300"
-                            [class.hidden]="collapsed()" [class.text-white]="activeItem() === item.label"
-                            [class.text-gray-700]="activeItem() !== item.label">
+                        [class.justify-center]="collapsed()" [class.px-3]="!collapsed()" [class.py-2.5]="true"
+                        [title]="collapsed() ? item.label : ''">
+                        <lucide-icon [img]="item.icon"
+                            class="w-5 h-5 shrink-0 text-gray-500 transition-colors duration-200"></lucide-icon>
+                        <span
+                            class="ml-3 text-sm font-medium whitespace-nowrap transition-all duration-300 text-gray-700"
+                            [class.hidden]="collapsed()">
                             {{ item.label }}
                         </span>
-                    </button>
+                    </a>
                 </li>
             </ul>
         </div>

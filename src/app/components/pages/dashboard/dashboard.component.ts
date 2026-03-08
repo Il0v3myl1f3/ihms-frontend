@@ -5,11 +5,12 @@ import { AuthService, User } from '../../../services/auth.service';
 import { SidebarComponent } from '../../shared/sidebar/sidebar.component';
 import { Observable } from 'rxjs';
 import { LucideAngularModule, Search, Bell } from 'lucide-angular';
+import { RouterModule } from '@angular/router';
 
 @Component({
   selector: 'app-dashboard',
   standalone: true,
-  imports: [CommonModule, SidebarComponent, LucideAngularModule],
+  imports: [CommonModule, SidebarComponent, LucideAngularModule, RouterModule],
   templateUrl: './dashboard.component.html',
   styleUrl: './dashboard.component.css',
 })
@@ -32,10 +33,5 @@ export class DashboardComponent implements OnInit {
         this.router.navigate(['/']);
       }
     });
-  }
-
-  getUserFirstName(): string {
-    if (!this.currentUser?.name) return 'User';
-    return this.currentUser.name.split(' ')[0] || 'User';
   }
 }

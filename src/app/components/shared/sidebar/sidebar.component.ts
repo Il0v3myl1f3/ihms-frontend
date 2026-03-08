@@ -45,7 +45,6 @@ export class SidebarComponent {
 
     // State
     collapsed = signal(false);
-    activeItem = signal('Dashboard');
 
     // Menu sections
     menuSections: MenuSection[] = [
@@ -53,24 +52,24 @@ export class SidebarComponent {
             title: 'Menu',
             items: [
                 { label: 'Dashboard', icon: LayoutDashboard, route: '/dashboard' },
-                { label: 'Appointment', icon: CalendarDays, route: '/dashboard' },
-                { label: 'Room', icon: DoorOpen, route: '/dashboard' },
-                { label: 'Payment', icon: CreditCard, route: '/dashboard' },
+                { label: 'Appointment', icon: CalendarDays, route: '/dashboard/appointment' },
+                { label: 'Room', icon: DoorOpen, route: '/dashboard/room' },
+                { label: 'Payment', icon: CreditCard, route: '/dashboard/payment' },
             ],
         },
         {
             title: 'Management',
             items: [
-                { label: 'Doctor', icon: Stethoscope, route: '/dashboard' },
-                { label: 'Patient', icon: Users, route: '/dashboard' },
-                { label: 'Inpatient', icon: BedDouble, route: '/dashboard' },
+                { label: 'Doctor', icon: Stethoscope, route: '/dashboard/doctors' },
+                { label: 'Patient', icon: Users, route: '/dashboard/patient' },
+                { label: 'Inpatient', icon: BedDouble, route: '/dashboard/inpatient' },
             ],
         },
         {
             title: 'Setting',
             items: [
-                { label: 'User', icon: UserCog, route: '/dashboard' },
-                { label: 'Settings', icon: Settings, route: '/dashboard' },
+                { label: 'User', icon: UserCog, route: '/dashboard/user' },
+                { label: 'Settings', icon: Settings, route: '/dashboard/settings' },
             ],
         },
     ];
@@ -86,10 +85,6 @@ export class SidebarComponent {
 
     toggleCollapse(): void {
         this.collapsed.update((v) => !v);
-    }
-
-    setActive(item: MenuItem): void {
-        this.activeItem.set(item.label);
     }
 
     logout(): void {

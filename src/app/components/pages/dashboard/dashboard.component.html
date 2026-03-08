@@ -44,33 +44,9 @@
       </div>
     </header>
 
-    <!-- Rest of the Content -->
-    <div class="p-8 lg:p-12 flex-1 relative">
-      <!-- Welcome Section -->
-      <div class="mb-8">
-        <h1 class="text-display-1 text-[#1F2B6C] mb-2">
-          Welcome back, {{ getUserFirstName() }}! 👋
-        </h1>
-        <p class="text-body text-gray-500">
-          There is the latest update for the last 7 days, check now.
-        </p>
-      </div>
-
-      <!-- Placeholder content area — clean page -->
-      <div
-        class="bg-white rounded-2xl shadow-sm border border-gray-100 p-12 flex flex-col items-center justify-center min-h-[400px]">
-        <div class="w-20 h-20 bg-[#159EEC]/10 rounded-full flex items-center justify-center mb-6">
-          <svg class="w-10 h-10 text-[#159EEC]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
-              d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
-          </svg>
-        </div>
-        <h2 class="text-title text-[#1F2B6C] mb-2">Welcome to Dashboard</h2>
-        <p class="text-body text-gray-400 text-center max-w-md">
-          Your central hub for managing appointments, patients, and hospital operations. Select an option from the
-          sidebar to get started.
-        </p>
-      </div>
+    <!-- Rest of the Content (Router Outlet) -->
+    <div class="p-8 lg:p-12 flex-1 relative bg-transparent">
+      <router-outlet></router-outlet>
     </div>
   </main>
 </div>
