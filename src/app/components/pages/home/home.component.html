@@ -1,36 +1,28 @@
 <div class="font-sans">
     <!-- Hero Section -->
-    <section class="relative bg-[#BFD2F8]/20 min-h-[500px] md:min-h-[600px] flex items-center overflow-hidden">
-        <div class="container mx-auto px-4 relative z-10">
-            <div class="flex flex-col lg:flex-row items-center gap-12">
-                <div class="flex-1 text-center lg:text-left pt-8 lg:pt-12">
-                    <h5 class="text-[#159EEC] text-caption mb-4">Caring for Life</h5>
-                    <h1 class="text-display-1 font-bold text-[#1F2B6C] leading-tight mb-6">
-                        Leading the Way <br /> in Medical Excellence
-                    </h1>
-                    <!-- CTA button: visible on mobile only -->
-                    <a routerLink="/services"
-                        class="inline-block lg:hidden bg-[#BFD2F8]/80 text-[#1F2B6C] px-8 py-3 rounded-full font-bold text-button hover:bg-[#BFD2F8] transition-all">
-                        Our Services
-                    </a>
-                </div>
+    <section class="relative h-[350px] md:h-[400px] lg:h-auto lg:min-h-[600px] flex items-center overflow-hidden">
+        <!-- Background Image -->
+        <div class="absolute inset-0">
+            <img src="assets/images/hero-doctor.jpg" alt="Doctor" class="w-full h-full object-cover object-top-right" />
+        </div>
+        <!-- Bottom gradient overlay (mobile/tablet) -->
+        <div class="absolute inset-0 bg-linear-to-t from-white/70 to-transparent lg:hidden z-1"></div>
 
-                <!-- Image: background on mobile, side-by-side on desktop -->
-                <div class="hidden lg:flex flex-1 lg:self-end">
-                    <div
-                        class="relative rounded-t-[40px] overflow-hidden bg-gray-200 aspect-4/3 flex items-center justify-center w-full">
-                        <span class="text-gray-400 font-bold opacity-30">Image Placeholder</span>
-                    </div>
-                </div>
+        <div class="container mx-auto px-4 relative z-10">
+            <div
+                class="flex flex-col items-center lg:items-start text-center lg:text-left pt-8 lg:pt-12 max-w-xl mx-auto lg:mx-0">
+                <h5 class="text-[#159EEC] text-caption mb-4">Caring for Life</h5>
+                <h1 class="text-display-1 font-bold text-[#1F2B6C] leading-tight mb-6">
+                    Leading the Way <br /> in Medical Excellence
+                </h1>
+                <a routerLink="/services"
+                    class="inline-block bg-[#BFD2F8]/80 text-[#1F2B6C] px-8 py-3 rounded-full font-bold text-button hover:bg-[#BFD2F8] transition-all">
+                    Our Services
+                </a>
             </div>
         </div>
-
-        <!-- Mobile hero background image (placeholder) -->
-        <div class="absolute inset-0 lg:hidden bg-gray-200 opacity-20 flex items-center justify-end pr-4">
-            <div class="rounded-t-[40px] overflow-hidden h-full w-1/2 bg-gray-300"></div>
-        </div>
         <!-- Feature Overlay -->
-        <div class="absolute bottom-0 left-0 w-full translate-y-1/2 z-40">
+        <div class="hidden lg:block absolute bottom-0 left-0 w-full translate-y-1/2 z-40">
             <div class="container mx-auto px-4">
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
                     <div (click)="openAppointmentModal()"
