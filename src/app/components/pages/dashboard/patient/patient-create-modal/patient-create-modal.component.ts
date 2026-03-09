@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, Output, OnInit } from '@angular/core';
+import { Component, EventEmitter, Input, Output, OnInit, OnChanges, SimpleChanges } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ModalComponent } from '../../../../shared/modal/modal.component';
@@ -10,8 +10,9 @@ import { ModalComponent } from '../../../../shared/modal/modal.component';
     templateUrl: './patient-create-modal.component.html',
     styleUrl: './patient-create-modal.component.css'
 })
-export class PatientCreateModalComponent implements OnInit {
+export class PatientCreateModalComponent implements OnInit, OnChanges {
     @Input() isOpen = false;
+    @Input() patientToEdit: any = null;
     @Output() closeModal = new EventEmitter<void>();
     @Output() savePatient = new EventEmitter<any>();
 
@@ -31,9 +32,19 @@ export class PatientCreateModalComponent implements OnInit {
         });
     }
 
+    ngOnChanges(changes: SimpleChanges): void {
+        if (changes['isOpen'] && this.isOpen) {
+            if (this.patientToEdit) {
+                this.patientForm?.patchValue(this.patientToEdit);
+            } else {
+                this.patientForm?.reset({ gender: '', bloodType: '' });
+            }
+        }
+    }
+
     onCancel(): void {
         this.closeModal.emit();
-        this.patientForm.reset();
+        this.patientForm.reset({ gender: '', bloodType: '' });
     }
 
     onSubmit(): void {
