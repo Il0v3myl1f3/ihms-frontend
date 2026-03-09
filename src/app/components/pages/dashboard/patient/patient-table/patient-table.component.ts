@@ -1,7 +1,8 @@
 import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { LucideAngularModule, Pencil, Trash2 } from 'lucide-angular';
+import { LucideAngularModule, Pencil, Trash2, MoreHorizontal, Search, Filter } from 'lucide-angular';
+import { HostListener } from '@angular/core';
 
 export interface Patient {
     id: number;
@@ -30,10 +31,25 @@ export class PatientTableComponent implements OnInit {
 
     readonly Pencil = Pencil;
     readonly Trash2 = Trash2;
+    readonly MoreHorizontal = MoreHorizontal;
+    readonly Search = Search;
+    readonly Filter = Filter;
+
+    activeDropdownId: number | null = null;
 
     selectAll = false;
     currentPage = 1;
-    readonly pageSize = 5;
+    readonly pageSize = 9; // Changed from 11 to 9
+
+    @HostListener('document:click')
+    closeDropdown() {
+        this.activeDropdownId = null;
+    }
+
+    toggleDropdown(patientId: number, event: Event): void {
+        event.stopPropagation();
+        this.activeDropdownId = this.activeDropdownId === patientId ? null : patientId;
+    }
 
     ngOnInit(): void {
     }
