@@ -1,1 +1,10 @@
 /* patient-table styles */
+
+table {
+    border-collapse: collapse;
+}
+
+table th,
+table td {
+    border: 1px solid #e5e7eb;
+}
