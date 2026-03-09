@@ -27,9 +27,11 @@ export class PatientListPageComponent {
         { id: 11, no: 11, name: 'Marvin McKinney', gender: 'Male', dob: '21/01/1986', address: '8642 Yake Cervies', phone: '(219) 555-0114', bloodType: 'A+', selected: false }
     ];
 
+    selectedPatientForEdit: Patient | null = null;
     isAddPatientModalOpen = false;
 
     openAddPatientModal() {
+        this.selectedPatientForEdit = null;
         this.isAddPatientModalOpen = true;
     }
 
@@ -37,25 +39,66 @@ export class PatientListPageComponent {
         this.isAddPatientModalOpen = false;
     }
 
+    onEditPatient(patient: Patient) {
+        this.selectedPatientForEdit = patient;
+        this.isAddPatientModalOpen = true;
+    }
+
+    onDeletePatient(patient: Patient) {
+        this.patients = this.patients.filter(p => p.id !== patient.id);
+
+        // Re-order the 'no' property sequentially
+        this.patients = this.patients.map((p, index) => ({
+            ...p,
+            no: index + 1
+        }));
+
+        if (this.patientTable) {
+            this.patientTable.patients = this.patients;
+            const totalPages = this.patientTable.totalPages;
+            if (this.patientTable.currentPage > totalPages && totalPages > 0) {
+                this.patientTable.currentPage = totalPages;
+            } else if (totalPages === 0) {
+                this.patientTable.currentPage = 1;
+            }
+        }
+    }
+
     onPatientSaved(patientData: any) {
-        const newPatient = {
-            id: this.patients.length + 1,
-            no: this.patients.length + 1,
-            name: patientData.name,
-            gender: patientData.gender,
-            dob: patientData.dob,
-            address: patientData.address,
-            phone: patientData.phone,
-            bloodType: patientData.bloodType,
-            selected: false
-        };
-        this.patients = [...this.patients, newPatient];
+        if (this.selectedPatientForEdit) {
+            // Edit existing patient
+            const index = this.patients.findIndex(p => p.id === this.selectedPatientForEdit!.id);
+            if (index !== -1) {
+                const updatedPatients = [...this.patients];
+                updatedPatients[index] = { ...updatedPatients[index], ...patientData };
+                this.patients = updatedPatients;
+            }
+        } else {
+            // Add new patient
+            const newId = this.patients.length > 0 ? Math.max(...this.patients.map(p => p.id)) + 1 : 1;
+            const newNo = this.patients.length > 0 ? Math.max(...this.patients.map(p => p.no)) + 1 : 1;
+            const newPatient = {
+                id: newId,
+                no: newNo,
+                name: patientData.name,
+                gender: patientData.gender,
+                dob: patientData.dob,
+                address: patientData.address,
+                phone: patientData.phone,
+                bloodType: patientData.bloodType,
+                selected: false
+            };
+            this.patients = [...this.patients, newPatient];
+        }
+
         this.isAddPatientModalOpen = false;
 
         // Force synchronous update on the child component before angular change detection ticks
         if (this.patientTable) {
             this.patientTable.patients = this.patients;
-            this.patientTable.goToPage(this.patientTable.totalPages);
+            if (!this.selectedPatientForEdit) {
+                this.patientTable.goToPage(this.patientTable.totalPages);
+            }
         }
     }
 }

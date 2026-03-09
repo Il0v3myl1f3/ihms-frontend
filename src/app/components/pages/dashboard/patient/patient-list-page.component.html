@@ -19,11 +19,13 @@
 
     <!-- Table Container -->
     <div class="bg-white rounded-xl shadow-sm border border-gray-100 flex-1 flex flex-col overflow-hidden relative">
-        <app-patient-table class="flex-1 flex flex-col" [patients]="patients"></app-patient-table>
+        <app-patient-table class="flex-1 flex flex-col" [patients]="patients" (editPatient)="onEditPatient($event)"
+            (deletePatient)="onDeletePatient($event)"></app-patient-table>
     </div>
 </div>
 
 <!-- Modal Overlay -->
 <app-patient-create-modal *ngIf="isAddPatientModalOpen" [isOpen]="isAddPatientModalOpen"
-    (closeModal)="closeAddPatientModal()" (savePatient)="onPatientSaved($event)">
+    [patientToEdit]="selectedPatientForEdit" (closeModal)="closeAddPatientModal()"
+    (savePatient)="onPatientSaved($event)">
 </app-patient-create-modal>

@@ -1,6 +1,7 @@
-import { Component, OnInit, Input } from '@angular/core';
+import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { LucideAngularModule, Pencil, Trash2 } from 'lucide-angular';
 
 export interface Patient {
     id: number;
@@ -17,12 +18,18 @@ export interface Patient {
 @Component({
     selector: 'app-patient-table',
     standalone: true,
-    imports: [CommonModule, FormsModule],
+    imports: [CommonModule, FormsModule, LucideAngularModule],
     templateUrl: './patient-table.component.html',
     styleUrl: './patient-table.component.css'
 })
 export class PatientTableComponent implements OnInit {
     @Input() patients: Patient[] = [];
+    @Output() editPatient = new EventEmitter<Patient>();
+    @Output() deletePatient = new EventEmitter<Patient>();
+
+    readonly Pencil = Pencil;
+    readonly Trash2 = Trash2;
+
     selectAll = false;
     currentPage = 1;
     readonly pageSize = 5;
@@ -77,6 +84,16 @@ export class PatientTableComponent implements OnInit {
     prevPage(): void {
         if (this.currentPage > 1) {
             this.currentPage--;
+        }
+    }
+
+    onEdit(patient: Patient): void {
+        this.editPatient.emit(patient);
+    }
+
+    onDelete(patient: Patient): void {
+        if (confirm(`Are you sure you want to delete patient "${patient.name}"?`)) {
+            this.deletePatient.emit(patient);
         }
     }
 }

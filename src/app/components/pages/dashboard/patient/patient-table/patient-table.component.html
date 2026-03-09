@@ -65,14 +65,19 @@
                 <td class="px-4 py-4 text-gray-500 font-normal">{{ patient.phone }}</td>
                 <td class="px-4 py-4 font-semibold text-gray-600">{{ patient.bloodType }}</td>
                 <td
-                    class="px-4 py-4 bg-gray-50 group-hover:bg-gray-100/80 sticky right-0 w-16 text-center text-gray-400">
-                    <button class="p-1 hover:text-gray-600 transition-colors">
-                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2"
-                            stroke="currentColor" class="w-5 h-5">
-                            <path stroke-linecap="round" stroke-linejoin="round"
-                                d="M12 6.75a.75.75 0 110-1.5.75.75 0 010 1.5zM12 12.75a.75.75 0 110-1.5.75.75 0 010 1.5zM12 18.75a.75.75 0 110-1.5.75.75 0 010 1.5z" />
-                        </svg>
-                    </button>
+                    class="px-4 py-4 bg-gray-50 group-hover:bg-gray-100/80 sticky right-0 w-24 text-center text-gray-400">
+                    <div class="flex items-center justify-center gap-1.5 transition-opacity">
+                        <button (click)="onEdit(patient)"
+                            class="p-1.5 hover:text-[#159EEC] hover:bg-blue-50 rounded-md transition-colors cursor-pointer"
+                            title="Edit Patient">
+                            <lucide-icon [img]="Pencil" class="w-4 h-4"></lucide-icon>
+                        </button>
+                        <button (click)="onDelete(patient)"
+                            class="p-1.5 hover:text-red-500 hover:bg-red-50 rounded-md transition-colors cursor-pointer"
+                            title="Delete Patient">
+                            <lucide-icon [img]="Trash2" class="w-4 h-4"></lucide-icon>
+                        </button>
+                    </div>
                 </td>
             </tr>
         </tbody>
