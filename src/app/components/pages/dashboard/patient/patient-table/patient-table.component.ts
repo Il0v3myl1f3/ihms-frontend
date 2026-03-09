@@ -26,6 +26,7 @@ export class PatientTableComponent implements OnInit {
     @Input() patients: Patient[] = [];
     @Output() editPatient = new EventEmitter<Patient>();
     @Output() deletePatient = new EventEmitter<Patient>();
+    @Output() deleteSelected = new EventEmitter<Patient[]>();
 
     readonly Pencil = Pencil;
     readonly Trash2 = Trash2;
@@ -43,6 +44,10 @@ export class PatientTableComponent implements OnInit {
 
     updateSelectAllState(): void {
         this.selectAll = this.patients.every(p => p.selected);
+    }
+
+    get hasSelectedPatients(): boolean {
+        return this.patients.some(p => p.selected);
     }
 
     get totalPages(): number {
@@ -94,6 +99,15 @@ export class PatientTableComponent implements OnInit {
     onDelete(patient: Patient): void {
         if (confirm(`Are you sure you want to delete patient "${patient.name}"?`)) {
             this.deletePatient.emit(patient);
+        }
+    }
+
+    onDeleteSelected(): void {
+        const selected = this.patients.filter(p => p.selected);
+        if (selected.length === 0) return;
+        if (confirm(`Are you sure you want to delete ${selected.length} selected patient(s)?`)) {
+            this.deleteSelected.emit(selected);
+            this.selectAll = false;
         }
     }
 }

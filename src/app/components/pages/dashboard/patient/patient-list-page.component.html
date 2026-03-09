@@ -20,7 +20,8 @@
     <!-- Table Container -->
     <div class="bg-white rounded-xl shadow-sm border border-gray-100 flex-1 flex flex-col overflow-hidden relative">
         <app-patient-table class="flex-1 flex flex-col" [patients]="patients" (editPatient)="onEditPatient($event)"
-            (deletePatient)="onDeletePatient($event)"></app-patient-table>
+            (deletePatient)="onDeletePatient($event)"
+            (deleteSelected)="onDeleteSelectedPatients($event)"></app-patient-table>
     </div>
 </div>
 

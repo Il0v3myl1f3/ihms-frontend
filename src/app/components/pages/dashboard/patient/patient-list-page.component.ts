@@ -64,6 +64,27 @@ export class PatientListPageComponent {
         }
     }
 
+    onDeleteSelectedPatients(selectedPatients: Patient[]) {
+        const selectedIds = new Set(selectedPatients.map(p => p.id));
+        this.patients = this.patients.filter(p => !selectedIds.has(p.id));
+
+        // Re-order the 'no' property sequentially
+        this.patients = this.patients.map((p, index) => ({
+            ...p,
+            no: index + 1
+        }));
+
+        if (this.patientTable) {
+            this.patientTable.patients = this.patients;
+            const totalPages = this.patientTable.totalPages;
+            if (this.patientTable.currentPage > totalPages && totalPages > 0) {
+                this.patientTable.currentPage = totalPages;
+            } else if (totalPages === 0) {
+                this.patientTable.currentPage = 1;
+            }
+        }
+    }
+
     onPatientSaved(patientData: any) {
         if (this.selectedPatientForEdit) {
             // Edit existing patient

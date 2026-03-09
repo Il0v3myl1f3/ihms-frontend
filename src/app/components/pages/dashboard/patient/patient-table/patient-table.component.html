@@ -4,6 +4,12 @@
         <h3 class="text-xl font-bold text-gray-900">Patients</h3>
         <span class="text-xs font-semibold bg-gray-100 text-gray-600 px-2.5 py-1 rounded-full">{{ patients.length
             }}</span>
+
+        <button *ngIf="hasSelectedPatients" (click)="onDeleteSelected()"
+            class="ml-2 px-3 py-1.5 text-xs font-medium text-red-600 bg-red-50 hover:bg-red-100 hover:text-red-700 rounded-md transition-colors flex items-center gap-1.5 border border-red-100 shadow-sm cursor-pointer">
+            <lucide-icon [img]="Trash2" class="w-3.5 h-3.5"></lucide-icon>
+            Delete Selected
+        </button>
     </div>
 
     <div class="flex items-center gap-3">
