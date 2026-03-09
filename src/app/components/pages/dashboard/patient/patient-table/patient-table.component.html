@@ -50,12 +50,14 @@
             </tr>
         </thead>
         <tbody class="divide-y divide-gray-100 text-sm text-gray-800 font-medium bg-white">
-            <tr *ngFor="let patient of patients" class="hover:bg-gray-50/50 group whitespace-nowrap transition-colors">
+            <tr *ngFor="let patient of paginatedPatients"
+                class="hover:bg-gray-50/50 group whitespace-nowrap transition-colors">
                 <td class="px-6 py-4 w-12 text-center align-middle">
                     <input type="checkbox" [(ngModel)]="patient.selected" (change)="updateSelectAllState()"
                         class="w-4 h-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500 cursor-pointer" />
                 </td>
-                <td class="px-2 py-4 text-gray-400 font-normal">0{{ patient.no }}</td>
+                <td class="px-2 py-4 text-gray-400 font-normal">{{ patient.no < 10 ? '0' + patient.no : patient.no
+                        }}</td>
                 <td class="px-4 py-4 text-gray-900">{{ patient.name }}</td>
                 <td class="px-4 py-4">{{ patient.gender }}</td>
                 <td class="px-4 py-4 text-gray-500 font-normal">{{ patient.dob }}</td>
@@ -77,31 +79,41 @@
     </table>
 </div>
 
-<!-- Pagination Footer (Static Configuration) -->
+<!-- Pagination Footer (Dynamic Application) -->
 <div class="px-6 py-4 flex items-center justify-between border-t border-gray-100 flex-none bg-white">
-    <span class="text-sm font-medium text-gray-500">Page 1 of 15</span>
-    <div class="flex items-center gap-1.5">
-        <button
-            class="w-8 h-8 flex items-center justify-center rounded-md border border-gray-200 text-gray-400 hover:text-gray-600 hover:bg-gray-50 transition-colors disabled:opacity-50"
-            disabled>
+    <span class="text-sm font-medium text-gray-500">Page {{ currentPage }} of {{ totalPages }}</span>
+    <div class="flex items-center gap-2">
+        <!-- Previous Button -->
+        <button (click)="prevPage()" [disabled]="currentPage === 1"
+            class="w-10 h-10 flex items-center justify-center rounded-xl border transition-colors disabled:opacity-50"
+            [ngClass]="currentPage === 1 ? 'border-gray-200 text-gray-300 bg-gray-50 cursor-not-allowed' : 'border-gray-200 text-[#8e98bc] hover:text-[#303e67] hover:bg-gray-50 cursor-pointer'">
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2"
-                stroke="currentColor" class="w-4 h-4">
+                stroke="currentColor" class="w-4 h-4 flex-none">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" />
             </svg>
         </button>
-        <button
-            class="w-8 h-8 flex items-center justify-center text-sm font-medium rounded-md bg-blue-600 text-white hover:bg-blue-700 transition-colors">1</button>
-        <button
-            class="w-8 h-8 flex items-center justify-center text-sm font-medium rounded-md border border-gray-200 text-gray-600 hover:bg-gray-50 transition-colors">2</button>
-        <button
-            class="w-8 h-8 flex items-center justify-center text-sm font-medium rounded-md border border-gray-200 text-gray-600 hover:bg-gray-50 transition-colors">3</button>
-        <span class="w-4 h-8 flex items-center justify-center text-gray-400 font-medium px-1">...</span>
-        <button
-            class="w-8 h-8 flex items-center justify-center text-sm font-medium rounded-md border border-gray-200 text-gray-600 hover:bg-gray-50 transition-colors">15</button>
-        <button
-            class="w-8 h-8 flex items-center justify-center rounded-md border border-gray-200 text-gray-400 hover:text-gray-600 hover:bg-gray-50 transition-colors">
+
+        <!-- Dynamic Pages -->
+        <ng-container *ngFor="let page of visiblePages">
+            <button *ngIf="page !== '...'" (click)="goToPage(page)"
+                class="w-10 h-10 flex items-center justify-center text-sm font-semibold rounded-xl border transition-colors cursor-pointer"
+                [ngClass]="page === currentPage 
+                    ? 'bg-[#2962ff] text-white border-transparent shadow-sm' 
+                    : 'border-gray-200 text-[#303e67] hover:bg-gray-50 hover:text-blue-600'">
+                {{ page }}
+            </button>
+            <span *ngIf="page === '...'"
+                class="w-6 h-10 flex items-center justify-center text-gray-400 font-bold tracking-widest px-1">
+                ...
+            </span>
+        </ng-container>
+
+        <!-- Next Button -->
+        <button (click)="nextPage()" [disabled]="currentPage === totalPages"
+            class="w-10 h-10 flex items-center justify-center rounded-xl border transition-colors disabled:opacity-50"
+            [ngClass]="currentPage === totalPages ? 'border-gray-200 text-gray-300 bg-gray-50 cursor-not-allowed' : 'border-gray-200 text-[#8e98bc] hover:text-[#303e67] hover:bg-gray-50 cursor-pointer'">
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2"
-                stroke="currentColor" class="w-4 h-4">
+                stroke="currentColor" class="w-4 h-4 flex-none">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
             </svg>
         </button>
