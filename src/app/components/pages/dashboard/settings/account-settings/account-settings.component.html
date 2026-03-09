@@ -1,0 +1,109 @@
+<div class="bg-white rounded-lg pb-6">
+    <!-- Header -->
+    <div class="border-b border-gray-200 pb-4 mb-6">
+        <h3 class="text-lg font-bold text-gray-900">Account</h3>
+    </div>
+
+    <!-- Profile Photo -->
+    <div class="flex items-center gap-6 mb-8">
+        <div class="relative w-16 h-16 rounded-full overflow-hidden border border-gray-200 bg-gray-50 flex-shrink-0">
+            <img src="https://i.pravatar.cc/150?u=a04258114e29026702d" alt="Profile"
+                class="w-full h-full object-cover" />
+        </div>
+        <div class="flex flex-col items-start justify-center gap-1.5">
+            <button type="button"
+                class="px-3 py-1.5 text-sm font-medium border border-gray-200 rounded-md text-gray-700 hover:bg-gray-50 transition-colors">
+                Upload Image
+            </button>
+            <p class="text-xs text-gray-400">JPG or PNG. 1MB max</p>
+        </div>
+    </div>
+
+    <!-- Form Section -->
+    <form [formGroup]="accountForm" class="mb-10">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4">
+
+            <!-- First Name -->
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1.5">First name</label>
+                <input type="text" formControlName="firstName"
+                    class="block w-full px-3 py-2 border border-gray-200 rounded-md text-sm focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 transition-colors" />
+            </div>
+
+            <!-- Last Name -->
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1.5">Last name</label>
+                <input type="text" formControlName="lastName"
+                    class="block w-full px-3 py-2 border border-gray-200 rounded-md text-sm focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 transition-colors" />
+            </div>
+
+            <!-- Phone Number -->
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1.5">Phone number</label>
+                <div class="relative">
+                    <span
+                        class="absolute inset-y-0 left-0 flex items-center pl-3 text-gray-500 z-10 w-8 h-8 pointer-events-none self-center">
+                        <svg class="w-4 h-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <rect x="5" y="2" width="14" height="20" rx="2" ry="2"></rect>
+                            <line x1="12" y1="18" x2="12.01" y2="18"></line>
+                        </svg>
+                    </span>
+                    <input type="text" formControlName="phoneNumber"
+                        class="block w-full pl-10 pr-3 py-2 border border-gray-200 rounded-md text-sm focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 transition-colors" />
+                </div>
+            </div>
+
+            <!-- Email Address -->
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1.5">Email address</label>
+                <input type="email" formControlName="email"
+                    class="block w-full px-3 py-2 border border-gray-200 rounded-md text-sm focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 transition-colors" />
+            </div>
+
+            <!-- Date of Birth -->
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1.5">Date of Birth</label>
+                <input type="date" formControlName="dob"
+                    class="block w-full px-3 py-2 border border-gray-200 rounded-md text-sm text-gray-600 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 transition-colors" />
+            </div>
+
+            <!-- Password -->
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1.5">Password</label>
+                <div class="relative">
+                    <input [type]="showPassword ? 'text' : 'password'" formControlName="password"
+                        class="block w-full pl-3 pr-10 py-2 border border-gray-200 rounded-md text-sm focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 transition-colors" />
+                    <button type="button" (click)="togglePasswordVisibility()"
+                        class="absolute inset-y-0 right-0 flex items-center pr-3 text-gray-400 hover:text-gray-600">
+                        <lucide-icon [img]="showPassword ? EyeOff : Eye" class="w-4 h-4"></lucide-icon>
+                    </button>
+                </div>
+            </div>
+
+        </div>
+    </form>
+
+    <!-- Danger Zone -->
+    <div class="border-t border-gray-200 pt-6">
+        <div class="flex flex-col sm:flex-row justify-between items-start gap-4">
+            <div>
+                <h4 class="text-sm font-bold text-gray-900 mb-1">Delete account</h4>
+                <p class="text-xs text-gray-500 max-w-lg leading-relaxed">
+                    When you delete your account, you lose access to Front account services, and we permanently delete
+                    your personal data. You can cancel the deletion for 14 days.
+                </p>
+            </div>
+            <div class="flex items-center gap-3 shrink-0">
+                <button type="button"
+                    class="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-200 rounded-md hover:bg-gray-50 transition-colors">
+                    Learn More
+                </button>
+                <button type="button"
+                    class="px-4 py-2 text-sm font-medium text-white bg-red-600 rounded-md hover:bg-red-700 transition-colors shadow-sm">
+                    Delete Account
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
