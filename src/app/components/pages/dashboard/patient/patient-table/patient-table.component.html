@@ -1,0 +1,109 @@
+<!-- Table Header Configuration Bar -->
+<div class="px-6 py-4 flex items-center justify-between border-b border-gray-100 flex-none">
+    <div class="flex items-center gap-3">
+        <h3 class="text-xl font-bold text-gray-900">Patients</h3>
+        <span class="text-xs font-semibold bg-gray-100 text-gray-600 px-2.5 py-1 rounded-full">{{ patients.length
+            }}</span>
+    </div>
+
+    <div class="flex items-center gap-3">
+        <div class="relative w-64">
+            <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none text-gray-400">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2"
+                    stroke="currentColor" class="w-4 h-4">
+                    <path stroke-linecap="round" stroke-linejoin="round"
+                        d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" />
+                </svg>
+            </div>
+            <input type="text" placeholder="Search"
+                class="block w-full pl-9 pr-3 py-2 bg-gray-50 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-1 focus:ring-blue-500 focus:bg-white transition-colors" />
+        </div>
+        <button
+            class="flex items-center justify-center w-9 h-9 border border-gray-200 rounded-lg text-gray-500 hover:bg-gray-50 transition-colors">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2"
+                stroke="currentColor" class="w-4 h-4">
+                <path stroke-linecap="round" stroke-linejoin="round"
+                    d="M12 3c2.755 0 5.455.232 8.083.678.533.09.917.556.917 1.096v1.044a2.25 2.25 0 01-.659 1.591l-5.432 5.432a2.25 2.25 0 00-.659 1.591v2.927a2.25 2.25 0 01-1.244 2.013L9.75 21v-6.568a2.25 2.25 0 00-.659-1.591L3.659 7.409A2.25 2.25 0 013 5.818V4.774c0-.54.384-1.006.917-1.096A48.32 48.32 0 0112 3z" />
+            </svg>
+        </button>
+    </div>
+</div>
+
+<!-- Table Body (Scrollable) -->
+<div class="flex-auto overflow-y-auto w-full">
+    <table class="w-full text-left border-collapse min-w-[900px]">
+        <thead class="bg-white sticky top-0 z-10 border-b border-gray-100">
+            <tr>
+                <th class="px-6 py-4 font-semibold text-gray-500 text-sm w-12 text-center align-middle">
+                    <input type="checkbox" [(ngModel)]="selectAll" (change)="toggleSelectAll()"
+                        class="w-4 h-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500 cursor-pointer" />
+                </th>
+                <th class="px-2 py-4 font-semibold text-gray-500 text-sm whitespace-nowrap">No</th>
+                <th class="px-4 py-4 font-semibold text-gray-500 text-sm whitespace-nowrap">Name</th>
+                <th class="px-4 py-4 font-semibold text-gray-500 text-sm whitespace-nowrap">Gender</th>
+                <th class="px-4 py-4 font-semibold text-gray-500 text-sm whitespace-nowrap">Date of Birth</th>
+                <th class="px-4 py-4 font-semibold text-gray-500 text-sm min-w-[150px]">Address</th>
+                <th class="px-4 py-4 font-semibold text-gray-500 text-sm whitespace-nowrap">Phone Number</th>
+                <th class="px-4 py-4 font-semibold text-gray-500 text-sm whitespace-nowrap">Blood Type</th>
+                <th class="px-4 py-4 font-semibold text-gray-500 text-sm bg-gray-50 sticky right-0 w-16 text-center">
+                </th>
+            </tr>
+        </thead>
+        <tbody class="divide-y divide-gray-100 text-sm text-gray-800 font-medium bg-white">
+            <tr *ngFor="let patient of patients" class="hover:bg-gray-50/50 group whitespace-nowrap transition-colors">
+                <td class="px-6 py-4 w-12 text-center align-middle">
+                    <input type="checkbox" [(ngModel)]="patient.selected" (change)="updateSelectAllState()"
+                        class="w-4 h-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500 cursor-pointer" />
+                </td>
+                <td class="px-2 py-4 text-gray-400 font-normal">0{{ patient.no }}</td>
+                <td class="px-4 py-4 text-gray-900">{{ patient.name }}</td>
+                <td class="px-4 py-4">{{ patient.gender }}</td>
+                <td class="px-4 py-4 text-gray-500 font-normal">{{ patient.dob }}</td>
+                <td class="px-4 py-4 text-gray-500 font-normal truncate max-w-[200px]">{{ patient.address }}</td>
+                <td class="px-4 py-4 text-gray-500 font-normal">{{ patient.phone }}</td>
+                <td class="px-4 py-4 font-semibold text-gray-600">{{ patient.bloodType }}</td>
+                <td
+                    class="px-4 py-4 bg-gray-50 group-hover:bg-gray-100/80 sticky right-0 w-16 text-center text-gray-400">
+                    <button class="p-1 hover:text-gray-600 transition-colors">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2"
+                            stroke="currentColor" class="w-5 h-5">
+                            <path stroke-linecap="round" stroke-linejoin="round"
+                                d="M12 6.75a.75.75 0 110-1.5.75.75 0 010 1.5zM12 12.75a.75.75 0 110-1.5.75.75 0 010 1.5zM12 18.75a.75.75 0 110-1.5.75.75 0 010 1.5z" />
+                        </svg>
+                    </button>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+
+<!-- Pagination Footer (Static Configuration) -->
+<div class="px-6 py-4 flex items-center justify-between border-t border-gray-100 flex-none bg-white">
+    <span class="text-sm font-medium text-gray-500">Page 1 of 15</span>
+    <div class="flex items-center gap-1.5">
+        <button
+            class="w-8 h-8 flex items-center justify-center rounded-md border border-gray-200 text-gray-400 hover:text-gray-600 hover:bg-gray-50 transition-colors disabled:opacity-50"
+            disabled>
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2"
+                stroke="currentColor" class="w-4 h-4">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" />
+            </svg>
+        </button>
+        <button
+            class="w-8 h-8 flex items-center justify-center text-sm font-medium rounded-md bg-blue-600 text-white hover:bg-blue-700 transition-colors">1</button>
+        <button
+            class="w-8 h-8 flex items-center justify-center text-sm font-medium rounded-md border border-gray-200 text-gray-600 hover:bg-gray-50 transition-colors">2</button>
+        <button
+            class="w-8 h-8 flex items-center justify-center text-sm font-medium rounded-md border border-gray-200 text-gray-600 hover:bg-gray-50 transition-colors">3</button>
+        <span class="w-4 h-8 flex items-center justify-center text-gray-400 font-medium px-1">...</span>
+        <button
+            class="w-8 h-8 flex items-center justify-center text-sm font-medium rounded-md border border-gray-200 text-gray-600 hover:bg-gray-50 transition-colors">15</button>
+        <button
+            class="w-8 h-8 flex items-center justify-center rounded-md border border-gray-200 text-gray-400 hover:text-gray-600 hover:bg-gray-50 transition-colors">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2"
+                stroke="currentColor" class="w-4 h-4">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
+            </svg>
+        </button>
+    </div>
+</div>
