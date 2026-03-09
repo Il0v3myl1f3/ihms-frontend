@@ -8,6 +8,7 @@ import { DashboardComponent } from './components/pages/dashboard/dashboard.compo
 import { DashboardHomeComponent } from './components/pages/dashboard/home/dashboard-home.component';
 import { DashboardDoctorsComponent } from './components/pages/dashboard/doctors/dashboard-doctors.component';
 import { DashboardSettingsComponent } from './components/pages/dashboard/settings/dashboard-settings.component';
+import { PatientListPageComponent } from './components/pages/dashboard/patient/patient-list-page.component';
 
 export const routes: Routes = [
   { path: '', component: HomeComponent },
@@ -24,7 +25,7 @@ export const routes: Routes = [
       { path: 'room', component: DashboardHomeComponent },
       { path: 'payment', component: DashboardHomeComponent },
       { path: 'doctors', component: DashboardDoctorsComponent },
-      { path: 'patient', component: DashboardHomeComponent },
+      { path: 'patient', component: PatientListPageComponent },
       { path: 'inpatient', component: DashboardHomeComponent },
       { path: 'user', component: DashboardHomeComponent },
       { path: 'settings', component: DashboardSettingsComponent }
