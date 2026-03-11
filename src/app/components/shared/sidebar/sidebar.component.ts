@@ -1,4 +1,4 @@
-import { Component, signal, output } from '@angular/core';
+import { Component, signal, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router, RouterModule } from '@angular/router';
 import {
@@ -16,13 +16,16 @@ import {
     LogOut,
     ChevronLeft,
 } from 'lucide-angular';
-import { AuthService } from '../../../services/auth.service';
+import { AuthService, User } from '../../../services/auth.service';
+import { Subscription } from 'rxjs';
 
 export interface MenuItem {
     label: string;
     icon: any;
     route?: string;
     action?: () => void;
+    /** Roles that can see this item. If omitted, visible to all roles. */
+    roles?: string[];
 }
 
 export interface MenuSection {
@@ -37,7 +40,7 @@ export interface MenuSection {
     templateUrl: './sidebar.component.html',
     styleUrl: './sidebar.component.css',
 })
-export class SidebarComponent {
+export class SidebarComponent implements OnInit, OnDestroy {
     // Icons
     readonly ChevronLeft = ChevronLeft;
     readonly LogOut = LogOut;
@@ -46,42 +49,57 @@ export class SidebarComponent {
     // State
     collapsed = signal(false);
 
-    // Menu sections
-    menuSections: MenuSection[] = [
+    // Full menu definition with role restrictions
+    private readonly allMenuSections: MenuSection[] = [
         {
             title: 'Menu',
             items: [
                 { label: 'Dashboard', icon: LayoutDashboard, route: '/dashboard' },
                 { label: 'Appointment', icon: CalendarDays, route: '/dashboard/appointment' },
-                { label: 'Room', icon: DoorOpen, route: '/dashboard/room' },
-                { label: 'Payment', icon: CreditCard, route: '/dashboard/payment' },
+                { label: 'Room', icon: DoorOpen, route: '/dashboard/room', roles: ['admin'] },
+                { label: 'Payment', icon: CreditCard, route: '/dashboard/payment', roles: ['admin', 'user'] },
             ],
         },
         {
             title: 'Management',
             items: [
-                { label: 'Doctor', icon: Stethoscope, route: '/dashboard/doctors' },
-                { label: 'Patient', icon: Users, route: '/dashboard/patient' },
-                { label: 'Inpatient', icon: BedDouble, route: '/dashboard/inpatient' },
+                { label: 'Doctor', icon: Stethoscope, route: '/dashboard/doctors', roles: ['admin'] },
+                { label: 'Patient', icon: Users, route: '/dashboard/patient', roles: ['admin', 'doctor'] },
+                { label: 'Inpatient', icon: BedDouble, route: '/dashboard/inpatient', roles: ['admin', 'doctor'] },
             ],
         },
         {
             title: 'Setting',
             items: [
-                { label: 'User', icon: UserCog, route: '/dashboard/user' },
+                { label: 'User', icon: UserCog, route: '/dashboard/user', roles: ['admin'] },
                 { label: 'Settings', icon: Settings, route: '/dashboard/settings' },
             ],
         },
     ];
 
+    /** Filtered menu sections visible to the current user */
+    menuSections: MenuSection[] = [];
+
     bottomItems: MenuItem[] = [
         { label: 'Help Center', icon: HelpCircle },
     ];
+
+    private userSub?: Subscription;
 
     constructor(
         private router: Router,
         private authService: AuthService,
     ) { }
+
+    ngOnInit(): void {
+        this.userSub = this.authService.currentUser$.subscribe((user) => {
+            this.menuSections = this.filterMenuByRole(user);
+        });
+    }
+
+    ngOnDestroy(): void {
+        this.userSub?.unsubscribe();
+    }
 
     toggleCollapse(): void {
         this.collapsed.update((v) => !v);
@@ -91,4 +109,22 @@ export class SidebarComponent {
         this.authService.logout();
         this.router.navigate(['/']);
     }
+
+    /**
+     * Filters menu sections based on the user's role.
+     * Removes items the user cannot access and hides sections that become empty.
+     */
+    private filterMenuByRole(user: User | null): MenuSection[] {
+        const role = user?.role ?? 'user';
+
+        return this.allMenuSections
+            .map((section) => ({
+                title: section.title,
+                items: section.items.filter(
+                    (item) => !item.roles || item.roles.includes(role)
+                ),
+            }))
+            .filter((section) => section.items.length > 0);
+    }
 }
+
