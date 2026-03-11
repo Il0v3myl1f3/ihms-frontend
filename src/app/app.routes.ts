@@ -9,6 +9,7 @@ import { DashboardHomeComponent } from './components/pages/dashboard/home/dashbo
 import { DashboardDoctorsComponent } from './components/pages/dashboard/doctors/dashboard-doctors.component';
 import { DashboardSettingsComponent } from './components/pages/dashboard/settings/dashboard-settings.component';
 import { PatientListPageComponent } from './components/pages/dashboard/patient/patient-list-page.component';
+import { roleGuard } from './guards/role.guard';
 
 export const routes: Routes = [
   { path: '', component: HomeComponent },
@@ -22,12 +23,12 @@ export const routes: Routes = [
     children: [
       { path: '', component: DashboardHomeComponent },
       { path: 'appointment', component: DashboardHomeComponent },
-      { path: 'room', component: DashboardHomeComponent },
-      { path: 'payment', component: DashboardHomeComponent },
-      { path: 'doctors', component: DashboardDoctorsComponent },
-      { path: 'patient', component: PatientListPageComponent },
-      { path: 'inpatient', component: DashboardHomeComponent },
-      { path: 'user', component: DashboardHomeComponent },
+      { path: 'room', component: DashboardHomeComponent, canActivate: [roleGuard], data: { allowedRoles: ['admin'] } },
+      { path: 'payment', component: DashboardHomeComponent, canActivate: [roleGuard], data: { allowedRoles: ['admin', 'user'] } },
+      { path: 'doctors', component: DashboardDoctorsComponent, canActivate: [roleGuard], data: { allowedRoles: ['admin'] } },
+      { path: 'patient', component: PatientListPageComponent, canActivate: [roleGuard], data: { allowedRoles: ['admin', 'doctor'] } },
+      { path: 'inpatient', component: DashboardHomeComponent, canActivate: [roleGuard], data: { allowedRoles: ['admin', 'doctor'] } },
+      { path: 'user', component: DashboardHomeComponent, canActivate: [roleGuard], data: { allowedRoles: ['admin'] } },
       { path: 'settings', component: DashboardSettingsComponent }
     ]
   },
