@@ -106,10 +106,10 @@
                         class="w-5 h-5 cursor-pointer hover:text-[#BFD2F8] transition-colors"></lucide-icon>
                 </button>
 
-                <!-- Login Button - Show when user is NOT logged in -->
+                <!-- My Account Button - Show when user is NOT logged in -->
                 <button *ngIf="(currentUser$ | async) === null" (click)="openLoginModal()"
                     class="hidden lg:block bg-[#159EEC] text-white px-6 py-2 rounded-full font-bold hover:bg-[#1282C4] transition-all transform hover:scale-105 shadow-md text-sm cursor-pointer">
-                    Login
+                    My Account
                 </button>
 
                 <!-- User Profile - Show when user IS logged in -->
@@ -119,12 +119,6 @@
                         <div class="text-xs text-[#BFD2F8]">{{ user.role }}</div>
                     </div>
                 </div>
-
-                <!-- Appointment button — desktop only -->
-                <button (click)="openAppointmentModal()"
-                    class="hidden lg:block bg-[#BFD2F8] text-[#1F2B6C] px-8 py-3 rounded-full font-bold hover:bg-white transition-all transform hover:scale-105 shadow-md text-sm cursor-pointer">
-                    Appointment
-                </button>
 
                 <!-- Hamburger / Close — mobile only (animated) -->
                 <button (click)="toggleMenu()" [class.is-open]="menuOpen" class="hamburger lg:hidden"
@@ -167,10 +161,10 @@
             </a>
         </li>
 
-        <li class="w-full mt-2">
-            <button routerLink="/appointments" (click)="closeMenu()"
-                class="w-full bg-[#1F2B6C] text-white py-3.5 rounded-full font-semibold hover:bg-[#152055] transition-all cursor-pointer text-base">
-                Appointment
+        <li class="mt-2">
+            <button (click)="closeMenu(); openLoginModal()"
+                class="bg-[#1F2B6C] text-white px-10 py-3.5 rounded-full font-semibold hover:bg-[#152055] transition-all cursor-pointer text-base">
+                My Account
             </button>
         </li>
     </ul>
@@ -178,8 +172,3 @@
 <!-- Login Modal Component -->
 <app-login-modal [isOpen]="isLoginModalOpen()" (close)="closeLoginModal()" (login)="handleLogin($event)">
 </app-login-modal>
-
-<!-- Appointments Modal Component -->
-<app-appointments-modal [isOpen]="isAppointmentModalOpen()" (close)="closeAppointmentModal()"
-    (submit)="handleAppointmentSubmit($event)">
-</app-appointments-modal>
