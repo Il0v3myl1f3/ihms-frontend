@@ -43,3 +43,6 @@ __screenshots__/
 # System files
 .DS_Store
 Thumbs.db
+
+# Local session context (keep out of version control)
+PROJECT_CONTEXT.md

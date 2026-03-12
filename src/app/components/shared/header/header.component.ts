@@ -1,16 +1,15 @@
 import { Component, signal, ViewChild, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink, RouterLinkActive, Router } from '@angular/router';
-import { LucideAngularModule, Phone, Clock, MapPin, Search, LogOut, Menu, X } from 'lucide-angular';
+import { LucideAngularModule, Phone, Clock, MapPin, Search, Menu, X } from 'lucide-angular';
 import { Observable } from 'rxjs';
 import { LoginModalComponent } from '../login-modal/login-modal.component';
-import { AppointmentsModalComponent } from '../appointments-modal/appointments-modal.component';
 import { AuthService, User, AuthResponse } from '../../../services/auth.service';
 
 @Component({
   selector: 'app-header',
   standalone: true,
-  imports: [CommonModule, RouterLink, RouterLinkActive, LucideAngularModule, LoginModalComponent, AppointmentsModalComponent],
+  imports: [CommonModule, RouterLink, RouterLinkActive, LucideAngularModule, LoginModalComponent],
   templateUrl: './header.component.html'
 })
 export class HeaderComponent implements OnInit {
@@ -30,13 +29,10 @@ export class HeaderComponent implements OnInit {
   closeMenu(): void {
     this.menuOpen = false;
   }
-  readonly LogOut = LogOut;
 
   @ViewChild(LoginModalComponent) loginModal!: LoginModalComponent;
-  @ViewChild(AppointmentsModalComponent) appointmentsModal!: AppointmentsModalComponent;
 
   isLoginModalOpen = signal(false);
-  isAppointmentModalOpen = signal(false);
   currentUser$!: Observable<User | null>;
   loginAttemptFailed = signal(false);
   loginErrorMessage = signal('');
@@ -70,14 +66,6 @@ export class HeaderComponent implements OnInit {
     this.loginErrorMessage.set('');
   }
 
-  openAppointmentModal(): void {
-    this.isAppointmentModalOpen.set(true);
-  }
-
-  closeAppointmentModal(): void {
-    this.isAppointmentModalOpen.set(false);
-  }
-
   handleLogin(credentials: { email: string; password: string }): void {
     this.loginAttemptFailed.set(false);
     this.loginErrorMessage.set('');
@@ -99,16 +87,5 @@ export class HeaderComponent implements OnInit {
         }
       }
     });
-  }
-
-  handleAppointmentSubmit(appointmentData: any): void {
-    // TODO: Connect to backend API in future
-    // For now, just log the appointment data
-    console.log('Appointment submitted:', appointmentData);
-  }
-
-  logout(): void {
-    this.authService.logout();
-    this.router.navigate(['/']);
   }
 }
