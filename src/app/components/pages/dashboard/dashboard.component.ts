@@ -1,4 +1,4 @@
-﻿import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { AuthService, User } from '../../../services/auth.service';
@@ -9,7 +9,6 @@ import { RouterModule } from '@angular/router';
 
 @Component({
   selector: 'app-dashboard',
-  standalone: true,
   imports: [CommonModule, SidebarComponent, LucideAngularModule, RouterModule],
   templateUrl: './dashboard.component.html',
   styleUrl: './dashboard.component.css',
@@ -20,10 +19,8 @@ export class DashboardComponent implements OnInit {
   currentUser$!: Observable<User | null>;
   currentUser: User | null = null;
 
-  constructor(
-    private authService: AuthService,
-    private router: Router,
-  ) { }
+  private authService = inject(AuthService);
+  private router = inject(Router);
 
   ngOnInit(): void {
     this.currentUser$ = this.authService.currentUser$;

@@ -1,4 +1,4 @@
-import { Component, signal, OnInit, OnDestroy } from '@angular/core';
+import { Component, signal, OnInit, OnDestroy, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router, RouterModule } from '@angular/router';
 import {
@@ -15,13 +15,14 @@ import {
     HelpCircle,
     LogOut,
     ChevronLeft,
+    LucideIconData,
 } from 'lucide-angular';
 import { AuthService, User } from '../../../services/auth.service';
 import { Subscription } from 'rxjs';
 
 export interface MenuItem {
     label: string;
-    icon: any;
+    icon: LucideIconData;
     route?: string;
     action?: () => void;
     /** Roles that can see this item. If omitted, visible to all roles. */
@@ -35,7 +36,6 @@ export interface MenuSection {
 
 @Component({
     selector: 'app-sidebar',
-    standalone: true,
     imports: [CommonModule, RouterModule, LucideAngularModule],
     templateUrl: './sidebar.component.html',
     styleUrl: './sidebar.component.css',
@@ -85,11 +85,8 @@ export class SidebarComponent implements OnInit, OnDestroy {
     ];
 
     private userSub?: Subscription;
-
-    constructor(
-        private router: Router,
-        private authService: AuthService,
-    ) { }
+    private router = inject(Router);
+    private authService = inject(AuthService);
 
     ngOnInit(): void {
         this.userSub = this.authService.currentUser$.subscribe((user) => {
@@ -127,4 +124,3 @@ export class SidebarComponent implements OnInit, OnDestroy {
             .filter((section) => section.items.length > 0);
     }
 }
-

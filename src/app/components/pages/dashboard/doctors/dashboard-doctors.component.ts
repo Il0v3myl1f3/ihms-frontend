@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { LucideAngularModule, Search, Filter, MoreHorizontal, ChevronLeft, ChevronRight } from 'lucide-angular';
 import { MedicalService, Doctor } from '../../../../services/medical.service';
@@ -6,7 +6,6 @@ import { AddDoctorComponent } from './add-doctor/add-doctor.component';
 
 @Component({
     selector: 'app-dashboard-doctors',
-    standalone: true,
     imports: [CommonModule, LucideAngularModule, AddDoctorComponent],
     templateUrl: './dashboard-doctors.component.html',
     styleUrls: ['./dashboard-doctors.component.css']
@@ -22,7 +21,7 @@ export class DashboardDoctorsComponent implements OnInit {
     readonly pageSize = 5;
     isAddModalOpen = false;
 
-    constructor(private medicalService: MedicalService) { }
+    private medicalService = inject(MedicalService);
 
     ngOnInit(): void {
         this.medicalService.getDoctors().subscribe(data => {
@@ -73,7 +72,6 @@ export class DashboardDoctorsComponent implements OnInit {
     }
 
     getAvatarInitialsName(name: string): string {
-        // Return the name formatted for UI avatars, replace spaces with +
         return name.replace('Dr. ', '').replace(' ', '+');
     }
 
@@ -86,11 +84,9 @@ export class DashboardDoctorsComponent implements OnInit {
     }
 
     handleAddDoctor(doctorData: { name: string; specialty: string; phone: string; availability: string }): void {
-        this.medicalService.addDoctor(doctorData as any).subscribe(() => {
-            // Re-fetch list to update pagination correctly
+        this.medicalService.addDoctor(doctorData as Omit<Doctor, 'id' | 'image' | 'role'>).subscribe(() => {
             this.medicalService.getDoctors().subscribe(data => {
                 this.doctors = data;
-                // Go to last page to see new entry potentially
                 this.currentPage = this.totalPages;
             });
             this.closeAddModal();

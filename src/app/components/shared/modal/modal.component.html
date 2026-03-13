@@ -1,5 +1,5 @@
 <!-- Backdrop -->
-<div *ngIf="isOpen"
+<div *ngIf="isOpen()"
     class="modal-backdrop fixed inset-0 z-50 flex items-center justify-center bg-black/40 transition-opacity"
     (click)="onBackdropClick($event)">
 
@@ -9,7 +9,7 @@
 
         <!-- Header -->
         <div class="px-6 py-5 border-b border-gray-100 flex items-center justify-between shrink-0">
-            <h3 class="text-xl font-bold text-[#1F2B6C] tracking-tight">{{ title }}</h3>
+            <h3 class="text-xl font-bold text-[#1F2B6C] tracking-tight">{{ title() }}</h3>
             <button (click)="onClose()"
                 class="text-gray-400 hover:text-gray-600 transition-colors p-1 rounded-md hover:bg-gray-100">
                 <lucide-icon [img]="X" class="w-5 h-5"></lucide-icon>

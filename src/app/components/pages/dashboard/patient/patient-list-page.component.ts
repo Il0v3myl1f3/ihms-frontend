@@ -5,7 +5,6 @@ import { PatientCreateModalComponent } from './patient-create-modal/patient-crea
 
 @Component({
     selector: 'app-patient-list-page',
-    standalone: true,
     imports: [CommonModule, PatientTableComponent, PatientCreateModalComponent],
     templateUrl: './patient-list-page.component.html',
     styleUrl: './patient-list-page.component.css'
@@ -47,14 +46,12 @@ export class PatientListPageComponent {
     onDeletePatient(patient: Patient) {
         this.patients = this.patients.filter(p => p.id !== patient.id);
 
-        // Re-order the 'no' property sequentially
         this.patients = this.patients.map((p, index) => ({
             ...p,
             no: index + 1
         }));
 
         if (this.patientTable) {
-            this.patientTable.patients = this.patients;
             const totalPages = this.patientTable.totalPages;
             if (this.patientTable.currentPage > totalPages && totalPages > 0) {
                 this.patientTable.currentPage = totalPages;
@@ -68,14 +65,12 @@ export class PatientListPageComponent {
         const selectedIds = new Set(selectedPatients.map(p => p.id));
         this.patients = this.patients.filter(p => !selectedIds.has(p.id));
 
-        // Re-order the 'no' property sequentially
         this.patients = this.patients.map((p, index) => ({
             ...p,
             no: index + 1
         }));
 
         if (this.patientTable) {
-            this.patientTable.patients = this.patients;
             const totalPages = this.patientTable.totalPages;
             if (this.patientTable.currentPage > totalPages && totalPages > 0) {
                 this.patientTable.currentPage = totalPages;
@@ -85,9 +80,8 @@ export class PatientListPageComponent {
         }
     }
 
-    onPatientSaved(patientData: any) {
+    onPatientSaved(patientData: Record<string, string>) {
         if (this.selectedPatientForEdit) {
-            // Edit existing patient
             const index = this.patients.findIndex(p => p.id === this.selectedPatientForEdit!.id);
             if (index !== -1) {
                 const updatedPatients = [...this.patients];
@@ -95,18 +89,17 @@ export class PatientListPageComponent {
                 this.patients = updatedPatients;
             }
         } else {
-            // Add new patient
             const newId = this.patients.length > 0 ? Math.max(...this.patients.map(p => p.id)) + 1 : 1;
             const newNo = this.patients.length > 0 ? Math.max(...this.patients.map(p => p.no)) + 1 : 1;
-            const newPatient = {
+            const newPatient: Patient = {
                 id: newId,
                 no: newNo,
-                name: patientData.name,
-                gender: patientData.gender,
-                dob: patientData.dob,
-                address: patientData.address,
-                phone: patientData.phone,
-                bloodType: patientData.bloodType,
+                name: patientData['name'],
+                gender: patientData['gender'] as 'Male' | 'Female',
+                dob: patientData['dob'],
+                address: patientData['address'],
+                phone: patientData['phone'],
+                bloodType: patientData['bloodType'],
                 selected: false
             };
             this.patients = [...this.patients, newPatient];
@@ -114,9 +107,7 @@ export class PatientListPageComponent {
 
         this.isAddPatientModalOpen = false;
 
-        // Force synchronous update on the child component before angular change detection ticks
         if (this.patientTable) {
-            this.patientTable.patients = this.patients;
             if (!this.selectedPatientForEdit) {
                 this.patientTable.goToPage(this.patientTable.totalPages);
             }

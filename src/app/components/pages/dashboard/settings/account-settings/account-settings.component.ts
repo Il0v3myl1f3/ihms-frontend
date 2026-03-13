@@ -1,11 +1,10 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { LucideAngularModule, Eye, EyeOff } from 'lucide-angular';
 
 @Component({
     selector: 'app-account-settings',
-    standalone: true,
     imports: [CommonModule, ReactiveFormsModule, LucideAngularModule],
     templateUrl: './account-settings.component.html',
     styleUrl: './account-settings.component.css'
@@ -18,7 +17,7 @@ export class AccountSettingsComponent implements OnInit {
     accountForm!: FormGroup;
     showPassword = false;
 
-    constructor(private fb: FormBuilder) { }
+    private fb = inject(FormBuilder);
 
     ngOnInit(): void {
         this.accountForm = this.fb.group({

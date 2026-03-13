@@ -126,7 +126,7 @@
                         <div *ngFor="let item of servicesData" (click)="selectService(item)"
                             class="flex flex-col items-center gap-2 py-6 px-4 cursor-pointer transition-all border-b border-gray-100 last:border-0"
                             [ngClass]="activeService.id === item.id ? 'bg-[#1F2B6C] text-white' : 'hover:bg-gray-50 text-[#1F2B6C]'">
-                            <lucide-icon *ngIf="item.icon" [img]="item.icon" class="w-6 h-6"></lucide-icon>
+                            <lucide-icon *ngIf="item.icon" [img]="$any(item.icon)" class="w-6 h-6"></lucide-icon>
                             <span class="text-body font-bold text-center">{{ item.name }}</span>
                         </div>
                         <div routerLink="/services"

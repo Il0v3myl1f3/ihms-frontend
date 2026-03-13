@@ -5,7 +5,6 @@ import { RouterLink } from '@angular/router';
 
 @Component({
   selector: 'app-footer',
-  standalone: true,
   imports: [CommonModule, LucideAngularModule, RouterLink],
   templateUrl: './footer.component.html'
 })

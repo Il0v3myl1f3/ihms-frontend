@@ -5,7 +5,6 @@ import { PageHeaderComponent } from '../../shared/page-header/page-header.compon
 
 @Component({
   selector: 'app-contact',
-  standalone: true,
   imports: [CommonModule, LucideAngularModule, PageHeaderComponent],
   templateUrl: './contact.component.html'
 })

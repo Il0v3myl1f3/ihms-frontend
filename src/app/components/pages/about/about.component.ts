@@ -4,7 +4,6 @@ import { PageHeaderComponent } from '../../shared/page-header/page-header.compon
 
 @Component({
   selector: 'app-about',
-  standalone: true,
   imports: [CommonModule, PageHeaderComponent],
   templateUrl: './about.component.html'
 })

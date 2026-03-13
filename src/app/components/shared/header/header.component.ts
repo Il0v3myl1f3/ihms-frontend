@@ -1,4 +1,4 @@
-import { Component, signal, ViewChild, OnInit } from '@angular/core';
+import { Component, signal, inject, ViewChild, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink, RouterLinkActive, Router } from '@angular/router';
 import { LucideAngularModule, Phone, Clock, MapPin, Search, Menu, X } from 'lucide-angular';
@@ -8,7 +8,6 @@ import { AuthService, User, AuthResponse } from '../../../services/auth.service'
 
 @Component({
   selector: 'app-header',
-  standalone: true,
   imports: [CommonModule, RouterLink, RouterLinkActive, LucideAngularModule, LoginModalComponent],
   templateUrl: './header.component.html'
 })
@@ -45,13 +44,10 @@ export class HeaderComponent implements OnInit {
     { label: 'Contact', id: 'contact', path: '/contact' }
   ];
 
-  constructor(
-    private authService: AuthService,
-    private router: Router
-  ) { }
+  private authService = inject(AuthService);
+  private router = inject(Router);
 
   ngOnInit(): void {
-    // Subscribe to current user from auth service
     this.currentUser$ = this.authService.currentUser$;
   }
 
@@ -74,13 +70,13 @@ export class HeaderComponent implements OnInit {
       next: (response: AuthResponse) => {
         if (response.success) {
           this.closeLoginModal();
-          // Redirect to dashboard after successful login
           this.router.navigate(['/dashboard']);
         }
       },
-      error: (error: any) => {
+      error: (error: unknown) => {
         this.loginAttemptFailed.set(true);
-        const errorMsg = error.error || error.message || 'Invalid email or password';
+        const err = error as { error?: string; message?: string };
+        const errorMsg = err.error || err.message || 'Invalid email or password';
         this.loginErrorMessage.set(errorMsg);
         if (this.loginModal) {
           this.loginModal.setErrorMessage(errorMsg);

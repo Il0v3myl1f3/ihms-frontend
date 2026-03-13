@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Observable } from 'rxjs';
 import { AuthService, User } from '../../../../services/auth.service';
@@ -6,7 +6,6 @@ import { LucideAngularModule, Users, Stethoscope, CalendarDays, CreditCard, File
 
 @Component({
     selector: 'app-dashboard-home',
-    standalone: true,
     imports: [CommonModule, LucideAngularModule],
     templateUrl: './dashboard-home.component.html',
     styleUrls: ['./dashboard-home.component.css']
@@ -27,7 +26,7 @@ export class DashboardHomeComponent implements OnInit {
     readonly DoorOpen = DoorOpen;
     readonly BedDouble = BedDouble;
 
-    constructor(private authService: AuthService) { }
+    private authService = inject(AuthService);
 
     ngOnInit(): void {
         this.currentUser$ = this.authService.currentUser$;
@@ -45,4 +44,3 @@ export class DashboardHomeComponent implements OnInit {
         return this.currentUser?.role ?? 'user';
     }
 }
-

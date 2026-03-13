@@ -1,4 +1,4 @@
-<app-modal [isOpen]="isOpen" title="{{ patientToEdit ? 'Edit Patient' : 'Add New Patient' }}" (close)="onCancel()">
+<app-modal [isOpen]="isOpen()" title="{{ patientToEdit() ? 'Edit Patient' : 'Add New Patient' }}" (close)="onCancel()">
 
     <form [formGroup]="patientForm" modal-body>
         <div class="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-5">
@@ -113,7 +113,7 @@
         </button>
         <button type="button" (click)="onSubmit()" [disabled]="patientForm.invalid"
             class="px-5 py-2.5 bg-blue-600 disabled:bg-gray-400 disabled:cursor-not-allowed text-white rounded-md text-sm font-medium hover:bg-blue-700 transition-colors shadow-sm">
-            {{ patientToEdit ? 'Save Changes' : 'Add Patient' }}
+            {{ patientToEdit() ? 'Save Changes' : 'Add Patient' }}
         </button>
     </div>
 </app-modal>

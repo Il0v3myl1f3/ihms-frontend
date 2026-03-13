@@ -1,5 +1,5 @@
-﻿﻿<!-- Modal Overlay -->
-<div *ngIf="isOpen" class="fixed inset-0 bg-black/50 z-[999] flex items-center justify-center" (click)="onClose()">
+﻿<!-- Modal Overlay -->
+<div *ngIf="isOpen()" class="fixed inset-0 bg-black/50 z-[999] flex items-center justify-center" (click)="onClose()">
   <!-- Modal Container -->
   <div class="bg-white rounded-lg shadow-2xl w-full max-w-md mx-4 z-[1000]" (click)="$event.stopPropagation()">
     <!-- Header -->
