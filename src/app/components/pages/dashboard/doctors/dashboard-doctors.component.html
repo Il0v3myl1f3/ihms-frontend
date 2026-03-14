@@ -4,7 +4,7 @@
     <div class="flex items-center justify-between mb-6">
         <div>
             <h2 class="text-display-2 text-[#1F2B6C] tracking-tight mb-1">List Doctors</h2>
-            <p class="text-xs text-gray-500">There is the latest update for the last 7 days, check now.</p>
+            <p class="text-sm text-gray-500">There is the latest update for the last 7 days, check now.</p>
         </div>
         <button (click)="openAddModal()"
             class="bg-[#159EEC] hover:bg-[#1282C4] text-white px-5 py-2.5 rounded-lg text-sm font-medium transition-colors cursor-pointer">
@@ -17,7 +17,7 @@
 
         <!-- Card Toolbar -->
         <div class="px-5 py-4 border-b border-gray-100 flex items-center justify-between">
-            <div class="text-sm font-semibold text-gray-600">Doctors</div>
+            <div class="text-base font-semibold text-gray-600">Doctors</div>
             <div class="flex items-center gap-3">
                 <!-- Search -->
                 <div class="relative w-64">
@@ -36,40 +36,44 @@
         </div>
 
         <!-- Table -->
-        <div class="overflow-x-auto">
-            <table class="w-full text-left border-collapse">
+        <div class="flex-auto overflow-y-auto w-full">
+            <table class="w-full text-left min-w-[900px] border-collapse">
                 <thead class="bg-gray-50/50 border-b border-gray-100">
                     <tr>
-                        <th class="px-5 py-3 text-xs font-medium text-gray-400 w-10">
-                            <input type="checkbox"
-                                class="rounded border-gray-300 text-[#159EEC] shadow-sm focus:border-[#159EEC] focus:ring focus:ring-[#159EEC] focus:ring-opacity-50">
+                        <th class="px-4 py-3.5 text-sm font-medium text-gray-400 whitespace-nowrap">
+                            <div class="flex items-center gap-5">
+                                <input type="checkbox"
+                                    class="rounded border-gray-300 text-[#159EEC] focus:border-[#159EEC] focus:ring focus:ring-[#159EEC] focus:ring-opacity-50 cursor-pointer">
+                                <span>No</span>
+                            </div>
                         </th>
-                        <th class="px-2 py-3 text-xs font-medium text-gray-400 whitespace-nowrap">No</th>
-                        <th class="px-5 py-3 text-xs font-medium text-gray-400 whitespace-nowrap">Doctor Name</th>
-                        <th class="px-5 py-3 text-xs font-medium text-gray-400 whitespace-nowrap">Specialization</th>
-                        <th class="px-5 py-3 text-xs font-medium text-gray-400 whitespace-nowrap">Phone Number</th>
-                        <th class="px-5 py-3 text-xs font-medium text-gray-400 whitespace-nowrap">Availability Status</th>
-                        <th class="px-5 py-3 text-xs font-medium text-gray-400 w-10"></th>
+                        <th class="px-4 py-3.5 text-sm font-medium text-gray-400 whitespace-nowrap">Doctor Name</th>
+                        <th class="px-4 py-3.5 text-sm font-medium text-gray-400 whitespace-nowrap">Specialization</th>
+                        <th class="px-4 py-3.5 text-sm font-medium text-gray-400 whitespace-nowrap">Phone Number</th>
+                        <th class="px-4 py-3.5 text-sm font-medium text-gray-400 whitespace-nowrap">Availability Status</th>
+                        <th class="px-4 py-3.5 text-sm font-medium text-gray-400 w-14"></th>
                     </tr>
                 </thead>
-                <tbody class="divide-y divide-gray-100 text-sm">
+                <tbody class="text-sm text-gray-800 font-medium bg-white">
                     @for (doc of paginatedDoctors(); track doc.id) {
-                        <tr class="hover:bg-gray-50/50 transition-colors group">
-                            <td class="px-5 py-4">
-                                <input type="checkbox"
-                                    class="rounded border-gray-300 text-[#159EEC] shadow-sm focus:border-[#159EEC] focus:ring focus:ring-[#159EEC] focus:ring-opacity-50 cursor-pointer">
+                        <tr class="hover:bg-gray-50/50 group whitespace-nowrap transition-colors">
+                            <td class="px-4 py-4">
+                                <div class="flex items-center gap-5">
+                                    <input type="checkbox"
+                                        class="rounded border-gray-300 text-[#159EEC] focus:border-[#159EEC] focus:ring focus:ring-[#159EEC] focus:ring-opacity-50 cursor-pointer">
+                                    <span class="text-gray-700 font-medium">{{ doc.id }}</span>
+                                </div>
                             </td>
-                            <td class="px-2 py-4 font-medium text-gray-700">{{ doc.id }}</td>
-                            <td class="px-5 py-4">
+                            <td class="px-4 py-4">
                                 <div class="flex items-center gap-3">
                                     <img src="https://ui-avatars.com/api/?name={{ getAvatarInitialsName(doc.name) }}&background=E8EFFF&color=1F2B6C&rounded=true"
                                         alt="Avatar" class="w-8 h-8 rounded-full">
-                                    <span class="font-medium text-gray-900">{{ doc.name }}</span>
+                                    <span class="text-gray-900 font-medium">{{ doc.name }}</span>
                                 </div>
                             </td>
-                            <td class="px-5 py-4 text-gray-600">{{ doc.specialty }}</td>
-                            <td class="px-5 py-4 text-gray-600 font-medium">{{ doc.phone }}</td>
-                            <td class="px-5 py-4">
+                            <td class="px-4 py-4 text-gray-700 font-medium">{{ doc.specialty }}</td>
+                            <td class="px-4 py-4 text-gray-700 font-medium">{{ doc.phone }}</td>
+                            <td class="px-4 py-4">
                                 <span
                                     class="inline-flex items-center px-2.5 py-1 rounded-md text-[11px] font-semibold tracking-wide"
                                     [class.bg-emerald-50]="doc.availability === 'Available'"
@@ -79,11 +83,31 @@
                                     {{ doc.availability }}
                                 </span>
                             </td>
-                            <td class="px-5 py-4 text-right">
-                                <button
-                                    class="text-gray-400 hover:text-[#159EEC] transition-colors opacity-0 group-hover:opacity-100">
-                                    <lucide-icon [img]="MoreHorizontal" class="w-5 h-5"></lucide-icon>
-                                </button>
+                            <td class="px-4 py-4 sticky right-0 w-14 text-center text-gray-400 bg-white group-hover:bg-gray-50">
+                                <div class="relative inline-flex items-center justify-center">
+                                    <button (click)="toggleDropdown(doc.id, $event)"
+                                        class="p-1.5 hover:text-gray-600 rounded-md transition-colors cursor-pointer"
+                                        title="More Actions">
+                                        <lucide-icon [img]="MoreHorizontal" class="w-4 h-4"></lucide-icon>
+                                    </button>
+
+                                    <!-- Dropdown Menu -->
+                                    @if (activeDropdownId === doc.id) {
+                                        <div
+                                            class="absolute right-0 top-full mt-1 w-32 bg-white rounded-md shadow-[0_4px_20px_-4px_rgba(0,0,0,0.1)] z-50 py-1 overflow-visible">
+                                            <button
+                                                class="w-full px-4 py-2 text-sm text-left text-gray-700 hover:bg-gray-50 flex items-center gap-2 transition-colors">
+                                                <lucide-icon [img]="Pencil" class="w-3.5 h-3.5"></lucide-icon>
+                                                Edit
+                                            </button>
+                                            <button
+                                                class="w-full px-4 py-2 text-sm text-left text-red-600 hover:bg-red-50 flex items-center gap-2 transition-colors">
+                                                <lucide-icon [img]="Trash2" class="w-3.5 h-3.5"></lucide-icon>
+                                                Delete
+                                            </button>
+                                        </div>
+                                    }
+                                </div>
                             </td>
                         </tr>
                     }
@@ -92,7 +116,7 @@
         </div>
 
         <!-- Pagination Footer -->
-        <div class="mt-auto px-5 py-4 border-t border-gray-100 flex items-center justify-between">
+        <div class="mt-auto px-5 py-4 border-t border-gray-100 flex items-center justify-between bg-white">
             <span class="text-sm font-medium text-gray-700 block">Page {{ currentPage() }} of {{ totalPages() }}</span>
             <div class="flex items-center gap-1.5">
                 <!-- Previous Button -->

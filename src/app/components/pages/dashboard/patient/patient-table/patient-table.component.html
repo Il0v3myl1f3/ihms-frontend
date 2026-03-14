@@ -1,6 +1,6 @@
 <!-- Table Header Configuration Bar -->
 <div class="px-5 py-4 border-b border-gray-100 flex items-center justify-between">
-    <div class="text-sm font-semibold text-gray-600">Patients</div>
+    <div class="text-base font-semibold text-gray-600">Patients</div>
     <div class="flex items-center gap-3">
         <!-- Search -->
         <div class="relative w-64">
@@ -23,20 +23,20 @@
     <table class="w-full text-left min-w-[900px]">
         <thead class="bg-gray-50/50 border-b border-gray-100">
             <tr>
-                <th class="px-4 py-3.5 text-xs font-medium text-gray-400 whitespace-nowrap">
+                <th class="px-4 py-3.5 text-sm font-medium text-gray-400 whitespace-nowrap">
                     <div class="flex items-center gap-5">
                         <input type="checkbox" [(ngModel)]="selectAll" (change)="toggleSelectAll()"
-                            class="rounded border-gray-300 text-[#159EEC] shadow-sm focus:border-[#159EEC] focus:ring focus:ring-[#159EEC] focus:ring-opacity-50 cursor-pointer" />
+                            class="rounded border-gray-300 text-[#159EEC] focus:border-[#159EEC] focus:ring focus:ring-[#159EEC] focus:ring-opacity-50 cursor-pointer" />
                         <span>No</span>
                     </div>
                 </th>
-                <th class="px-4 py-3.5 text-xs font-medium text-gray-400 whitespace-nowrap">Name</th>
-                <th class="px-4 py-3.5 text-xs font-medium text-gray-400 whitespace-nowrap">Gender</th>
-                <th class="px-4 py-3.5 text-xs font-medium text-gray-400 whitespace-nowrap">Date of Birth</th>
-                <th class="px-4 py-3.5 text-xs font-medium text-gray-400 min-w-[150px]">Address</th>
-                <th class="px-4 py-3.5 text-xs font-medium text-gray-400 whitespace-nowrap">Phone Number</th>
-                <th class="px-4 py-3.5 text-xs font-medium text-gray-400 whitespace-nowrap">Blood Type</th>
-                <th class="px-4 py-3.5 text-xs font-medium text-gray-400 w-10"></th>
+                <th class="px-4 py-3.5 text-sm font-medium text-gray-400 whitespace-nowrap">Name</th>
+                <th class="px-4 py-3.5 text-sm font-medium text-gray-400 whitespace-nowrap">Gender</th>
+                <th class="px-4 py-3.5 text-sm font-medium text-gray-400 whitespace-nowrap">Date of Birth</th>
+                <th class="px-4 py-3.5 text-sm font-medium text-gray-400 min-w-[150px]">Address</th>
+                <th class="px-4 py-3.5 text-sm font-medium text-gray-400 whitespace-nowrap">Phone Number</th>
+                <th class="px-4 py-3.5 text-sm font-medium text-gray-400 whitespace-nowrap">Blood Type</th>
+                <th class="px-4 py-3.5 text-sm font-medium text-gray-400 w-14"></th>
             </tr>
         </thead>
         <tbody class="text-sm text-gray-800 font-medium bg-white">
@@ -45,7 +45,7 @@
                     <td class="px-4 py-4">
                         <div class="flex items-center gap-5">
                             <input type="checkbox" [(ngModel)]="patient.selected" (change)="updateSelectAllState()"
-                                class="rounded border-gray-300 text-[#159EEC] shadow-sm focus:border-[#159EEC] focus:ring focus:ring-[#159EEC] focus:ring-opacity-50 cursor-pointer" />
+                                class="rounded border-gray-300 text-[#159EEC] focus:border-[#159EEC] focus:ring focus:ring-[#159EEC] focus:ring-opacity-50 cursor-pointer" />
                             <span class="text-gray-700 font-medium">{{ patient.no }}</span>
                         </div>
                     </td>
@@ -55,7 +55,7 @@
                     <td class="px-4 py-4 text-gray-700 font-medium truncate max-w-[200px]">{{ patient.address }}</td>
                     <td class="px-4 py-4 text-gray-700 font-medium">{{ patient.phone }}</td>
                     <td class="px-4 py-4 text-gray-900 font-medium">{{ patient.bloodType }}</td>
-                    <td class="px-4 py-4 sticky right-0 w-32 text-center text-gray-400 bg-white group-hover:bg-gray-50">
+                    <td class="px-4 py-4 sticky right-0 w-14 text-center text-gray-400 bg-white group-hover:bg-gray-50">
                         <div class="relative inline-flex items-center justify-center">
                             <button (click)="toggleDropdown(patient.id, $event)"
                                 class="p-1.5 hover:text-gray-600 rounded-md transition-colors cursor-pointer"

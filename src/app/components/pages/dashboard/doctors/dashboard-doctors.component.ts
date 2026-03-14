@@ -1,5 +1,5 @@
 import { Component, OnInit, inject, ChangeDetectionStrategy, signal, computed } from '@angular/core';
-import { LucideAngularModule, Search, Filter, MoreHorizontal, ChevronLeft, ChevronRight } from 'lucide-angular';
+import { LucideAngularModule, Search, Filter, MoreHorizontal, ChevronLeft, ChevronRight, Pencil, Trash2 } from 'lucide-angular';
 import { MedicalService, Doctor } from '../../../../services/medical.service';
 import { AddDoctorComponent } from './add-doctor/add-doctor.component';
 
@@ -8,7 +8,10 @@ import { AddDoctorComponent } from './add-doctor/add-doctor.component';
     imports: [LucideAngularModule, AddDoctorComponent],
     templateUrl: './dashboard-doctors.component.html',
     styleUrls: ['./dashboard-doctors.component.css'],
-    changeDetection: ChangeDetectionStrategy.OnPush
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    host: {
+        '(document:click)': 'closeDropdown()'
+    }
 })
 export class DashboardDoctorsComponent implements OnInit {
     readonly Search = Search;
@@ -16,7 +19,10 @@ export class DashboardDoctorsComponent implements OnInit {
     readonly MoreHorizontal = MoreHorizontal;
     readonly ChevronLeft = ChevronLeft;
     readonly ChevronRight = ChevronRight;
+    readonly Pencil = Pencil;
+    readonly Trash2 = Trash2;
     doctors = signal<Doctor[]>([]);
+    activeDropdownId: number | null = null;
     currentPage = signal(1);
     readonly pageSize = 5;
     isAddModalOpen = false;
@@ -74,6 +80,15 @@ export class DashboardDoctorsComponent implements OnInit {
 
     getAvatarInitialsName(name: string): string {
         return name.replace('Dr. ', '').replace(' ', '+');
+    }
+
+    closeDropdown(): void {
+        this.activeDropdownId = null;
+    }
+
+    toggleDropdown(docId: number, event: Event): void {
+        event.stopPropagation();
+        this.activeDropdownId = this.activeDropdownId === docId ? null : docId;
     }
 
     openAddModal(): void {
