@@ -33,12 +33,15 @@
                     @for (item of section.items; track item.route) {
                         <li>
                             <a [routerLink]="item.route" routerLinkActive="sidebar-item--active"
+                                #rla="routerLinkActive"
                                 [routerLinkActiveOptions]="{exact: item.route === '/dashboard'}"
                                 class="sidebar-item flex items-center w-full rounded-lg transition-all duration-200 cursor-pointer"
                                 [class.justify-center]="collapsed()" [class.px-3]="!collapsed()" [class.py-2.5]="true"
                                 [title]="collapsed() ? item.label : ''">
                                 <lucide-icon [img]="item.icon"
-                                    class="w-5 h-5 shrink-0 text-gray-500 transition-colors duration-200"></lucide-icon>
+                                    [class.text-white]="rla.isActive"
+                                    [class.text-gray-500]="!rla.isActive"
+                                    class="w-5 h-5 shrink-0 transition-colors duration-200"></lucide-icon>
                                 <span
                                     class="ml-3 text-sm font-medium whitespace-nowrap transition-all duration-300 text-gray-700"
                                     [class.hidden]="collapsed()">
