@@ -1,9 +1,9 @@
 <!-- Table Header Configuration Bar -->
-<div class="px-5 py-4 border-b border-gray-100 flex items-center justify-between">
+<div class="px-5 py-4 border-b border-gray-100 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
     <div class="text-base font-semibold text-gray-600">Doctors</div>
-    <div class="flex items-center gap-3">
+    <div class="flex flex-wrap items-center gap-3">
         <!-- Search -->
-        <div class="relative w-64">
+        <div class="relative w-full sm:w-64">
             <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                 <lucide-icon [img]="Search" class="h-4 w-4 text-gray-400"></lucide-icon>
             </div>
@@ -19,7 +19,7 @@
 </div>
 
 <!-- Table Body (Scrollable) -->
-<div class="flex-auto overflow-y-auto w-full">
+<div class="flex-auto overflow-x-auto overflow-y-auto w-full">
     <table class="w-full text-left min-w-[900px] border-collapse">
         <thead class="bg-gray-50/50 border-b border-gray-100">
             <tr>

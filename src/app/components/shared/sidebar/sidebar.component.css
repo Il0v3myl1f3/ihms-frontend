@@ -8,6 +8,21 @@
   width: 72px;
 }
 
+/* Mobile & Tablet: Sidebar off-canvas/hidden by default */
+@media (max-width: 1023px) {
+  .sidebar {
+    transform: translateX(-100%);
+    pointer-events: none;
+    opacity: 0;
+  }
+
+  .sidebar--active {
+    transform: translateX(0);
+    pointer-events: auto;
+    opacity: 1;
+  }
+}
+
 /* Menu item base */
 .sidebar-item {
   padding: 10px 12px;

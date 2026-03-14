@@ -1,11 +1,20 @@
-﻿/* Dashboard layout */
+/* Dashboard layout */
 :host {
   display: block;
 }
 
-/* Fade-in for main content */
+/* Main Content Area */
 .dashboard-main {
   animation: fadeIn 0.4s ease-in;
+  /* Transitions the margin when toggled */
+  transition: margin-left 0.3s ease-in-out;
+}
+
+/* Mobile & Tablet responsiveness: No margin */
+@media (max-width: 1023px) {
+  .dashboard-main {
+    margin-left: 0 !important;
+  }
 }
 
 @keyframes fadeIn {
@@ -18,9 +27,4 @@
     opacity: 1;
     transform: translateY(0);
   }
-}
-
-/* When sidebar is collapsed, reduce the margin */
-:host-context(.sidebar--collapsed) .dashboard-main {
-  margin-left: 72px;
 }
