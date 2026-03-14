@@ -18,12 +18,12 @@
                     </li>
                     <li aria-hidden="true">/</li>
                     <li>
-                        <span class="text-[#159EEC]" aria-current="page">{{ subtitle || title }}</span>
+                        <span class="text-[#159EEC]" aria-current="page">{{ subtitle() || title() }}</span>
                     </li>
                 </ol>
             </nav>
             <h1 class="text-display-1 font-bold text-[#1F2B6C] leading-tight">
-                {{ title }}
+                {{ title() }}
             </h1>
         </div>
     </div>

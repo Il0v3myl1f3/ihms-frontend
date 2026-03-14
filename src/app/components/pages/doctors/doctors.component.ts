@@ -1,14 +1,13 @@
-import { Component, OnInit } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { Component, OnInit, inject, ChangeDetectionStrategy } from '@angular/core';
 import { LucideAngularModule, Facebook, Twitter, Linkedin } from 'lucide-angular';
 import { PageHeaderComponent } from '../../shared/page-header/page-header.component';
 import { MedicalService, Doctor } from '../../../services/medical.service';
 
 @Component({
   selector: 'app-doctors',
-  standalone: true,
-  imports: [CommonModule, LucideAngularModule, PageHeaderComponent],
-  templateUrl: './doctors.component.html'
+  imports: [LucideAngularModule, PageHeaderComponent],
+  templateUrl: './doctors.component.html',
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class DoctorsComponent implements OnInit {
   readonly Facebook = Facebook;
@@ -17,12 +16,11 @@ export class DoctorsComponent implements OnInit {
 
   doctors: Doctor[] = [];
 
-  constructor(private medicalService: MedicalService) { }
+  private medicalService = inject(MedicalService);
 
   ngOnInit(): void {
     this.medicalService.getDoctors().subscribe(data => {
       this.doctors = data;
     });
-
   }
 }

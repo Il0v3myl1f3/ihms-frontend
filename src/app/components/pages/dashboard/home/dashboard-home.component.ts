@@ -1,15 +1,14 @@
-import { Component, OnInit } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { Component, OnInit, inject, ChangeDetectionStrategy } from '@angular/core';
 import { Observable } from 'rxjs';
 import { AuthService, User } from '../../../../services/auth.service';
 import { LucideAngularModule, Users, Stethoscope, CalendarDays, CreditCard, FileText, Activity, ClipboardList, Heart, DoorOpen, BedDouble } from 'lucide-angular';
 
 @Component({
     selector: 'app-dashboard-home',
-    standalone: true,
-    imports: [CommonModule, LucideAngularModule],
+    imports: [LucideAngularModule],
     templateUrl: './dashboard-home.component.html',
-    styleUrls: ['./dashboard-home.component.css']
+    styleUrls: ['./dashboard-home.component.css'],
+    changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class DashboardHomeComponent implements OnInit {
     currentUser$!: Observable<User | null>;
@@ -27,7 +26,7 @@ export class DashboardHomeComponent implements OnInit {
     readonly DoorOpen = DoorOpen;
     readonly BedDouble = BedDouble;
 
-    constructor(private authService: AuthService) { }
+    private authService = inject(AuthService);
 
     ngOnInit(): void {
         this.currentUser$ = this.authService.currentUser$;
@@ -45,4 +44,3 @@ export class DashboardHomeComponent implements OnInit {
         return this.currentUser?.role ?? 'user';
     }
 }
-

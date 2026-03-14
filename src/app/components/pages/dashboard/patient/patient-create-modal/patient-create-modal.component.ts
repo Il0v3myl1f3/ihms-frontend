@@ -1,24 +1,24 @@
-import { Component, EventEmitter, Input, Output, OnInit, OnChanges, SimpleChanges } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { Component, input, output, inject, OnInit, OnChanges, SimpleChanges, ChangeDetectionStrategy } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ModalComponent } from '../../../../shared/modal/modal.component';
+import { Patient } from '../patient-table/patient-table.component';
 
 @Component({
     selector: 'app-patient-create-modal',
-    standalone: true,
-    imports: [CommonModule, ReactiveFormsModule, ModalComponent],
+    imports: [ReactiveFormsModule, ModalComponent],
     templateUrl: './patient-create-modal.component.html',
-    styleUrl: './patient-create-modal.component.css'
+    styleUrl: './patient-create-modal.component.css',
+    changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class PatientCreateModalComponent implements OnInit, OnChanges {
-    @Input() isOpen = false;
-    @Input() patientToEdit: any = null;
-    @Output() closeModal = new EventEmitter<void>();
-    @Output() savePatient = new EventEmitter<any>();
+    isOpen = input(false);
+    patientToEdit = input<Patient | null>(null);
+    closeModal = output<void>();
+    savePatient = output<Record<string, string>>();
 
     patientForm!: FormGroup;
 
-    constructor(private fb: FormBuilder) { }
+    private fb = inject(FormBuilder);
 
     ngOnInit(): void {
         this.patientForm = this.fb.group({
@@ -33,9 +33,9 @@ export class PatientCreateModalComponent implements OnInit, OnChanges {
     }
 
     ngOnChanges(changes: SimpleChanges): void {
-        if (changes['isOpen'] && this.isOpen) {
-            if (this.patientToEdit) {
-                this.patientForm?.patchValue(this.patientToEdit);
+        if (changes['isOpen'] && this.isOpen()) {
+            if (this.patientToEdit()) {
+                this.patientForm?.patchValue(this.patientToEdit()!);
             } else {
                 this.patientForm?.reset({ gender: '', bloodType: '' });
             }
@@ -52,7 +52,6 @@ export class PatientCreateModalComponent implements OnInit, OnChanges {
             this.savePatient.emit(this.patientForm.value);
             this.patientForm.reset();
         } else {
-            // Mark all as touched to trigger validation UI if needed
             this.patientForm.markAllAsTouched();
         }
     }

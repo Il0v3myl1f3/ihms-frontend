@@ -1,4 +1,4 @@
-﻿﻿﻿import { Injectable } from '@angular/core';
+﻿import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable, throwError, of } from 'rxjs';
 import { map, catchError, tap } from 'rxjs/operators';
 
@@ -61,6 +61,7 @@ export class AuthService {
     this.initializeAuthState();
   }
 
+
   /**
    * Initialize auth state from localStorage on service creation
    */
@@ -116,15 +117,16 @@ export class AuthService {
           this.isAuthenticatedSubject.next(true);
         }
       }),
-      catchError((error: any) => {
+      catchError((error: unknown) => {
         let errorMessage = 'Login failed';
+        const err = error as { status?: number; message?: string; error?: { message?: string } };
 
-        if (error.status === 404) {
+        if (err.status === 404) {
           errorMessage = 'Accounts database not found. Please contact support.';
-        } else if (error.message) {
-          errorMessage = error.message;
-        } else if (error.error?.message) {
-          errorMessage = error.error.message;
+        } else if (err.message) {
+          errorMessage = err.message;
+        } else if (err.error?.message) {
+          errorMessage = err.error.message;
         }
 
         this.isAuthenticatedSubject.next(false);

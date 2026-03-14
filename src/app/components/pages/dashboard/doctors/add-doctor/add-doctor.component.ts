@@ -1,30 +1,31 @@
-import { Component, EventEmitter, Input, Output, OnChanges, SimpleChanges } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { Component, input, output, inject, OnChanges, SimpleChanges, ChangeDetectionStrategy } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { LucideAngularModule, ChevronDown } from 'lucide-angular';
 import { ModalComponent } from '../../../../shared/modal/modal.component';
 
 @Component({
     selector: 'app-add-doctor',
-    standalone: true,
-    imports: [CommonModule, ReactiveFormsModule, LucideAngularModule, ModalComponent],
+    imports: [ReactiveFormsModule, LucideAngularModule, ModalComponent],
     templateUrl: './add-doctor.component.html',
-    styleUrls: ['./add-doctor.component.css']
+    styleUrls: ['./add-doctor.component.css'],
+    changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class AddDoctorComponent implements OnChanges {
-    @Input() isOpen = false;
-    @Output() save = new EventEmitter<{
+    isOpen = input(false);
+    save = output<{
         name: string;
         specialty: string;
         phone: string;
         availability: string;
     }>();
-    @Output() cancel = new EventEmitter<void>();
+    cancel = output<void>();
 
     doctorForm: FormGroup;
     readonly ChevronDown = ChevronDown;
 
-    constructor(private fb: FormBuilder) {
+    private fb = inject(FormBuilder);
+
+    constructor() {
         this.doctorForm = this.fb.group({
             name: ['', Validators.required],
             specialty: ['', Validators.required],
@@ -35,7 +36,6 @@ export class AddDoctorComponent implements OnChanges {
 
     ngOnChanges(changes: SimpleChanges): void {
         if (changes['isOpen'] && changes['isOpen'].currentValue === false) {
-            // Reset form when modal closes
             this.doctorForm.reset({ availability: 'Available' });
         }
     }

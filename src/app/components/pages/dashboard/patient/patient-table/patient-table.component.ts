@@ -1,8 +1,6 @@
-import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { Component, OnInit, input, output, ChangeDetectionStrategy, signal, computed } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { LucideAngularModule, Pencil, Trash2, MoreHorizontal, Search, Filter } from 'lucide-angular';
-import { HostListener } from '@angular/core';
 
 export interface Patient {
     id: number;
@@ -18,16 +16,19 @@ export interface Patient {
 
 @Component({
     selector: 'app-patient-table',
-    standalone: true,
-    imports: [CommonModule, FormsModule, LucideAngularModule],
+    imports: [FormsModule, LucideAngularModule],
     templateUrl: './patient-table.component.html',
-    styleUrl: './patient-table.component.css'
+    styleUrl: './patient-table.component.css',
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    host: {
+        '(document:click)': 'closeDropdown()'
+    }
 })
 export class PatientTableComponent implements OnInit {
-    @Input() patients: Patient[] = [];
-    @Output() editPatient = new EventEmitter<Patient>();
-    @Output() deletePatient = new EventEmitter<Patient>();
-    @Output() deleteSelected = new EventEmitter<Patient[]>();
+    patients = input<Patient[]>([]);
+    editPatient = output<Patient>();
+    deletePatient = output<Patient>();
+    deleteSelected = output<Patient[]>();
 
     readonly Pencil = Pencil;
     readonly Trash2 = Trash2;
@@ -38,10 +39,9 @@ export class PatientTableComponent implements OnInit {
     activeDropdownId: number | null = null;
 
     selectAll = false;
-    currentPage = 1;
-    readonly pageSize = 9; // Changed from 11 to 9
+    currentPage = signal(1);
+    readonly pageSize = 10;
 
-    @HostListener('document:click')
     closeDropdown() {
         this.activeDropdownId = null;
     }
@@ -55,56 +55,57 @@ export class PatientTableComponent implements OnInit {
     }
 
     toggleSelectAll(): void {
-        this.patients.forEach(p => p.selected = this.selectAll);
+        this.patients().forEach(p => p.selected = this.selectAll);
     }
 
     updateSelectAllState(): void {
-        this.selectAll = this.patients.every(p => p.selected);
+        this.selectAll = this.patients().every(p => p.selected);
     }
 
     get hasSelectedPatients(): boolean {
-        return this.patients.some(p => p.selected);
+        return this.patients().some(p => p.selected);
     }
 
-    get totalPages(): number {
-        return Math.ceil(this.patients.length / this.pageSize);
-    }
+    totalPages = computed(() => {
+        return Math.ceil(this.patients().length / this.pageSize);
+    });
 
-    get paginatedPatients(): Patient[] {
-        const startIndex = (this.currentPage - 1) * this.pageSize;
-        return this.patients.slice(startIndex, startIndex + this.pageSize);
-    }
+    paginatedPatients = computed(() => {
+        const startIndex = (this.currentPage() - 1) * this.pageSize;
+        return this.patients().slice(startIndex, startIndex + this.pageSize);
+    });
 
-    get visiblePages(): (number | string)[] {
-        const total = this.totalPages;
+    visiblePages = computed(() => {
+        const total = this.totalPages();
+        const current = this.currentPage();
         if (total <= 5) {
             return Array.from({ length: total }, (_, i) => i + 1);
         }
 
-        if (this.currentPage <= 3) {
+        if (current <= 3) {
             return [1, 2, 3, '...', total];
-        } else if (this.currentPage >= total - 2) {
+        } else if (current >= total - 2) {
             return [1, '...', total - 2, total - 1, total];
         } else {
-            return [1, '...', this.currentPage, '...', total];
+            return [1, '...', current, '...', total];
         }
-    }
+    });
 
     goToPage(page: number | string): void {
-        if (typeof page === 'number' && page >= 1 && page <= this.totalPages && page !== this.currentPage) {
-            this.currentPage = page;
+        if (typeof page === 'number' && page >= 1 && page <= this.totalPages() && page !== this.currentPage()) {
+            this.currentPage.set(page);
         }
     }
 
     nextPage(): void {
-        if (this.currentPage < this.totalPages) {
-            this.currentPage++;
+        if (this.currentPage() < this.totalPages()) {
+            this.currentPage.update(p => p + 1);
         }
     }
 
     prevPage(): void {
-        if (this.currentPage > 1) {
-            this.currentPage--;
+        if (this.currentPage() > 1) {
+            this.currentPage.update(p => p - 1);
         }
     }
 
@@ -119,7 +120,7 @@ export class PatientTableComponent implements OnInit {
     }
 
     onDeleteSelected(): void {
-        const selected = this.patients.filter(p => p.selected);
+        const selected = this.patients().filter(p => p.selected);
         if (selected.length === 0) return;
         if (confirm(`Are you sure you want to delete ${selected.length} selected patient(s)?`)) {
             this.deleteSelected.emit(selected);

@@ -1,15 +1,24 @@
-import { Component } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { Component, signal, inject, ChangeDetectionStrategy } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { LucideAngularModule, Calendar, Users, SquareArrowOutUpRight, ChevronRight, Brain, Activity, Microscope, Stethoscope, Eye, Heart, Baby, Thermometer, Database, Pill } from 'lucide-angular';
 import { AppointmentsModalComponent } from '../../shared/appointments-modal/appointments-modal.component';
-import { signal } from '@angular/core';
+
+interface ServiceItem {
+  id: string;
+  name: string;
+  icon: unknown;
+  title: string;
+  description: string;
+  bullets: string[];
+}
+
+import { NgOptimizedImage } from '@angular/common';
 
 @Component({
   selector: 'app-home',
-  standalone: true,
-  imports: [CommonModule, RouterLink, LucideAngularModule, AppointmentsModalComponent],
-  templateUrl: './home.component.html'
+  imports: [RouterLink, LucideAngularModule, AppointmentsModalComponent, NgOptimizedImage],
+  templateUrl: './home.component.html',
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class HomeComponent {
   readonly Calendar = Calendar;
@@ -31,7 +40,7 @@ export class HomeComponent {
 
   isAppointmentModalOpen = signal(false);
 
-  servicesData = [
+  servicesData: ServiceItem[] = [
     {
       id: 'checkup',
       name: 'Free Checkup',
@@ -68,7 +77,7 @@ export class HomeComponent {
 
   activeService = this.servicesData[0];
 
-  selectService(service: any) {
+  selectService(service: ServiceItem) {
     this.activeService = service;
   }
 
@@ -97,7 +106,7 @@ export class HomeComponent {
     this.isAppointmentModalOpen.set(false);
   }
 
-  handleAppointmentSubmit(appointmentData: any): void {
+  handleAppointmentSubmit(appointmentData: Record<string, string>): void {
     console.log('Appointment submitted from home:', appointmentData);
   }
 }

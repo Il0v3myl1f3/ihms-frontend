@@ -1,16 +1,15 @@
-import { Component, EventEmitter, Input, Output } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { Component, input, output, ChangeDetectionStrategy } from '@angular/core';
 
 @Component({
   selector: 'app-settings-sidebar',
-  standalone: true,
-  imports: [CommonModule],
+  imports: [],
   templateUrl: './settings-sidebar.component.html',
-  styleUrl: './settings-sidebar.component.css'
+  styleUrl: './settings-sidebar.component.css',
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class SettingsSidebarComponent {
-  @Input() activeTab: string = 'Account';
-  @Output() tabChange = new EventEmitter<string>();
+  activeTab = input('Account');
+  tabChange = output<string>();
 
   tabs = [
     'General',
@@ -24,7 +23,6 @@ export class SettingsSidebarComponent {
   ];
 
   setTab(tab: string) {
-    this.activeTab = tab;
     this.tabChange.emit(tab);
   }
 }

@@ -1,19 +1,18 @@
-﻿﻿import { Component, Input, Output, EventEmitter, OnChanges, SimpleChanges, OnDestroy } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { ReactiveFormsModule, FormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { Component, input, output, inject, OnChanges, SimpleChanges, OnDestroy, ChangeDetectionStrategy } from '@angular/core';
+import { ReactiveFormsModule, FormsModule, FormBuilder, FormGroup, Validators, ValidationErrors } from '@angular/forms';
 import { LucideAngularModule, X } from 'lucide-angular';
 
 @Component({
   selector: 'app-login-modal',
-  standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, FormsModule, LucideAngularModule],
+  imports: [ReactiveFormsModule, FormsModule, LucideAngularModule],
   templateUrl: './login-modal.component.html',
-  styleUrl: './login-modal.component.css'
+  styleUrl: './login-modal.component.css',
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class LoginModalComponent implements OnChanges, OnDestroy {
-  @Input() isOpen: boolean = false;
-  @Output() close = new EventEmitter<void>();
-  @Output() login = new EventEmitter<{ email: string; password: string }>();
+  isOpen = input(false);
+  close = output<void>();
+  login = output<{ email: string; password: string }>();
 
   readonly X = X;
 
@@ -21,7 +20,9 @@ export class LoginModalComponent implements OnChanges, OnDestroy {
   errorMessage = '';
   isLoading = false;
 
-  constructor(private fb: FormBuilder) {
+  private fb = inject(FormBuilder);
+
+  constructor() {
     this.loginForm = this.fb.group({
       email: ['', [Validators.required, Validators.email]],
       password: ['', [Validators.required, Validators.minLength(6)]]
@@ -30,12 +31,11 @@ export class LoginModalComponent implements OnChanges, OnDestroy {
 
   ngOnChanges(changes: SimpleChanges): void {
     if (changes['isOpen']) {
-      this.toggleBodyScroll(this.isOpen);
+      this.toggleBodyScroll(this.isOpen());
     }
   }
 
   ngOnDestroy(): void {
-    // Ensure scroll is re-enabled when component is destroyed
     this.toggleBodyScroll(false);
   }
 
@@ -72,12 +72,11 @@ export class LoginModalComponent implements OnChanges, OnDestroy {
     this.isLoading = false;
   }
 
-  get emailErrors(): any {
-    return this.loginForm.get('email')?.errors;
+  get emailErrors(): ValidationErrors | null {
+    return this.loginForm.get('email')?.errors ?? null;
   }
 
-  get passwordErrors(): any {
-    return this.loginForm.get('password')?.errors;
+  get passwordErrors(): ValidationErrors | null {
+    return this.loginForm.get('password')?.errors ?? null;
   }
 }
-

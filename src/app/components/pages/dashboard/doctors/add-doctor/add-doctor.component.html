@@ -1,4 +1,4 @@
-<app-modal [isOpen]="isOpen" title="Add New Doctor" (close)="onCancel()">
+<app-modal [isOpen]="isOpen()" title="Add New Doctor" (close)="onCancel()">
 
     <form [formGroup]="doctorForm" modal-body class="grid grid-cols-2 gap-x-6 gap-y-5">
 
@@ -7,9 +7,12 @@
             <label class="text-xs font-semibold text-gray-500 block">Name</label>
             <input type="text" formControlName="name" placeholder="E.g. Dr. John Doe"
                 class="w-full px-4 py-2.5 border border-gray-200 rounded-lg text-sm text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-1 focus:ring-[#159EEC] focus:border-[#159EEC] transition-all"
-                [ngClass]="{'border-red-300 focus:ring-red-400 focus:border-red-400': doctorForm.get('name')?.invalid && doctorForm.get('name')?.touched}">
-            <span *ngIf="doctorForm.get('name')?.invalid && doctorForm.get('name')?.touched"
-                class="text-[10px] text-red-500 font-medium">Name is required.</span>
+                [class.border-red-300]="doctorForm.get('name')?.invalid && doctorForm.get('name')?.touched"
+                [class.focus:ring-red-400]="doctorForm.get('name')?.invalid && doctorForm.get('name')?.touched"
+                [class.focus:border-red-400]="doctorForm.get('name')?.invalid && doctorForm.get('name')?.touched">
+            @if (doctorForm.get('name')?.invalid && doctorForm.get('name')?.touched) {
+                <span class="text-[10px] text-red-500 font-medium">Name is required.</span>
+            }
         </div>
 
         <!-- Specialization Field -->
@@ -18,7 +21,9 @@
             <div class="relative">
                 <select formControlName="specialty"
                     class="w-full px-4 py-2.5 border border-gray-200 rounded-lg text-sm text-gray-900 appearance-none bg-white focus:outline-none focus:ring-1 focus:ring-[#159EEC] focus:border-[#159EEC] transition-all cursor-pointer"
-                    [ngClass]="{'border-red-300 focus:ring-red-400 focus:border-red-400': doctorForm.get('specialty')?.invalid && doctorForm.get('specialty')?.touched}">
+                    [class.border-red-300]="doctorForm.get('specialty')?.invalid && doctorForm.get('specialty')?.touched"
+                    [class.focus:ring-red-400]="doctorForm.get('specialty')?.invalid && doctorForm.get('specialty')?.touched"
+                    [class.focus:border-red-400]="doctorForm.get('specialty')?.invalid && doctorForm.get('specialty')?.touched">
                     <option value="" disabled>Select Specialization</option>
                     <option value="Cardiology">Cardiology</option>
                     <option value="Dermatology">Dermatology</option>
@@ -35,8 +40,9 @@
                     <lucide-icon [img]="ChevronDown" class="w-4 h-4"></lucide-icon>
                 </div>
             </div>
-            <span *ngIf="doctorForm.get('specialty')?.invalid && doctorForm.get('specialty')?.touched"
-                class="text-[10px] text-red-500 font-medium tracking-wide">Specialization is required.</span>
+            @if (doctorForm.get('specialty')?.invalid && doctorForm.get('specialty')?.touched) {
+                <span class="text-[10px] text-red-500 font-medium tracking-wide">Specialization is required.</span>
+            }
         </div>
 
         <!-- Phone Number Field -->
@@ -44,9 +50,12 @@
             <label class="text-xs font-semibold text-gray-500 block">Phone Number</label>
             <input type="text" formControlName="phone" placeholder="+62 888 1234 5678"
                 class="w-full px-4 py-2.5 border border-gray-200 rounded-lg text-sm text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-1 focus:ring-[#159EEC] focus:border-[#159EEC] transition-all"
-                [ngClass]="{'border-red-300 focus:ring-red-400 focus:border-red-400': doctorForm.get('phone')?.invalid && doctorForm.get('phone')?.touched}">
-            <span *ngIf="doctorForm.get('phone')?.invalid && doctorForm.get('phone')?.touched"
-                class="text-[10px] text-red-500 font-medium">Valid phone number is required.</span>
+                [class.border-red-300]="doctorForm.get('phone')?.invalid && doctorForm.get('phone')?.touched"
+                [class.focus:ring-red-400]="doctorForm.get('phone')?.invalid && doctorForm.get('phone')?.touched"
+                [class.focus:border-red-400]="doctorForm.get('phone')?.invalid && doctorForm.get('phone')?.touched">
+            @if (doctorForm.get('phone')?.invalid && doctorForm.get('phone')?.touched) {
+                <span class="text-[10px] text-red-500 font-medium">Valid phone number is required.</span>
+            }
         </div>
 
         <!-- Availability Status Field -->
@@ -55,7 +64,9 @@
             <div class="relative">
                 <select formControlName="availability"
                     class="w-full px-4 py-2.5 border border-gray-200 rounded-lg text-sm text-gray-900 appearance-none bg-white focus:outline-none focus:ring-1 focus:ring-[#159EEC] focus:border-[#159EEC] transition-all cursor-pointer"
-                    [ngClass]="{'border-red-300 focus:ring-red-400 focus:border-red-400': doctorForm.get('availability')?.invalid && doctorForm.get('availability')?.touched}">
+                    [class.border-red-300]="doctorForm.get('availability')?.invalid && doctorForm.get('availability')?.touched"
+                    [class.focus:ring-red-400]="doctorForm.get('availability')?.invalid && doctorForm.get('availability')?.touched"
+                    [class.focus:border-red-400]="doctorForm.get('availability')?.invalid && doctorForm.get('availability')?.touched">
                     <option value="Available">Available</option>
                     <option value="On Leave">On Leave</option>
                 </select>
@@ -63,8 +74,9 @@
                     <lucide-icon [img]="ChevronDown" class="w-4 h-4"></lucide-icon>
                 </div>
             </div>
-            <span *ngIf="doctorForm.get('availability')?.invalid && doctorForm.get('availability')?.touched"
-                class="text-[10px] text-red-500 font-medium tracking-wide">Status is required.</span>
+            @if (doctorForm.get('availability')?.invalid && doctorForm.get('availability')?.touched) {
+                <span class="text-[10px] text-red-500 font-medium tracking-wide">Status is required.</span>
+            }
         </div>
 
     </form>

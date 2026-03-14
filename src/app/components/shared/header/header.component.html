@@ -85,18 +85,20 @@
 
             <!-- Brand logo (mobile only) -->
             <a class="lg:hidden text-white text-display-2 tracking-wider uppercase cursor-pointer" routerLink="/">
-                Med<span class="text-[#BFD2F8]">dical</span>
+                Med<span class="text-[#BFD2F8]">ical</span>
             </a>
 
             <!-- Desktop nav links -->
             <ul class="hidden lg:flex items-center gap-8">
-                <li *ngFor="let item of navItems">
-                    <a [routerLink]="item.path" routerLinkActive="text-[#BFD2F8] font-bold"
-                        [routerLinkActiveOptions]="{exact: item.id === ''}"
-                        class="text-button transition-colors cursor-pointer hover:text-[#BFD2F8]">
-                        {{ item.label }}
-                    </a>
-                </li>
+                @for (item of navItems; track item.id) {
+                    <li>
+                        <a [routerLink]="item.path" routerLinkActive="text-[#BFD2F8] font-bold"
+                            [routerLinkActiveOptions]="{exact: item.id === ''}"
+                            class="text-button transition-colors cursor-pointer hover:text-[#BFD2F8]">
+                            {{ item.label }}
+                        </a>
+                    </li>
+                }
             </ul>
 
             <!-- Right side controls -->
@@ -107,18 +109,22 @@
                 </button>
 
                 <!-- My Account Button - Show when user is NOT logged in -->
-                <button *ngIf="(currentUser$ | async) === null" (click)="openLoginModal()"
-                    class="hidden lg:block bg-[#159EEC] text-white px-6 py-2 rounded-full font-bold hover:bg-[#1282C4] transition-all transform hover:scale-105 shadow-md text-sm cursor-pointer">
-                    My Account
-                </button>
+                @if ((currentUser$ | async) === null) {
+                    <button (click)="openLoginModal()"
+                        class="hidden lg:block bg-[#159EEC] text-white px-6 py-2 rounded-full font-bold hover:bg-[#1282C4] transition-all transform hover:scale-105 shadow-md text-sm cursor-pointer">
+                        My Account
+                    </button>
+                }
 
                 <!-- User Profile - Show when user IS logged in -->
-                <div *ngIf="(currentUser$ | async) as user" class="hidden lg:flex items-center gap-4">
-                    <div class="text-right">
-                        <div class="text-sm font-semibold text-white">{{ user.name }}</div>
-                        <div class="text-xs text-[#BFD2F8]">{{ user.role }}</div>
+                @if (currentUser$ | async; as user) {
+                    <div class="hidden lg:flex items-center gap-4">
+                        <div class="text-right">
+                            <div class="text-sm font-semibold text-white">{{ user.name }}</div>
+                            <div class="text-xs text-[#BFD2F8]">{{ user.role }}</div>
+                        </div>
                     </div>
-                </div>
+                }
 
                 <!-- Hamburger / Close — mobile only (animated) -->
                 <button (click)="toggleMenu()" [class.is-open]="menuOpen" class="hamburger lg:hidden"
@@ -133,42 +139,46 @@
 </nav>
 
 <!-- Full-screen mobile menu overlay -->
-<div *ngIf="menuOpen" class="fixed inset-0 z-100 lg:hidden flex flex-col bg-[#BFD2F8]">
+@if (menuOpen) {
+    <div class="fixed inset-0 z-100 lg:hidden flex flex-col bg-[#BFD2F8]">
 
-    <!-- Top bar -->
-    <div class="bg-[#1F2B6C] flex items-center justify-between px-5 h-14 shrink-0">
-        <a routerLink="/" (click)="closeMenu()"
-            class="text-white text-display-2 tracking-wider uppercase cursor-pointer">
-            Med<span class="text-[#BFD2F8]">dical</span>
-        </a>
-        <div class="flex items-center gap-5">
-            <button aria-label="Search">
-                <lucide-icon [img]="Search" class="w-5 h-5 text-white"></lucide-icon>
-            </button>
-            <button (click)="closeMenu()" aria-label="Close menu">
-                <lucide-icon [img]="X" class="w-6 h-6 text-white"></lucide-icon>
-            </button>
-        </div>
-    </div>
-
-    <!-- Nav links -->
-    <ul class="flex flex-col items-center justify-center flex-1 gap-5 px-8">
-        <li *ngFor="let item of navItems">
-            <a [routerLink]="item.path" routerLinkActive="font-bold" [routerLinkActiveOptions]="{exact: item.id === ''}"
-                (click)="closeMenu()"
-                class="text-xl text-[#1F2B6C] hover:text-[#159EEC] transition-colors cursor-pointer">
-                {{ item.label }}
+        <!-- Top bar -->
+        <div class="bg-[#1F2B6C] flex items-center justify-between px-5 h-14 shrink-0">
+            <a routerLink="/" (click)="closeMenu()"
+                class="text-white text-display-2 tracking-wider uppercase cursor-pointer">
+                Med<span class="text-[#BFD2F8]">ical</span>
             </a>
-        </li>
+            <div class="flex items-center gap-5">
+                <button aria-label="Search">
+                    <lucide-icon [img]="Search" class="w-5 h-5 text-white"></lucide-icon>
+                </button>
+                <button (click)="closeMenu()" aria-label="Close menu">
+                    <lucide-icon [img]="X" class="w-6 h-6 text-white"></lucide-icon>
+                </button>
+            </div>
+        </div>
 
-        <li class="mt-2">
-            <button (click)="closeMenu(); openLoginModal()"
-                class="bg-[#1F2B6C] text-white px-10 py-3.5 rounded-full font-semibold hover:bg-[#152055] transition-all cursor-pointer text-base">
-                My Account
-            </button>
-        </li>
-    </ul>
-</div>
+        <!-- Nav links -->
+        <ul class="flex flex-col items-center justify-center flex-1 gap-5 px-8">
+            @for (item of navItems; track item.id) {
+                <li>
+                    <a [routerLink]="item.path" routerLinkActive="font-bold" [routerLinkActiveOptions]="{exact: item.id === ''}"
+                        (click)="closeMenu()"
+                        class="text-xl text-[#1F2B6C] hover:text-[#159EEC] transition-colors cursor-pointer">
+                        {{ item.label }}
+                    </a>
+                </li>
+            }
+
+            <li class="mt-2">
+                <button (click)="closeMenu(); openLoginModal()"
+                    class="bg-[#1F2B6C] text-white px-10 py-3.5 rounded-full font-semibold hover:bg-[#152055] transition-all cursor-pointer text-base">
+                    My Account
+                </button>
+            </li>
+        </ul>
+    </div>
+}
 <!-- Login Modal Component -->
 <app-login-modal [isOpen]="isLoginModalOpen()" (close)="closeLoginModal()" (login)="handleLogin($event)">
 </app-login-modal>

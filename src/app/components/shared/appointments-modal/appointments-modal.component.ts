@@ -1,19 +1,18 @@
-﻿import { Component, Input, Output, EventEmitter, OnChanges, SimpleChanges, OnDestroy } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { ReactiveFormsModule, FormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { Component, input, output, inject, OnChanges, SimpleChanges, OnDestroy, ChangeDetectionStrategy } from '@angular/core';
+import { ReactiveFormsModule, FormsModule, FormBuilder, FormGroup, Validators, ValidationErrors } from '@angular/forms';
 import { LucideAngularModule, X, Calendar, Clock } from 'lucide-angular';
 
 @Component({
   selector: 'app-appointments-modal',
-  standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, FormsModule, LucideAngularModule],
+  imports: [ReactiveFormsModule, FormsModule, LucideAngularModule],
   templateUrl: './appointments-modal.component.html',
-  styleUrl: './appointments-modal.component.css'
+  styleUrl: './appointments-modal.component.css',
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class AppointmentsModalComponent implements OnChanges, OnDestroy {
-  @Input() isOpen: boolean = false;
-  @Output() close = new EventEmitter<void>();
-  @Output() submit = new EventEmitter<{
+  isOpen = input(false);
+  close = output<void>();
+  submit = output<{
     patientName: string;
     email: string;
     phone: string;
@@ -43,7 +42,9 @@ export class AppointmentsModalComponent implements OnChanges, OnDestroy {
     'Psychiatry'
   ];
 
-  constructor(private fb: FormBuilder) {
+  private fb = inject(FormBuilder);
+
+  constructor() {
     this.appointmentForm = this.fb.group({
       patientName: ['', [Validators.required, Validators.minLength(2)]],
       email: ['', [Validators.required, Validators.email]],
@@ -57,7 +58,7 @@ export class AppointmentsModalComponent implements OnChanges, OnDestroy {
 
   ngOnChanges(changes: SimpleChanges): void {
     if (changes['isOpen']) {
-      this.toggleBodyScroll(this.isOpen);
+      this.toggleBodyScroll(this.isOpen());
     }
   }
 
@@ -82,12 +83,10 @@ export class AppointmentsModalComponent implements OnChanges, OnDestroy {
       const formData = this.appointmentForm.value;
       this.submit.emit(formData);
 
-      // Simulate submission delay
       setTimeout(() => {
         this.successMessage = 'Appointment requested successfully! We will contact you soon.';
         this.isLoading = false;
 
-        // Auto-close after 2 seconds
         setTimeout(() => {
           this.onClose();
         }, 2000);
@@ -113,34 +112,33 @@ export class AppointmentsModalComponent implements OnChanges, OnDestroy {
     this.successMessage = '';
   }
 
-  get patientNameErrors(): any {
-    return this.appointmentForm.get('patientName')?.errors;
+  get patientNameErrors(): ValidationErrors | null {
+    return this.appointmentForm.get('patientName')?.errors ?? null;
   }
 
-  get emailErrors(): any {
-    return this.appointmentForm.get('email')?.errors;
+  get emailErrors(): ValidationErrors | null {
+    return this.appointmentForm.get('email')?.errors ?? null;
   }
 
-  get phoneErrors(): any {
-    return this.appointmentForm.get('phone')?.errors;
+  get phoneErrors(): ValidationErrors | null {
+    return this.appointmentForm.get('phone')?.errors ?? null;
   }
 
-  get preferredDateErrors(): any {
-    return this.appointmentForm.get('preferredDate')?.errors;
+  get preferredDateErrors(): ValidationErrors | null {
+    return this.appointmentForm.get('preferredDate')?.errors ?? null;
   }
 
-  get preferredTimeErrors(): any {
-    return this.appointmentForm.get('preferredTime')?.errors;
+  get preferredTimeErrors(): ValidationErrors | null {
+    return this.appointmentForm.get('preferredTime')?.errors ?? null;
   }
 
-  get specialtyErrors(): any {
-    return this.appointmentForm.get('specialty')?.errors;
+  get specialtyErrors(): ValidationErrors | null {
+    return this.appointmentForm.get('specialty')?.errors ?? null;
   }
 
   getMinDate(): string {
     const today = new Date();
-    today.setDate(today.getDate() + 1); // Minimum date is tomorrow
+    today.setDate(today.getDate() + 1);
     return today.toISOString().split('T')[0];
   }
 }
-

@@ -20,32 +20,36 @@
 
     <!-- Menu Sections -->
     <nav class="flex-1 overflow-y-auto overflow-x-hidden py-4 px-3">
-        <div *ngFor="let section of menuSections" class="mb-6">
-            <!-- Section Title -->
-            <p class="px-3 mb-2 text-xs font-semibold uppercase tracking-wider text-gray-400 transition-all duration-300 whitespace-nowrap"
-                [class.opacity-0]="collapsed()" [class.text-center]="collapsed()">
-                {{ section.title }}
-            </p>
+        @for (section of menuSections; track section.title) {
+            <div class="mb-6">
+                <!-- Section Title -->
+                <p class="px-3 mb-2 text-xs font-semibold uppercase tracking-wider text-gray-400 transition-all duration-300 whitespace-nowrap"
+                    [class.opacity-0]="collapsed()" [class.text-center]="collapsed()">
+                    {{ section.title }}
+                </p>
 
-            <!-- Section Items -->
-            <ul class="space-y-1">
-                <li *ngFor="let item of section.items">
-                    <a [routerLink]="item.route" routerLinkActive="sidebar-item--active"
-                        [routerLinkActiveOptions]="{exact: item.route === '/dashboard'}"
-                        class="sidebar-item flex items-center w-full rounded-lg transition-all duration-200 cursor-pointer"
-                        [class.justify-center]="collapsed()" [class.px-3]="!collapsed()" [class.py-2.5]="true"
-                        [title]="collapsed() ? item.label : ''">
-                        <lucide-icon [img]="item.icon"
-                            class="w-5 h-5 shrink-0 text-gray-500 transition-colors duration-200"></lucide-icon>
-                        <span
-                            class="ml-3 text-sm font-medium whitespace-nowrap transition-all duration-300 text-gray-700"
-                            [class.hidden]="collapsed()">
-                            {{ item.label }}
-                        </span>
-                    </a>
-                </li>
-            </ul>
-        </div>
+                <!-- Section Items -->
+                <ul class="space-y-1">
+                    @for (item of section.items; track item.route) {
+                        <li>
+                            <a [routerLink]="item.route" routerLinkActive="sidebar-item--active"
+                                [routerLinkActiveOptions]="{exact: item.route === '/dashboard'}"
+                                class="sidebar-item flex items-center w-full rounded-lg transition-all duration-200 cursor-pointer"
+                                [class.justify-center]="collapsed()" [class.px-3]="!collapsed()" [class.py-2.5]="true"
+                                [title]="collapsed() ? item.label : ''">
+                                <lucide-icon [img]="item.icon"
+                                    class="w-5 h-5 shrink-0 text-gray-500 transition-colors duration-200"></lucide-icon>
+                                <span
+                                    class="ml-3 text-sm font-medium whitespace-nowrap transition-all duration-300 text-gray-700"
+                                    [class.hidden]="collapsed()">
+                                    {{ item.label }}
+                                </span>
+                            </a>
+                        </li>
+                    }
+                </ul>
+            </div>
+        }
     </nav>
 
     <!-- Bottom Section -->

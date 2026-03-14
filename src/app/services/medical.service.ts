@@ -66,8 +66,6 @@ export const DOCTORS: Doctor[] = [
 })
 export class MedicalService {
 
-    constructor() { }
-
     getDoctors(): Observable<Doctor[]> {
         return of(DOCTORS);
     }
@@ -85,7 +83,7 @@ export class MedicalService {
             specialty: doc.specialty,
             image: '', // Avatar handled by UI generator
             phone: doc.phone,
-            availability: doc.availability as any
+            availability: doc.availability as Doctor['availability']
         };
         DOCTORS.push(newDoctor);
         return of(newDoctor);

@@ -9,24 +9,35 @@
                 <aside class="lg:col-span-3">
                     <!-- Mobile: horizontal scrollable pill tabs -->
                     <div class="flex overflow-x-auto gap-2 pb-3 lg:hidden no-scrollbar">
-                        <button *ngFor="let service of servicesList" (click)="setActiveService(service.id)"
-                            class="shrink-0 px-4 py-2 rounded-full font-bold text-sm cursor-pointer transition-all whitespace-nowrap"
-                            [ngClass]="activeServiceId === service.id
-                                ? 'bg-[#1F2B6C] text-white'
-                                : 'bg-gray-100 text-[#1F2B6C] hover:bg-gray-200'">
-                            {{ service.name }}
-                        </button>
+                        @for (service of servicesList; track service.id) {
+                            <button (click)="setActiveService(service.id)"
+                                class="shrink-0 px-4 py-2 rounded-full font-bold text-sm cursor-pointer transition-all whitespace-nowrap"
+                                [class.bg-\[#1F2B6C\]]="activeServiceId === service.id"
+                                [class.text-white]="activeServiceId === service.id"
+                                [class.bg-gray-100]="activeServiceId !== service.id"
+                                [class.text-\[#1F2B6C\]]="activeServiceId !== service.id"
+                                [class.hover:bg-gray-200]="activeServiceId !== service.id">
+                                {{ service.name }}
+                            </button>
+                        }
                     </div>
                     <!-- Desktop: vertical sidebar -->
                     <div class="hidden lg:flex flex-col border border-gray-100 rounded-xl overflow-hidden shadow-sm">
-                        <button *ngFor="let service of servicesList" (click)="setActiveService(service.id)"
-                            class="flex items-center gap-4 p-6 transition-all border-b border-gray-100 last:border-0 w-full text-left font-bold"
-                            [ngClass]="activeServiceId === service.id ? 'bg-[#1F2B6C] text-white' : 'bg-white text-[#1F2B6C] hover:bg-gray-50'">
-                            <span [ngClass]="activeServiceId === service.id ? 'text-[#BFD2F8]' : 'text-[#159EEC]'">
-                                <lucide-icon [img]="service.icon" class="w-5 h-5"></lucide-icon>
-                            </span>
-                            {{ service.name }}
-                        </button>
+                        @for (service of servicesList; track service.id) {
+                            <button (click)="setActiveService(service.id)"
+                                class="flex items-center gap-4 p-6 transition-all border-b border-gray-100 last:border-0 w-full text-left font-bold"
+                                [class.bg-\[#1F2B6C\]]="activeServiceId === service.id"
+                                [class.text-white]="activeServiceId === service.id"
+                                [class.bg-white]="activeServiceId !== service.id"
+                                [class.text-\[#1F2B6C\]]="activeServiceId !== service.id"
+                                [class.hover:bg-gray-50]="activeServiceId !== service.id">
+                                <span [class.text-\[#BFD2F8\]]="activeServiceId === service.id"
+                                      [class.text-\[#159EEC\]]="activeServiceId !== service.id">
+                                    <lucide-icon [img]="service.icon" class="w-5 h-5"></lucide-icon>
+                                </span>
+                                {{ service.name }}
+                            </button>
+                        }
                     </div>
                 </aside>
 
@@ -48,11 +59,12 @@
                         first</h2>
 
                     <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-y-4 gap-x-8 mb-8 md:mb-12">
-                        <div *ngFor="let item of ['A Passion for Healing', '5-Star Care', 'A Legacy of Excellence', 'All our best', 'Believe in Us', 'Always Caring']"
-                            class="flex items-center gap-3">
-                            <div class="w-3 h-3 bg-[#159EEC] rounded-full shrink-0"></div>
-                            <span class="font-medium text-[#1F2B6C]">{{ item }}</span>
-                        </div>
+                        @for (item of ['A Passion for Healing', '5-Star Care', 'A Legacy of Excellence', 'All our best', 'Believe in Us', 'Always Caring']; track item) {
+                            <div class="flex items-center gap-3">
+                                <div class="w-3 h-3 bg-[#159EEC] rounded-full shrink-0"></div>
+                                <span class="font-medium text-[#1F2B6C]">{{ item }}</span>
+                            </div>
+                        }
                     </div>
 
                     <div class="text-gray-500 leading-loose space-y-6 max-w-4xl">
@@ -93,17 +105,19 @@
                     class="flex gap-4 md:gap-6 overflow-x-auto no-scrollbar select-none cursor-pointer"
                     [class.snap-x]="!isDragging" [class.snap-mandatory]="!isDragging" (mousedown)="onMouseDown($event)"
                     (scroll)="onScroll()" style="scroll-behavior: smooth;">
-                    <div *ngFor="let doc of carouselDoctors" class="shrink-0 flex flex-col items-center snap-start"
-                        [style.width.px]="cardWidthPx">
-                        <div
-                            class="relative mb-0 overflow-hidden rounded-t-xl w-full bg-gray-100 aspect-square flex items-center justify-center">
+                    @for (doc of carouselDoctors; track doc.name) {
+                        <div class="shrink-0 flex flex-col items-center snap-start"
+                            [style.width.px]="cardWidthPx">
+                            <div
+                                class="relative mb-0 overflow-hidden rounded-t-xl w-full bg-gray-100 aspect-square flex items-center justify-center">
+                            </div>
+                            <div class="w-full bg-[#1F2B6C] p-6 text-center rounded-b-xl border-b-[6px] border-[#1F2B6C]">
+                                <h3 class="text-lg font-bold text-white">{{ doc.name }}</h3>
+                                <p class="text-white font-bold uppercase text-xs tracking-widest mt-1 mb-4">
+                                    {{ doc.role }}</p>
+                            </div>
                         </div>
-                        <div class="w-full bg-[#1F2B6C] p-6 text-center rounded-b-xl border-b-[6px] border-[#1F2B6C]">
-                            <h3 class="text-lg font-bold text-white">{{ doc.name }}</h3>
-                            <p class="text-white font-bold uppercase text-xs tracking-widest mt-1 mb-4">
-                                {{ doc.role }}</p>
-                        </div>
-                    </div>
+                    }
                 </div>
 
                 <!-- Next Arrow -->
