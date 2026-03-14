@@ -1,4 +1,4 @@
-import { Component, OnInit, input, output, ChangeDetectionStrategy, signal, computed, HostListener } from '@angular/core';
+import { Component, OnInit, input, output, ChangeDetectionStrategy, signal, computed, HostListener, effect, untracked } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { LucideAngularModule, Pencil, Trash2, MoreHorizontal, Search, Filter, ChevronLeft, ChevronRight } from 'lucide-angular';
 
@@ -43,6 +43,29 @@ export class PatientTableComponent implements OnInit {
     selectAll = false;
     currentPage = signal(1);
     pageSize = signal(7);
+    searchQuery = signal('');
+
+    constructor() {
+        // Reset to page 1 when search query changes
+        effect(() => {
+            this.searchQuery();
+            untracked(() => this.currentPage.set(1));
+        });
+    }
+
+    filteredPatients = computed(() => {
+        const query = this.searchQuery().toLowerCase().trim();
+        if (!query) return this.patients();
+
+        return this.patients().filter(p =>
+            p.name.toLowerCase().includes(query) ||
+            p.gender.toLowerCase().includes(query) ||
+            (p.address?.toLowerCase().includes(query)) ||
+            (p.phone?.toLowerCase().includes(query)) ||
+            (p.bloodType?.toLowerCase().includes(query)) ||
+            p.no.toString().includes(query)
+        );
+    });
 
     @HostListener('window:resize')
     onResize() {
@@ -86,12 +109,12 @@ export class PatientTableComponent implements OnInit {
     }
 
     totalPages = computed(() => {
-        return Math.ceil(this.patients().length / this.pageSize());
+        return Math.max(1, Math.ceil(this.filteredPatients().length / this.pageSize()));
     });
 
     paginatedPatients = computed(() => {
         const startIndex = (this.currentPage() - 1) * this.pageSize();
-        return this.patients().slice(startIndex, startIndex + this.pageSize());
+        return this.filteredPatients().slice(startIndex, startIndex + this.pageSize());
     });
 
     visiblePages = computed(() => {

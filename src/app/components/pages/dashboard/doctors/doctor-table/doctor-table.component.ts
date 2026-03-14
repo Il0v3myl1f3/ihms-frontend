@@ -1,4 +1,4 @@
-import { Component, OnInit, input, output, ChangeDetectionStrategy, signal, computed, HostListener } from '@angular/core';
+import { Component, OnInit, input, output, ChangeDetectionStrategy, signal, computed, HostListener, effect, untracked } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { LucideAngularModule, Search, Filter, MoreHorizontal, ChevronLeft, ChevronRight, Pencil, Trash2 } from 'lucide-angular';
@@ -31,6 +31,27 @@ export class DoctorTableComponent implements OnInit {
     activeDropdownId: number | null = null;
     currentPage = signal(1);
     pageSize = signal(7);
+    searchQuery = signal('');
+
+    constructor() {
+        // Reset to page 1 when search query changes
+        effect(() => {
+            this.searchQuery();
+            untracked(() => this.currentPage.set(1));
+        });
+    }
+
+    filteredDoctors = computed(() => {
+        const query = this.searchQuery().toLowerCase().trim();
+        if (!query) return this.doctors();
+
+        return this.doctors().filter(doc =>
+            doc.name.toLowerCase().includes(query) ||
+            doc.specialty.toLowerCase().includes(query) ||
+            doc.phone?.toLowerCase().includes(query) ||
+            doc.availability?.toLowerCase().includes(query)
+        );
+    });
 
     @HostListener('window:resize')
     onResize() {
@@ -62,12 +83,12 @@ export class DoctorTableComponent implements OnInit {
     }
 
     totalPages = computed(() => {
-        return Math.max(1, Math.ceil(this.doctors().length / this.pageSize()));
+        return Math.max(1, Math.ceil(this.filteredDoctors().length / this.pageSize()));
     });
 
     paginatedDoctors = computed(() => {
         const startIndex = (this.currentPage() - 1) * this.pageSize();
-        return this.doctors().slice(startIndex, startIndex + this.pageSize());
+        return this.filteredDoctors().slice(startIndex, startIndex + this.pageSize());
     });
 
     visiblePages = computed(() => {

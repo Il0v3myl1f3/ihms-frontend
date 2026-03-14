@@ -8,6 +8,7 @@
                 <lucide-icon [img]="Search" class="h-4 w-4 text-gray-400"></lucide-icon>
             </div>
             <input type="text" placeholder="Search"
+                (input)="searchQuery.set($any($event.target).value)"
                 class="block w-full pl-9 pr-3 py-2 border border-gray-200 rounded-lg text-sm placeholder-gray-400 focus:outline-none focus:ring-1 focus:ring-[#159EEC] focus:border-[#159EEC] transition-all">
         </div>
         <!-- Filter Button -->
