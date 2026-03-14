@@ -3,11 +3,13 @@
     <div class="flex items-center gap-3">
         <h3 class="text-[16px] font-semibold text-gray-500">Patients</h3>
 
-        <button *ngIf="hasSelectedPatients" (click)="onDeleteSelected()"
-            class="ml-2 px-3 py-1.5 text-xs font-medium text-red-600 bg-red-50 hover:bg-red-100 hover:text-red-700 rounded-md transition-colors flex items-center gap-1.5 border border-red-100 shadow-sm cursor-pointer">
-            <lucide-icon [img]="Trash2" class="w-3.5 h-3.5"></lucide-icon>
-            Delete Selected
-        </button>
+        @if (hasSelectedPatients) {
+            <button (click)="onDeleteSelected()"
+                class="ml-2 px-3 py-1.5 text-xs font-medium text-red-600 bg-red-50 hover:bg-red-100 hover:text-red-700 rounded-md transition-colors flex items-center gap-1.5 border border-red-100 shadow-sm cursor-pointer">
+                <lucide-icon [img]="Trash2" class="w-3.5 h-3.5"></lucide-icon>
+                Delete Selected
+            </button>
+        }
     </div>
 
     <div class="flex items-center gap-3">
@@ -37,78 +39,79 @@
                         <span>No</span>
                     </div>
                 </th>
-                <th class="px-4 py-3.5 text-gray-400 text-sm font-normal whitespace-nowrap">Name
-                </th>
-                <th class="px-4 py-3.5 text-gray-400 text-sm font-normal whitespace-nowrap">
-                    Gender</th>
-                <th class="px-4 py-3.5 text-gray-400 text-sm font-normal whitespace-nowrap">Date
-                    of Birth</th>
-                <th class="px-4 py-3.5 text-gray-400 text-sm font-normal min-w-[150px]">Address
-                </th>
-                <th class="px-4 py-3.5 text-gray-400 text-sm font-normal whitespace-nowrap">
-                    Phone
-                    Number</th>
-                <th class="px-4 py-3.5 text-gray-400 text-sm font-normal whitespace-nowrap">
-                    Blood
-                    Type</th>
+                <th class="px-4 py-3.5 text-gray-400 text-sm font-normal whitespace-nowrap">Name</th>
+                <th class="px-4 py-3.5 text-gray-400 text-sm font-normal whitespace-nowrap">Gender</th>
+                <th class="px-4 py-3.5 text-gray-400 text-sm font-normal whitespace-nowrap">Date of Birth</th>
+                <th class="px-4 py-3.5 text-gray-400 text-sm font-normal min-w-[150px]">Address</th>
+                <th class="px-4 py-3.5 text-gray-400 text-sm font-normal whitespace-nowrap">Phone Number</th>
+                <th class="px-4 py-3.5 text-gray-400 text-sm font-normal whitespace-nowrap">Blood Type</th>
                 <th class="px-4 py-3.5 text-gray-400 text-sm font-normal sticky right-0 w-16 text-center bg-[#fafafa]">
                 </th>
             </tr>
         </thead>
         <tbody class="text-sm text-gray-800 font-medium bg-white">
-            <tr *ngFor="let patient of paginatedPatients"
-                class="hover:bg-gray-50/50 group whitespace-nowrap transition-colors">
-                <td class="px-4 py-4">
-                    <div class="flex items-center gap-5">
-                        <input type="checkbox" [(ngModel)]="patient.selected" (change)="updateSelectAllState()"
-                            class="w-4 h-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500 cursor-pointer" />
-                        <span class="text-gray-900 font-medium">{{ patient.no }}</span>
-                    </div>
-                </td>
-                <td class="px-4 py-4 text-gray-900 font-medium">{{ patient.name }}</td>
-                <td class="px-4 py-4 text-gray-700 font-medium">{{ patient.gender }}</td>
-                <td class="px-4 py-4 text-gray-700 font-medium">{{ patient.dob }}</td>
-                <td class="px-4 py-4 text-gray-700 font-medium truncate max-w-[200px]">{{
-                    patient.address }}</td>
-                <td class="px-4 py-4 text-gray-700 font-medium">{{ patient.phone }}</td>
-                <td class="px-4 py-4 text-gray-900 font-medium">{{ patient.bloodType }}</td>
-                <td class="px-4 py-4 sticky right-0 w-32 text-center text-gray-400 bg-white group-hover:bg-gray-50">
-                    <div class="relative inline-flex items-center justify-center">
-                        <button (click)="toggleDropdown(patient.id, $event)"
-                            class="p-1.5 hover:text-gray-600 rounded-md transition-colors cursor-pointer"
-                            title="More Actions">
-                            <lucide-icon [img]="MoreHorizontal" class="w-4 h-4"></lucide-icon>
-                        </button>
-
-                        <!-- Dropdown Menu -->
-                        <div *ngIf="activeDropdownId === patient.id"
-                            class="absolute right-0 top-full mt-1 w-32 bg-white rounded-md shadow-[0_4px_20px_-4px_rgba(0,0,0,0.1)] z-50 py-1 overflow-visible">
-                            <button (click)="onEdit(patient); toggleDropdown(patient.id, $event)"
-                                class="w-full px-4 py-2 text-sm text-left text-gray-700 hover:bg-gray-50 flex items-center gap-2 transition-colors">
-                                <lucide-icon [img]="Pencil" class="w-3.5 h-3.5"></lucide-icon>
-                                Edit
-                            </button>
-                            <button (click)="onDelete(patient); toggleDropdown(patient.id, $event)"
-                                class="w-full px-4 py-2 text-sm text-left text-red-600 hover:bg-red-50 flex items-center gap-2 transition-colors">
-                                <lucide-icon [img]="Trash2" class="w-3.5 h-3.5"></lucide-icon>
-                                Delete
-                            </button>
+            @for (patient of paginatedPatients(); track patient.id) {
+                <tr class="hover:bg-gray-50/50 group whitespace-nowrap transition-colors">
+                    <td class="px-4 py-4">
+                        <div class="flex items-center gap-5">
+                            <input type="checkbox" [(ngModel)]="patient.selected" (change)="updateSelectAllState()"
+                                class="w-4 h-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500 cursor-pointer" />
+                            <span class="text-gray-900 font-medium">{{ patient.no }}</span>
                         </div>
-                    </div>
-                </td>
-            </tr>
+                    </td>
+                    <td class="px-4 py-4 text-gray-900 font-medium">{{ patient.name }}</td>
+                    <td class="px-4 py-4 text-gray-700 font-medium">{{ patient.gender }}</td>
+                    <td class="px-4 py-4 text-gray-700 font-medium">{{ patient.dob }}</td>
+                    <td class="px-4 py-4 text-gray-700 font-medium truncate max-w-[200px]">{{ patient.address }}</td>
+                    <td class="px-4 py-4 text-gray-700 font-medium">{{ patient.phone }}</td>
+                    <td class="px-4 py-4 text-gray-900 font-medium">{{ patient.bloodType }}</td>
+                    <td class="px-4 py-4 sticky right-0 w-32 text-center text-gray-400 bg-white group-hover:bg-gray-50">
+                        <div class="relative inline-flex items-center justify-center">
+                            <button (click)="toggleDropdown(patient.id, $event)"
+                                class="p-1.5 hover:text-gray-600 rounded-md transition-colors cursor-pointer"
+                                title="More Actions">
+                                <lucide-icon [img]="MoreHorizontal" class="w-4 h-4"></lucide-icon>
+                            </button>
+
+                            <!-- Dropdown Menu -->
+                            @if (activeDropdownId === patient.id) {
+                                <div
+                                    class="absolute right-0 top-full mt-1 w-32 bg-white rounded-md shadow-[0_4px_20px_-4px_rgba(0,0,0,0.1)] z-50 py-1 overflow-visible">
+                                    <button (click)="onEdit(patient); toggleDropdown(patient.id, $event)"
+                                        class="w-full px-4 py-2 text-sm text-left text-gray-700 hover:bg-gray-50 flex items-center gap-2 transition-colors">
+                                        <lucide-icon [img]="Pencil" class="w-3.5 h-3.5"></lucide-icon>
+                                        Edit
+                                    </button>
+                                    <button (click)="onDelete(patient); toggleDropdown(patient.id, $event)"
+                                        class="w-full px-4 py-2 text-sm text-left text-red-600 hover:bg-red-50 flex items-center gap-2 transition-colors">
+                                        <lucide-icon [img]="Trash2" class="w-3.5 h-3.5"></lucide-icon>
+                                        Delete
+                                    </button>
+                                </div>
+                            }
+                        </div>
+                    </td>
+                </tr>
+            }
         </tbody>
     </table>
 </div>
 
-<!-- Pagination Footer (Dynamic Application) -->
+<!-- Pagination Footer -->
 <div class="px-6 py-4 flex items-center justify-between border-t border-[#e2e2e2] flex-none bg-white">
-    <span class="text-sm font-medium text-gray-900">Page {{ currentPage }} of {{ totalPages }}</span>
+    <p class="text-sm text-gray-700 font-medium">Page {{ currentPage() }} of {{ totalPages() }}</p>
     <div class="flex items-center gap-2">
         <!-- Previous Button -->
-        <button (click)="prevPage()" [disabled]="currentPage === 1"
+        <button (click)="prevPage()" [disabled]="currentPage() === 1"
             class="w-8 h-8 flex items-center justify-center rounded-lg border shadow-sm transition-colors disabled:opacity-50"
-            [ngClass]="currentPage === 1 ? 'border-gray-200 text-gray-300 bg-gray-50 cursor-not-allowed' : 'border-gray-200 text-gray-700 hover:bg-gray-50 cursor-pointer bg-white'">
+            [class.border-gray-200]="true"
+            [class.text-gray-300]="currentPage() === 1"
+            [class.bg-gray-50]="currentPage() === 1"
+            [class.cursor-not-allowed]="currentPage() === 1"
+            [class.text-gray-700]="currentPage() !== 1"
+            [class.hover:bg-gray-50]="currentPage() !== 1"
+            [class.cursor-pointer]="currentPage() !== 1"
+            [class.bg-white]="currentPage() !== 1">
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2"
                 stroke="currentColor" class="w-4 h-4 flex-none">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" />
@@ -118,25 +121,37 @@
         <!-- Dynamic Pages Group -->
         <div
             class="flex items-center rounded-lg border border-gray-200 bg-white shadow-sm overflow-hidden divide-x divide-gray-200 text-sm">
-            <ng-container *ngFor="let page of visiblePages">
-                <button *ngIf="page !== '...'" (click)="goToPage(page)"
-                    class="w-8 h-8 flex items-center justify-center transition-colors focus:z-10 cursor-pointer"
-                    [ngClass]="page === currentPage 
-                        ? 'bg-[#2962ff] text-white font-medium' 
-                        : 'text-gray-700 hover:bg-gray-50 font-normal'">
-                    {{ page }}
-                </button>
-                <div *ngIf="page === '...'"
-                    class="w-8 h-8 flex items-center justify-center text-gray-700 bg-white font-normal">
-                    ...
-                </div>
-            </ng-container>
+            @for (page of visiblePages(); track $index) {
+                @if (page !== '...') {
+                    <button (click)="goToPage(page)"
+                        class="w-8 h-8 flex items-center justify-center transition-colors focus:z-10 cursor-pointer"
+                        [class.bg-\[#2962ff\]]="page === currentPage()"
+                        [class.text-white]="page === currentPage()"
+                        [class.font-medium]="page === currentPage()"
+                        [class.text-gray-700]="page !== currentPage()"
+                        [class.hover:bg-gray-50]="page !== currentPage()"
+                        [class.font-normal]="page !== currentPage()">
+                        {{ page }}
+                    </button>
+                } @else {
+                    <div class="w-8 h-8 flex items-center justify-center text-gray-700 bg-white font-normal">
+                        ...
+                    </div>
+                }
+            }
         </div>
 
         <!-- Next Button -->
-        <button (click)="nextPage()" [disabled]="currentPage === totalPages"
+        <button (click)="nextPage()" [disabled]="currentPage() === totalPages()"
             class="w-8 h-8 flex items-center justify-center rounded-lg border shadow-sm transition-colors disabled:opacity-50"
-            [ngClass]="currentPage === totalPages ? 'border-gray-200 text-gray-300 bg-gray-50 cursor-not-allowed' : 'border-gray-200 text-gray-700 hover:bg-gray-50 cursor-pointer bg-white'">
+            [class.border-gray-200]="true"
+            [class.text-gray-300]="currentPage() === totalPages()"
+            [class.bg-gray-50]="currentPage() === totalPages()"
+            [class.cursor-not-allowed]="currentPage() === totalPages()"
+            [class.text-gray-700]="currentPage() !== totalPages()"
+            [class.hover:bg-gray-50]="currentPage() !== totalPages()"
+            [class.cursor-pointer]="currentPage() !== totalPages()"
+            [class.bg-white]="currentPage() !== totalPages()">
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2"
                 stroke="currentColor" class="w-4 h-4 flex-none">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />

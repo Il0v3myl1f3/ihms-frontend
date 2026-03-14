@@ -1,5 +1,4 @@
-import { Component, signal, OnInit, OnDestroy, inject } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { Component, signal, OnInit, OnDestroy, inject, ChangeDetectionStrategy } from '@angular/core';
 import { Router, RouterModule } from '@angular/router';
 import {
     LucideAngularModule,
@@ -36,9 +35,10 @@ export interface MenuSection {
 
 @Component({
     selector: 'app-sidebar',
-    imports: [CommonModule, RouterModule, LucideAngularModule],
+    imports: [RouterModule, LucideAngularModule],
     templateUrl: './sidebar.component.html',
     styleUrl: './sidebar.component.css',
+    changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class SidebarComponent implements OnInit, OnDestroy {
     // Icons

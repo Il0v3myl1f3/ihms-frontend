@@ -1,13 +1,13 @@
-import { Component, ViewChild } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { Component, ViewChild, ChangeDetectionStrategy } from '@angular/core';
 import { PatientTableComponent, Patient } from './patient-table/patient-table.component';
 import { PatientCreateModalComponent } from './patient-create-modal/patient-create-modal.component';
 
 @Component({
     selector: 'app-patient-list-page',
-    imports: [CommonModule, PatientTableComponent, PatientCreateModalComponent],
+    imports: [PatientTableComponent, PatientCreateModalComponent],
     templateUrl: './patient-list-page.component.html',
-    styleUrl: './patient-list-page.component.css'
+    styleUrl: './patient-list-page.component.css',
+    changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class PatientListPageComponent {
     @ViewChild(PatientTableComponent) patientTable!: PatientTableComponent;
@@ -52,11 +52,11 @@ export class PatientListPageComponent {
         }));
 
         if (this.patientTable) {
-            const totalPages = this.patientTable.totalPages;
-            if (this.patientTable.currentPage > totalPages && totalPages > 0) {
-                this.patientTable.currentPage = totalPages;
+            const totalPages = this.patientTable.totalPages();
+            if (this.patientTable.currentPage() > totalPages && totalPages > 0) {
+                this.patientTable.currentPage.set(totalPages);
             } else if (totalPages === 0) {
-                this.patientTable.currentPage = 1;
+                this.patientTable.currentPage.set(1);
             }
         }
     }
@@ -71,11 +71,11 @@ export class PatientListPageComponent {
         }));
 
         if (this.patientTable) {
-            const totalPages = this.patientTable.totalPages;
-            if (this.patientTable.currentPage > totalPages && totalPages > 0) {
-                this.patientTable.currentPage = totalPages;
+            const totalPages = this.patientTable.totalPages();
+            if (this.patientTable.currentPage() > totalPages && totalPages > 0) {
+                this.patientTable.currentPage.set(totalPages);
             } else if (totalPages === 0) {
-                this.patientTable.currentPage = 1;
+                this.patientTable.currentPage.set(1);
             }
         }
     }
@@ -109,7 +109,7 @@ export class PatientListPageComponent {
 
         if (this.patientTable) {
             if (!this.selectedPatientForEdit) {
-                this.patientTable.goToPage(this.patientTable.totalPages);
+                this.patientTable.goToPage(this.patientTable.totalPages());
             }
         }
     }

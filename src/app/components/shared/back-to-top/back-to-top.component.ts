@@ -1,12 +1,12 @@
-import { Component } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { Component, ChangeDetectionStrategy } from '@angular/core';
 import { LucideAngularModule, ArrowUp } from 'lucide-angular';
 
 @Component({
   selector: 'app-back-to-top',
-  imports: [CommonModule, LucideAngularModule],
+  imports: [LucideAngularModule],
   templateUrl: './back-to-top.component.html',
   styleUrl: './back-to-top.component.css',
+  changeDetection: ChangeDetectionStrategy.OnPush,
   host: {
     '(window:scroll)': 'onWindowScroll()'
   }

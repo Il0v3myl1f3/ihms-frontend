@@ -20,11 +20,12 @@
                         Health</h2>
 
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-y-4 gap-x-8 mb-12">
-                        <div *ngFor="let item of ['A Passion for Healing', '5-Star Care', 'All our best', 'Believe in Us', 'Always Caring', 'A Legacy of Excellence']"
-                            class="flex items-center gap-3">
-                            <div class="w-3 h-3 bg-[#159EEC] rounded-full"></div>
-                            <span class="text-body font-medium text-[#1F2B6C]">{{ item }}</span>
-                        </div>
+                        @for (item of ['A Passion for Healing', '5-Star Care', 'All our best', 'Believe in Us', 'Always Caring', 'A Legacy of Excellence']; track item) {
+                            <div class="flex items-center gap-3">
+                                <div class="w-3 h-3 bg-[#159EEC] rounded-full"></div>
+                                <span class="text-body font-medium text-[#1F2B6C]">{{ item }}</span>
+                            </div>
+                        }
                     </div>
 
                     <div class="text-gray-500 text-body leading-loose space-y-6">

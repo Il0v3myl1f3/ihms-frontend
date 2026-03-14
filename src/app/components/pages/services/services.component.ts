@@ -1,13 +1,13 @@
-import { Component, OnInit, OnDestroy, ElementRef, ViewChild, AfterViewInit, NgZone, ChangeDetectorRef, inject } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { Component, OnInit, OnDestroy, ElementRef, ViewChild, AfterViewInit, NgZone, ChangeDetectorRef, inject, ChangeDetectionStrategy } from '@angular/core';
 import { LucideAngularModule, Activity, Heart, Database, Pill, Thermometer, Stethoscope, Facebook, Twitter, Linkedin, ChevronLeft, ChevronRight } from 'lucide-angular';
 import { PageHeaderComponent } from '../../shared/page-header/page-header.component';
 import { MedicalService, Doctor } from '../../../services/medical.service';
 
 @Component({
   selector: 'app-services',
-  imports: [CommonModule, LucideAngularModule, PageHeaderComponent],
+  imports: [LucideAngularModule, PageHeaderComponent],
   templateUrl: './services.component.html',
+  changeDetection: ChangeDetectionStrategy.OnPush,
   host: {
     '(window:resize)': 'onResize()'
   }

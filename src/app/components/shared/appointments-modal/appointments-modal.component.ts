@@ -1,13 +1,13 @@
-import { Component, input, output, inject, OnChanges, SimpleChanges, OnDestroy } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { Component, input, output, inject, OnChanges, SimpleChanges, OnDestroy, ChangeDetectionStrategy } from '@angular/core';
 import { ReactiveFormsModule, FormsModule, FormBuilder, FormGroup, Validators, ValidationErrors } from '@angular/forms';
 import { LucideAngularModule, X, Calendar, Clock } from 'lucide-angular';
 
 @Component({
   selector: 'app-appointments-modal',
-  imports: [CommonModule, ReactiveFormsModule, FormsModule, LucideAngularModule],
+  imports: [ReactiveFormsModule, FormsModule, LucideAngularModule],
   templateUrl: './appointments-modal.component.html',
-  styleUrl: './appointments-modal.component.css'
+  styleUrl: './appointments-modal.component.css',
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class AppointmentsModalComponent implements OnChanges, OnDestroy {
   isOpen = input(false);

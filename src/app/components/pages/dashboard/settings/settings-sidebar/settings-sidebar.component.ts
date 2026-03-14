@@ -1,11 +1,11 @@
-import { Component, input, output } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { Component, input, output, ChangeDetectionStrategy } from '@angular/core';
 
 @Component({
   selector: 'app-settings-sidebar',
-  imports: [CommonModule],
+  imports: [],
   templateUrl: './settings-sidebar.component.html',
-  styleUrl: './settings-sidebar.component.css'
+  styleUrl: './settings-sidebar.component.css',
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class SettingsSidebarComponent {
   activeTab = input('Account');

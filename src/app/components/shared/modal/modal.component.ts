@@ -1,12 +1,12 @@
-import { Component, input, output, OnChanges, OnDestroy, SimpleChanges } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { Component, input, output, OnChanges, OnDestroy, SimpleChanges, ChangeDetectionStrategy } from '@angular/core';
 import { LucideAngularModule, X } from 'lucide-angular';
 
 @Component({
     selector: 'app-modal',
-    imports: [CommonModule, LucideAngularModule],
+    imports: [LucideAngularModule],
     templateUrl: './modal.component.html',
-    styleUrls: ['./modal.component.css']
+    styleUrls: ['./modal.component.css'],
+    changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class ModalComponent implements OnChanges, OnDestroy {
     isOpen = input(false);

@@ -1,14 +1,14 @@
-import { Component, input, output, inject, OnChanges, SimpleChanges } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { Component, input, output, inject, OnChanges, SimpleChanges, ChangeDetectionStrategy } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { LucideAngularModule, ChevronDown } from 'lucide-angular';
 import { ModalComponent } from '../../../../shared/modal/modal.component';
 
 @Component({
     selector: 'app-add-doctor',
-    imports: [CommonModule, ReactiveFormsModule, LucideAngularModule, ModalComponent],
+    imports: [ReactiveFormsModule, LucideAngularModule, ModalComponent],
     templateUrl: './add-doctor.component.html',
-    styleUrls: ['./add-doctor.component.css']
+    styleUrls: ['./add-doctor.component.css'],
+    changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class AddDoctorComponent implements OnChanges {
     isOpen = input(false);

@@ -1,12 +1,12 @@
-import { Component } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { Component, ChangeDetectionStrategy } from '@angular/core';
 import { LucideAngularModule, Facebook, Instagram, Linkedin, Phone, Mail, MapPin, Send } from 'lucide-angular';
 import { RouterLink } from '@angular/router';
 
 @Component({
   selector: 'app-footer',
-  imports: [CommonModule, LucideAngularModule, RouterLink],
-  templateUrl: './footer.component.html'
+  imports: [LucideAngularModule, RouterLink],
+  templateUrl: './footer.component.html',
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class FooterComponent {
   readonly Facebook = Facebook;

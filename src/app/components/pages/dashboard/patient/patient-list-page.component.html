@@ -22,7 +22,9 @@
 </div>
 
 <!-- Modal Overlay -->
-<app-patient-create-modal *ngIf="isAddPatientModalOpen" [isOpen]="isAddPatientModalOpen"
-    [patientToEdit]="selectedPatientForEdit" (closeModal)="closeAddPatientModal()"
-    (savePatient)="onPatientSaved($event)">
-</app-patient-create-modal>
+@if (isAddPatientModalOpen) {
+    <app-patient-create-modal [isOpen]="isAddPatientModalOpen"
+        [patientToEdit]="selectedPatientForEdit" (closeModal)="closeAddPatientModal()"
+        (savePatient)="onPatientSaved($event)">
+    </app-patient-create-modal>
+}

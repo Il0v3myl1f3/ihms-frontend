@@ -1,11 +1,11 @@
-import { Component } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { Component, ChangeDetectionStrategy } from '@angular/core';
 import { PageHeaderComponent } from '../../shared/page-header/page-header.component';
 
 @Component({
   selector: 'app-about',
-  imports: [CommonModule, PageHeaderComponent],
-  templateUrl: './about.component.html'
+  imports: [PageHeaderComponent],
+  templateUrl: './about.component.html',
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class AboutComponent {
 }

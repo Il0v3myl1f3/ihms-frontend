@@ -1,5 +1,5 @@
-import { Component, signal, inject, ViewChild, OnInit } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { Component, signal, inject, ViewChild, OnInit, ChangeDetectionStrategy } from '@angular/core';
+import { AsyncPipe } from '@angular/common';
 import { RouterLink, RouterLinkActive, Router } from '@angular/router';
 import { LucideAngularModule, Phone, Clock, MapPin, Search, Menu, X } from 'lucide-angular';
 import { Observable } from 'rxjs';
@@ -8,8 +8,9 @@ import { AuthService, User, AuthResponse } from '../../../services/auth.service'
 
 @Component({
   selector: 'app-header',
-  imports: [CommonModule, RouterLink, RouterLinkActive, LucideAngularModule, LoginModalComponent],
-  templateUrl: './header.component.html'
+  imports: [AsyncPipe, RouterLink, RouterLinkActive, LucideAngularModule, LoginModalComponent],
+  templateUrl: './header.component.html',
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class HeaderComponent implements OnInit {
   readonly Phone = Phone;

@@ -1,13 +1,13 @@
-import { Component } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { Component, ChangeDetectionStrategy } from '@angular/core';
 import { SettingsSidebarComponent } from './settings-sidebar/settings-sidebar.component';
 import { AccountSettingsComponent } from './account-settings/account-settings.component';
 
 @Component({
     selector: 'app-dashboard-settings',
-    imports: [CommonModule, SettingsSidebarComponent, AccountSettingsComponent],
+    imports: [SettingsSidebarComponent, AccountSettingsComponent],
     templateUrl: './dashboard-settings.component.html',
-    styleUrl: './dashboard-settings.component.css'
+    styleUrl: './dashboard-settings.component.css',
+    changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class DashboardSettingsComponent {
     activeTab: string = 'Account';

@@ -1,5 +1,4 @@
-import { Component, signal, inject } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { Component, signal, inject, ChangeDetectionStrategy } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { LucideAngularModule, Calendar, Users, SquareArrowOutUpRight, ChevronRight, Brain, Activity, Microscope, Stethoscope, Eye, Heart, Baby, Thermometer, Database, Pill } from 'lucide-angular';
 import { AppointmentsModalComponent } from '../../shared/appointments-modal/appointments-modal.component';
@@ -13,10 +12,13 @@ interface ServiceItem {
   bullets: string[];
 }
 
+import { NgOptimizedImage } from '@angular/common';
+
 @Component({
   selector: 'app-home',
-  imports: [CommonModule, RouterLink, LucideAngularModule, AppointmentsModalComponent],
-  templateUrl: './home.component.html'
+  imports: [RouterLink, LucideAngularModule, AppointmentsModalComponent, NgOptimizedImage],
+  templateUrl: './home.component.html',
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class HomeComponent {
   readonly Calendar = Calendar;

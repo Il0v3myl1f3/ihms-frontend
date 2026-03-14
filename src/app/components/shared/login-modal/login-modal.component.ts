@@ -1,13 +1,13 @@
-import { Component, input, output, inject, OnChanges, SimpleChanges, OnDestroy } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { Component, input, output, inject, OnChanges, SimpleChanges, OnDestroy, ChangeDetectionStrategy } from '@angular/core';
 import { ReactiveFormsModule, FormsModule, FormBuilder, FormGroup, Validators, ValidationErrors } from '@angular/forms';
 import { LucideAngularModule, X } from 'lucide-angular';
 
 @Component({
   selector: 'app-login-modal',
-  imports: [CommonModule, ReactiveFormsModule, FormsModule, LucideAngularModule],
+  imports: [ReactiveFormsModule, FormsModule, LucideAngularModule],
   templateUrl: './login-modal.component.html',
-  styleUrl: './login-modal.component.css'
+  styleUrl: './login-modal.component.css',
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class LoginModalComponent implements OnChanges, OnDestroy {
   isOpen = input(false);

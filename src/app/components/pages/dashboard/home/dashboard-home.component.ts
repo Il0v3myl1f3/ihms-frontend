@@ -1,14 +1,14 @@
-import { Component, OnInit, inject } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { Component, OnInit, inject, ChangeDetectionStrategy } from '@angular/core';
 import { Observable } from 'rxjs';
 import { AuthService, User } from '../../../../services/auth.service';
 import { LucideAngularModule, Users, Stethoscope, CalendarDays, CreditCard, FileText, Activity, ClipboardList, Heart, DoorOpen, BedDouble } from 'lucide-angular';
 
 @Component({
     selector: 'app-dashboard-home',
-    imports: [CommonModule, LucideAngularModule],
+    imports: [LucideAngularModule],
     templateUrl: './dashboard-home.component.html',
-    styleUrls: ['./dashboard-home.component.css']
+    styleUrls: ['./dashboard-home.component.css'],
+    changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class DashboardHomeComponent implements OnInit {
     currentUser$!: Observable<User | null>;

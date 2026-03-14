@@ -1,7 +1,8 @@
-﻿<!-- Modal Overlay -->
-<div *ngIf="isOpen()" class="fixed inset-0 bg-black/50 z-[999] flex items-center justify-center" (click)="onClose()">
+<!-- Modal Overlay -->
+@if (isOpen()) {
+<div class="fixed inset-0 bg-black/50 z-999 flex items-center justify-center" (click)="onClose()">
   <!-- Modal Container -->
-  <div class="bg-white rounded-lg shadow-2xl w-full max-w-md mx-4 z-[1000]" (click)="$event.stopPropagation()">
+  <div class="bg-white rounded-lg shadow-2xl w-full max-w-md mx-4 z-1000" (click)="$event.stopPropagation()">
     <!-- Header -->
     <div class="flex items-center justify-between p-6 border-b border-gray-200">
       <h2 class="text-2xl font-bold text-[#1F2B6C]">Login</h2>
@@ -15,9 +16,11 @@
     <!-- Body -->
     <div class="p-6">
       <!-- Error Message -->
-      <div *ngIf="errorMessage" class="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg">
-        <p class="text-sm text-red-600">{{ errorMessage }}</p>
-      </div>
+      @if (errorMessage) {
+        <div class="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg">
+          <p class="text-sm text-red-600">{{ errorMessage }}</p>
+        </div>
+      }
 
       <!-- Form -->
       <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
@@ -30,10 +33,12 @@
             placeholder="Enter your email"
             class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#159EEC] focus:border-transparent transition-all"
             [class.border-red-500]="emailErrors && loginForm.get('email')?.touched">
-          <div *ngIf="emailErrors && loginForm.get('email')?.touched" class="mt-1 text-sm text-red-600">
-            <p *ngIf="emailErrors['required']">Email is required</p>
-            <p *ngIf="emailErrors['email']">Please enter a valid email</p>
-          </div>
+          @if (emailErrors && loginForm.get('email')?.touched) {
+            <div class="mt-1 text-sm text-red-600">
+              @if (emailErrors['required']) { <p>Email is required</p> }
+              @if (emailErrors['email']) { <p>Please enter a valid email</p> }
+            </div>
+          }
         </div>
 
         <!-- Password Field -->
@@ -45,10 +50,12 @@
             placeholder="Enter your password"
             class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#159EEC] focus:border-transparent transition-all"
             [class.border-red-500]="passwordErrors && loginForm.get('password')?.touched">
-          <div *ngIf="passwordErrors && loginForm.get('password')?.touched" class="mt-1 text-sm text-red-600">
-            <p *ngIf="passwordErrors['required']">Password is required</p>
-            <p *ngIf="passwordErrors['minlength']">Password must be at least 6 characters</p>
-          </div>
+          @if (passwordErrors && loginForm.get('password')?.touched) {
+            <div class="mt-1 text-sm text-red-600">
+              @if (passwordErrors['required']) { <p>Password is required</p> }
+              @if (passwordErrors['minlength']) { <p>Password must be at least 6 characters</p> }
+            </div>
+          }
         </div>
 
         <!-- Submit Button -->
@@ -67,4 +74,4 @@
     </div>
   </div>
 </div>
-
+}

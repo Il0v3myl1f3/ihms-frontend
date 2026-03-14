@@ -1,11 +1,15 @@
 <div class="flex flex-col gap-1 w-full bg-white">
-  <ng-container *ngFor="let tab of tabs">
+  @for (tab of tabs; track tab) {
     <button
       (click)="setTab(tab)"
-      [ngClass]="activeTab() === tab ? 'bg-blue-50 text-blue-600 font-medium' : 'text-gray-500 hover:bg-gray-50'"
+      [class.bg-blue-50]="activeTab() === tab"
+      [class.text-blue-600]="activeTab() === tab"
+      [class.font-medium]="activeTab() === tab"
+      [class.text-gray-500]="activeTab() !== tab"
+      [class.hover:bg-gray-50]="activeTab() !== tab"
       class="w-full text-left px-4 py-2.5 rounded-md text-sm transition-colors cursor-pointer"
     >
       {{ tab }}
     </button>
-  </ng-container>
+  }
 </div>

@@ -1,12 +1,12 @@
-import { Component } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { Component, ChangeDetectionStrategy } from '@angular/core';
 import { LucideAngularModule, Phone, MapPin, Mail, Clock } from 'lucide-angular';
 import { PageHeaderComponent } from '../../shared/page-header/page-header.component';
 
 @Component({
   selector: 'app-contact',
-  imports: [CommonModule, LucideAngularModule, PageHeaderComponent],
-  templateUrl: './contact.component.html'
+  imports: [LucideAngularModule, PageHeaderComponent],
+  templateUrl: './contact.component.html',
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class ContactComponent {
   readonly Phone = Phone;

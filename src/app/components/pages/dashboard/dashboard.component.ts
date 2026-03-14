@@ -1,5 +1,4 @@
-import { Component, OnInit, inject } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { Component, OnInit, inject, ChangeDetectionStrategy } from '@angular/core';
 import { Router } from '@angular/router';
 import { AuthService, User } from '../../../services/auth.service';
 import { SidebarComponent } from '../../shared/sidebar/sidebar.component';
@@ -9,9 +8,10 @@ import { RouterModule } from '@angular/router';
 
 @Component({
   selector: 'app-dashboard',
-  imports: [CommonModule, SidebarComponent, LucideAngularModule, RouterModule],
+  imports: [SidebarComponent, LucideAngularModule, RouterModule],
   templateUrl: './dashboard.component.html',
   styleUrl: './dashboard.component.css',
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class DashboardComponent implements OnInit {
   readonly Search = Search;

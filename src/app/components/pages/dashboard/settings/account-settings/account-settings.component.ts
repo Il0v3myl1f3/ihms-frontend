@@ -1,13 +1,13 @@
-import { Component, OnInit, inject } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { Component, OnInit, inject, ChangeDetectionStrategy } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { LucideAngularModule, Eye, EyeOff } from 'lucide-angular';
 
 @Component({
     selector: 'app-account-settings',
-    imports: [CommonModule, ReactiveFormsModule, LucideAngularModule],
+    imports: [ReactiveFormsModule, LucideAngularModule],
     templateUrl: './account-settings.component.html',
-    styleUrl: './account-settings.component.css'
+    styleUrl: './account-settings.component.css',
+    changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class AccountSettingsComponent implements OnInit {
     // Icons

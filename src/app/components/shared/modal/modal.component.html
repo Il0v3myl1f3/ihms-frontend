@@ -1,5 +1,6 @@
 <!-- Backdrop -->
-<div *ngIf="isOpen()"
+@if (isOpen()) {
+<div
     class="modal-backdrop fixed inset-0 z-50 flex items-center justify-center bg-black/40 transition-opacity"
     (click)="onBackdropClick($event)">
 
@@ -29,3 +30,4 @@
 
     </div>
 </div>
+}

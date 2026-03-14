@@ -1,14 +1,14 @@
-import { Component, input, output, inject, OnInit, OnChanges, SimpleChanges } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { Component, input, output, inject, OnInit, OnChanges, SimpleChanges, ChangeDetectionStrategy } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ModalComponent } from '../../../../shared/modal/modal.component';
 import { Patient } from '../patient-table/patient-table.component';
 
 @Component({
     selector: 'app-patient-create-modal',
-    imports: [CommonModule, ReactiveFormsModule, ModalComponent],
+    imports: [ReactiveFormsModule, ModalComponent],
     templateUrl: './patient-create-modal.component.html',
-    styleUrl: './patient-create-modal.component.css'
+    styleUrl: './patient-create-modal.component.css',
+    changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class PatientCreateModalComponent implements OnInit, OnChanges {
     isOpen = input(false);

@@ -1,5 +1,4 @@
-import { Component, OnInit, input, output } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { Component, OnInit, input, output, ChangeDetectionStrategy, signal, computed } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { LucideAngularModule, Pencil, Trash2, MoreHorizontal, Search, Filter } from 'lucide-angular';
 
@@ -17,9 +16,10 @@ export interface Patient {
 
 @Component({
     selector: 'app-patient-table',
-    imports: [CommonModule, FormsModule, LucideAngularModule],
+    imports: [FormsModule, LucideAngularModule],
     templateUrl: './patient-table.component.html',
     styleUrl: './patient-table.component.css',
+    changeDetection: ChangeDetectionStrategy.OnPush,
     host: {
         '(document:click)': 'closeDropdown()'
     }
@@ -39,8 +39,8 @@ export class PatientTableComponent implements OnInit {
     activeDropdownId: number | null = null;
 
     selectAll = false;
-    currentPage = 1;
-    readonly pageSize = 9;
+    currentPage = signal(1);
+    readonly pageSize = 10;
 
     closeDropdown() {
         this.activeDropdownId = null;
@@ -66,45 +66,46 @@ export class PatientTableComponent implements OnInit {
         return this.patients().some(p => p.selected);
     }
 
-    get totalPages(): number {
+    totalPages = computed(() => {
         return Math.ceil(this.patients().length / this.pageSize);
-    }
+    });
 
-    get paginatedPatients(): Patient[] {
-        const startIndex = (this.currentPage - 1) * this.pageSize;
+    paginatedPatients = computed(() => {
+        const startIndex = (this.currentPage() - 1) * this.pageSize;
         return this.patients().slice(startIndex, startIndex + this.pageSize);
-    }
+    });
 
-    get visiblePages(): (number | string)[] {
-        const total = this.totalPages;
+    visiblePages = computed(() => {
+        const total = this.totalPages();
+        const current = this.currentPage();
         if (total <= 5) {
             return Array.from({ length: total }, (_, i) => i + 1);
         }
 
-        if (this.currentPage <= 3) {
+        if (current <= 3) {
             return [1, 2, 3, '...', total];
-        } else if (this.currentPage >= total - 2) {
+        } else if (current >= total - 2) {
             return [1, '...', total - 2, total - 1, total];
         } else {
-            return [1, '...', this.currentPage, '...', total];
+            return [1, '...', current, '...', total];
         }
-    }
+    });
 
     goToPage(page: number | string): void {
-        if (typeof page === 'number' && page >= 1 && page <= this.totalPages && page !== this.currentPage) {
-            this.currentPage = page;
+        if (typeof page === 'number' && page >= 1 && page <= this.totalPages() && page !== this.currentPage()) {
+            this.currentPage.set(page);
         }
     }
 
     nextPage(): void {
-        if (this.currentPage < this.totalPages) {
-            this.currentPage++;
+        if (this.currentPage() < this.totalPages()) {
+            this.currentPage.update(p => p + 1);
         }
     }
 
     prevPage(): void {
-        if (this.currentPage > 1) {
-            this.currentPage--;
+        if (this.currentPage() > 1) {
+            this.currentPage.update(p => p - 1);
         }
     }
 
