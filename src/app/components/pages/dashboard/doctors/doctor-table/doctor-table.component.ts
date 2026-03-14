@@ -28,7 +28,8 @@ export class DoctorTableComponent implements OnInit {
     readonly Pencil = Pencil;
     readonly Trash2 = Trash2;
 
-    activeDropdownId: number | null = null;
+    activeItem: Doctor | null = null;
+    dropdownPos = { top: 0, right: 0 };
     currentPage = signal(1);
     pageSize = signal(7);
     searchQuery = signal('');
@@ -126,12 +127,23 @@ export class DoctorTableComponent implements OnInit {
     }
 
     closeDropdown(): void {
-        this.activeDropdownId = null;
+        this.activeItem = null;
     }
 
-    toggleDropdown(docId: number, event: Event): void {
+    toggleDropdown(doc: Doctor, event: Event): void {
         event.stopPropagation();
-        this.activeDropdownId = this.activeDropdownId === docId ? null : docId;
+        if (this.activeItem?.id === doc.id) {
+            this.activeItem = null;
+            return;
+        }
+        const btn = (event.currentTarget as HTMLElement).getBoundingClientRect();
+        this.dropdownPos = { top: btn.bottom + 4, right: window.innerWidth - btn.right };
+        this.activeItem = doc;
+    }
+
+    @HostListener('window:scroll')
+    onWindowScroll(): void {
+        this.activeItem = null;
     }
 
     getAvatarInitialsName(name: string): string {

@@ -13,7 +13,7 @@
     </div>
 
     <!-- Table Card -->
-    <div class="bg-white rounded-xl border border-gray-200 overflow-hidden flex flex-col shadow-sm">
+    <div class="bg-white rounded-xl border border-gray-200 flex flex-col shadow-sm">
         <app-doctor-table [doctors]="doctors()" (editDoctor)="handleEditDoctor($event)"
             (deleteDoctor)="handleDeleteDoctor($event)">
         </app-doctor-table>

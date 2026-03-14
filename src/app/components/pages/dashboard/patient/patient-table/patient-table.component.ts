@@ -1,4 +1,4 @@
-import { Component, OnInit, input, output, ChangeDetectionStrategy, signal, computed, HostListener, effect, untracked } from '@angular/core';
+import { Component, OnInit, OnDestroy, input, output, ChangeDetectionStrategy, signal, computed, HostListener, effect, untracked } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { LucideAngularModule, Pencil, Trash2, MoreHorizontal, Search, Filter, ChevronLeft, ChevronRight } from 'lucide-angular';
 
@@ -24,7 +24,7 @@ export interface Patient {
         '(document:click)': 'closeDropdown()'
     }
 })
-export class PatientTableComponent implements OnInit {
+export class PatientTableComponent implements OnInit, OnDestroy {
     patients = input<Patient[]>([]);
     editPatient = output<Patient>();
     deletePatient = output<Patient>();
@@ -38,7 +38,8 @@ export class PatientTableComponent implements OnInit {
     readonly ChevronLeft = ChevronLeft;
     readonly ChevronRight = ChevronRight;
 
-    activeDropdownId: number | null = null;
+    activeItem: Patient | null = null;
+    dropdownPos = { top: 0, right: 0 };
 
     selectAll = false;
     currentPage = signal(1);
@@ -84,12 +85,25 @@ export class PatientTableComponent implements OnInit {
     }
 
     closeDropdown() {
-        this.activeDropdownId = null;
+        this.activeItem = null;
     }
 
-    toggleDropdown(patientId: number, event: Event): void {
+    toggleDropdown(patient: Patient, event: Event): void {
         event.stopPropagation();
-        this.activeDropdownId = this.activeDropdownId === patientId ? null : patientId;
+        if (this.activeItem?.id === patient.id) {
+            this.activeItem = null;
+            return;
+        }
+        const btn = (event.currentTarget as HTMLElement).getBoundingClientRect();
+        this.dropdownPos = { top: btn.bottom + 4, right: window.innerWidth - btn.right };
+        this.activeItem = patient;
+    }
+
+    ngOnDestroy(): void {}
+
+    @HostListener('window:scroll')
+    onWindowScroll(): void {
+        this.activeItem = null;
     }
 
     ngOnInit(): void {
