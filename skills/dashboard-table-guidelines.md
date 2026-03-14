@@ -53,6 +53,13 @@ Every dashboard page should follow this structural hierarchy:
   - Left: `Page X of Y` in `text-sm font-medium text-gray-700`.
   - Right: Navigation buttons using `Lucide` icons.
 - **Active State**: Use `bg-[#159EEC] text-white border-[#159EEC]` for the current page number.
+- **Responsive Row Scaling**: Implement dynamic `pageSize` based on breakpoints:
+  - **> 1920px (Ultra HD)**: 10 rows per page.
+  - **> 1024px (Standard)**: 7 rows per page.
+  - **<= 1024px (Tablet/Small)**: 5 rows per page.
+- **UX Range Limits**: To handle large numbers of pages, visually limit the displayed numbers using ellipses (`...`). Show a maximum of 5 distinct elements (e.g., `1, ..., 4, ..., 10`) at a time to prevent UI clutter.
+- **Bounds Safety**: Ensure that when a window resize alters the `totalPages`, logic exists to reset the `currentPage` to `1` if the user is suddenly left on an out-of-bounds page.
+- **State Updates**: Handle dynamic resizes efficiently via an Angular `@HostListener('window:resize')`.
 
 ## Code Best Practices
 - **Performance**: Use Angular `signal()` and `computed()` for state management (page data, dropdown states).
