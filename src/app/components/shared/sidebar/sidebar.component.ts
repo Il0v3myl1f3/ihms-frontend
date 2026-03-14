@@ -1,4 +1,4 @@
-import { Component, signal, OnInit, OnDestroy, inject, ChangeDetectionStrategy } from '@angular/core';
+import { Component, OnInit, OnDestroy, inject, ChangeDetectionStrategy, input, output } from '@angular/core';
 import { Router, RouterModule } from '@angular/router';
 import {
     LucideAngularModule,
@@ -46,8 +46,9 @@ export class SidebarComponent implements OnInit, OnDestroy {
     readonly LogOut = LogOut;
     readonly HelpCircle = HelpCircle;
 
-    // State
-    collapsed = signal(false);
+    // State (Managed by parent)
+    collapsed = input(false);
+    onToggle = output<void>();
 
     // Full menu definition with role restrictions
     private readonly allMenuSections: MenuSection[] = [
@@ -99,7 +100,7 @@ export class SidebarComponent implements OnInit, OnDestroy {
     }
 
     toggleCollapse(): void {
-        this.collapsed.update((v) => !v);
+        this.onToggle.emit();
     }
 
     logout(): void {

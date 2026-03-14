@@ -1,6 +1,6 @@
-import { Component, OnInit, input, output, ChangeDetectionStrategy, signal, computed } from '@angular/core';
+import { Component, OnInit, OnDestroy, input, output, ChangeDetectionStrategy, signal, computed, HostListener, effect, untracked } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { LucideAngularModule, Pencil, Trash2, MoreHorizontal, Search, Filter } from 'lucide-angular';
+import { LucideAngularModule, Pencil, Trash2, MoreHorizontal, Search, Filter, ChevronLeft, ChevronRight } from 'lucide-angular';
 
 export interface Patient {
     id: number;
@@ -24,7 +24,7 @@ export interface Patient {
         '(document:click)': 'closeDropdown()'
     }
 })
-export class PatientTableComponent implements OnInit {
+export class PatientTableComponent implements OnInit, OnDestroy {
     patients = input<Patient[]>([]);
     editPatient = output<Patient>();
     deletePatient = output<Patient>();
@@ -35,23 +35,79 @@ export class PatientTableComponent implements OnInit {
     readonly MoreHorizontal = MoreHorizontal;
     readonly Search = Search;
     readonly Filter = Filter;
+    readonly ChevronLeft = ChevronLeft;
+    readonly ChevronRight = ChevronRight;
 
-    activeDropdownId: number | null = null;
+    activeItem: Patient | null = null;
+    dropdownPos = { top: 0, right: 0 };
 
     selectAll = false;
     currentPage = signal(1);
-    readonly pageSize = 10;
+    pageSize = signal(7);
+    searchQuery = signal('');
 
-    closeDropdown() {
-        this.activeDropdownId = null;
+    constructor() {
+        // Reset to page 1 when search query changes
+        effect(() => {
+            this.searchQuery();
+            untracked(() => this.currentPage.set(1));
+        });
     }
 
-    toggleDropdown(patientId: number, event: Event): void {
+    filteredPatients = computed(() => {
+        const query = this.searchQuery().toLowerCase().trim();
+        if (!query) return this.patients();
+
+        return this.patients().filter(p =>
+            p.name.toLowerCase().includes(query) ||
+            p.gender.toLowerCase().includes(query) ||
+            (p.address?.toLowerCase().includes(query)) ||
+            (p.phone?.toLowerCase().includes(query)) ||
+            (p.bloodType?.toLowerCase().includes(query)) ||
+            p.no.toString().includes(query)
+        );
+    });
+
+    @HostListener('window:resize')
+    onResize() {
+        this.updatePageSize();
+    }
+
+    private updatePageSize(): void {
+        const width = window.innerWidth;
+        if (width > 1920) {
+            this.pageSize.set(10);
+        } else if (width > 1024) {
+            this.pageSize.set(7);
+        } else {
+            this.pageSize.set(5);
+        }
+    }
+
+    closeDropdown() {
+        this.activeItem = null;
+    }
+
+    toggleDropdown(patient: Patient, event: Event): void {
         event.stopPropagation();
-        this.activeDropdownId = this.activeDropdownId === patientId ? null : patientId;
+        if (this.activeItem?.id === patient.id) {
+            this.activeItem = null;
+            return;
+        }
+        const btn = (event.currentTarget as HTMLElement).getBoundingClientRect();
+        this.dropdownPos = { top: btn.bottom + 4, right: window.innerWidth - btn.right };
+        this.activeItem = patient;
+    }
+
+    ngOnDestroy(): void {}
+
+    @HostListener('window:scroll')
+    onWindowScroll(): void {
+        this.activeItem = null;
     }
 
     ngOnInit(): void {
+        this.updatePageSize();
     }
 
     toggleSelectAll(): void {
@@ -67,12 +123,12 @@ export class PatientTableComponent implements OnInit {
     }
 
     totalPages = computed(() => {
-        return Math.ceil(this.patients().length / this.pageSize);
+        return Math.max(1, Math.ceil(this.filteredPatients().length / this.pageSize()));
     });
 
     paginatedPatients = computed(() => {
-        const startIndex = (this.currentPage() - 1) * this.pageSize;
-        return this.patients().slice(startIndex, startIndex + this.pageSize);
+        const startIndex = (this.currentPage() - 1) * this.pageSize();
+        return this.filteredPatients().slice(startIndex, startIndex + this.pageSize());
     });
 
     visiblePages = computed(() => {

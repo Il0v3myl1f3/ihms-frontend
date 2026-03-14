@@ -4,7 +4,7 @@
     <div class="flex items-center justify-between mb-6">
         <div>
             <h2 class="text-display-2 text-[#1F2B6C] tracking-tight mb-1">List Doctors</h2>
-            <p class="text-xs text-gray-500">There is the latest update for the last 7 days, check now.</p>
+            <p class="text-sm text-gray-500">There is the latest update for the last 7 days, check now.</p>
         </div>
         <button (click)="openAddModal()"
             class="bg-[#159EEC] hover:bg-[#1282C4] text-white px-5 py-2.5 rounded-lg text-sm font-medium transition-colors cursor-pointer">
@@ -13,134 +13,10 @@
     </div>
 
     <!-- Table Card -->
-    <div class="bg-white rounded-xl border border-gray-200 overflow-hidden flex flex-col shadow-sm">
-
-        <!-- Card Toolbar -->
-        <div class="px-5 py-4 border-b border-gray-100 flex items-center justify-between">
-            <div class="text-sm font-semibold text-gray-600">Doctors</div>
-            <div class="flex items-center gap-3">
-                <!-- Search -->
-                <div class="relative w-64">
-                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                        <lucide-icon [img]="Search" class="h-4 w-4 text-gray-400"></lucide-icon>
-                    </div>
-                    <input type="text" placeholder="Search"
-                        class="block w-full pl-9 pr-3 py-2 border border-gray-200 rounded-lg text-sm placeholder-gray-400 focus:outline-none focus:ring-1 focus:ring-[#159EEC] focus:border-[#159EEC] transition-all">
-                </div>
-                <!-- Filter Button -->
-                <button
-                    class="flex items-center justify-center p-2 border border-gray-200 rounded-lg text-gray-500 hover:bg-gray-50 hover:text-[#159EEC] transition-colors cursor-pointer">
-                    <lucide-icon [img]="Filter" class="w-4 h-4"></lucide-icon>
-                </button>
-            </div>
-        </div>
-
-        <!-- Table -->
-        <div class="overflow-x-auto">
-            <table class="w-full text-left border-collapse">
-                <thead class="bg-gray-50/50 border-b border-gray-100">
-                    <tr>
-                        <th class="px-5 py-3 text-xs font-medium text-gray-400 w-10">
-                            <input type="checkbox"
-                                class="rounded border-gray-300 text-[#159EEC] shadow-sm focus:border-[#159EEC] focus:ring focus:ring-[#159EEC] focus:ring-opacity-50">
-                        </th>
-                        <th class="px-2 py-3 text-xs font-medium text-gray-400 whitespace-nowrap">No</th>
-                        <th class="px-5 py-3 text-xs font-medium text-gray-400 whitespace-nowrap">Doctor Name</th>
-                        <th class="px-5 py-3 text-xs font-medium text-gray-400 whitespace-nowrap">Specialization</th>
-                        <th class="px-5 py-3 text-xs font-medium text-gray-400 whitespace-nowrap">Phone Number</th>
-                        <th class="px-5 py-3 text-xs font-medium text-gray-400 whitespace-nowrap">Availability Status</th>
-                        <th class="px-5 py-3 text-xs font-medium text-gray-400 w-10"></th>
-                    </tr>
-                </thead>
-                <tbody class="divide-y divide-gray-100 text-sm">
-                    @for (doc of paginatedDoctors(); track doc.id) {
-                        <tr class="hover:bg-gray-50/50 transition-colors group">
-                            <td class="px-5 py-4">
-                                <input type="checkbox"
-                                    class="rounded border-gray-300 text-[#159EEC] shadow-sm focus:border-[#159EEC] focus:ring focus:ring-[#159EEC] focus:ring-opacity-50 cursor-pointer">
-                            </td>
-                            <td class="px-2 py-4 font-medium text-gray-700">{{ doc.id }}</td>
-                            <td class="px-5 py-4">
-                                <div class="flex items-center gap-3">
-                                    <img src="https://ui-avatars.com/api/?name={{ getAvatarInitialsName(doc.name) }}&background=E8EFFF&color=1F2B6C&rounded=true"
-                                        alt="Avatar" class="w-8 h-8 rounded-full">
-                                    <span class="font-medium text-gray-900">{{ doc.name }}</span>
-                                </div>
-                            </td>
-                            <td class="px-5 py-4 text-gray-600">{{ doc.specialty }}</td>
-                            <td class="px-5 py-4 text-gray-600 font-medium">{{ doc.phone }}</td>
-                            <td class="px-5 py-4">
-                                <span
-                                    class="inline-flex items-center px-2.5 py-1 rounded-md text-[11px] font-semibold tracking-wide"
-                                    [class.bg-emerald-50]="doc.availability === 'Available'"
-                                    [class.text-emerald-600]="doc.availability === 'Available'"
-                                    [class.bg-rose-50]="doc.availability === 'On Leave'"
-                                    [class.text-rose-600]="doc.availability === 'On Leave'">
-                                    {{ doc.availability }}
-                                </span>
-                            </td>
-                            <td class="px-5 py-4 text-right">
-                                <button
-                                    class="text-gray-400 hover:text-[#159EEC] transition-colors opacity-0 group-hover:opacity-100">
-                                    <lucide-icon [img]="MoreHorizontal" class="w-5 h-5"></lucide-icon>
-                                </button>
-                            </td>
-                        </tr>
-                    }
-                </tbody>
-            </table>
-        </div>
-
-        <!-- Pagination Footer -->
-        <div class="mt-auto px-5 py-4 border-t border-gray-100 flex items-center justify-between">
-            <span class="text-sm font-medium text-gray-700 block">Page {{ currentPage() }} of {{ totalPages() }}</span>
-            <div class="flex items-center gap-1.5">
-                <!-- Previous Button -->
-                <button (click)="prevPage()" [disabled]="currentPage() === 1"
-                    class="w-8 h-8 flex items-center justify-center rounded-md border border-gray-200 transition-colors"
-                    [class.text-gray-300]="currentPage() === 1"
-                    [class.bg-gray-50]="currentPage() === 1"
-                    [class.cursor-not-allowed]="currentPage() === 1"
-                    [class.text-gray-500]="currentPage() !== 1"
-                    [class.hover:bg-gray-50]="currentPage() !== 1"
-                    [class.cursor-pointer]="currentPage() !== 1">
-                    <lucide-icon [img]="ChevronLeft" class="w-4 h-4"></lucide-icon>
-                </button>
-
-                <!-- Page Numbers -->
-                @for (page of visiblePages(); track $index) {
-                    @if (page !== '...') {
-                        <button (click)="goToPage(page)"
-                            class="w-8 h-8 flex items-center justify-center rounded-md border text-sm font-medium transition-colors cursor-pointer"
-                            [class.bg-[#159EEC]]="page === currentPage()"
-                            [class.text-white]="page === currentPage()"
-                            [class.border-[#159EEC]]="page === currentPage()"
-                            [class.border-gray-200]="page !== currentPage()"
-                            [class.text-gray-500]="page !== currentPage()"
-                            [class.hover:bg-gray-50]="page !== currentPage()">
-                            {{ page }}
-                        </button>
-                    } @else {
-                        <div class="w-8 h-8 flex items-center justify-center text-gray-400 text-sm">
-                            ...
-                        </div>
-                    }
-                }
-
-                <!-- Next Button -->
-                <button (click)="nextPage()" [disabled]="currentPage() === totalPages()"
-                    class="w-8 h-8 flex items-center justify-center rounded-md border border-gray-200 transition-colors"
-                    [class.text-gray-300]="currentPage() === totalPages()"
-                    [class.bg-gray-50]="currentPage() === totalPages()"
-                    [class.cursor-not-allowed]="currentPage() === totalPages()"
-                    [class.text-gray-500]="currentPage() !== totalPages()"
-                    [class.hover:bg-gray-50]="currentPage() !== totalPages()"
-                    [class.cursor-pointer]="currentPage() !== totalPages()">
-                    <lucide-icon [img]="ChevronRight" class="w-4 h-4"></lucide-icon>
-                </button>
-            </div>
-        </div>
-
+    <div class="bg-white rounded-xl border border-gray-200 flex flex-col shadow-sm">
+        <app-doctor-table [doctors]="doctors()" (editDoctor)="handleEditDoctor($event)"
+            (deleteDoctor)="handleDeleteDoctor($event)">
+        </app-doctor-table>
     </div>
 
     <!-- Custom Reusable Modal for Add Doctor -->

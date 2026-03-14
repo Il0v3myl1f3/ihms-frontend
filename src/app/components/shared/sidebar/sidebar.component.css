@@ -8,6 +8,21 @@
   width: 72px;
 }
 
+/* Mobile & Tablet: Sidebar off-canvas/hidden by default */
+@media (max-width: 1023px) {
+  .sidebar {
+    transform: translateX(-100%);
+    pointer-events: none;
+    opacity: 0;
+  }
+
+  .sidebar--active {
+    transform: translateX(0);
+    pointer-events: auto;
+    opacity: 1;
+  }
+}
+
 /* Menu item base */
 .sidebar-item {
   padding: 10px 12px;
@@ -25,9 +40,7 @@
   box-shadow: 0 4px 12px rgba(21, 158, 236, 0.35);
 }
 
-.sidebar-item--active lucide-icon {
-  color: white !important;
-}
+
 
 .sidebar-item--active span {
   color: white !important;
@@ -38,8 +51,13 @@
 }
 
 /* Scrollbar styling */
+nav {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(31, 43, 108, 0.1) transparent;
+}
+
 nav::-webkit-scrollbar {
-  width: 4px;
+  width: 3px;
 }
 
 nav::-webkit-scrollbar-track {
@@ -47,8 +65,13 @@ nav::-webkit-scrollbar-track {
 }
 
 nav::-webkit-scrollbar-thumb {
-  background-color: rgba(191, 210, 248, 0.5);
+  background-color: rgba(31, 43, 108, 0.05);
   border-radius: 10px;
+  transition: background-color 0.2s;
+}
+
+nav:hover::-webkit-scrollbar-thumb {
+  background-color: rgba(31, 43, 108, 0.15);
 }
 
 /* Smooth transition for host */

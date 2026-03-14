@@ -1,4 +1,4 @@
-import { Component, OnInit, inject, ChangeDetectionStrategy } from '@angular/core';
+import { Component, OnInit, inject, ChangeDetectionStrategy, signal } from '@angular/core';
 import { Router } from '@angular/router';
 import { AuthService, User } from '../../../services/auth.service';
 import { SidebarComponent } from '../../shared/sidebar/sidebar.component';
@@ -16,6 +16,9 @@ import { RouterModule } from '@angular/router';
 export class DashboardComponent implements OnInit {
   readonly Search = Search;
   readonly Bell = Bell;
+
+  isSidebarCollapsed = signal(false);
+
   currentUser$!: Observable<User | null>;
   currentUser: User | null = null;
 
@@ -30,5 +33,9 @@ export class DashboardComponent implements OnInit {
         this.router.navigate(['/']);
       }
     });
+  }
+
+  toggleSidebar(): void {
+    this.isSidebarCollapsed.update(v => !v);
   }
 }
