@@ -1,6 +1,6 @@
 import { Component, OnInit, input, output, ChangeDetectionStrategy, signal, computed } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { LucideAngularModule, Pencil, Trash2, MoreHorizontal, Search, Filter } from 'lucide-angular';
+import { LucideAngularModule, Pencil, Trash2, MoreHorizontal, Search, Filter, ChevronLeft, ChevronRight } from 'lucide-angular';
 
 export interface Patient {
     id: number;
@@ -35,6 +35,8 @@ export class PatientTableComponent implements OnInit {
     readonly MoreHorizontal = MoreHorizontal;
     readonly Search = Search;
     readonly Filter = Filter;
+    readonly ChevronLeft = ChevronLeft;
+    readonly ChevronRight = ChevronRight;
 
     activeDropdownId: number | null = null;
 
