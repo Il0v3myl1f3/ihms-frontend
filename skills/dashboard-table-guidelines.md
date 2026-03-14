@@ -61,7 +61,60 @@ Every dashboard page should follow this structural hierarchy:
 - **Bounds Safety**: Ensure that when a window resize alters the `totalPages`, logic exists to reset the `currentPage` to `1` if the user is suddenly left on an out-of-bounds page.
 - **State Updates**: Handle dynamic resizes efficiently via an Angular `@HostListener('window:resize')`.
 
-## Code Best Practices
-- **Performance**: Use Angular `signal()` and `computed()` for state management (page data, dropdown states).
-- **Icons**: Always import icons individually from `lucide-angular` and expose them as properties in the component.
-- **Clean Flow**: Use the modern Angular `@for` and `@if` control flow syntax.
+## Reusable Search Implementation
+
+To implement search in any dashboard table, follow this reactive signal-based pattern:
+
+### 1. Component Logic (.ts)
+Add a `searchQuery` signal, a `filteredItems` computed signal, and an `effect` to reset the current page when the search query changes.
+
+```ts
+// 1. Signal for the query
+searchQuery = signal('');
+
+// 2. Computed for filtered data
+filteredItems = computed(() => {
+  const query = this.searchQuery().toLowerCase().trim();
+  const rawItems = this.items(); // The raw input() data
+  if (!query) return rawItems;
+
+  return rawItems.filter(item =>
+    // List all searchable fields
+    ['field1', 'field2', 'field3'].some(field =>
+      String(item[field] ?? '').toLowerCase().includes(query)
+    )
+  );
+});
+
+// 3. Reset pagination on search
+constructor() {
+  effect(() => {
+    this.searchQuery(); // track the query
+    untracked(() => this.currentPage.set(1));
+  });
+}
+```
+
+### 2. Template Integration (.html)
+Bind the search `<input>` directly to the `searchQuery` signal using the `(input)` event.
+
+```html
+<input type="text" 
+       placeholder="Search"
+       (input)="searchQuery.set($any($event.target).value)"
+       class="...">
+```
+
+### 3. Pagination Chaining
+Ensure that `totalPages` and `paginatedItems` derive their state from `filteredItems()` instead of the raw input data.
+
+```ts
+totalPages = computed(() => {
+  return Math.max(1, Math.ceil(this.filteredItems().length / this.pageSize()));
+});
+
+paginatedItems = computed(() => {
+  const startIndex = (this.currentPage() - 1) * this.pageSize();
+  return this.filteredItems().slice(startIndex, startIndex + this.pageSize());
+});
+```
