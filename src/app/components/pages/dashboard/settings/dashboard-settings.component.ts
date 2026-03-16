@@ -1,4 +1,5 @@
-import { Component, ChangeDetectionStrategy } from '@angular/core';
+import { Component, ChangeDetectionStrategy, inject } from '@angular/core';
+import { Router } from '@angular/router';
 import { SettingsSidebarComponent } from './settings-sidebar/settings-sidebar.component';
 import { AccountSettingsComponent } from './account-settings/account-settings.component';
 
@@ -11,8 +12,18 @@ import { AccountSettingsComponent } from './account-settings/account-settings.co
 })
 export class DashboardSettingsComponent {
     activeTab: string = 'Account';
+    
+    private router = inject(Router);
 
     onTabChange(tab: string) {
         this.activeTab = tab;
+    }
+
+    saveSettings() {
+        alert('Settings saved successfully!');
+    }
+
+    cancelSettings() {
+        alert('Changes discarded!');
     }
 }
