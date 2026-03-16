@@ -40,47 +40,82 @@
 
 <!-- Table Body (Scrollable) -->
 <div class="flex-auto overflow-x-auto overflow-y-auto w-full">
-    <table class="w-full text-left min-w-[1000px] border-collapse">
+    <table class="w-full text-left min-w-[1000px] border-collapse table-fixed">
         <thead class="bg-gray-50/0 border-b border-gray-100">
             <tr>
-                <th class="px-4 py-4 text-[12px] font-semibold text-gray-400 whitespace-nowrap pt-5 w-20">
+                <th
+                    class="px-4 py-4 text-[12px] font-semibold text-gray-400 whitespace-nowrap pt-5 w-[7%] min-w-[4rem]">
                     <div class="flex items-center gap-3">
                         <input type="checkbox" [(ngModel)]="selectAll" (change)="toggleSelectAll()"
                             class="rounded border-gray-300 text-[#159EEC] focus:border-[#159EEC] focus:ring focus:ring-[#159EEC] focus:ring-opacity-50 cursor-pointer" />
-                        <span class="flex items-center gap-1 group/th cursor-pointer pl-1">
+                        <span (click)="handleSort('no')"
+                            class="flex items-center gap-1 group/th cursor-pointer pl-1 select-none hover:text-[#1F2B6C] transition-colors"
+                            [class.text-[#1F2B6C]]="sortColumn() === 'no'">
                             Nr
-                            <lucide-icon [img]="ChevronDown" class="w-3 h-3 text-gray-300"></lucide-icon>
+                            <lucide-icon *ngIf="sortColumn() !== 'no'" [img]="ChevronDown"
+                                class="w-3 h-3 text-gray-300"></lucide-icon>
+                            <lucide-icon *ngIf="sortColumn() === 'no' && sortDirection() === 'desc'" [img]="ChevronDown"
+                                class="w-3 h-3 text-[#1F2B6C]"></lucide-icon>
+                            <lucide-icon *ngIf="sortColumn() === 'no' && sortDirection() === 'asc'" [img]="ChevronUp"
+                                class="w-3 h-3 text-[#1F2B6C]"></lucide-icon>
                         </span>
                     </div>
                 </th>
-                <th class="px-4 py-4 text-[12px] font-semibold text-gray-400 whitespace-nowrap pt-5">
-                    <div class="flex items-center gap-1 group/th cursor-pointer pl-1">
+                <th class="px-4 py-4 text-[12px] font-semibold text-gray-400 whitespace-nowrap pt-5 w-[25%]">
+                    <div (click)="handleSort('name')"
+                        class="flex items-center gap-1 group/th cursor-pointer pl-1 select-none hover:text-[#1F2B6C] transition-colors"
+                        [class.text-[#1F2B6C]]="sortColumn() === 'name'">
                         Name
-                        <lucide-icon [img]="ChevronDown" class="w-3 h-3 text-gray-300"></lucide-icon>
+                        <lucide-icon *ngIf="sortColumn() !== 'name'" [img]="ChevronDown"
+                            class="w-3 h-3 text-gray-300"></lucide-icon>
+                        <lucide-icon *ngIf="sortColumn() === 'name' && sortDirection() === 'desc'" [img]="ChevronDown"
+                            class="w-3 h-3 text-[#1F2B6C]"></lucide-icon>
+                        <lucide-icon *ngIf="sortColumn() === 'name' && sortDirection() === 'asc'" [img]="ChevronUp"
+                            class="w-3 h-3 text-[#1F2B6C]"></lucide-icon>
                     </div>
                 </th>
-                <th class="px-4 py-4 text-[12px] font-semibold text-gray-400 whitespace-nowrap pt-5">
-                    <div class="flex items-center gap-1 group/th cursor-pointer">
+                <th class="px-4 py-4 text-[12px] font-semibold text-gray-400 whitespace-nowrap pt-5 w-[10%]">
+                    <div (click)="handleSort('gender')"
+                        class="flex items-center gap-1 group/th cursor-pointer select-none hover:text-[#1F2B6C] transition-colors"
+                        [class.text-[#1F2B6C]]="sortColumn() === 'gender'">
                         Gender
-                        <lucide-icon [img]="ChevronDown" class="w-3 h-3 text-gray-300"></lucide-icon>
+                        <lucide-icon *ngIf="sortColumn() !== 'gender'" [img]="ChevronDown"
+                            class="w-3 h-3 text-gray-300"></lucide-icon>
+                        <lucide-icon *ngIf="sortColumn() === 'gender' && sortDirection() === 'desc'" [img]="ChevronDown"
+                            class="w-3 h-3 text-[#1F2B6C]"></lucide-icon>
+                        <lucide-icon *ngIf="sortColumn() === 'gender' && sortDirection() === 'asc'" [img]="ChevronUp"
+                            class="w-3 h-3 text-[#1F2B6C]"></lucide-icon>
                     </div>
                 </th>
-                <th class="px-4 py-4 text-[12px] font-semibold text-gray-400 whitespace-nowrap pt-5">
-                    <div class="flex items-center gap-1 group/th cursor-pointer">
+                <th class="px-4 py-4 text-[12px] font-semibold text-gray-400 whitespace-nowrap pt-5 w-[12%]">
+                    <div (click)="handleSort('dob')"
+                        class="flex items-center gap-1 group/th cursor-pointer select-none hover:text-[#1F2B6C] transition-colors"
+                        [class.text-[#1F2B6C]]="sortColumn() === 'dob'">
                         Date of Birth
-                        <lucide-icon [img]="ChevronDown" class="w-3 h-3 text-gray-300"></lucide-icon>
+                        <lucide-icon *ngIf="sortColumn() !== 'dob'" [img]="ChevronDown"
+                            class="w-3 h-3 text-gray-300"></lucide-icon>
+                        <lucide-icon *ngIf="sortColumn() === 'dob' && sortDirection() === 'desc'" [img]="ChevronDown"
+                            class="w-3 h-3 text-[#1F2B6C]"></lucide-icon>
+                        <lucide-icon *ngIf="sortColumn() === 'dob' && sortDirection() === 'asc'" [img]="ChevronUp"
+                            class="w-3 h-3 text-[#1F2B6C]"></lucide-icon>
                     </div>
                 </th>
-                <th class="px-4 py-4 text-[12px] font-semibold text-gray-400 min-w-[150px] pt-5">
-                    <div class="flex items-center gap-1 group/th cursor-pointer">
+                <th class="px-4 py-4 text-[12px] font-semibold text-gray-400 whitespace-nowrap pt-5 w-[31%]">
+                    <div class="flex items-center gap-1 group/th">
                         Address
-                        <lucide-icon [img]="ChevronDown" class="w-3 h-3 text-gray-300"></lucide-icon>
                     </div>
                 </th>
-                <th class="px-4 py-4 text-[12px] font-semibold text-gray-400 whitespace-nowrap pt-5">
-                    <div class="flex items-center gap-1 group/th cursor-pointer">
+                <th class="px-4 py-4 text-[12px] font-semibold text-gray-400 whitespace-nowrap pt-5 w-[10%]">
+                    <div (click)="handleSort('bloodType')"
+                        class="flex items-center gap-1 group/th cursor-pointer select-none hover:text-[#1F2B6C] transition-colors"
+                        [class.text-[#1F2B6C]]="sortColumn() === 'bloodType'">
                         Blood Type
-                        <lucide-icon [img]="ChevronDown" class="w-3 h-3 text-gray-300"></lucide-icon>
+                        <lucide-icon *ngIf="sortColumn() !== 'bloodType'" [img]="ChevronDown"
+                            class="w-3 h-3 text-gray-300"></lucide-icon>
+                        <lucide-icon *ngIf="sortColumn() === 'bloodType' && sortDirection() === 'desc'"
+                            [img]="ChevronDown" class="w-3 h-3 text-[#1F2B6C]"></lucide-icon>
+                        <lucide-icon *ngIf="sortColumn() === 'bloodType' && sortDirection() === 'asc'" [img]="ChevronUp"
+                            class="w-3 h-3 text-[#1F2B6C]"></lucide-icon>
                     </div>
                 </th>
                 <th class="px-4 py-4 text-[12px] font-semibold text-gray-400 w-14 pt-5">Action</th>
@@ -95,8 +130,7 @@
                         <input type="checkbox" [(ngModel)]="patient.selected" (change)="updateSelectAllState()"
                             class="rounded border-gray-300 text-[#159EEC] focus:border-[#159EEC] focus:ring focus:ring-[#159EEC] focus:ring-opacity-50 cursor-pointer" />
                         <div class="flex items-center gap-3 pl-1">
-                            <span class="font-medium text-gray-600 tracking-tight">{{ (currentPage() - 1) * pageSize()
-                                + i + 1 }}</span>
+                            <span class="font-medium text-gray-600 tracking-tight">{{ patient.no }}</span>
                         </div>
                     </div>
                 </td>

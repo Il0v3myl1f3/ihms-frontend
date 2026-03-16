@@ -1,6 +1,7 @@
 import { Component, OnInit, OnDestroy, input, output, ChangeDetectionStrategy, signal, computed, HostListener, effect, untracked } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { LucideAngularModule, Pencil, Trash2, MoreHorizontal, Search, Filter, ChevronLeft, ChevronRight, Plus, ChevronDown, Eye } from 'lucide-angular';
+import { CommonModule } from '@angular/common';
+import { LucideAngularModule, Pencil, Trash2, MoreHorizontal, Search, Filter, ChevronLeft, ChevronRight, Plus, ChevronDown, ChevronUp, Eye } from 'lucide-angular';
 
 export interface Patient {
     id: number;
@@ -16,7 +17,7 @@ export interface Patient {
 
 @Component({
     selector: 'app-patient-table',
-    imports: [FormsModule, LucideAngularModule],
+    imports: [FormsModule, LucideAngularModule, CommonModule],
     templateUrl: './patient-table.component.html',
     styleUrl: './patient-table.component.css',
     changeDetection: ChangeDetectionStrategy.OnPush,
@@ -41,6 +42,7 @@ export class PatientTableComponent implements OnInit, OnDestroy {
     readonly ChevronRight = ChevronRight;
     readonly Plus = Plus;
     readonly ChevronDown = ChevronDown;
+    readonly ChevronUp = ChevronUp;
     readonly Eye = Eye;
 
     activeItem: Patient | null = null;
@@ -51,6 +53,8 @@ export class PatientTableComponent implements OnInit, OnDestroy {
     currentPage = signal(1);
     pageSize = signal(7);
     searchQuery = signal('');
+    sortColumn = signal<string>('');
+    sortDirection = signal<'asc' | 'desc'>('asc');
 
     constructor() {
         // Reset to page 1 when search query changes
@@ -62,17 +66,59 @@ export class PatientTableComponent implements OnInit, OnDestroy {
 
     filteredPatients = computed(() => {
         const query = this.searchQuery().toLowerCase().trim();
-        if (!query) return this.patients();
+        let result = this.patients();
 
-        return this.patients().filter(p =>
-            p.name.toLowerCase().includes(query) ||
-            p.gender.toLowerCase().includes(query) ||
-            (p.address?.toLowerCase().includes(query)) ||
-            (p.phone?.toLowerCase().includes(query)) ||
-            (p.bloodType?.toLowerCase().includes(query)) ||
-            p.no.toString().includes(query)
-        );
+        if (query) {
+            result = result.filter(p =>
+                p.name.toLowerCase().includes(query) ||
+                p.gender.toLowerCase().includes(query) ||
+                (p.address?.toLowerCase().includes(query)) ||
+                (p.phone?.toLowerCase().includes(query)) ||
+                (p.bloodType?.toLowerCase().includes(query)) ||
+                p.no.toString().includes(query)
+            );
+        }
+
+        const col = this.sortColumn();
+        const dir = this.sortDirection() === 'asc' ? 1 : -1;
+
+        if (col) {
+            result = [...result].sort((a, b) => {
+                let aVal: any = a[col as keyof Patient];
+                let bVal: any = b[col as keyof Patient];
+
+                if (col === 'dob') {
+                    // Custom parser for DD/MM/YYYY
+                    const parseDate = (d: string) => {
+                        if (!d) return 0;
+                        const parts = d.split('/');
+                        if (parts.length === 3) {
+                            return new Date(Number(parts[2]), Number(parts[1]) - 1, Number(parts[0])).getTime();
+                        }
+                        return new Date(d).getTime();
+                    };
+                    aVal = parseDate(aVal);
+                    bVal = parseDate(bVal);
+                }
+
+                if (aVal < bVal) return -1 * dir;
+                if (aVal > bVal) return 1 * dir;
+                return 0;
+            });
+        }
+
+        return result;
     });
+
+    handleSort(column: string): void {
+        if (this.sortColumn() === column) {
+            this.sortDirection.set(this.sortDirection() === 'asc' ? 'desc' : 'asc');
+        } else {
+            this.sortColumn.set(column);
+            this.sortDirection.set('asc');
+        }
+        this.currentPage.set(1);
+    }
 
     ngOnInit(): void {
         // Default initialized in signal

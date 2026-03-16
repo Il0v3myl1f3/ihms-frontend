@@ -38,37 +38,64 @@
 
 <!-- Table Body (Scrollable) -->
 <div class="flex-auto overflow-x-auto overflow-y-auto w-full">
-    <table class="w-full text-left min-w-[1000px] border-collapse">
+    <table class="w-full text-left min-w-[1000px] border-collapse table-fixed">
         <thead class="bg-gray-50/0 border-b border-gray-100">
             <tr>
-                <th class="px-4 py-4 text-[12px] font-semibold text-gray-400 whitespace-nowrap pt-5">
-                    <div class="flex items-center gap-1 group/th cursor-pointer pl-2">
+                <th class="px-4 py-4 text-[12px] font-semibold text-gray-400 whitespace-nowrap pt-5 w-[25%]">
+                    <div (click)="handleSort('name')"
+                        class="flex items-center gap-1 group/th cursor-pointer pl-2 select-none hover:text-[#1F2B6C] transition-colors"
+                        [class.text-[#1F2B6C]]="sortColumn() === 'name'">
                         Name
-                        <lucide-icon [img]="ChevronDown" class="w-3 h-3 text-gray-300"></lucide-icon>
+                        <lucide-icon *ngIf="sortColumn() !== 'name'" [img]="ChevronDown"
+                            class="w-3 h-3 text-gray-300"></lucide-icon>
+                        <lucide-icon *ngIf="sortColumn() === 'name' && sortDirection() === 'desc'" [img]="ChevronDown"
+                            class="w-3 h-3 text-[#1F2B6C]"></lucide-icon>
+                        <lucide-icon *ngIf="sortColumn() === 'name' && sortDirection() === 'asc'" [img]="ChevronUp"
+                            class="w-3 h-3 text-[#1F2B6C]"></lucide-icon>
                     </div>
                 </th>
-                <th class="px-4 py-4 text-[12px] font-semibold text-gray-400 whitespace-nowrap pt-5">
-                    <div class="flex items-center gap-1 group/th cursor-pointer">
+                <th class="px-4 py-4 text-[12px] font-semibold text-gray-400 whitespace-nowrap pt-5 w-[15%]">
+                    <div (click)="handleSort('id')"
+                        class="flex items-center gap-1 group/th cursor-pointer select-none hover:text-[#1F2B6C] transition-colors"
+                        [class.text-[#1F2B6C]]="sortColumn() === 'id'">
                         ID
-                        <lucide-icon [img]="ChevronDown" class="w-3 h-3 text-gray-300"></lucide-icon>
+                        <lucide-icon *ngIf="sortColumn() !== 'id'" [img]="ChevronDown"
+                            class="w-3 h-3 text-gray-300"></lucide-icon>
+                        <lucide-icon *ngIf="sortColumn() === 'id' && sortDirection() === 'desc'" [img]="ChevronDown"
+                            class="w-3 h-3 text-[#1F2B6C]"></lucide-icon>
+                        <lucide-icon *ngIf="sortColumn() === 'id' && sortDirection() === 'asc'" [img]="ChevronUp"
+                            class="w-3 h-3 text-[#1F2B6C]"></lucide-icon>
                     </div>
                 </th>
-                <th class="px-4 py-4 text-[12px] font-semibold text-gray-400 whitespace-nowrap pt-5">
-                    <div class="flex items-center gap-1 group/th cursor-pointer">
+                <th class="px-4 py-4 text-[12px] font-semibold text-gray-400 whitespace-nowrap pt-5 w-[15%]">
+                    <div class="flex items-center gap-1 group/th">
                         Phone Number
-                        <lucide-icon [img]="ChevronDown" class="w-3 h-3 text-gray-300"></lucide-icon>
                     </div>
                 </th>
-                <th class="px-4 py-4 text-[12px] font-semibold text-gray-400 whitespace-nowrap pt-5">
-                    <div class="flex items-center gap-1 group/th cursor-pointer">
+                <th class="px-4 py-4 text-[12px] font-semibold text-gray-400 whitespace-nowrap pt-5 w-[20%]">
+                    <div (click)="handleSort('specialty')"
+                        class="flex items-center gap-1 group/th cursor-pointer select-none hover:text-[#1F2B6C] transition-colors"
+                        [class.text-[#1F2B6C]]="sortColumn() === 'specialty'">
                         Specialist
-                        <lucide-icon [img]="ChevronDown" class="w-3 h-3 text-gray-300"></lucide-icon>
+                        <lucide-icon *ngIf="sortColumn() !== 'specialty'" [img]="ChevronDown"
+                            class="w-3 h-3 text-gray-300"></lucide-icon>
+                        <lucide-icon *ngIf="sortColumn() === 'specialty' && sortDirection() === 'desc'"
+                            [img]="ChevronDown" class="w-3 h-3 text-[#1F2B6C]"></lucide-icon>
+                        <lucide-icon *ngIf="sortColumn() === 'specialty' && sortDirection() === 'asc'" [img]="ChevronUp"
+                            class="w-3 h-3 text-[#1F2B6C]"></lucide-icon>
                     </div>
                 </th>
-                <th class="px-4 py-4 text-[12px] font-semibold text-gray-400 whitespace-nowrap pt-5">
-                    <div class="flex items-center gap-1">
+                <th class="px-4 py-4 text-[12px] font-semibold text-gray-400 whitespace-nowrap pt-5 w-[20%]">
+                    <div (click)="handleSort('availability')"
+                        class="flex items-center gap-1 group/th cursor-pointer select-none hover:text-[#1F2B6C] transition-colors"
+                        [class.text-[#1F2B6C]]="sortColumn() === 'availability'">
                         Availability Status
-                        <lucide-icon [img]="ChevronDown" class="w-3 h-3 text-gray-300"></lucide-icon>
+                        <lucide-icon *ngIf="sortColumn() !== 'availability'" [img]="ChevronDown"
+                            class="w-3 h-3 text-gray-300"></lucide-icon>
+                        <lucide-icon *ngIf="sortColumn() === 'availability' && sortDirection() === 'desc'"
+                            [img]="ChevronDown" class="w-3 h-3 text-[#1F2B6C]"></lucide-icon>
+                        <lucide-icon *ngIf="sortColumn() === 'availability' && sortDirection() === 'asc'"
+                            [img]="ChevronUp" class="w-3 h-3 text-[#1F2B6C]"></lucide-icon>
                     </div>
                 </th>
                 <th class="px-4 py-4 text-[12px] font-semibold text-gray-400 w-14 pt-5">Action</th>

@@ -1,7 +1,7 @@
 import { Component, OnInit, input, output, ChangeDetectionStrategy, signal, computed, HostListener, effect, untracked } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { LucideAngularModule, Search, Filter, MoreHorizontal, ChevronLeft, ChevronRight, Pencil, Trash2, Plus, ChevronDown, Eye } from 'lucide-angular';
+import { LucideAngularModule, Search, Filter, MoreHorizontal, ChevronLeft, ChevronRight, Pencil, Trash2, Plus, ChevronDown, ChevronUp, Eye } from 'lucide-angular';
 import { Doctor } from '../../../../../services/medical.service';
 
 @Component({
@@ -31,6 +31,7 @@ export class DoctorTableComponent implements OnInit {
     readonly Trash2 = Trash2;
     readonly Plus = Plus;
     readonly ChevronDown = ChevronDown;
+    readonly ChevronUp = ChevronUp;
     readonly Eye = Eye;
 
     activeItem: Doctor | null = null;
@@ -39,6 +40,8 @@ export class DoctorTableComponent implements OnInit {
     currentPage = signal(1);
     pageSize = signal(7);
     searchQuery = signal('');
+    sortColumn = signal<string>('');
+    sortDirection = signal<'asc' | 'desc'>('asc');
 
     constructor() {
         // Reset to page 1 when search query changes
@@ -50,15 +53,44 @@ export class DoctorTableComponent implements OnInit {
 
     filteredDoctors = computed(() => {
         const query = this.searchQuery().toLowerCase().trim();
-        if (!query) return this.doctors();
+        let result = this.doctors();
 
-        return this.doctors().filter(doc =>
-            doc.name.toLowerCase().includes(query) ||
-            doc.specialty.toLowerCase().includes(query) ||
-            doc.phone?.toLowerCase().includes(query) ||
-            doc.availability?.toLowerCase().includes(query)
-        );
+        if (query) {
+            result = result.filter(doc =>
+                doc.name.toLowerCase().includes(query) ||
+                doc.specialty.toLowerCase().includes(query) ||
+                (doc.phone?.toLowerCase().includes(query)) ||
+                (doc.availability?.toLowerCase().includes(query)) ||
+                doc.id.toString().includes(query)
+            );
+        }
+
+        const col = this.sortColumn();
+        const dir = this.sortDirection() === 'asc' ? 1 : -1;
+
+        if (col) {
+            result = [...result].sort((a, b) => {
+                let aVal: any = a[col as keyof Doctor];
+                let bVal: any = b[col as keyof Doctor];
+
+                if (aVal < bVal) return -1 * dir;
+                if (aVal > bVal) return 1 * dir;
+                return 0;
+            });
+        }
+
+        return result;
     });
+
+    handleSort(column: string): void {
+        if (this.sortColumn() === column) {
+            this.sortDirection.set(this.sortDirection() === 'asc' ? 'desc' : 'asc');
+        } else {
+            this.sortColumn.set(column);
+            this.sortDirection.set('asc');
+        }
+        this.currentPage.set(1);
+    }
 
     ngOnInit(): void {
         // Default initialized in signal
