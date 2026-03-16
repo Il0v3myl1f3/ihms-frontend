@@ -76,12 +76,6 @@ export class SidebarComponent implements OnInit, OnDestroy {
                 { label: 'Inpatient', icon: BedDouble, route: '/dashboard/inpatient', roles: ['admin', 'doctor'] },
             ],
         },
-        {
-            title: 'Setting',
-            items: [
-                { label: 'User', icon: UserCog, route: '/dashboard/user', roles: ['admin'] }
-            ],
-        },
     ];
 
     /** Filtered menu sections visible to the current user */
