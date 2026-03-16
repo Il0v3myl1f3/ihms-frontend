@@ -1,7 +1,7 @@
 import { Component, OnInit, input, output, ChangeDetectionStrategy, signal, computed, HostListener, effect, untracked } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { LucideAngularModule, Search, Filter, MoreHorizontal, ChevronLeft, ChevronRight, Pencil, Trash2 } from 'lucide-angular';
+import { LucideAngularModule, Search, Filter, MoreHorizontal, ChevronLeft, ChevronRight, Pencil, Trash2, Plus, ChevronDown } from 'lucide-angular';
 import { Doctor } from '../../../../../services/medical.service';
 
 @Component({
@@ -19,6 +19,7 @@ export class DoctorTableComponent implements OnInit {
     doctors = input<Doctor[]>([]);
     editDoctor = output<Doctor>();
     deleteDoctor = output<Doctor>();
+    addDoctor = output<void>();
 
     readonly Search = Search;
     readonly Filter = Filter;
@@ -27,6 +28,8 @@ export class DoctorTableComponent implements OnInit {
     readonly ChevronRight = ChevronRight;
     readonly Pencil = Pencil;
     readonly Trash2 = Trash2;
+    readonly Plus = Plus;
+    readonly ChevronDown = ChevronDown;
 
     activeItem: Doctor | null = null;
     dropdownPos = { top: 0, right: 0 };
@@ -62,7 +65,7 @@ export class DoctorTableComponent implements OnInit {
     private updatePageSize(): void {
         const width = window.innerWidth;
         const oldPageSize = this.pageSize();
-        
+
         if (width > 1920) {
             this.pageSize.set(10);
         } else if (width > 1024) {

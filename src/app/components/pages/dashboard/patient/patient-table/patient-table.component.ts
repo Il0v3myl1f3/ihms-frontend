@@ -1,6 +1,6 @@
 import { Component, OnInit, OnDestroy, input, output, ChangeDetectionStrategy, signal, computed, HostListener, effect, untracked } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { LucideAngularModule, Pencil, Trash2, MoreHorizontal, Search, Filter, ChevronLeft, ChevronRight } from 'lucide-angular';
+import { LucideAngularModule, Pencil, Trash2, MoreHorizontal, Search, Filter, ChevronLeft, ChevronRight, Plus, ChevronDown } from 'lucide-angular';
 
 export interface Patient {
     id: number;
@@ -29,6 +29,7 @@ export class PatientTableComponent implements OnInit, OnDestroy {
     editPatient = output<Patient>();
     deletePatient = output<Patient>();
     deleteSelected = output<Patient[]>();
+    addPatient = output<void>();
 
     readonly Pencil = Pencil;
     readonly Trash2 = Trash2;
@@ -37,6 +38,8 @@ export class PatientTableComponent implements OnInit, OnDestroy {
     readonly Filter = Filter;
     readonly ChevronLeft = ChevronLeft;
     readonly ChevronRight = ChevronRight;
+    readonly Plus = Plus;
+    readonly ChevronDown = ChevronDown;
 
     activeItem: Patient | null = null;
     dropdownPos = { top: 0, right: 0 };
@@ -99,7 +102,7 @@ export class PatientTableComponent implements OnInit, OnDestroy {
         this.activeItem = patient;
     }
 
-    ngOnDestroy(): void {}
+    ngOnDestroy(): void { }
 
     @HostListener('window:scroll')
     onWindowScroll(): void {

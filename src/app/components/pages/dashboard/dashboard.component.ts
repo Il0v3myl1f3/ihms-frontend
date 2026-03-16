@@ -3,7 +3,7 @@ import { Router } from '@angular/router';
 import { AuthService, User } from '../../../services/auth.service';
 import { SidebarComponent } from '../../shared/sidebar/sidebar.component';
 import { Observable } from 'rxjs';
-import { LucideAngularModule, Search, Bell } from 'lucide-angular';
+import { LucideAngularModule, Search, Bell, Settings } from 'lucide-angular';
 import { RouterModule } from '@angular/router';
 
 @Component({
@@ -16,6 +16,7 @@ import { RouterModule } from '@angular/router';
 export class DashboardComponent implements OnInit {
   readonly Search = Search;
   readonly Bell = Bell;
+  readonly Settings = Settings;
 
   isSidebarCollapsed = signal(false);
 

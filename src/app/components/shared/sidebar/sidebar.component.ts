@@ -15,7 +15,11 @@ import {
     LogOut,
     ChevronLeft,
     LucideIconData,
+    Lock,
+    Plus,
+    ChevronDown,
 } from 'lucide-angular';
+
 import { AuthService, User } from '../../../services/auth.service';
 import { Subscription } from 'rxjs';
 
@@ -45,6 +49,9 @@ export class SidebarComponent implements OnInit, OnDestroy {
     readonly ChevronLeft = ChevronLeft;
     readonly LogOut = LogOut;
     readonly HelpCircle = HelpCircle;
+    readonly Lock = Lock;
+    readonly Plus = Plus;
+
 
     // State (Managed by parent)
     collapsed = input(false);
@@ -72,8 +79,7 @@ export class SidebarComponent implements OnInit, OnDestroy {
         {
             title: 'Setting',
             items: [
-                { label: 'User', icon: UserCog, route: '/dashboard/user', roles: ['admin'] },
-                { label: 'Settings', icon: Settings, route: '/dashboard/settings' },
+                { label: 'User', icon: UserCog, route: '/dashboard/user', roles: ['admin'] }
             ],
         },
     ];
