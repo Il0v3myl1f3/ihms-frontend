@@ -1,7 +1,7 @@
 import { Component, OnInit, input, output, ChangeDetectionStrategy, signal, computed, HostListener, effect, untracked } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { LucideAngularModule, Search, Filter, MoreHorizontal, ChevronLeft, ChevronRight, Pencil, Trash2, Plus, ChevronDown } from 'lucide-angular';
+import { LucideAngularModule, Search, Filter, MoreHorizontal, ChevronLeft, ChevronRight, Pencil, Trash2, Plus, ChevronDown, Eye } from 'lucide-angular';
 import { Doctor } from '../../../../../services/medical.service';
 
 @Component({
@@ -19,6 +19,7 @@ export class DoctorTableComponent implements OnInit {
     doctors = input<Doctor[]>([]);
     editDoctor = output<Doctor>();
     deleteDoctor = output<Doctor>();
+    viewDoctor = output<Doctor>();
     addDoctor = output<void>();
 
     readonly Search = Search;
@@ -30,9 +31,11 @@ export class DoctorTableComponent implements OnInit {
     readonly Trash2 = Trash2;
     readonly Plus = Plus;
     readonly ChevronDown = ChevronDown;
+    readonly Eye = Eye;
 
     activeItem: Doctor | null = null;
     dropdownPos = { top: 0, right: 0 };
+    isPageSizeMenuOpen = false;
     currentPage = signal(1);
     pageSize = signal(7);
     searchQuery = signal('');
@@ -57,33 +60,14 @@ export class DoctorTableComponent implements OnInit {
         );
     });
 
-    @HostListener('window:resize')
-    onResize() {
-        this.updatePageSize();
-    }
-
-    private updatePageSize(): void {
-        const width = window.innerWidth;
-        const oldPageSize = this.pageSize();
-
-        if (width > 1920) {
-            this.pageSize.set(10);
-        } else if (width > 1024) {
-            this.pageSize.set(7);
-        } else {
-            this.pageSize.set(5);
-        }
-
-        // Reset to page 1 if current page is now out of bounds
-        if (this.pageSize() !== oldPageSize) {
-            if (this.currentPage() > this.totalPages()) {
-                this.currentPage.set(1);
-            }
-        }
-    }
-
     ngOnInit(): void {
-        this.updatePageSize();
+        // Default initialized in signal
+    }
+
+    changePageSize(size: number | string): void {
+        this.pageSize.set(Number(size));
+        this.currentPage.set(1);
+        this.isPageSizeMenuOpen = false;
     }
 
     totalPages = computed(() => {
@@ -131,6 +115,13 @@ export class DoctorTableComponent implements OnInit {
 
     closeDropdown(): void {
         this.activeItem = null;
+        this.isPageSizeMenuOpen = false;
+    }
+
+    togglePageSizeMenu(event: Event): void {
+        event.stopPropagation();
+        this.isPageSizeMenuOpen = !this.isPageSizeMenuOpen;
+        this.activeItem = null;
     }
 
     toggleDropdown(doc: Doctor, event: Event): void {
@@ -155,6 +146,10 @@ export class DoctorTableComponent implements OnInit {
 
     onEdit(doctor: Doctor): void {
         this.editDoctor.emit(doctor);
+    }
+
+    onView(doctor: Doctor): void {
+        this.viewDoctor.emit(doctor);
     }
 
     onDelete(doctor: Doctor): void {

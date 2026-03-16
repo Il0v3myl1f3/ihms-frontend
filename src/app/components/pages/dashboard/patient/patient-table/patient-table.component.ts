@@ -1,6 +1,6 @@
 import { Component, OnInit, OnDestroy, input, output, ChangeDetectionStrategy, signal, computed, HostListener, effect, untracked } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { LucideAngularModule, Pencil, Trash2, MoreHorizontal, Search, Filter, ChevronLeft, ChevronRight, Plus, ChevronDown } from 'lucide-angular';
+import { LucideAngularModule, Pencil, Trash2, MoreHorizontal, Search, Filter, ChevronLeft, ChevronRight, Plus, ChevronDown, Eye } from 'lucide-angular';
 
 export interface Patient {
     id: number;
@@ -30,6 +30,7 @@ export class PatientTableComponent implements OnInit, OnDestroy {
     deletePatient = output<Patient>();
     deleteSelected = output<Patient[]>();
     addPatient = output<void>();
+    viewPatient = output<Patient>();
 
     readonly Pencil = Pencil;
     readonly Trash2 = Trash2;
@@ -40,9 +41,11 @@ export class PatientTableComponent implements OnInit, OnDestroy {
     readonly ChevronRight = ChevronRight;
     readonly Plus = Plus;
     readonly ChevronDown = ChevronDown;
+    readonly Eye = Eye;
 
     activeItem: Patient | null = null;
     dropdownPos = { top: 0, right: 0 };
+    isPageSizeMenuOpen = false;
 
     selectAll = false;
     currentPage = signal(1);
@@ -71,23 +74,24 @@ export class PatientTableComponent implements OnInit, OnDestroy {
         );
     });
 
-    @HostListener('window:resize')
-    onResize() {
-        this.updatePageSize();
+    ngOnInit(): void {
+        // Default initialized in signal
     }
 
-    private updatePageSize(): void {
-        const width = window.innerWidth;
-        if (width > 1920) {
-            this.pageSize.set(10);
-        } else if (width > 1024) {
-            this.pageSize.set(7);
-        } else {
-            this.pageSize.set(5);
-        }
+    changePageSize(size: number | string): void {
+        this.pageSize.set(Number(size));
+        this.currentPage.set(1);
+        this.isPageSizeMenuOpen = false;
     }
 
     closeDropdown() {
+        this.activeItem = null;
+        this.isPageSizeMenuOpen = false;
+    }
+
+    togglePageSizeMenu(event: Event): void {
+        event.stopPropagation();
+        this.isPageSizeMenuOpen = !this.isPageSizeMenuOpen;
         this.activeItem = null;
     }
 
@@ -109,9 +113,7 @@ export class PatientTableComponent implements OnInit, OnDestroy {
         this.activeItem = null;
     }
 
-    ngOnInit(): void {
-        this.updatePageSize();
-    }
+
 
     toggleSelectAll(): void {
         this.patients().forEach(p => p.selected = this.selectAll);
@@ -170,6 +172,10 @@ export class PatientTableComponent implements OnInit, OnDestroy {
 
     onEdit(patient: Patient): void {
         this.editPatient.emit(patient);
+    }
+
+    onView(patient: Patient): void {
+        this.viewPatient.emit(patient);
     }
 
     onDelete(patient: Patient): void {
