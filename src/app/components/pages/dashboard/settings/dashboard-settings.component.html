@@ -6,12 +6,12 @@
             <p class="text-sm text-gray-500">Customize until match to your workflows.</p>
         </div>
         <div class="flex items-center gap-3">
-            <button type="button"
-                class="px-4 py-2 bg-white border border-gray-200 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors">
+            <button type="button" (click)="cancelSettings()"
+                class="px-4 py-2 bg-white border border-gray-200 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors cursor-pointer">
                 Cancel
             </button>
-            <button type="button"
-                class="px-4 py-2 bg-blue-600 text-white rounded-md text-sm font-medium hover:bg-blue-700 transition-colors shadow-sm">
+            <button type="button" (click)="saveSettings()"
+                class="px-4 py-2 bg-blue-600 text-white rounded-md text-sm font-medium hover:bg-blue-700 transition-colors shadow-sm cursor-pointer">
                 Save
             </button>
         </div>
