@@ -1,6 +1,7 @@
 import { Component, OnInit, OnDestroy, input, output, ChangeDetectionStrategy, signal, computed, HostListener, effect, untracked } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { LucideAngularModule, Pencil, Trash2, MoreHorizontal, Search, Filter, ChevronLeft, ChevronRight } from 'lucide-angular';
+import { CommonModule } from '@angular/common';
+import { LucideAngularModule, Pencil, Trash2, MoreHorizontal, Search, Filter, ChevronLeft, ChevronRight, Plus, ChevronDown, ChevronUp, Eye } from 'lucide-angular';
 
 export interface Patient {
     id: number;
@@ -16,7 +17,7 @@ export interface Patient {
 
 @Component({
     selector: 'app-patient-table',
-    imports: [FormsModule, LucideAngularModule],
+    imports: [FormsModule, LucideAngularModule, CommonModule],
     templateUrl: './patient-table.component.html',
     styleUrl: './patient-table.component.css',
     changeDetection: ChangeDetectionStrategy.OnPush,
@@ -29,6 +30,8 @@ export class PatientTableComponent implements OnInit, OnDestroy {
     editPatient = output<Patient>();
     deletePatient = output<Patient>();
     deleteSelected = output<Patient[]>();
+    addPatient = output<void>();
+    viewPatient = output<Patient>();
 
     readonly Pencil = Pencil;
     readonly Trash2 = Trash2;
@@ -37,14 +40,34 @@ export class PatientTableComponent implements OnInit, OnDestroy {
     readonly Filter = Filter;
     readonly ChevronLeft = ChevronLeft;
     readonly ChevronRight = ChevronRight;
+    readonly Plus = Plus;
+    readonly ChevronDown = ChevronDown;
+    readonly ChevronUp = ChevronUp;
+    readonly Eye = Eye;
 
     activeItem: Patient | null = null;
     dropdownPos = { top: 0, right: 0 };
+    isPageSizeMenuOpen = false;
 
     selectAll = false;
     currentPage = signal(1);
     pageSize = signal(7);
     searchQuery = signal('');
+    sortColumn = signal<string>('');
+    sortDirection = signal<'asc' | 'desc'>('asc');
+    filterGender = signal<string>('All');
+    filterBloodType = signal<string>('All');
+    activeFilterMenu = signal<string | null>(null);
+
+    availableGenders = computed(() => {
+        const genders = this.patients().map(p => p.gender).filter(s => !!s);
+        return ['All', ...Array.from(new Set(genders)).sort()];
+    });
+
+    availableBloodTypes = computed(() => {
+        const types = this.patients().map(p => p.bloodType).filter(s => !!s);
+        return ['All', ...Array.from(new Set(types)).sort()];
+    });
 
     constructor() {
         // Reset to page 1 when search query changes
@@ -56,35 +79,103 @@ export class PatientTableComponent implements OnInit, OnDestroy {
 
     filteredPatients = computed(() => {
         const query = this.searchQuery().toLowerCase().trim();
-        if (!query) return this.patients();
+        let result = this.patients();
 
-        return this.patients().filter(p =>
-            p.name.toLowerCase().includes(query) ||
-            p.gender.toLowerCase().includes(query) ||
-            (p.address?.toLowerCase().includes(query)) ||
-            (p.phone?.toLowerCase().includes(query)) ||
-            (p.bloodType?.toLowerCase().includes(query)) ||
-            p.no.toString().includes(query)
-        );
+        const genderFilter = this.filterGender();
+        if (genderFilter !== 'All') {
+            result = result.filter(p => p.gender === genderFilter);
+        }
+
+        const typeFilter = this.filterBloodType();
+        if (typeFilter !== 'All') {
+            result = result.filter(p => p.bloodType === typeFilter);
+        }
+
+        if (query) {
+            result = result.filter(p =>
+                p.name.toLowerCase().includes(query) ||
+                p.gender.toLowerCase().includes(query) ||
+                (p.address?.toLowerCase().includes(query)) ||
+                (p.phone?.toLowerCase().includes(query)) ||
+                (p.bloodType?.toLowerCase().includes(query)) ||
+                p.no.toString().includes(query)
+            );
+        }
+
+        const col = this.sortColumn();
+        const dir = this.sortDirection() === 'asc' ? 1 : -1;
+
+        if (col) {
+            result = [...result].sort((a, b) => {
+                let aVal: any = a[col as keyof Patient];
+                let bVal: any = b[col as keyof Patient];
+
+                if (col === 'dob') {
+                    // Custom parser for DD/MM/YYYY
+                    const parseDate = (d: string) => {
+                        if (!d) return 0;
+                        const parts = d.split('/');
+                        if (parts.length === 3) {
+                            return new Date(Number(parts[2]), Number(parts[1]) - 1, Number(parts[0])).getTime();
+                        }
+                        return new Date(d).getTime();
+                    };
+                    aVal = parseDate(aVal);
+                    bVal = parseDate(bVal);
+                }
+
+                if (aVal < bVal) return -1 * dir;
+                if (aVal > bVal) return 1 * dir;
+                return 0;
+            });
+        }
+
+        return result;
     });
 
-    @HostListener('window:resize')
-    onResize() {
-        this.updatePageSize();
+    handleSort(column: string): void {
+        if (this.sortColumn() === column) {
+            this.sortDirection.set(this.sortDirection() === 'asc' ? 'desc' : 'asc');
+        } else {
+            this.sortColumn.set(column);
+            this.sortDirection.set('asc');
+        }
+        this.currentPage.set(1);
     }
 
-    private updatePageSize(): void {
-        const width = window.innerWidth;
-        if (width > 1920) {
-            this.pageSize.set(10);
-        } else if (width > 1024) {
-            this.pageSize.set(7);
-        } else {
-            this.pageSize.set(5);
-        }
+    ngOnInit(): void {
+        // Default initialized in signal
+    }
+
+    changePageSize(size: number | string): void {
+        this.pageSize.set(Number(size));
+        this.currentPage.set(1);
+        this.isPageSizeMenuOpen = false;
     }
 
     closeDropdown() {
+        this.activeItem = null;
+        this.isPageSizeMenuOpen = false;
+        this.activeFilterMenu.set(null);
+    }
+
+    toggleFilterMenu(menu: string, event: Event): void {
+        event.stopPropagation();
+        this.activeFilterMenu.set(this.activeFilterMenu() === menu ? null : menu);
+        this.activeItem = null;
+        this.isPageSizeMenuOpen = false;
+    }
+
+    setFilter(type: 'gender' | 'bloodType', value: string): void {
+        if (type === 'gender') this.filterGender.set(value);
+        if (type === 'bloodType') this.filterBloodType.set(value);
+        this.activeFilterMenu.set(null);
+        this.currentPage.set(1);
+    }
+
+    togglePageSizeMenu(event: Event): void {
+        event.stopPropagation();
+        this.isPageSizeMenuOpen = !this.isPageSizeMenuOpen;
         this.activeItem = null;
     }
 
@@ -99,16 +190,14 @@ export class PatientTableComponent implements OnInit, OnDestroy {
         this.activeItem = patient;
     }
 
-    ngOnDestroy(): void {}
+    ngOnDestroy(): void { }
 
     @HostListener('window:scroll')
     onWindowScroll(): void {
         this.activeItem = null;
     }
 
-    ngOnInit(): void {
-        this.updatePageSize();
-    }
+
 
     toggleSelectAll(): void {
         this.patients().forEach(p => p.selected = this.selectAll);
@@ -167,6 +256,10 @@ export class PatientTableComponent implements OnInit, OnDestroy {
 
     onEdit(patient: Patient): void {
         this.editPatient.emit(patient);
+    }
+
+    onView(patient: Patient): void {
+        this.viewPatient.emit(patient);
     }
 
     onDelete(patient: Patient): void {

@@ -1,7 +1,7 @@
 import { Component, OnInit, input, output, ChangeDetectionStrategy, signal, computed, HostListener, effect, untracked } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { LucideAngularModule, Search, Filter, MoreHorizontal, ChevronLeft, ChevronRight, Pencil, Trash2 } from 'lucide-angular';
+import { LucideAngularModule, Search, Filter, MoreHorizontal, ChevronLeft, ChevronRight, Pencil, Trash2, Plus, ChevronDown, ChevronUp, Eye } from 'lucide-angular';
 import { Doctor } from '../../../../../services/medical.service';
 
 @Component({
@@ -19,6 +19,8 @@ export class DoctorTableComponent implements OnInit {
     doctors = input<Doctor[]>([]);
     editDoctor = output<Doctor>();
     deleteDoctor = output<Doctor>();
+    viewDoctor = output<Doctor>();
+    addDoctor = output<void>();
 
     readonly Search = Search;
     readonly Filter = Filter;
@@ -27,12 +29,32 @@ export class DoctorTableComponent implements OnInit {
     readonly ChevronRight = ChevronRight;
     readonly Pencil = Pencil;
     readonly Trash2 = Trash2;
+    readonly Plus = Plus;
+    readonly ChevronDown = ChevronDown;
+    readonly ChevronUp = ChevronUp;
+    readonly Eye = Eye;
 
     activeItem: Doctor | null = null;
     dropdownPos = { top: 0, right: 0 };
+    isPageSizeMenuOpen = false;
     currentPage = signal(1);
     pageSize = signal(7);
     searchQuery = signal('');
+    sortColumn = signal<string>('');
+    sortDirection = signal<'asc' | 'desc'>('asc');
+    filterSpecialty = signal<string>('All');
+    filterStatus = signal<string>('All');
+    activeFilterMenu = signal<string | null>(null);
+
+    availableSpecialties = computed(() => {
+        const specs = this.doctors().map(d => d.specialty).filter(s => !!s);
+        return ['All', ...Array.from(new Set(specs)).sort()];
+    });
+
+    availableStatuses = computed(() => {
+        const statuses = this.doctors().map(d => d.availability).filter(s => !!s);
+        return ['All', ...Array.from(new Set(statuses)).sort()];
+    });
 
     constructor() {
         // Reset to page 1 when search query changes
@@ -44,43 +66,63 @@ export class DoctorTableComponent implements OnInit {
 
     filteredDoctors = computed(() => {
         const query = this.searchQuery().toLowerCase().trim();
-        if (!query) return this.doctors();
+        let result = this.doctors();
 
-        return this.doctors().filter(doc =>
-            doc.name.toLowerCase().includes(query) ||
-            doc.specialty.toLowerCase().includes(query) ||
-            doc.phone?.toLowerCase().includes(query) ||
-            doc.availability?.toLowerCase().includes(query)
-        );
+        const specFilter = this.filterSpecialty();
+        if (specFilter !== 'All') {
+            result = result.filter(d => d.specialty === specFilter);
+        }
+
+        const statFilter = this.filterStatus();
+        if (statFilter !== 'All') {
+            result = result.filter(d => d.availability === statFilter);
+        }
+
+        if (query) {
+            result = result.filter(doc =>
+                doc.name.toLowerCase().includes(query) ||
+                doc.specialty.toLowerCase().includes(query) ||
+                (doc.phone?.toLowerCase().includes(query)) ||
+                (doc.availability?.toLowerCase().includes(query)) ||
+                doc.id.toString().includes(query)
+            );
+        }
+
+        const col = this.sortColumn();
+        const dir = this.sortDirection() === 'asc' ? 1 : -1;
+
+        if (col) {
+            result = [...result].sort((a, b) => {
+                let aVal: any = a[col as keyof Doctor];
+                let bVal: any = b[col as keyof Doctor];
+
+                if (aVal < bVal) return -1 * dir;
+                if (aVal > bVal) return 1 * dir;
+                return 0;
+            });
+        }
+
+        return result;
     });
 
-    @HostListener('window:resize')
-    onResize() {
-        this.updatePageSize();
-    }
-
-    private updatePageSize(): void {
-        const width = window.innerWidth;
-        const oldPageSize = this.pageSize();
-        
-        if (width > 1920) {
-            this.pageSize.set(10);
-        } else if (width > 1024) {
-            this.pageSize.set(7);
+    handleSort(column: string): void {
+        if (this.sortColumn() === column) {
+            this.sortDirection.set(this.sortDirection() === 'asc' ? 'desc' : 'asc');
         } else {
-            this.pageSize.set(5);
+            this.sortColumn.set(column);
+            this.sortDirection.set('asc');
         }
-
-        // Reset to page 1 if current page is now out of bounds
-        if (this.pageSize() !== oldPageSize) {
-            if (this.currentPage() > this.totalPages()) {
-                this.currentPage.set(1);
-            }
-        }
+        this.currentPage.set(1);
     }
 
     ngOnInit(): void {
-        this.updatePageSize();
+        // Default initialized in signal
+    }
+
+    changePageSize(size: number | string): void {
+        this.pageSize.set(Number(size));
+        this.currentPage.set(1);
+        this.isPageSizeMenuOpen = false;
     }
 
     totalPages = computed(() => {
@@ -128,6 +170,28 @@ export class DoctorTableComponent implements OnInit {
 
     closeDropdown(): void {
         this.activeItem = null;
+        this.isPageSizeMenuOpen = false;
+        this.activeFilterMenu.set(null);
+    }
+
+    toggleFilterMenu(menu: string, event: Event): void {
+        event.stopPropagation();
+        this.activeFilterMenu.set(this.activeFilterMenu() === menu ? null : menu);
+        this.activeItem = null;
+        this.isPageSizeMenuOpen = false;
+    }
+
+    setFilter(type: 'specialty' | 'status', value: string): void {
+        if (type === 'specialty') this.filterSpecialty.set(value);
+        if (type === 'status') this.filterStatus.set(value);
+        this.activeFilterMenu.set(null);
+        this.currentPage.set(1);
+    }
+
+    togglePageSizeMenu(event: Event): void {
+        event.stopPropagation();
+        this.isPageSizeMenuOpen = !this.isPageSizeMenuOpen;
+        this.activeItem = null;
     }
 
     toggleDropdown(doc: Doctor, event: Event): void {
@@ -152,6 +216,10 @@ export class DoctorTableComponent implements OnInit {
 
     onEdit(doctor: Doctor): void {
         this.editDoctor.emit(doctor);
+    }
+
+    onView(doctor: Doctor): void {
+        this.viewDoctor.emit(doctor);
     }
 
     onDelete(doctor: Doctor): void {
