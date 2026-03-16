@@ -55,6 +55,19 @@ export class PatientTableComponent implements OnInit, OnDestroy {
     searchQuery = signal('');
     sortColumn = signal<string>('');
     sortDirection = signal<'asc' | 'desc'>('asc');
+    filterGender = signal<string>('All');
+    filterBloodType = signal<string>('All');
+    activeFilterMenu = signal<string | null>(null);
+
+    availableGenders = computed(() => {
+        const genders = this.patients().map(p => p.gender).filter(s => !!s);
+        return ['All', ...Array.from(new Set(genders)).sort()];
+    });
+
+    availableBloodTypes = computed(() => {
+        const types = this.patients().map(p => p.bloodType).filter(s => !!s);
+        return ['All', ...Array.from(new Set(types)).sort()];
+    });
 
     constructor() {
         // Reset to page 1 when search query changes
@@ -67,6 +80,16 @@ export class PatientTableComponent implements OnInit, OnDestroy {
     filteredPatients = computed(() => {
         const query = this.searchQuery().toLowerCase().trim();
         let result = this.patients();
+
+        const genderFilter = this.filterGender();
+        if (genderFilter !== 'All') {
+            result = result.filter(p => p.gender === genderFilter);
+        }
+
+        const typeFilter = this.filterBloodType();
+        if (typeFilter !== 'All') {
+            result = result.filter(p => p.bloodType === typeFilter);
+        }
 
         if (query) {
             result = result.filter(p =>
@@ -133,6 +156,21 @@ export class PatientTableComponent implements OnInit, OnDestroy {
     closeDropdown() {
         this.activeItem = null;
         this.isPageSizeMenuOpen = false;
+        this.activeFilterMenu.set(null);
+    }
+
+    toggleFilterMenu(menu: string, event: Event): void {
+        event.stopPropagation();
+        this.activeFilterMenu.set(this.activeFilterMenu() === menu ? null : menu);
+        this.activeItem = null;
+        this.isPageSizeMenuOpen = false;
+    }
+
+    setFilter(type: 'gender' | 'bloodType', value: string): void {
+        if (type === 'gender') this.filterGender.set(value);
+        if (type === 'bloodType') this.filterBloodType.set(value);
+        this.activeFilterMenu.set(null);
+        this.currentPage.set(1);
     }
 
     togglePageSizeMenu(event: Event): void {

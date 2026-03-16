@@ -10,25 +10,63 @@
                 (input)="searchQuery.set($any($event.target).value)"
                 class="block w-full pl-9 pr-3 py-2 border border-gray-200 rounded-lg text-sm placeholder-gray-400 focus:outline-none focus:ring-1 focus:ring-[#159EEC] focus:border-[#159EEC] bg-gray-50/20 transition-all">
         </div>
-        <!-- Filter Buttons (mock) -->
-        <button
-            class="flex items-center gap-1.5 px-4 py-2 border border-gray-200 rounded-lg text-sm text-gray-500 hover:bg-gray-50 transition-colors bg-white shadow-[0_1px_2px_rgba(0,0,0,0.02)]">
-            <lucide-icon [img]="Filter" class="w-3.5 h-3.5 text-gray-400"></lucide-icon>
-            Department
-            <lucide-icon [img]="ChevronDown" class="w-3.5 h-3.5 text-gray-400 ml-1"></lucide-icon>
-        </button>
-        <button
-            class="flex items-center gap-1.5 px-4 py-2 border border-gray-200 rounded-lg text-sm text-gray-500 hover:bg-gray-50 transition-colors bg-white shadow-[0_1px_2px_rgba(0,0,0,0.02)]">
-            <lucide-icon [img]="Filter" class="w-3.5 h-3.5 text-gray-400"></lucide-icon>
-            Specialist
-            <lucide-icon [img]="ChevronDown" class="w-3.5 h-3.5 text-gray-400 ml-1"></lucide-icon>
-        </button>
-        <button
-            class="flex items-center gap-1.5 px-4 py-2 border border-gray-200 rounded-lg text-sm text-gray-500 hover:bg-gray-50 transition-colors bg-white shadow-[0_1px_2px_rgba(0,0,0,0.02)]">
-            <lucide-icon [img]="Filter" class="w-3.5 h-3.5 text-gray-400"></lucide-icon>
-            Status
-            <lucide-icon [img]="ChevronDown" class="w-3.5 h-3.5 text-gray-400 ml-1"></lucide-icon>
-        </button>
+        <!-- Filter Buttons -->
+        <!-- Specialist Filter -->
+        <div class="relative">
+            <button (click)="toggleFilterMenu('specialty', $event)"
+                class="flex items-center gap-1.5 px-4 py-2 border border-gray-200 rounded-lg text-sm text-gray-500 hover:bg-gray-50 transition-colors bg-white shadow-[0_1px_2px_rgba(0,0,0,0.02)]"
+                [class.ring-1]="activeFilterMenu() === 'specialty'"
+                [class.ring-[#159EEC]]="activeFilterMenu() === 'specialty'">
+                <lucide-icon [img]="Filter" class="w-3.5 h-3.5 text-gray-400"></lucide-icon>
+                <span class="truncate max-w-[90px]">
+                    {{ filterSpecialty() === 'All' ? 'Specialist' : filterSpecialty() }}
+                </span>
+                <lucide-icon [img]="ChevronDown" class="w-3.5 h-3.5 text-gray-400 ml-1"
+                    [class.rotate-180]="activeFilterMenu() === 'specialty'"></lucide-icon>
+            </button>
+            @if (activeFilterMenu() === 'specialty') {
+            <div
+                class="absolute top-full mt-1 left-0 z-50 w-52 bg-white border border-gray-100 rounded-lg shadow-lg py-1 max-h-60 overflow-auto">
+                @for (spec of availableSpecialties(); track spec) {
+                <button (click)="setFilter('specialty', spec)"
+                    class="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
+                    [class.bg-emerald-50]="filterSpecialty() === spec"
+                    [class.text-emerald-700]="filterSpecialty() === spec"
+                    [class.hover:bg-emerald-100]="filterSpecialty() === spec">
+                    {{ spec }}
+                </button>
+                }
+            </div>
+            }
+        </div>
+
+        <!-- Status Filter -->
+        <div class="relative">
+            <button (click)="toggleFilterMenu('status', $event)"
+                class="flex items-center gap-1.5 px-4 py-2 border border-gray-200 rounded-lg text-sm text-gray-500 hover:bg-gray-50 transition-colors bg-white shadow-[0_1px_2px_rgba(0,0,0,0.02)]"
+                [class.ring-1]="activeFilterMenu() === 'status'"
+                [class.ring-[#159EEC]]="activeFilterMenu() === 'status'">
+                <lucide-icon [img]="Filter" class="w-3.5 h-3.5 text-gray-400"></lucide-icon>
+                <span class="truncate max-w-[80px]">
+                    {{ filterStatus() === 'All' ? 'Status' : filterStatus() }}
+                </span>
+                <lucide-icon [img]="ChevronDown" class="w-3.5 h-3.5 text-gray-400 ml-1"
+                    [class.rotate-180]="activeFilterMenu() === 'status'"></lucide-icon>
+            </button>
+            @if (activeFilterMenu() === 'status') {
+            <div
+                class="absolute top-full mt-1 left-0 z-50 w-40 bg-white border border-gray-100 rounded-lg shadow-lg py-1 max-h-60 overflow-auto">
+                @for (stat of availableStatuses(); track stat) {
+                <button (click)="setFilter('status', stat)"
+                    class="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
+                    [class.bg-emerald-50]="filterStatus() === stat" [class.text-emerald-700]="filterStatus() === stat"
+                    [class.hover:bg-emerald-100]="filterStatus() === stat">
+                    {{ stat }}
+                </button>
+                }
+            </div>
+            }
+        </div>
     </div>
     <button (click)="addDoctor.emit()"
         class="shrink-0 bg-[#1F2B6C] hover:bg-[#151D4A] text-white px-5 py-2.5 rounded-lg text-sm font-medium transition-colors shadow-sm flex items-center gap-2 cursor-pointer">

@@ -10,19 +10,64 @@
                 (input)="searchQuery.set($any($event.target).value)"
                 class="block w-full pl-9 pr-3 py-2 border border-gray-200 rounded-lg text-sm placeholder-gray-400 focus:outline-none focus:ring-1 focus:ring-[#159EEC] focus:border-[#159EEC] bg-gray-50/20 transition-all">
         </div>
-        <!-- Filter Buttons (mock) -->
-        <button
-            class="flex items-center gap-1.5 px-4 py-2 border border-gray-200 rounded-lg text-sm text-gray-500 hover:bg-gray-50 transition-colors bg-white shadow-[0_1px_2px_rgba(0,0,0,0.02)]">
-            <lucide-icon [img]="Filter" class="w-3.5 h-3.5 text-gray-400"></lucide-icon>
-            Gender
-            <lucide-icon [img]="ChevronDown" class="w-3.5 h-3.5 text-gray-400 ml-1"></lucide-icon>
-        </button>
-        <button
-            class="flex items-center gap-1.5 px-4 py-2 border border-gray-200 rounded-lg text-sm text-gray-500 hover:bg-gray-50 transition-colors bg-white shadow-[0_1px_2px_rgba(0,0,0,0.02)]">
-            <lucide-icon [img]="Filter" class="w-3.5 h-3.5 text-gray-400"></lucide-icon>
-            Blood Type
-            <lucide-icon [img]="ChevronDown" class="w-3.5 h-3.5 text-gray-400 ml-1"></lucide-icon>
-        </button>
+        <!-- Filter Buttons -->
+        <!-- Gender Filter -->
+        <div class="relative">
+            <button (click)="toggleFilterMenu('gender', $event)"
+                class="flex items-center gap-1.5 px-4 py-2 border border-gray-200 rounded-lg text-sm text-gray-500 hover:bg-gray-50 transition-colors bg-white shadow-[0_1px_2px_rgba(0,0,0,0.02)]"
+                [class.ring-1]="activeFilterMenu() === 'gender'"
+                [class.ring-[#159EEC]]="activeFilterMenu() === 'gender'">
+                <lucide-icon [img]="Filter" class="w-3.5 h-3.5 text-gray-400"></lucide-icon>
+                <span class="truncate max-w-[80px]">
+                    {{ filterGender() === 'All' ? 'Gender' : filterGender() }}
+                </span>
+                <lucide-icon [img]="ChevronDown" class="w-3.5 h-3.5 text-gray-400 ml-1"
+                    [class.rotate-180]="activeFilterMenu() === 'gender'"></lucide-icon>
+            </button>
+            @if (activeFilterMenu() === 'gender') {
+            <div
+                class="absolute top-full mt-1 left-0 z-50 w-40 bg-white border border-gray-100 rounded-lg shadow-lg py-1 max-h-60 overflow-auto">
+                @for (gender of availableGenders(); track gender) {
+                <button (click)="setFilter('gender', gender)"
+                    class="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
+                    [class.bg-emerald-50]="filterGender() === gender"
+                    [class.text-emerald-700]="filterGender() === gender"
+                    [class.hover:bg-emerald-100]="filterGender() === gender">
+                    {{ gender }}
+                </button>
+                }
+            </div>
+            }
+        </div>
+
+        <!-- Blood Type Filter -->
+        <div class="relative">
+            <button (click)="toggleFilterMenu('bloodType', $event)"
+                class="flex items-center gap-1.5 px-4 py-2 border border-gray-200 rounded-lg text-sm text-gray-500 hover:bg-gray-50 transition-colors bg-white shadow-[0_1px_2px_rgba(0,0,0,0.02)]"
+                [class.ring-1]="activeFilterMenu() === 'bloodType'"
+                [class.ring-[#159EEC]]="activeFilterMenu() === 'bloodType'">
+                <lucide-icon [img]="Filter" class="w-3.5 h-3.5 text-gray-400"></lucide-icon>
+                <span class="truncate max-w-[80px]">
+                    {{ filterBloodType() === 'All' ? 'Blood Type' : filterBloodType() }}
+                </span>
+                <lucide-icon [img]="ChevronDown" class="w-3.5 h-3.5 text-gray-400 ml-1"
+                    [class.rotate-180]="activeFilterMenu() === 'bloodType'"></lucide-icon>
+            </button>
+            @if (activeFilterMenu() === 'bloodType') {
+            <div
+                class="absolute top-full mt-1 left-0 z-50 w-40 bg-white border border-gray-100 rounded-lg shadow-lg py-1 max-h-60 overflow-auto">
+                @for (bType of availableBloodTypes(); track bType) {
+                <button (click)="setFilter('bloodType', bType)"
+                    class="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
+                    [class.bg-emerald-50]="filterBloodType() === bType"
+                    [class.text-emerald-700]="filterBloodType() === bType"
+                    [class.hover:bg-emerald-100]="filterBloodType() === bType">
+                    {{ bType }}
+                </button>
+                }
+            </div>
+            }
+        </div>
     </div>
     <div class="flex items-center gap-3 shrink-0">
         @if (hasSelectedPatients) {

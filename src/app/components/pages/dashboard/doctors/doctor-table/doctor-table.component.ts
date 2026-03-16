@@ -42,6 +42,19 @@ export class DoctorTableComponent implements OnInit {
     searchQuery = signal('');
     sortColumn = signal<string>('');
     sortDirection = signal<'asc' | 'desc'>('asc');
+    filterSpecialty = signal<string>('All');
+    filterStatus = signal<string>('All');
+    activeFilterMenu = signal<string | null>(null);
+
+    availableSpecialties = computed(() => {
+        const specs = this.doctors().map(d => d.specialty).filter(s => !!s);
+        return ['All', ...Array.from(new Set(specs)).sort()];
+    });
+
+    availableStatuses = computed(() => {
+        const statuses = this.doctors().map(d => d.availability).filter(s => !!s);
+        return ['All', ...Array.from(new Set(statuses)).sort()];
+    });
 
     constructor() {
         // Reset to page 1 when search query changes
@@ -54,6 +67,16 @@ export class DoctorTableComponent implements OnInit {
     filteredDoctors = computed(() => {
         const query = this.searchQuery().toLowerCase().trim();
         let result = this.doctors();
+
+        const specFilter = this.filterSpecialty();
+        if (specFilter !== 'All') {
+            result = result.filter(d => d.specialty === specFilter);
+        }
+
+        const statFilter = this.filterStatus();
+        if (statFilter !== 'All') {
+            result = result.filter(d => d.availability === statFilter);
+        }
 
         if (query) {
             result = result.filter(doc =>
@@ -148,6 +171,21 @@ export class DoctorTableComponent implements OnInit {
     closeDropdown(): void {
         this.activeItem = null;
         this.isPageSizeMenuOpen = false;
+        this.activeFilterMenu.set(null);
+    }
+
+    toggleFilterMenu(menu: string, event: Event): void {
+        event.stopPropagation();
+        this.activeFilterMenu.set(this.activeFilterMenu() === menu ? null : menu);
+        this.activeItem = null;
+        this.isPageSizeMenuOpen = false;
+    }
+
+    setFilter(type: 'specialty' | 'status', value: string): void {
+        if (type === 'specialty') this.filterSpecialty.set(value);
+        if (type === 'status') this.filterStatus.set(value);
+        this.activeFilterMenu.set(null);
+        this.currentPage.set(1);
     }
 
     togglePageSizeMenu(event: Event): void {
