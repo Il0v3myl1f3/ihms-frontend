@@ -31,8 +31,20 @@ export const routes: Routes = [
         loadComponent: () => import('./components/pages/dashboard/home/dashboard-home.component').then(m => m.DashboardHomeComponent)
       },
       {
-        path: 'appointment',
-        loadComponent: () => import('./components/pages/dashboard/home/dashboard-home.component').then(m => m.DashboardHomeComponent)
+        path: 'appointments',
+        loadComponent: () => import('./components/pages/dashboard/appointments/appointments-page.component').then(m => m.AppointmentsPageComponent)
+      },
+      {
+        path: 'prescriptions',
+        loadComponent: () => import('./components/pages/dashboard/prescriptions/prescriptions-page.component').then(m => m.PrescriptionsPageComponent),
+        canActivate: [roleGuard],
+        data: { allowedRoles: ['user'] }
+      },
+      {
+        path: 'medical-records',
+        loadComponent: () => import('./components/pages/dashboard/medical-records/medical-records-page.component').then(m => m.MedicalRecordsPageComponent),
+        canActivate: [roleGuard],
+        data: { allowedRoles: ['user'] }
       },
       {
         path: 'room',
