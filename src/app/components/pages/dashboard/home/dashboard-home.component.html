@@ -317,99 +317,127 @@
 <!--          USER / PATIENT DASHBOARD                  -->
 <!-- ═══════════════════════════════════════════════════ -->
 @if (userRole === 'user') {
-    <!-- Stat Cards Row -->
-    <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6 mb-8">
+    <!-- Top Row: Upcoming Appointment + Quick Actions -->
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
 
-        <!-- Upcoming Appointments -->
-        <div
-            class="group bg-white rounded-2xl border border-gray-100 shadow-sm p-6 hover:shadow-lg hover:border-[#159EEC]/30 transition-all duration-300 cursor-pointer">
-            <div class="flex items-center justify-between mb-4">
+        <!-- Upcoming Appointment — featured card -->
+        <div class="lg:col-span-2 bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
+            <div class="flex items-center justify-between mb-5">
+                <h3 class="text-lg font-bold text-[#1F2B6C]">Upcoming Appointment</h3>
+                <a routerLink="/dashboard/appointments"
+                    class="text-xs font-semibold text-[#159EEC] hover:text-[#1282C4] transition-colors">View All →</a>
+            </div>
+
+            @if (upcomingAppointment) {
+            <div class="flex items-start gap-5 p-4 rounded-xl bg-[#159EEC]/5 border border-[#159EEC]/15">
+                <!-- Date block -->
                 <div
-                    class="w-12 h-12 bg-blue-50 rounded-xl flex items-center justify-center group-hover:bg-[#159EEC]/15 transition-colors">
-                    <lucide-icon [img]="CalendarDays" class="w-6 h-6 text-[#159EEC]"></lucide-icon>
+                    class="flex flex-col items-center justify-center min-w-[64px] h-[64px] bg-[#159EEC] rounded-xl text-white shrink-0">
+                    <span class="text-xl font-bold leading-none">{{ upcomingAppointment.day }}</span>
+                    <span class="text-[10px] font-semibold uppercase tracking-wider mt-0.5">{{ upcomingAppointment.month
+                        }}</span>
                 </div>
+                <!-- Details -->
+                <div class="flex-1 min-w-0">
+                    <p class="text-base font-semibold text-[#1F2B6C] mb-1">{{ upcomingAppointment.title }}</p>
+                    <div class="space-y-1">
+                        <p class="text-sm text-gray-500 flex items-center gap-2">
+                            <lucide-icon [img]="Clock" class="w-3.5 h-3.5 text-gray-400"></lucide-icon>
+                            {{ upcomingAppointment.time }}
+                        </p>
+                        <p class="text-sm text-gray-500 flex items-center gap-2">
+                            <lucide-icon [img]="Stethoscope" class="w-3.5 h-3.5 text-gray-400"></lucide-icon>
+                            {{ upcomingAppointment.doctorName }}
+                        </p>
+                        <p class="text-sm text-gray-500 flex items-center gap-2">
+                            <lucide-icon [img]="MapPin" class="w-3.5 h-3.5 text-gray-400"></lucide-icon>
+                            {{ upcomingAppointment.cabinet }}
+                        </p>
+                    </div>
+                </div>
+                <!-- Status badge -->
                 <span
-                    class="text-xs font-semibold text-[#159EEC] bg-blue-50 px-2.5 py-1 rounded-full">Next: Mar
-                    15</span>
+                    class="text-xs font-semibold text-[#159EEC] bg-blue-50 px-3 py-1 rounded-full shrink-0 self-start">
+                    Scheduled
+                </span>
             </div>
-            <p class="text-2xl font-bold text-[#1F2B6C] mb-1">2</p>
-            <p class="text-sm text-gray-400">Upcoming Appointments</p>
+            } @else {
+            <div class="p-6 text-center text-gray-400 text-sm rounded-xl border border-dashed border-gray-200">
+                No upcoming appointments scheduled. Book one from Quick Actions below.
+            </div>
+            }
         </div>
 
-        <!-- Prescriptions -->
-        <div
-            class="group bg-white rounded-2xl border border-gray-100 shadow-sm p-6 hover:shadow-lg hover:border-emerald-200 transition-all duration-300 cursor-pointer">
-            <div class="flex items-center justify-between mb-4">
-                <div
-                    class="w-12 h-12 bg-emerald-50 rounded-xl flex items-center justify-center group-hover:bg-emerald-100 transition-colors">
-                    <lucide-icon [img]="ClipboardList" class="w-6 h-6 text-emerald-500"></lucide-icon>
-                </div>
-                <span class="text-xs font-semibold text-emerald-500 bg-emerald-50 px-2.5 py-1 rounded-full">All
-                    Active</span>
-            </div>
-            <p class="text-2xl font-bold text-[#1F2B6C] mb-1">3</p>
-            <p class="text-sm text-gray-400">Active Prescriptions</p>
-        </div>
+        <!-- Quick Actions -->
+        <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
+            <h3 class="text-lg font-bold text-[#1F2B6C] mb-5">Quick Actions</h3>
+            <div class="space-y-3">
+                <a routerLink="/dashboard/appointments"
+                    class="flex items-center gap-3 p-3.5 rounded-xl hover:bg-[#159EEC]/5 border border-gray-100 hover:border-[#159EEC]/20 transition-all group cursor-pointer">
+                    <div
+                        class="w-10 h-10 bg-blue-50 rounded-xl flex items-center justify-center group-hover:bg-[#159EEC]/15 transition-colors shrink-0">
+                        <lucide-icon [img]="CalendarDays" class="w-5 h-5 text-[#159EEC]"></lucide-icon>
+                    </div>
+                    <div>
+                        <p class="text-sm font-semibold text-[#1F2B6C] group-hover:text-[#159EEC] transition-colors">
+                            Book Appointment</p>
+                        <p class="text-xs text-gray-400">Schedule a visit with your doctor</p>
+                    </div>
+                </a>
 
-        <!-- Medical Records -->
-        <div
-            class="group bg-white rounded-2xl border border-gray-100 shadow-sm p-6 hover:shadow-lg hover:border-indigo-200 transition-all duration-300 cursor-pointer">
-            <div class="flex items-center justify-between mb-4">
-                <div
-                    class="w-12 h-12 bg-indigo-50 rounded-xl flex items-center justify-center group-hover:bg-indigo-100 transition-colors">
-                    <lucide-icon [img]="FileText" class="w-6 h-6 text-indigo-500"></lucide-icon>
-                </div>
-            </div>
-            <p class="text-2xl font-bold text-[#1F2B6C] mb-1">14</p>
-            <p class="text-sm text-gray-400">Medical Records</p>
-        </div>
+                <a routerLink="/dashboard/medical-records"
+                    class="flex items-center gap-3 p-3.5 rounded-xl hover:bg-emerald-50/50 border border-gray-100 hover:border-emerald-200 transition-all group cursor-pointer">
+                    <div
+                        class="w-10 h-10 bg-emerald-50 rounded-xl flex items-center justify-center group-hover:bg-emerald-100 transition-colors shrink-0">
+                        <lucide-icon [img]="FileText" class="w-5 h-5 text-emerald-500"></lucide-icon>
+                    </div>
+                    <div>
+                        <p class="text-sm font-semibold text-[#1F2B6C] group-hover:text-emerald-600 transition-colors">
+                            Lab Results</p>
+                        <p class="text-xs text-gray-400">View your test results</p>
+                    </div>
+                </a>
 
-        <!-- Health Score -->
-        <div
-            class="group bg-white rounded-2xl border border-gray-100 shadow-sm p-6 hover:shadow-lg hover:border-rose-200 transition-all duration-300 cursor-pointer">
-            <div class="flex items-center justify-between mb-4">
-                <div
-                    class="w-12 h-12 bg-rose-50 rounded-xl flex items-center justify-center group-hover:bg-rose-100 transition-colors">
-                    <lucide-icon [img]="Heart" class="w-6 h-6 text-rose-500"></lucide-icon>
-                </div>
-                <span
-                    class="text-xs font-semibold text-emerald-500 bg-emerald-50 px-2.5 py-1 rounded-full">Excellent</span>
+                <a routerLink="/dashboard/prescriptions"
+                    class="flex items-center gap-3 p-3.5 rounded-xl hover:bg-indigo-50/50 border border-gray-100 hover:border-indigo-200 transition-all group cursor-pointer">
+                    <div
+                        class="w-10 h-10 bg-indigo-50 rounded-xl flex items-center justify-center group-hover:bg-indigo-100 transition-colors shrink-0">
+                        <lucide-icon [img]="ClipboardList" class="w-5 h-5 text-indigo-500"></lucide-icon>
+                    </div>
+                    <div>
+                        <p class="text-sm font-semibold text-[#1F2B6C] group-hover:text-indigo-600 transition-colors">
+                            Prescriptions</p>
+                        <p class="text-xs text-gray-400">Manage your medications</p>
+                    </div>
+                </a>
             </div>
-            <p class="text-2xl font-bold text-[#1F2B6C] mb-1">92%</p>
-            <p class="text-sm text-gray-400">Health Score</p>
         </div>
     </div>
 
-    <!-- Patient Quick-Access Cards -->
+    <!-- Bottom Row: Active Prescriptions + Health Summary -->
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <!-- Upcoming Appointments Details -->
+        <!-- Active Prescriptions -->
         <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
-            <h3 class="text-lg font-bold text-[#1F2B6C] mb-4">Upcoming Appointments</h3>
+            <div class="flex items-center justify-between mb-4">
+                <h3 class="text-lg font-bold text-[#1F2B6C]">Active Prescriptions</h3>
+                <a routerLink="/dashboard/prescriptions"
+                    class="text-xs font-semibold text-[#159EEC] hover:text-[#1282C4] transition-colors">View All →</a>
+            </div>
             <div class="space-y-3">
-                <div
-                    class="flex items-center gap-4 p-3 rounded-xl bg-[#159EEC]/5 border border-[#159EEC]/15">
-                    <div class="text-center shrink-0 min-w-[52px]">
-                        <p class="text-lg font-bold text-[#159EEC]">15</p>
-                        <p class="text-[10px] font-semibold text-gray-400 uppercase">Mar</p>
+                @for (rx of activePrescriptions; track rx.name) {
+                <div class="flex items-center gap-4 p-3 rounded-xl hover:bg-gray-50 transition-colors">
+                    <div
+                        class="w-10 h-10 bg-indigo-50 rounded-xl flex items-center justify-center shrink-0">
+                        <lucide-icon [img]="Pill" class="w-5 h-5 text-indigo-500"></lucide-icon>
                     </div>
-                    <div class="w-px h-10 bg-[#159EEC]/30"></div>
                     <div class="flex-1 min-w-0">
-                        <p class="text-sm font-medium text-[#1F2B6C] truncate">General Checkup</p>
-                        <p class="text-xs text-gray-400">Dr. Jane Smith — 10:00 AM</p>
+                        <p class="text-sm font-medium text-[#1F2B6C] truncate">{{ rx.name }}</p>
+                        <p class="text-xs text-gray-400">{{ rx.dosage }} · {{ rx.doctor }}</p>
                     </div>
+                    <span
+                        class="text-xs font-semibold text-emerald-600 bg-emerald-50 px-2.5 py-1 rounded-full shrink-0">Active</span>
                 </div>
-                <div
-                    class="flex items-center gap-4 p-3 rounded-xl hover:bg-gray-50 transition-colors">
-                    <div class="text-center shrink-0 min-w-[52px]">
-                        <p class="text-lg font-bold text-gray-500">22</p>
-                        <p class="text-[10px] font-semibold text-gray-400 uppercase">Mar</p>
-                    </div>
-                    <div class="w-px h-10 bg-gray-200"></div>
-                    <div class="flex-1 min-w-0">
-                        <p class="text-sm font-medium text-[#1F2B6C] truncate">Blood Test Results</p>
-                        <p class="text-xs text-gray-400">Dr. Michael Chen — 02:30 PM</p>
-                    </div>
-                </div>
+                }
             </div>
         </div>
 

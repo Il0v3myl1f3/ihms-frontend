@@ -18,6 +18,9 @@ import {
     Lock,
     Plus,
     ChevronDown,
+    Pill,
+    FolderHeart,
+    ClipboardList,
 } from 'lucide-angular';
 
 import { AuthService, User } from '../../../services/auth.service';
@@ -63,7 +66,7 @@ export class SidebarComponent implements OnInit, OnDestroy {
             title: 'Menu',
             items: [
                 { label: 'Dashboard', icon: LayoutDashboard, route: '/dashboard' },
-                { label: 'Appointment', icon: CalendarDays, route: '/dashboard/appointment' },
+                { label: 'Appointments', icon: CalendarDays, route: '/dashboard/appointments' },
                 { label: 'Room', icon: DoorOpen, route: '/dashboard/room', roles: ['admin'] },
                 { label: 'Payment', icon: CreditCard, route: '/dashboard/payment', roles: ['admin', 'user'] },
             ],
@@ -74,6 +77,13 @@ export class SidebarComponent implements OnInit, OnDestroy {
                 { label: 'Doctor', icon: Stethoscope, route: '/dashboard/doctors', roles: ['admin'] },
                 { label: 'Patient', icon: Users, route: '/dashboard/patient', roles: ['admin', 'doctor'] },
                 { label: 'Inpatient', icon: BedDouble, route: '/dashboard/inpatient', roles: ['admin', 'doctor'] },
+            ],
+        },
+        {
+            title: 'Health',
+            items: [
+                { label: 'Prescriptions', icon: Pill, route: '/dashboard/prescriptions', roles: ['user'] },
+                { label: 'Medical Records', icon: FolderHeart, route: '/dashboard/medical-records', roles: ['user'] },
             ],
         },
     ];
