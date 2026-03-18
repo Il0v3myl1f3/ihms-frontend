@@ -26,7 +26,7 @@
             </button>
             @if (activeFilterMenu() === 'gender') {
             <div
-                class="absolute top-full mt-1 left-0 z-50 w-40 bg-white border border-gray-100 rounded-lg shadow-lg py-1 max-h-60 overflow-auto">
+                class="absolute top-full mt-1 left-0 z-50 w-40 bg-white border border-gray-100 rounded-lg shadow-lg py-1 max-h-60 overflow-auto slim-scroll">
                 @for (gender of availableGenders(); track gender) {
                 <button (click)="setFilter('gender', gender)"
                     class="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
@@ -55,7 +55,7 @@
             </button>
             @if (activeFilterMenu() === 'bloodType') {
             <div
-                class="absolute top-full mt-1 left-0 z-50 w-40 bg-white border border-gray-100 rounded-lg shadow-lg py-1 max-h-60 overflow-auto">
+                class="absolute top-full mt-1 left-0 z-50 w-40 bg-white border border-gray-100 rounded-lg shadow-lg py-1 max-h-60 overflow-auto slim-scroll">
                 @for (bType of availableBloodTypes(); track bType) {
                 <button (click)="setFilter('bloodType', bType)"
                     class="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
