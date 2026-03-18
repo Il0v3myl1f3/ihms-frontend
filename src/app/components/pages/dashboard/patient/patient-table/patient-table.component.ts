@@ -53,7 +53,7 @@ export class PatientTableComponent implements OnInit, OnDestroy {
     currentPage = signal(1);
     pageSize = signal(7);
     searchQuery = signal('');
-    sortColumn = signal<string>('');
+    sortColumn = signal<string>('no');
     sortDirection = signal<'asc' | 'desc'>('asc');
     filterGender = signal<string>('All');
     filterBloodType = signal<string>('All');
