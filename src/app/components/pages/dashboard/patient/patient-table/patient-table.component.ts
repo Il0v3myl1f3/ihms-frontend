@@ -144,7 +144,7 @@ export class PatientTableComponent implements OnInit, OnDestroy {
     }
 
     ngOnInit(): void {
-        // Default initialized in signal
+        this.checkResponsiveSettings();
     }
 
     changePageSize(size: number | string): void {
@@ -195,6 +195,19 @@ export class PatientTableComponent implements OnInit, OnDestroy {
     @HostListener('window:scroll')
     onWindowScroll(): void {
         this.activeItem = null;
+    }
+
+    @HostListener('window:resize')
+    onResize(): void {
+        this.checkResponsiveSettings();
+    }
+
+    private checkResponsiveSettings(): void {
+        if (window.innerWidth < 1024) {
+            if (this.pageSize() !== 7) {
+                this.pageSize.set(7);
+            }
+        }
     }
 
 
