@@ -58,7 +58,9 @@ export class SidebarComponent implements OnInit, OnDestroy {
 
     // State (Managed by parent)
     collapsed = input(false);
+    mobileOpen = input(false);
     onToggle = output<void>();
+    onMenuClick = output<void>();
 
     // Full menu definition with role restrictions
     private readonly allMenuSections: MenuSection[] = [

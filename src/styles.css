@@ -34,6 +34,12 @@ body {
     line-height: 1.2;
 }
 
+.text-dashboard-title {
+    font-family: var(--font-display);
+    font-size: clamp(26px, 5vw, 36px);
+    line-height: 1.2;
+}
+
 .text-title {
     font-family: var(--font-body);
     font-size: clamp(18px, 2.5vw, 24px);

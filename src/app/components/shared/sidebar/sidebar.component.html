@@ -1,6 +1,7 @@
 <aside
     class="sidebar fixed left-0 top-0 bottom-0 z-40 flex flex-col bg-white border-r border-gray-100 transition-all duration-300 ease-in-out"
-    [class.sidebar--collapsed]="collapsed()">
+    [class.sidebar--collapsed]="collapsed()"
+    [class.sidebar--active]="mobileOpen()">
     <!-- Brand + Toggle -->
     <div class="flex items-center justify-between px-5 w-full h-24 shrink-0 bg-gray-50/10">
         <a routerLink="/" class="flex items-center gap-3 cursor-pointer overflow-hidden transition-all duration-300"
@@ -15,11 +16,11 @@
             <span class="text-xl font-extrabold text-[#1F2B6C] tracking-tight">IHMS</span>
         </a>
 
-        <!-- Collapse toggle -->
-        <button (click)="toggleCollapse()"
-            class="flex items-center justify-center w-8 h-8 rounded-lg border border-gray-200 hover:bg-gray-50 transition-colors cursor-pointer shrink-0"
-            aria-label="Toggle sidebar">
-            <lucide-icon [img]="ChevronLeft" class="w-4 h-4 text-gray-500 transition-transform duration-300"
+        <!-- Toggle Button -->
+        <button (click)="onToggle.emit()"
+            [class.hidden]="mobileOpen()"
+            class="p-2 rounded-xl border border-gray-100 bg-white text-gray-400 hover:text-gray-600 transition-all active:scale-95 shadow-xs">
+            <lucide-icon [img]="ChevronLeft" class="w-5 h-5 transition-transform duration-300"
                 [class.rotate-180]="collapsed()"></lucide-icon>
         </button>
     </div>
@@ -29,8 +30,8 @@
         @for (section of menuSections; track section.title) {
         <div class="mb-6">
             <!-- Section Title -->
-            <p class="px-3 mb-2 text-xs font-semibold uppercase tracking-wider text-gray-400 transition-all duration-300 whitespace-nowrap"
-                [class.opacity-0]="collapsed()" [class.text-center]="collapsed()">
+            <p class="px-3 mb-2 text-xs font-semibold uppercase tracking-wider text-gray-400 transition-all duration-300 whitespace-nowrap overflow-hidden"
+                [class.opacity-0]="collapsed()" [class.h-0]="collapsed()" [class.mb-0]="collapsed()">
                 {{ section.title }}
             </p>
 
@@ -40,16 +41,17 @@
                 <li>
                     <a [routerLink]="item.route" #rla="routerLinkActive" routerLinkActive="bg-[#159EEC]/10 font-bold"
                         [routerLinkActiveOptions]="{exact: item.route === '/dashboard'}"
-                        class="sidebar-item flex items-center w-full rounded-2xl transition-all duration-200 cursor-pointer"
-                        [class.justify-center]="collapsed()" [class.px-4]="!collapsed()" [class.py-3]="true"
+                        class="sidebar-item flex items-center w-full rounded-2xl transition-all duration-200 cursor-pointer overflow-hidden"
+                        (click)="onMenuClick.emit()"
+                        [style.padding]="collapsed() ? '12px 14px' : '12px 16px'"
                         [class.text-[#159EEC]]="rla.isActive" [class.text-gray-500]="!rla.isActive"
                         [class.hover:bg-gray-50]="!rla.isActive" [title]="collapsed() ? item.label : ''">
                         <lucide-icon [img]="item.icon" [class.text-[#159EEC]]="rla.isActive"
                             [class.text-gray-500]="!rla.isActive"
                             class="w-5 h-5 shrink-0 transition-colors duration-200"></lucide-icon>
                         <span
-                            class="ml-3 text-sm font-medium whitespace-nowrap transition-all duration-300 text-gray-700"
-                            [class.hidden]="collapsed()">
+                            class="text-sm font-medium whitespace-nowrap transition-all duration-300 text-gray-700 overflow-hidden"
+                            [class.w-0]="collapsed()" [class.opacity-0]="collapsed()" [class.ml-3]="!collapsed()">
                             {{ item.label }}
                         </span>
                     </a>
@@ -61,26 +63,27 @@
     </nav>
 
     <!-- Bottom Section -->
-    <div class="px-5 py-4 space-y-1 mb-2">
+    <div class="px-3 py-4 space-y-1 mb-2">
         <!-- Help Center -->
-        <button class="flex items-center w-full rounded-2xl transition-all duration-200 cursor-pointer hover:bg-gray-50"
-            [class.justify-center]="collapsed()" [class.px-4]="!collapsed()" [class.py-3]="true"
+        <button (click)="onMenuClick.emit()"
+            class="flex items-center w-full rounded-2xl transition-all duration-200 cursor-pointer hover:bg-gray-50 overflow-hidden"
+            [style.padding]="collapsed() ? '12px 14px' : '12px 16px'"
             [title]="collapsed() ? 'Help Center' : ''">
             <lucide-icon [img]="HelpCircle" class="w-5 h-5 text-gray-500 shrink-0"></lucide-icon>
-            <span class="ml-3 text-sm font-medium text-gray-700 whitespace-nowrap transition-all duration-300"
-                [class.hidden]="collapsed()">
+            <span class="text-sm font-medium text-gray-700 whitespace-nowrap transition-all duration-300 overflow-hidden"
+                [class.w-0]="collapsed()" [class.opacity-0]="collapsed()" [class.ml-3]="!collapsed()">
                 Help Center
             </span>
         </button>
 
         <!-- Logout -->
-        <button (click)="logout()"
-            class="flex items-center w-full rounded-2xl transition-all duration-200 cursor-pointer group hover:bg-red-50"
-            [class.justify-center]="collapsed()" [class.px-4]="!collapsed()" [class.py-3]="true"
+        <button (click)="logout(); onMenuClick.emit()"
+            class="flex items-center w-full rounded-2xl transition-all duration-200 cursor-pointer group hover:bg-red-50 overflow-hidden"
+            [style.padding]="collapsed() ? '12px 14px' : '12px 16px'"
             [title]="collapsed() ? 'Logout' : ''">
             <lucide-icon [img]="LogOut" class="w-5 h-5 text-red-500 shrink-0"></lucide-icon>
-            <span class="ml-3 text-sm font-medium text-red-500 whitespace-nowrap transition-all duration-300"
-                [class.hidden]="collapsed()">
+            <span class="text-sm font-medium text-red-500 whitespace-nowrap transition-all duration-300 overflow-hidden"
+                [class.w-0]="collapsed()" [class.opacity-0]="collapsed()" [class.ml-3]="!collapsed()">
                 Logout
             </span>
         </button>
