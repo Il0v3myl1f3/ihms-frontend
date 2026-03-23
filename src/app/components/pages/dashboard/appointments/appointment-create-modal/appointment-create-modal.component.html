@@ -1,0 +1,96 @@
+<app-modal [isOpen]="isOpen()" title="{{ appointmentToEdit() ? 'Edit Appointment' : 'Create New Appointment' }}"
+    (close)="onCancel()">
+
+    <form [formGroup]="appointmentForm" modal-body>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-5">
+
+            <!-- Patient Name -->
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1.5">Patient Name *</label>
+                <div class="relative">
+                    <select formControlName="patientName"
+                        class="block w-full px-3 py-2 border border-gray-200 rounded-md text-sm focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 transition-colors appearance-none bg-white">
+                        <option value="" disabled>Select Patient</option>
+                        @for (name of patientNames(); track name) {
+                        <option [value]="name">{{ name }}</option>
+                        }
+                    </select>
+                    <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-500">
+                        <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7">
+                            </path>
+                        </svg>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Doctor Name -->
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1.5">Doctor Name *</label>
+                <div class="relative">
+                    <select formControlName="doctorName"
+                        class="block w-full px-3 py-2 border border-gray-200 rounded-md text-sm focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 transition-colors appearance-none bg-white">
+                        <option value="" disabled>Select Doctor</option>
+                        @for (doc of doctors(); track doc.id) {
+                        <option [value]="doc.name">{{ doc.name }}</option>
+                        }
+                    </select>
+                    <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-500">
+                        <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7">
+                            </path>
+                        </svg>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Appointment Date -->
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1.5">Appointment Date {{ appointmentToEdit() ?
+                    '' : '*' }}</label>
+                <input type="date" formControlName="date"
+                    class="block w-full px-3 py-2 border border-gray-200 rounded-md text-sm text-gray-600 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 transition-colors" />
+            </div>
+
+            <!-- Status -->
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1.5">Status *</label>
+                <div class="relative">
+                    <select formControlName="status"
+                        class="block w-full px-3 py-2 border border-gray-200 rounded-md text-sm focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 transition-colors appearance-none bg-white">
+                        <option value="Scheduled">Scheduled</option>
+                        <option value="Cancelled">Cancelled</option>
+                        <option value="Completed">Completed</option>
+                    </select>
+                    <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-500">
+                        <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7">
+                            </path>
+                        </svg>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Notes (full width) -->
+            <div class="md:col-span-2">
+                <label class="block text-sm font-medium text-gray-700 mb-1.5">Notes</label>
+                <textarea formControlName="notes" placeholder="Additional notes about the appointment" rows="4"
+                    maxlength="200"
+                    class="block w-full px-3 py-2 border border-gray-200 rounded-md text-sm focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 transition-colors resize-none"></textarea>
+                <p class="text-xs text-gray-400 mt-1">{{ notesLength }}/200</p>
+            </div>
+
+        </div>
+    </form>
+
+    <div modal-footer class="w-full flex items-center justify-end gap-3">
+        <button type="button" (click)="onCancel()"
+            class="px-5 py-2.5 bg-white border border-gray-200 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors">
+            Cancel
+        </button>
+        <button type="button" (click)="onSubmit()"
+            class="px-5 py-2.5 bg-blue-600 disabled:bg-gray-400 disabled:cursor-not-allowed text-white rounded-md text-sm font-medium hover:bg-blue-700 transition-colors shadow-sm">
+            {{ appointmentToEdit() ? 'Save Changes' : 'Create Appointment' }}
+        </button>
+    </div>
+</app-modal>
