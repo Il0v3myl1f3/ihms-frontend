@@ -1,7 +1,7 @@
-import { Component, OnInit, inject, ChangeDetectionStrategy, signal } from '@angular/core';
+import { Component, OnInit, inject, ViewChild, ChangeDetectionStrategy, signal } from '@angular/core';
 import { MedicalService, Doctor } from '../../../../services/medical.service';
 import { AddDoctorComponent } from './add-doctor/add-doctor.component';
-import { DoctorTableComponent } from './doctor-table/doctor-table.component';
+import { DoctorTableComponent, DoctorRow } from './doctor-table/doctor-table.component';
 
 @Component({
     selector: 'app-dashboard-doctors',
@@ -11,8 +11,11 @@ import { DoctorTableComponent } from './doctor-table/doctor-table.component';
     changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class DashboardDoctorsComponent implements OnInit {
-    doctors = signal<Doctor[]>([]);
-    isAddModalOpen = false;
+    @ViewChild(DoctorTableComponent) doctorTable!: DoctorTableComponent;
+
+    doctors = signal<DoctorRow[]>([]);
+    isAddDoctorModalOpen = false;
+    selectedDoctorForEdit: DoctorRow | null = null;
 
     private medicalService = inject(MedicalService);
 
@@ -22,33 +25,94 @@ export class DashboardDoctorsComponent implements OnInit {
 
     private loadDoctors(): void {
         this.medicalService.getDoctors().subscribe(data => {
-            this.doctors.set(data);
+            this.doctors.set(
+                data.map((d, index) => ({
+                    ...d,
+                    no: index + 1,
+                    selected: false
+                }))
+            );
         });
     }
 
-    openAddModal(): void {
-        this.isAddModalOpen = true;
+    openAddDoctorModal(): void {
+        this.selectedDoctorForEdit = null;
+        this.isAddDoctorModalOpen = true;
     }
 
-    closeAddModal(): void {
-        this.isAddModalOpen = false;
+    closeAddDoctorModal(): void {
+        this.isAddDoctorModalOpen = false;
     }
 
-    handleAddDoctor(doctorData: { name: string; specialty: string; phone: string; availability: string }): void {
-        this.medicalService.addDoctor(doctorData as Omit<Doctor, 'id' | 'image' | 'role'>).subscribe(() => {
-            this.loadDoctors();
-            this.closeAddModal();
-        });
+    onEditDoctor(doctor: DoctorRow): void {
+        this.selectedDoctorForEdit = doctor;
+        this.isAddDoctorModalOpen = true;
     }
 
-    handleEditDoctor(doctor: Doctor): void {
-        console.log('Edit doctor:', doctor);
-        // Implementation for edit will go here
+    onDeleteDoctor(doctor: DoctorRow): void {
+        const current = this.doctors();
+        const filtered = current.filter(d => d.id !== doctor.id);
+        this.doctors.set(filtered.map((d, index) => ({ ...d, no: index + 1 })));
+
+        if (this.doctorTable) {
+            const totalPages = this.doctorTable.totalPages();
+            if (this.doctorTable.currentPage() > totalPages && totalPages > 0) {
+                this.doctorTable.currentPage.set(totalPages);
+            } else if (totalPages === 0) {
+                this.doctorTable.currentPage.set(1);
+            }
+        }
     }
 
-    handleDeleteDoctor(doctor: Doctor): void {
-        if (confirm(`Are you sure you want to delete Dr. ${doctor.name}?`)) {
-            // Implementation for delete will go here
+    onDeleteSelectedDoctors(selectedDoctors: DoctorRow[]): void {
+        const selectedIds = new Set(selectedDoctors.map(d => d.id));
+        const current = this.doctors();
+        const filtered = current.filter(d => !selectedIds.has(d.id));
+        this.doctors.set(filtered.map((d, index) => ({ ...d, no: index + 1 })));
+
+        if (this.doctorTable) {
+            const totalPages = this.doctorTable.totalPages();
+            if (this.doctorTable.currentPage() > totalPages && totalPages > 0) {
+                this.doctorTable.currentPage.set(totalPages);
+            } else if (totalPages === 0) {
+                this.doctorTable.currentPage.set(1);
+            }
+        }
+    }
+
+    onDoctorSaved(doctorData: Record<string, string>): void {
+        if (this.selectedDoctorForEdit) {
+            const current = this.doctors();
+            const index = current.findIndex(d => d.id === this.selectedDoctorForEdit!.id);
+            if (index !== -1) {
+                const updated = [...current];
+                updated[index] = { ...updated[index], ...doctorData, role: doctorData['specialty'] };
+                this.doctors.set(updated);
+            }
+        } else {
+            const current = this.doctors();
+            const newId = current.length > 0 ? Math.max(...current.map(d => d.id)) + 1 : 1;
+            const newNo = current.length > 0 ? Math.max(...current.map(d => d.no)) + 1 : 1;
+            const newDoctor: DoctorRow = {
+                id: newId,
+                no: newNo,
+                name: doctorData['name'],
+                role: doctorData['specialty'],
+                specialty: doctorData['specialty'],
+                image: '',
+                phone: doctorData['phone'],
+                availability: doctorData['availability'] as Doctor['availability'],
+                selected: false
+            };
+            this.doctors.set([...current, newDoctor]);
+        }
+
+        this.isAddDoctorModalOpen = false;
+
+        if (this.doctorTable) {
+            if (!this.selectedDoctorForEdit) {
+                this.doctorTable.goToPage(this.doctorTable.totalPages());
+            }
         }
     }
 }

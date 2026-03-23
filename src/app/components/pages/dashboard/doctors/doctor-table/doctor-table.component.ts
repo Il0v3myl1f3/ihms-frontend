@@ -1,25 +1,30 @@
-import { Component, OnInit, input, output, ChangeDetectionStrategy, signal, computed, HostListener, effect, untracked } from '@angular/core';
+import { Component, OnInit, OnDestroy, input, output, ChangeDetectionStrategy, signal, computed, HostListener, effect, untracked } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { LucideAngularModule, Search, Filter, MoreHorizontal, ChevronLeft, ChevronRight, Pencil, Trash2, Plus, ChevronDown, ChevronUp, Eye } from 'lucide-angular';
 import { Doctor } from '../../../../../services/medical.service';
 
+export interface DoctorRow extends Doctor {
+    no: number;
+    selected: boolean;
+}
+
 @Component({
     selector: 'app-doctor-table',
-    standalone: true,
     imports: [CommonModule, FormsModule, LucideAngularModule],
     templateUrl: './doctor-table.component.html',
-    styleUrls: ['./doctor-table.component.css'],
+    styleUrl: './doctor-table.component.css',
     changeDetection: ChangeDetectionStrategy.OnPush,
     host: {
         '(document:click)': 'closeDropdown()'
     }
 })
-export class DoctorTableComponent implements OnInit {
-    doctors = input<Doctor[]>([]);
-    editDoctor = output<Doctor>();
-    deleteDoctor = output<Doctor>();
-    viewDoctor = output<Doctor>();
+export class DoctorTableComponent implements OnInit, OnDestroy {
+    doctors = input<DoctorRow[]>([]);
+    editDoctor = output<DoctorRow>();
+    deleteDoctor = output<DoctorRow>();
+    deleteSelected = output<DoctorRow[]>();
+    viewDoctor = output<DoctorRow>();
     addDoctor = output<void>();
 
     readonly Search = Search;
@@ -34,13 +39,15 @@ export class DoctorTableComponent implements OnInit {
     readonly ChevronUp = ChevronUp;
     readonly Eye = Eye;
 
-    activeItem: Doctor | null = null;
+    activeItem: DoctorRow | null = null;
     dropdownPos = { top: 0, right: 0 };
     isPageSizeMenuOpen = false;
+
+    selectAll = false;
     currentPage = signal(1);
     pageSize = signal(7);
     searchQuery = signal('');
-    sortColumn = signal<string>('');
+    sortColumn = signal<string>('no');
     sortDirection = signal<'asc' | 'desc'>('asc');
     filterSpecialty = signal<string>('All');
     filterStatus = signal<string>('All');
@@ -57,7 +64,6 @@ export class DoctorTableComponent implements OnInit {
     });
 
     constructor() {
-        // Reset to page 1 when search query changes
         effect(() => {
             this.searchQuery();
             untracked(() => this.currentPage.set(1));
@@ -84,6 +90,7 @@ export class DoctorTableComponent implements OnInit {
                 doc.specialty.toLowerCase().includes(query) ||
                 (doc.phone?.toLowerCase().includes(query)) ||
                 (doc.availability?.toLowerCase().includes(query)) ||
+                doc.no.toString().includes(query) ||
                 doc.id.toString().includes(query)
             );
         }
@@ -93,8 +100,8 @@ export class DoctorTableComponent implements OnInit {
 
         if (col) {
             result = [...result].sort((a, b) => {
-                let aVal: any = a[col as keyof Doctor];
-                let bVal: any = b[col as keyof Doctor];
+                let aVal: any = a[col as keyof DoctorRow];
+                let bVal: any = b[col as keyof DoctorRow];
 
                 if (aVal < bVal) return -1 * dir;
                 if (aVal > bVal) return 1 * dir;
@@ -116,13 +123,82 @@ export class DoctorTableComponent implements OnInit {
     }
 
     ngOnInit(): void {
-        // Default initialized in signal
+        this.checkResponsiveSettings();
     }
 
     changePageSize(size: number | string): void {
         this.pageSize.set(Number(size));
         this.currentPage.set(1);
         this.isPageSizeMenuOpen = false;
+    }
+
+    closeDropdown(): void {
+        this.activeItem = null;
+        this.isPageSizeMenuOpen = false;
+        this.activeFilterMenu.set(null);
+    }
+
+    toggleFilterMenu(menu: string, event: Event): void {
+        event.stopPropagation();
+        this.activeFilterMenu.set(this.activeFilterMenu() === menu ? null : menu);
+        this.activeItem = null;
+        this.isPageSizeMenuOpen = false;
+    }
+
+    setFilter(type: 'specialty' | 'status', value: string): void {
+        if (type === 'specialty') this.filterSpecialty.set(value);
+        if (type === 'status') this.filterStatus.set(value);
+        this.activeFilterMenu.set(null);
+        this.currentPage.set(1);
+    }
+
+    togglePageSizeMenu(event: Event): void {
+        event.stopPropagation();
+        this.isPageSizeMenuOpen = !this.isPageSizeMenuOpen;
+        this.activeItem = null;
+    }
+
+    toggleDropdown(doc: DoctorRow, event: Event): void {
+        event.stopPropagation();
+        if (this.activeItem?.id === doc.id) {
+            this.activeItem = null;
+            return;
+        }
+        const btn = (event.currentTarget as HTMLElement).getBoundingClientRect();
+        this.dropdownPos = { top: btn.bottom + 4, right: window.innerWidth - btn.right };
+        this.activeItem = doc;
+    }
+
+    ngOnDestroy(): void { }
+
+    @HostListener('window:scroll')
+    onWindowScroll(): void {
+        this.activeItem = null;
+    }
+
+    @HostListener('window:resize')
+    onResize(): void {
+        this.checkResponsiveSettings();
+    }
+
+    private checkResponsiveSettings(): void {
+        if (window.innerWidth < 1024) {
+            if (this.pageSize() !== 7) {
+                this.pageSize.set(7);
+            }
+        }
+    }
+
+    toggleSelectAll(): void {
+        this.doctors().forEach(d => d.selected = this.selectAll);
+    }
+
+    updateSelectAllState(): void {
+        this.selectAll = this.doctors().every(d => d.selected);
+    }
+
+    get hasSelectedDoctors(): boolean {
+        return this.doctors().some(d => d.selected);
     }
 
     totalPages = computed(() => {
@@ -168,61 +244,38 @@ export class DoctorTableComponent implements OnInit {
         }
     }
 
-    closeDropdown(): void {
-        this.activeItem = null;
-        this.isPageSizeMenuOpen = false;
-        this.activeFilterMenu.set(null);
-    }
-
-    toggleFilterMenu(menu: string, event: Event): void {
-        event.stopPropagation();
-        this.activeFilterMenu.set(this.activeFilterMenu() === menu ? null : menu);
-        this.activeItem = null;
-        this.isPageSizeMenuOpen = false;
-    }
-
-    setFilter(type: 'specialty' | 'status', value: string): void {
-        if (type === 'specialty') this.filterSpecialty.set(value);
-        if (type === 'status') this.filterStatus.set(value);
-        this.activeFilterMenu.set(null);
-        this.currentPage.set(1);
-    }
-
-    togglePageSizeMenu(event: Event): void {
-        event.stopPropagation();
-        this.isPageSizeMenuOpen = !this.isPageSizeMenuOpen;
-        this.activeItem = null;
-    }
-
-    toggleDropdown(doc: Doctor, event: Event): void {
-        event.stopPropagation();
-        if (this.activeItem?.id === doc.id) {
-            this.activeItem = null;
-            return;
-        }
-        const btn = (event.currentTarget as HTMLElement).getBoundingClientRect();
-        this.dropdownPos = { top: btn.bottom + 4, right: window.innerWidth - btn.right };
-        this.activeItem = doc;
-    }
-
-    @HostListener('window:scroll')
-    onWindowScroll(): void {
-        this.activeItem = null;
-    }
-
     getAvatarInitialsName(name: string): string {
         return name.replace('Dr. ', '').replace(' ', '+');
     }
 
-    onEdit(doctor: Doctor): void {
+    onEdit(doctor: DoctorRow): void {
         this.editDoctor.emit(doctor);
     }
 
-    onView(doctor: Doctor): void {
+    onView(doctor: DoctorRow): void {
         this.viewDoctor.emit(doctor);
     }
 
-    onDelete(doctor: Doctor): void {
-        this.deleteDoctor.emit(doctor);
+    onDelete(doctor: DoctorRow): void {
+        if (confirm(`Are you sure you want to delete Dr. "${doctor.name}"?`)) {
+            this.deleteDoctor.emit(doctor);
+        }
+    }
+
+    onDeleteSelected(): void {
+        const selected = this.doctors().filter(d => d.selected);
+        if (selected.length === 0) return;
+        if (confirm(`Are you sure you want to delete ${selected.length} selected doctor(s)?`)) {
+            this.deleteSelected.emit(selected);
+            this.selectAll = false;
+        }
+    }
+
+    getStatusClasses(status: string | undefined): string {
+        switch (status) {
+            case 'Available': return 'bg-emerald-50 text-emerald-700';
+            case 'On Leave': return 'bg-red-50 text-red-600';
+            default: return 'bg-gray-50 text-gray-700';
+        }
     }
 }
