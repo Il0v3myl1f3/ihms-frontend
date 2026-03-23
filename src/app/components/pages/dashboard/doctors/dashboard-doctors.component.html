@@ -1,4 +1,5 @@
-<div class="h-full flex flex-col">
+<div class="h-full flex flex-col w-full">
+    <!-- Page Header -->
     <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
         <div>
             <h2 class="text-dashboard-title text-[#1F2B6C] tracking-tight mb-1">List Doctors</h2>
@@ -6,13 +7,18 @@
         </div>
     </div>
 
-    <div class="bg-white rounded-[20px] border border-gray-100 flex flex-col shadow-sm">
-        <app-doctor-table [doctors]="doctors()" (editDoctor)="handleEditDoctor($event)"
-            (deleteDoctor)="handleDeleteDoctor($event)" (addDoctor)="openAddModal()">
-        </app-doctor-table>
+    <!-- Table Container -->
+    <div class="bg-white rounded-[20px] border border-gray-100 flex-1 flex flex-col relative shadow-sm">
+        <app-doctor-table class="flex-1 flex flex-col h-full" [doctors]="doctors()"
+            (editDoctor)="onEditDoctor($event)" (deleteDoctor)="onDeleteDoctor($event)"
+            (deleteSelected)="onDeleteSelectedDoctors($event)"
+            (addDoctor)="openAddDoctorModal()"></app-doctor-table>
     </div>
-
-    <!-- Custom Reusable Modal for Add Doctor -->
-    <app-add-doctor [isOpen]="isAddModalOpen" (save)="handleAddDoctor($event)" (cancel)="closeAddModal()">
-    </app-add-doctor>
 </div>
+
+<!-- Modal Overlay -->
+@if (isAddDoctorModalOpen) {
+<app-doctor-create-modal [isOpen]="isAddDoctorModalOpen" [doctorToEdit]="selectedDoctorForEdit"
+    (closeModal)="closeAddDoctorModal()" (saveDoctor)="onDoctorSaved($event)">
+</app-doctor-create-modal>
+}

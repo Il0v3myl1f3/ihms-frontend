@@ -1,45 +1,51 @@
 import { Component, OnInit, OnDestroy, input, output, ChangeDetectionStrategy, signal, computed, HostListener, effect, untracked } from '@angular/core';
-import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { LucideAngularModule, Search, Filter, MoreHorizontal, ChevronLeft, ChevronRight, Pencil, Trash2, Plus, ChevronDown, ChevronUp, Eye } from 'lucide-angular';
-import { Doctor } from '../../../../../services/medical.service';
+import { CommonModule } from '@angular/common';
+import { LucideAngularModule, Pencil, Trash2, MoreHorizontal, Search, Filter, ChevronLeft, ChevronRight, Plus, ChevronDown, ChevronUp, Eye } from 'lucide-angular';
 
-export interface DoctorRow extends Doctor {
+export interface Room {
+    id: number;
     no: number;
+    roomNumber: string;
+    type: 'Single' | 'Double' | 'Suite' | 'ICU' | 'Operating';
+    floor: number;
+    capacity: number;
+    status: 'Available' | 'Occupied' | 'Maintenance' | 'Reserved';
+    pricePerDay: number;
     selected: boolean;
 }
 
 @Component({
-    selector: 'app-doctor-table',
-    imports: [CommonModule, FormsModule, LucideAngularModule],
-    templateUrl: './doctor-table.component.html',
-    styleUrl: './doctor-table.component.css',
+    selector: 'app-room-table',
+    imports: [FormsModule, LucideAngularModule, CommonModule],
+    templateUrl: './room-table.component.html',
+    styleUrl: './room-table.component.css',
     changeDetection: ChangeDetectionStrategy.OnPush,
     host: {
         '(document:click)': 'closeDropdown()'
     }
 })
-export class DoctorTableComponent implements OnInit, OnDestroy {
-    doctors = input<DoctorRow[]>([]);
-    editDoctor = output<DoctorRow>();
-    deleteDoctor = output<DoctorRow>();
-    deleteSelected = output<DoctorRow[]>();
-    viewDoctor = output<DoctorRow>();
-    addDoctor = output<void>();
+export class RoomTableComponent implements OnInit, OnDestroy {
+    rooms = input<Room[]>([]);
+    editRoom = output<Room>();
+    deleteRoom = output<Room>();
+    deleteSelected = output<Room[]>();
+    addRoom = output<void>();
+    viewRoom = output<Room>();
 
-    readonly Search = Search;
-    readonly Filter = Filter;
-    readonly MoreHorizontal = MoreHorizontal;
-    readonly ChevronLeft = ChevronLeft;
-    readonly ChevronRight = ChevronRight;
     readonly Pencil = Pencil;
     readonly Trash2 = Trash2;
+    readonly MoreHorizontal = MoreHorizontal;
+    readonly Search = Search;
+    readonly Filter = Filter;
+    readonly ChevronLeft = ChevronLeft;
+    readonly ChevronRight = ChevronRight;
     readonly Plus = Plus;
     readonly ChevronDown = ChevronDown;
     readonly ChevronUp = ChevronUp;
     readonly Eye = Eye;
 
-    activeItem: DoctorRow | null = null;
+    activeItem: Room | null = null;
     dropdownPos = { top: 0, right: 0 };
     isPageSizeMenuOpen = false;
 
@@ -49,17 +55,17 @@ export class DoctorTableComponent implements OnInit, OnDestroy {
     searchQuery = signal('');
     sortColumn = signal<string>('no');
     sortDirection = signal<'asc' | 'desc'>('asc');
-    filterSpecialty = signal<string>('All');
+    filterType = signal<string>('All');
     filterStatus = signal<string>('All');
     activeFilterMenu = signal<string | null>(null);
 
-    availableSpecialties = computed(() => {
-        const specs = this.doctors().map(d => d.specialty).filter(s => !!s);
-        return ['All', ...Array.from(new Set(specs)).sort()];
+    availableTypes = computed(() => {
+        const types = this.rooms().map(r => r.type).filter(s => !!s);
+        return ['All', ...Array.from(new Set(types)).sort()];
     });
 
     availableStatuses = computed(() => {
-        const statuses = this.doctors().map(d => d.availability).filter(s => !!s);
+        const statuses = this.rooms().map(r => r.status).filter(s => !!s);
         return ['All', ...Array.from(new Set(statuses)).sort()];
     });
 
@@ -70,28 +76,29 @@ export class DoctorTableComponent implements OnInit, OnDestroy {
         });
     }
 
-    filteredDoctors = computed(() => {
+    filteredRooms = computed(() => {
         const query = this.searchQuery().toLowerCase().trim();
-        let result = this.doctors();
+        let result = this.rooms();
 
-        const specFilter = this.filterSpecialty();
-        if (specFilter !== 'All') {
-            result = result.filter(d => d.specialty === specFilter);
+        const typeFilter = this.filterType();
+        if (typeFilter !== 'All') {
+            result = result.filter(r => r.type === typeFilter);
         }
 
-        const statFilter = this.filterStatus();
-        if (statFilter !== 'All') {
-            result = result.filter(d => d.availability === statFilter);
+        const statusFilter = this.filterStatus();
+        if (statusFilter !== 'All') {
+            result = result.filter(r => r.status === statusFilter);
         }
 
         if (query) {
-            result = result.filter(doc =>
-                doc.name.toLowerCase().includes(query) ||
-                doc.specialty.toLowerCase().includes(query) ||
-                (doc.phone?.toLowerCase().includes(query)) ||
-                (doc.availability?.toLowerCase().includes(query)) ||
-                doc.no.toString().includes(query) ||
-                doc.id.toString().includes(query)
+            result = result.filter(r =>
+                r.roomNumber.toLowerCase().includes(query) ||
+                r.type.toLowerCase().includes(query) ||
+                r.status.toLowerCase().includes(query) ||
+                r.floor.toString().includes(query) ||
+                r.capacity.toString().includes(query) ||
+                r.pricePerDay.toString().includes(query) ||
+                r.no.toString().includes(query)
             );
         }
 
@@ -100,8 +107,8 @@ export class DoctorTableComponent implements OnInit, OnDestroy {
 
         if (col) {
             result = [...result].sort((a, b) => {
-                let aVal: any = a[col as keyof DoctorRow];
-                let bVal: any = b[col as keyof DoctorRow];
+                let aVal: any = a[col as keyof Room];
+                let bVal: any = b[col as keyof Room];
 
                 if (aVal < bVal) return -1 * dir;
                 if (aVal > bVal) return 1 * dir;
@@ -132,7 +139,7 @@ export class DoctorTableComponent implements OnInit, OnDestroy {
         this.isPageSizeMenuOpen = false;
     }
 
-    closeDropdown(): void {
+    closeDropdown() {
         this.activeItem = null;
         this.isPageSizeMenuOpen = false;
         this.activeFilterMenu.set(null);
@@ -145,8 +152,8 @@ export class DoctorTableComponent implements OnInit, OnDestroy {
         this.isPageSizeMenuOpen = false;
     }
 
-    setFilter(type: 'specialty' | 'status', value: string): void {
-        if (type === 'specialty') this.filterSpecialty.set(value);
+    setFilter(type: 'type' | 'status', value: string): void {
+        if (type === 'type') this.filterType.set(value);
         if (type === 'status') this.filterStatus.set(value);
         this.activeFilterMenu.set(null);
         this.currentPage.set(1);
@@ -158,15 +165,15 @@ export class DoctorTableComponent implements OnInit, OnDestroy {
         this.activeItem = null;
     }
 
-    toggleDropdown(doc: DoctorRow, event: Event): void {
+    toggleDropdown(room: Room, event: Event): void {
         event.stopPropagation();
-        if (this.activeItem?.id === doc.id) {
+        if (this.activeItem?.id === room.id) {
             this.activeItem = null;
             return;
         }
         const btn = (event.currentTarget as HTMLElement).getBoundingClientRect();
         this.dropdownPos = { top: btn.bottom + 4, right: window.innerWidth - btn.right };
-        this.activeItem = doc;
+        this.activeItem = room;
     }
 
     ngOnDestroy(): void { }
@@ -190,24 +197,24 @@ export class DoctorTableComponent implements OnInit, OnDestroy {
     }
 
     toggleSelectAll(): void {
-        this.doctors().forEach(d => d.selected = this.selectAll);
+        this.rooms().forEach(r => r.selected = this.selectAll);
     }
 
     updateSelectAllState(): void {
-        this.selectAll = this.doctors().every(d => d.selected);
+        this.selectAll = this.rooms().every(r => r.selected);
     }
 
-    get hasSelectedDoctors(): boolean {
-        return this.doctors().some(d => d.selected);
+    get hasSelectedRooms(): boolean {
+        return this.rooms().some(r => r.selected);
     }
 
     totalPages = computed(() => {
-        return Math.max(1, Math.ceil(this.filteredDoctors().length / this.pageSize()));
+        return Math.max(1, Math.ceil(this.filteredRooms().length / this.pageSize()));
     });
 
-    paginatedDoctors = computed(() => {
+    paginatedRooms = computed(() => {
         const startIndex = (this.currentPage() - 1) * this.pageSize();
-        return this.filteredDoctors().slice(startIndex, startIndex + this.pageSize());
+        return this.filteredRooms().slice(startIndex, startIndex + this.pageSize());
     });
 
     visiblePages = computed(() => {
@@ -244,37 +251,35 @@ export class DoctorTableComponent implements OnInit, OnDestroy {
         }
     }
 
-    getAvatarInitialsName(name: string): string {
-        return name.replace('Dr. ', '').replace(' ', '+');
+    onEdit(room: Room): void {
+        this.editRoom.emit(room);
     }
 
-    onEdit(doctor: DoctorRow): void {
-        this.editDoctor.emit(doctor);
+    onView(room: Room): void {
+        this.viewRoom.emit(room);
     }
 
-    onView(doctor: DoctorRow): void {
-        this.viewDoctor.emit(doctor);
-    }
-
-    onDelete(doctor: DoctorRow): void {
-        if (confirm(`Are you sure you want to delete Dr. "${doctor.name}"?`)) {
-            this.deleteDoctor.emit(doctor);
+    onDelete(room: Room): void {
+        if (confirm(`Are you sure you want to delete room "${room.roomNumber}"?`)) {
+            this.deleteRoom.emit(room);
         }
     }
 
     onDeleteSelected(): void {
-        const selected = this.doctors().filter(d => d.selected);
+        const selected = this.rooms().filter(r => r.selected);
         if (selected.length === 0) return;
-        if (confirm(`Are you sure you want to delete ${selected.length} selected doctor(s)?`)) {
+        if (confirm(`Are you sure you want to delete ${selected.length} selected room(s)?`)) {
             this.deleteSelected.emit(selected);
             this.selectAll = false;
         }
     }
 
-    getStatusClasses(status: string | undefined): string {
+    getStatusClasses(status: string): string {
         switch (status) {
             case 'Available': return 'bg-emerald-50 text-emerald-700';
-            case 'On Leave': return 'bg-red-50 text-red-600';
+            case 'Occupied': return 'bg-blue-50 text-blue-700';
+            case 'Maintenance': return 'bg-amber-50 text-amber-700';
+            case 'Reserved': return 'bg-purple-50 text-purple-700';
             default: return 'bg-gray-50 text-gray-700';
         }
     }

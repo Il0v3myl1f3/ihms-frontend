@@ -48,13 +48,13 @@ export const routes: Routes = [
       },
       {
         path: 'room',
-        loadComponent: () => import('./components/pages/dashboard/home/dashboard-home.component').then(m => m.DashboardHomeComponent),
+        loadComponent: () => import('./components/pages/dashboard/rooms/room-list-page.component').then(m => m.RoomListPageComponent),
         canActivate: [roleGuard],
         data: { allowedRoles: ['admin'] }
       },
       {
         path: 'payment',
-        loadComponent: () => import('./components/pages/dashboard/home/dashboard-home.component').then(m => m.DashboardHomeComponent),
+        loadComponent: () => import('./components/pages/dashboard/payments/payment-list-page.component').then(m => m.PaymentListPageComponent),
         canActivate: [roleGuard],
         data: { allowedRoles: ['admin', 'user'] }
       },

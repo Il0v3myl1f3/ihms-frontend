@@ -1,0 +1,57 @@
+import { Component, input, output, inject, OnInit, OnChanges, SimpleChanges, ChangeDetectionStrategy } from '@angular/core';
+import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { ModalComponent } from '../../../../shared/modal/modal.component';
+import { Payment } from '../payment-table/payment-table.component';
+
+@Component({
+    selector: 'app-payment-create-modal',
+    imports: [ReactiveFormsModule, ModalComponent],
+    templateUrl: './payment-create-modal.component.html',
+    styleUrl: './payment-create-modal.component.css',
+    changeDetection: ChangeDetectionStrategy.OnPush
+})
+export class PaymentCreateModalComponent implements OnInit, OnChanges {
+    isOpen = input(false);
+    paymentToEdit = input<Payment | null>(null);
+    closeModal = output<void>();
+    savePayment = output<Record<string, string>>();
+
+    paymentForm!: FormGroup;
+
+    private fb = inject(FormBuilder);
+
+    ngOnInit(): void {
+        this.paymentForm = this.fb.group({
+            invoiceNumber: ['', Validators.required],
+            patientName: ['', Validators.required],
+            amount: ['', [Validators.required, Validators.min(0)]],
+            date: ['', Validators.required],
+            method: ['', Validators.required],
+            status: ['', Validators.required]
+        });
+    }
+
+    ngOnChanges(changes: SimpleChanges): void {
+        if (changes['isOpen'] && this.isOpen()) {
+            if (this.paymentToEdit()) {
+                this.paymentForm?.patchValue(this.paymentToEdit()!);
+            } else {
+                this.paymentForm?.reset({ method: '', status: '' });
+            }
+        }
+    }
+
+    onCancel(): void {
+        this.closeModal.emit();
+        this.paymentForm.reset({ method: '', status: '' });
+    }
+
+    onSubmit(): void {
+        if (this.paymentForm.valid) {
+            this.savePayment.emit(this.paymentForm.value);
+            this.paymentForm.reset();
+        } else {
+            this.paymentForm.markAllAsTouched();
+        }
+    }
+}

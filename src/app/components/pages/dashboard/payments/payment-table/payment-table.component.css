@@ -1,4 +1,4 @@
-/* doctor-table styles */
+/* payment-table styles */
 
 table {
     border-collapse: collapse;
@@ -88,9 +88,9 @@ tr:hover td:last-child {
         overflow: visible;
     }
 
-    /* Hide Phone column on smaller screens (4th column) */
-    table th:nth-child(4),
-    table td:nth-child(4) {
+    /* Hide Method column on smaller screens (6th column) */
+    table th:nth-child(6),
+    table td:nth-child(6) {
         display: none;
     }
 }

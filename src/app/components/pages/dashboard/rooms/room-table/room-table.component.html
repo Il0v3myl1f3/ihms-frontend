@@ -6,34 +6,34 @@
             <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                 <lucide-icon [img]="Search" class="h-4 w-4 text-gray-400"></lucide-icon>
             </div>
-            <input type="text" placeholder="Search name, ID, specialty, etc"
+            <input type="text" placeholder="Search room number, type, etc"
                 (input)="searchQuery.set($any($event.target).value)"
                 class="block w-full pl-9 pr-3 py-2 border border-gray-200 rounded-lg text-sm placeholder-gray-400 focus:outline-none focus:ring-1 focus:ring-[#159EEC] focus:border-[#159EEC] bg-gray-50/20 transition-all">
         </div>
         <!-- Filter Buttons -->
-        <!-- Specialty Filter -->
+        <!-- Type Filter -->
         <div class="relative">
-            <button (click)="toggleFilterMenu('specialty', $event)"
+            <button (click)="toggleFilterMenu('type', $event)"
                 class="flex items-center gap-1.5 px-4 py-2 border border-gray-200 rounded-lg text-sm text-gray-500 hover:bg-gray-50 transition-colors bg-white shadow-[0_1px_2px_rgba(0,0,0,0.02)]"
-                [class.ring-1]="activeFilterMenu() === 'specialty'"
-                [class.ring-[#159EEC]]="activeFilterMenu() === 'specialty'">
+                [class.ring-1]="activeFilterMenu() === 'type'"
+                [class.ring-[#159EEC]]="activeFilterMenu() === 'type'">
                 <lucide-icon [img]="Filter" class="w-3.5 h-3.5 text-gray-400"></lucide-icon>
-                <span class="truncate max-w-[90px]">
-                    {{ filterSpecialty() === 'All' ? 'Specialty' : filterSpecialty() }}
+                <span class="truncate max-w-[80px]">
+                    {{ filterType() === 'All' ? 'Type' : filterType() }}
                 </span>
                 <lucide-icon [img]="ChevronDown" class="w-3.5 h-3.5 text-gray-400 ml-1"
-                    [class.rotate-180]="activeFilterMenu() === 'specialty'"></lucide-icon>
+                    [class.rotate-180]="activeFilterMenu() === 'type'"></lucide-icon>
             </button>
-            @if (activeFilterMenu() === 'specialty') {
+            @if (activeFilterMenu() === 'type') {
             <div
-                class="absolute top-full mt-1 left-0 z-50 w-52 bg-white border border-gray-100 rounded-lg shadow-lg py-1 max-h-60 overflow-auto slim-scroll">
-                @for (spec of availableSpecialties(); track spec) {
-                <button (click)="setFilter('specialty', spec)"
+                class="absolute top-full mt-1 left-0 z-50 w-40 bg-white border border-gray-100 rounded-lg shadow-lg py-1 max-h-60 overflow-auto slim-scroll">
+                @for (roomType of availableTypes(); track roomType) {
+                <button (click)="setFilter('type', roomType)"
                     class="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
-                    [class.bg-emerald-50]="filterSpecialty() === spec"
-                    [class.text-emerald-700]="filterSpecialty() === spec"
-                    [class.hover:bg-emerald-100]="filterSpecialty() === spec">
-                    {{ spec }}
+                    [class.bg-emerald-50]="filterType() === roomType"
+                    [class.text-emerald-700]="filterType() === roomType"
+                    [class.hover:bg-emerald-100]="filterType() === roomType">
+                    {{ roomType }}
                 </button>
                 }
             </div>
@@ -56,13 +56,13 @@
             @if (activeFilterMenu() === 'status') {
             <div
                 class="absolute top-full mt-1 left-0 z-50 w-40 bg-white border border-gray-100 rounded-lg shadow-lg py-1 max-h-60 overflow-auto slim-scroll">
-                @for (stat of availableStatuses(); track stat) {
-                <button (click)="setFilter('status', stat)"
+                @for (roomStatus of availableStatuses(); track roomStatus) {
+                <button (click)="setFilter('status', roomStatus)"
                     class="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
-                    [class.bg-emerald-50]="filterStatus() === stat"
-                    [class.text-emerald-700]="filterStatus() === stat"
-                    [class.hover:bg-emerald-100]="filterStatus() === stat">
-                    {{ stat }}
+                    [class.bg-emerald-50]="filterStatus() === roomStatus"
+                    [class.text-emerald-700]="filterStatus() === roomStatus"
+                    [class.hover:bg-emerald-100]="filterStatus() === roomStatus">
+                    {{ roomStatus }}
                 </button>
                 }
             </div>
@@ -70,15 +70,15 @@
         </div>
     </div>
     <div class="flex items-center gap-3 shrink-0">
-        @if (hasSelectedDoctors) {
+        @if (hasSelectedRooms) {
         <button (click)="onDeleteSelected()"
             class="bg-red-50 hover:bg-red-100 text-red-600 px-4 py-2.5 rounded-lg text-sm font-medium transition-colors border border-red-200 flex items-center gap-2">
             <lucide-icon [img]="Trash2" class="w-4 h-4"></lucide-icon> Delete Selected
         </button>
         }
-        <button (click)="addDoctor.emit()"
+        <button (click)="addRoom.emit()"
             class="bg-[#1F2B6C] hover:bg-[#151D4A] text-white px-5 py-2.5 rounded-lg text-sm font-medium transition-colors shadow-sm flex items-center gap-2 cursor-pointer">
-            <lucide-icon [img]="Plus" class="w-4 h-4"></lucide-icon> Add Doctor
+            <lucide-icon [img]="Plus" class="w-4 h-4"></lucide-icon> Add Room
         </button>
     </div>
 </div>
@@ -107,64 +107,87 @@
                         </span>
                     </div>
                 </th>
-                <th class="px-4 py-4 text-sm font-normal text-gray-600 whitespace-nowrap overflow-hidden w-[23%]">
-                    <div (click)="handleSort('name')"
+                <th class="px-4 py-4 text-sm font-normal text-gray-600 whitespace-nowrap overflow-hidden w-[14%]">
+                    <div (click)="handleSort('roomNumber')"
                         class="flex items-center gap-1 group/th cursor-pointer pl-1 select-none hover:text-[#1F2B6C] transition-colors"
-                        [class.text-[#1F2B6C]]="sortColumn() === 'name'"
-                        [class.font-semibold]="sortColumn() === 'name'">
-                        Name
-                        <lucide-icon *ngIf="sortColumn() !== 'name'" [img]="ChevronDown"
+                        [class.text-[#1F2B6C]]="sortColumn() === 'roomNumber'"
+                        [class.font-semibold]="sortColumn() === 'roomNumber'">
+                        Room Number
+                        <lucide-icon *ngIf="sortColumn() !== 'roomNumber'" [img]="ChevronDown"
                             class="w-3 h-3 text-gray-300"></lucide-icon>
-                        <lucide-icon *ngIf="sortColumn() === 'name' && sortDirection() === 'desc'" [img]="ChevronDown"
-                            class="w-3 h-3 text-[#1F2B6C]"></lucide-icon>
-                        <lucide-icon *ngIf="sortColumn() === 'name' && sortDirection() === 'asc'" [img]="ChevronUp"
-                            class="w-3 h-3 text-[#1F2B6C]"></lucide-icon>
-                    </div>
-                </th>
-                <th class="px-4 py-4 text-sm font-normal text-gray-600 whitespace-nowrap overflow-hidden w-[12%]">
-                    <div (click)="handleSort('id')"
-                        class="flex items-center gap-1 group/th cursor-pointer select-none hover:text-[#1F2B6C] transition-colors"
-                        [class.text-[#1F2B6C]]="sortColumn() === 'id'"
-                        [class.font-semibold]="sortColumn() === 'id'">
-                        ID
-                        <lucide-icon *ngIf="sortColumn() !== 'id'" [img]="ChevronDown"
-                            class="w-3 h-3 text-gray-300"></lucide-icon>
-                        <lucide-icon *ngIf="sortColumn() === 'id' && sortDirection() === 'desc'" [img]="ChevronDown"
-                            class="w-3 h-3 text-[#1F2B6C]"></lucide-icon>
-                        <lucide-icon *ngIf="sortColumn() === 'id' && sortDirection() === 'asc'" [img]="ChevronUp"
-                            class="w-3 h-3 text-[#1F2B6C]"></lucide-icon>
-                    </div>
-                </th>
-                <th class="px-4 py-4 text-sm font-normal text-gray-600 whitespace-nowrap overflow-hidden w-[13%]">
-                    <div class="flex items-center gap-1 group/th">
-                        Phone Number
-                    </div>
-                </th>
-                <th class="px-4 py-4 text-sm font-normal text-gray-600 whitespace-nowrap overflow-hidden w-[18%]">
-                    <div (click)="handleSort('specialty')"
-                        class="flex items-center gap-1 group/th cursor-pointer select-none hover:text-[#1F2B6C] transition-colors"
-                        [class.text-[#1F2B6C]]="sortColumn() === 'specialty'"
-                        [class.font-semibold]="sortColumn() === 'specialty'">
-                        Specialty
-                        <lucide-icon *ngIf="sortColumn() !== 'specialty'" [img]="ChevronDown"
-                            class="w-3 h-3 text-gray-300"></lucide-icon>
-                        <lucide-icon *ngIf="sortColumn() === 'specialty' && sortDirection() === 'desc'"
+                        <lucide-icon *ngIf="sortColumn() === 'roomNumber' && sortDirection() === 'desc'"
                             [img]="ChevronDown" class="w-3 h-3 text-[#1F2B6C]"></lucide-icon>
-                        <lucide-icon *ngIf="sortColumn() === 'specialty' && sortDirection() === 'asc'"
+                        <lucide-icon *ngIf="sortColumn() === 'roomNumber' && sortDirection() === 'asc'"
                             [img]="ChevronUp" class="w-3 h-3 text-[#1F2B6C]"></lucide-icon>
                     </div>
                 </th>
-                <th class="px-4 py-4 text-sm font-normal text-gray-600 whitespace-nowrap overflow-hidden w-[14%]">
-                    <div (click)="handleSort('availability')"
+                <th class="px-4 py-4 text-sm font-normal text-gray-600 whitespace-nowrap overflow-hidden w-[12%]">
+                    <div (click)="handleSort('type')"
                         class="flex items-center gap-1 group/th cursor-pointer select-none hover:text-[#1F2B6C] transition-colors"
-                        [class.text-[#1F2B6C]]="sortColumn() === 'availability'"
-                        [class.font-semibold]="sortColumn() === 'availability'">
-                        Status
-                        <lucide-icon *ngIf="sortColumn() !== 'availability'" [img]="ChevronDown"
+                        [class.text-[#1F2B6C]]="sortColumn() === 'type'"
+                        [class.font-semibold]="sortColumn() === 'type'">
+                        Type
+                        <lucide-icon *ngIf="sortColumn() !== 'type'" [img]="ChevronDown"
                             class="w-3 h-3 text-gray-300"></lucide-icon>
-                        <lucide-icon *ngIf="sortColumn() === 'availability' && sortDirection() === 'desc'"
+                        <lucide-icon *ngIf="sortColumn() === 'type' && sortDirection() === 'desc'" [img]="ChevronDown"
+                            class="w-3 h-3 text-[#1F2B6C]"></lucide-icon>
+                        <lucide-icon *ngIf="sortColumn() === 'type' && sortDirection() === 'asc'" [img]="ChevronUp"
+                            class="w-3 h-3 text-[#1F2B6C]"></lucide-icon>
+                    </div>
+                </th>
+                <th class="px-4 py-4 text-sm font-normal text-gray-600 whitespace-nowrap overflow-hidden w-[10%]">
+                    <div (click)="handleSort('floor')"
+                        class="flex items-center gap-1 group/th cursor-pointer select-none hover:text-[#1F2B6C] transition-colors"
+                        [class.text-[#1F2B6C]]="sortColumn() === 'floor'"
+                        [class.font-semibold]="sortColumn() === 'floor'">
+                        Floor
+                        <lucide-icon *ngIf="sortColumn() !== 'floor'" [img]="ChevronDown"
+                            class="w-3 h-3 text-gray-300"></lucide-icon>
+                        <lucide-icon *ngIf="sortColumn() === 'floor' && sortDirection() === 'desc'" [img]="ChevronDown"
+                            class="w-3 h-3 text-[#1F2B6C]"></lucide-icon>
+                        <lucide-icon *ngIf="sortColumn() === 'floor' && sortDirection() === 'asc'" [img]="ChevronUp"
+                            class="w-3 h-3 text-[#1F2B6C]"></lucide-icon>
+                    </div>
+                </th>
+                <th class="px-4 py-4 text-sm font-normal text-gray-600 whitespace-nowrap overflow-hidden w-[10%]">
+                    <div (click)="handleSort('capacity')"
+                        class="flex items-center gap-1 group/th cursor-pointer select-none hover:text-[#1F2B6C] transition-colors"
+                        [class.text-[#1F2B6C]]="sortColumn() === 'capacity'"
+                        [class.font-semibold]="sortColumn() === 'capacity'">
+                        Capacity
+                        <lucide-icon *ngIf="sortColumn() !== 'capacity'" [img]="ChevronDown"
+                            class="w-3 h-3 text-gray-300"></lucide-icon>
+                        <lucide-icon *ngIf="sortColumn() === 'capacity' && sortDirection() === 'desc'"
                             [img]="ChevronDown" class="w-3 h-3 text-[#1F2B6C]"></lucide-icon>
-                        <lucide-icon *ngIf="sortColumn() === 'availability' && sortDirection() === 'asc'"
+                        <lucide-icon *ngIf="sortColumn() === 'capacity' && sortDirection() === 'asc'" [img]="ChevronUp"
+                            class="w-3 h-3 text-[#1F2B6C]"></lucide-icon>
+                    </div>
+                </th>
+                <th class="px-4 py-4 text-sm font-normal text-gray-600 whitespace-nowrap overflow-hidden w-[14%]">
+                    <div (click)="handleSort('status')"
+                        class="flex items-center gap-1 group/th cursor-pointer select-none hover:text-[#1F2B6C] transition-colors"
+                        [class.text-[#1F2B6C]]="sortColumn() === 'status'"
+                        [class.font-semibold]="sortColumn() === 'status'">
+                        Status
+                        <lucide-icon *ngIf="sortColumn() !== 'status'" [img]="ChevronDown"
+                            class="w-3 h-3 text-gray-300"></lucide-icon>
+                        <lucide-icon *ngIf="sortColumn() === 'status' && sortDirection() === 'desc'"
+                            [img]="ChevronDown" class="w-3 h-3 text-[#1F2B6C]"></lucide-icon>
+                        <lucide-icon *ngIf="sortColumn() === 'status' && sortDirection() === 'asc'" [img]="ChevronUp"
+                            class="w-3 h-3 text-[#1F2B6C]"></lucide-icon>
+                    </div>
+                </th>
+                <th class="px-4 py-4 text-sm font-normal text-gray-600 whitespace-nowrap overflow-hidden w-[14%]">
+                    <div (click)="handleSort('pricePerDay')"
+                        class="flex items-center gap-1 group/th cursor-pointer select-none hover:text-[#1F2B6C] transition-colors"
+                        [class.text-[#1F2B6C]]="sortColumn() === 'pricePerDay'"
+                        [class.font-semibold]="sortColumn() === 'pricePerDay'">
+                        Price/Day
+                        <lucide-icon *ngIf="sortColumn() !== 'pricePerDay'" [img]="ChevronDown"
+                            class="w-3 h-3 text-gray-300"></lucide-icon>
+                        <lucide-icon *ngIf="sortColumn() === 'pricePerDay' && sortDirection() === 'desc'"
+                            [img]="ChevronDown" class="w-3 h-3 text-[#1F2B6C]"></lucide-icon>
+                        <lucide-icon *ngIf="sortColumn() === 'pricePerDay' && sortDirection() === 'asc'"
                             [img]="ChevronUp" class="w-3 h-3 text-[#1F2B6C]"></lucide-icon>
                     </div>
                 </th>
@@ -172,35 +195,32 @@
             </tr>
         </thead>
         <tbody class="text-sm text-gray-900 font-normal bg-white">
-            @for (doc of paginatedDoctors(); track doc.id; let i = $index) {
+            @for (room of paginatedRooms(); track room.id; let i = $index) {
             <tr
                 class="hover:bg-gray-50/30 group whitespace-nowrap transition-colors border-b border-gray-200 last:border-0 text-sm">
                 <td class="px-4 py-4">
                     <div class="flex items-center gap-3">
-                        <input type="checkbox" [(ngModel)]="doc.selected" (change)="updateSelectAllState()"
+                        <input type="checkbox" [(ngModel)]="room.selected" (change)="updateSelectAllState()"
                             class="w-3.5 h-3.5 rounded border-gray-100 text-[#159EEC] focus:ring-0 focus:ring-offset-0 cursor-pointer" />
-                        <span class="font-normal text-gray-900 tracking-tight pl-1">{{ doc.no }}</span>
+                        <span class="font-normal text-gray-900 tracking-tight pl-1">{{ room.no }}</span>
                     </div>
                 </td>
                 <td class="px-4 py-4 pl-5">
-                    <div class="flex items-center gap-3">
-                        <img src="https://ui-avatars.com/api/?name={{ getAvatarInitialsName(doc.name) }}&background=EAF6FD&color=1F2B6C&rounded=true"
-                            alt="Avatar" class="w-8 h-8 rounded-full border border-gray-100">
-                        <span class="text-gray-900 tracking-tight">{{ doc.name }}</span>
-                    </div>
+                    <span class="text-gray-900 tracking-tight">{{ room.roomNumber }}</span>
                 </td>
-                <td class="px-4 py-4 text-gray-900">WNH-{{ doc.id }}</td>
-                <td class="px-4 py-4 text-gray-900">{{ doc.phone }}</td>
-                <td class="px-4 py-4 text-gray-900">{{ doc.specialty }}</td>
+                <td class="px-4 py-4 text-gray-900">{{ room.type }}</td>
+                <td class="px-4 py-4 text-gray-900">{{ room.floor }}</td>
+                <td class="px-4 py-4 text-gray-900">{{ room.capacity }}</td>
                 <td class="px-4 py-4">
                     <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium"
-                        [ngClass]="getStatusClasses(doc.availability)">
-                        {{ doc.availability }}
+                        [ngClass]="getStatusClasses(room.status)">
+                        {{ room.status }}
                     </span>
                 </td>
+                <td class="px-4 py-4 text-gray-900">${{ room.pricePerDay.toFixed(2) }}</td>
                 <td class="px-4 py-4 w-[6%] text-center text-gray-400">
                     <div class="flex items-center justify-center">
-                        <button (click)="toggleDropdown(doc, $event)"
+                        <button (click)="toggleDropdown(room, $event)"
                             class="p-1.5 hover:text-gray-600 rounded-md transition-colors cursor-pointer"
                             title="More Actions">
                             <lucide-icon [img]="MoreHorizontal" class="w-4 h-4"></lucide-icon>
@@ -263,7 +283,7 @@
             </div>
             }
         </div>
-        <span>out of {{ filteredDoctors().length }}</span>
+        <span>out of {{ filteredRooms().length }}</span>
     </div>
     <div class="flex items-center gap-1.5">
         <!-- Previous Button -->

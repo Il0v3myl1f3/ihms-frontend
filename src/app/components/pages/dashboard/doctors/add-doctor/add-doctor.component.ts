@@ -1,62 +1,55 @@
-import { Component, input, output, inject, OnChanges, SimpleChanges, ChangeDetectionStrategy } from '@angular/core';
+import { Component, input, output, inject, OnInit, OnChanges, SimpleChanges, ChangeDetectionStrategy } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
-import { LucideAngularModule, ChevronDown } from 'lucide-angular';
 import { ModalComponent } from '../../../../shared/modal/modal.component';
+import { DoctorRow } from '../doctor-table/doctor-table.component';
 
 @Component({
-    selector: 'app-add-doctor',
-    imports: [ReactiveFormsModule, LucideAngularModule, ModalComponent],
+    selector: 'app-doctor-create-modal',
+    imports: [ReactiveFormsModule, ModalComponent],
     templateUrl: './add-doctor.component.html',
-    styleUrls: ['./add-doctor.component.css'],
+    styleUrl: './add-doctor.component.css',
     changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class AddDoctorComponent implements OnChanges {
+export class AddDoctorComponent implements OnInit, OnChanges {
     isOpen = input(false);
-    save = output<{
-        name: string;
-        specialty: string;
-        phone: string;
-        availability: string;
-    }>();
-    cancel = output<void>();
+    doctorToEdit = input<DoctorRow | null>(null);
+    closeModal = output<void>();
+    saveDoctor = output<Record<string, string>>();
 
-    doctorForm: FormGroup;
-    readonly ChevronDown = ChevronDown;
+    doctorForm!: FormGroup;
 
     private fb = inject(FormBuilder);
 
-    constructor() {
+    ngOnInit(): void {
         this.doctorForm = this.fb.group({
             name: ['', Validators.required],
             specialty: ['', Validators.required],
             phone: ['', [Validators.required, Validators.pattern(/^[0-9+\s-]+$/)]],
-            availability: ['Available', Validators.required]
+            availability: ['', Validators.required]
         });
     }
 
     ngOnChanges(changes: SimpleChanges): void {
-        if (changes['isOpen'] && changes['isOpen'].currentValue === false) {
-            this.doctorForm.reset({ availability: 'Available' });
-        }
-    }
-
-    onSave(): void {
-        if (this.doctorForm.valid) {
-            const formValue = this.doctorForm.value;
-            this.save.emit({
-                name: formValue.name,
-                specialty: formValue.specialty,
-                phone: formValue.phone,
-                availability: formValue.availability
-            });
-            this.doctorForm.reset({ availability: 'Available' });
-        } else {
-            this.doctorForm.markAllAsTouched();
+        if (changes['isOpen'] && this.isOpen()) {
+            if (this.doctorToEdit()) {
+                this.doctorForm?.patchValue(this.doctorToEdit()!);
+            } else {
+                this.doctorForm?.reset({ specialty: '', availability: '' });
+            }
         }
     }
 
     onCancel(): void {
-        this.doctorForm.reset({ availability: 'Available' });
-        this.cancel.emit();
+        this.closeModal.emit();
+        this.doctorForm.reset({ specialty: '', availability: '' });
+    }
+
+    onSubmit(): void {
+        if (this.doctorForm.valid) {
+            this.saveDoctor.emit(this.doctorForm.value);
+            this.doctorForm.reset();
+        } else {
+            this.doctorForm.markAllAsTouched();
+        }
     }
 }

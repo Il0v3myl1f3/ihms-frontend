@@ -1,96 +1,91 @@
-<app-modal [isOpen]="isOpen()" title="Add New Doctor" (close)="onCancel()">
+<app-modal [isOpen]="isOpen()" title="{{ doctorToEdit() ? 'Edit Doctor' : 'Add New Doctor' }}" (close)="onCancel()">
 
-    <form [formGroup]="doctorForm" modal-body class="grid grid-cols-2 gap-x-6 gap-y-5">
+    <form [formGroup]="doctorForm" modal-body>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-5">
 
-        <!-- Name Field -->
-        <div class="space-y-1.5">
-            <label class="text-xs font-semibold text-gray-500 block">Name</label>
-            <input type="text" formControlName="name" placeholder="E.g. Dr. John Doe"
-                class="w-full px-4 py-2.5 border border-gray-200 rounded-lg text-sm text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-1 focus:ring-[#159EEC] focus:border-[#159EEC] transition-all"
-                [class.border-red-300]="doctorForm.get('name')?.invalid && doctorForm.get('name')?.touched"
-                [class.focus:ring-red-400]="doctorForm.get('name')?.invalid && doctorForm.get('name')?.touched"
-                [class.focus:border-red-400]="doctorForm.get('name')?.invalid && doctorForm.get('name')?.touched">
-            @if (doctorForm.get('name')?.invalid && doctorForm.get('name')?.touched) {
-                <span class="text-[10px] text-red-500 font-medium">Name is required.</span>
-            }
-        </div>
+            <!-- Name -->
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1.5">Name *</label>
+                <input type="text" formControlName="name" placeholder="E.g. Dr. John Doe"
+                    class="block w-full px-3 py-2 border border-gray-200 rounded-md text-sm focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 transition-colors" />
+            </div>
 
-        <!-- Specialization Field -->
-        <div class="space-y-1.5 relative">
-            <label class="text-xs font-semibold text-gray-500 block">Specialization</label>
-            <div class="relative">
-                <select formControlName="specialty"
-                    class="w-full px-4 py-2.5 border border-gray-200 rounded-lg text-sm text-gray-900 appearance-none bg-white focus:outline-none focus:ring-1 focus:ring-[#159EEC] focus:border-[#159EEC] transition-all cursor-pointer"
-                    [class.border-red-300]="doctorForm.get('specialty')?.invalid && doctorForm.get('specialty')?.touched"
-                    [class.focus:ring-red-400]="doctorForm.get('specialty')?.invalid && doctorForm.get('specialty')?.touched"
-                    [class.focus:border-red-400]="doctorForm.get('specialty')?.invalid && doctorForm.get('specialty')?.touched">
-                    <option value="" disabled>Select Specialization</option>
-                    <option value="Cardiology">Cardiology</option>
-                    <option value="Dermatology">Dermatology</option>
-                    <option value="Endocrinology">Endocrinology</option>
-                    <option value="Gastroenterology">Gastroenterology</option>
-                    <option value="Neurology">Neurology</option>
-                    <option value="Ophthalmology">Ophthalmology</option>
-                    <option value="Orthopedics">Orthopedics</option>
-                    <option value="Pediatrics">Pediatrics</option>
-                    <option value="Psychiatry">Psychiatry</option>
-                    <option value="Urology">Urology</option>
-                </select>
-                <div class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none text-gray-400">
-                    <lucide-icon [img]="ChevronDown" class="w-4 h-4"></lucide-icon>
+            <!-- Specialization -->
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1.5">Specialization *</label>
+                <div class="relative">
+                    <select formControlName="specialty"
+                        class="block w-full px-3 py-2 border border-gray-200 rounded-md text-sm focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 transition-colors appearance-none bg-white">
+                        <option value="" disabled selected>Select</option>
+                        <option value="Anesthesiology">Anesthesiology</option>
+                        <option value="Cardiology">Cardiology</option>
+                        <option value="Dermatology">Dermatology</option>
+                        <option value="Endocrinology">Endocrinology</option>
+                        <option value="Gastroenterology">Gastroenterology</option>
+                        <option value="Neurology">Neurology</option>
+                        <option value="Oncology">Oncology</option>
+                        <option value="Ophthalmology">Ophthalmology</option>
+                        <option value="Orthopedics">Orthopedics</option>
+                        <option value="Pediatrics">Pediatrics</option>
+                        <option value="Psychiatry">Psychiatry</option>
+                        <option value="Urology">Urology</option>
+                    </select>
+                    <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-500">
+                        <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7">
+                            </path>
+                        </svg>
+                    </div>
                 </div>
             </div>
-            @if (doctorForm.get('specialty')?.invalid && doctorForm.get('specialty')?.touched) {
-                <span class="text-[10px] text-red-500 font-medium tracking-wide">Specialization is required.</span>
-            }
-        </div>
 
-        <!-- Phone Number Field -->
-        <div class="space-y-1.5">
-            <label class="text-xs font-semibold text-gray-500 block">Phone Number</label>
-            <input type="text" formControlName="phone" placeholder="+62 888 1234 5678"
-                class="w-full px-4 py-2.5 border border-gray-200 rounded-lg text-sm text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-1 focus:ring-[#159EEC] focus:border-[#159EEC] transition-all"
-                [class.border-red-300]="doctorForm.get('phone')?.invalid && doctorForm.get('phone')?.touched"
-                [class.focus:ring-red-400]="doctorForm.get('phone')?.invalid && doctorForm.get('phone')?.touched"
-                [class.focus:border-red-400]="doctorForm.get('phone')?.invalid && doctorForm.get('phone')?.touched">
-            @if (doctorForm.get('phone')?.invalid && doctorForm.get('phone')?.touched) {
-                <span class="text-[10px] text-red-500 font-medium">Valid phone number is required.</span>
-            }
-        </div>
-
-        <!-- Availability Status Field -->
-        <div class="space-y-1.5 relative">
-            <label class="text-xs font-semibold text-gray-500 block">Availability Status</label>
-            <div class="relative">
-                <select formControlName="availability"
-                    class="w-full px-4 py-2.5 border border-gray-200 rounded-lg text-sm text-gray-900 appearance-none bg-white focus:outline-none focus:ring-1 focus:ring-[#159EEC] focus:border-[#159EEC] transition-all cursor-pointer"
-                    [class.border-red-300]="doctorForm.get('availability')?.invalid && doctorForm.get('availability')?.touched"
-                    [class.focus:ring-red-400]="doctorForm.get('availability')?.invalid && doctorForm.get('availability')?.touched"
-                    [class.focus:border-red-400]="doctorForm.get('availability')?.invalid && doctorForm.get('availability')?.touched">
-                    <option value="Available">Available</option>
-                    <option value="On Leave">On Leave</option>
-                </select>
-                <div class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none text-gray-400">
-                    <lucide-icon [img]="ChevronDown" class="w-4 h-4"></lucide-icon>
+            <!-- Phone Number -->
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1.5">Phone Number *</label>
+                <div class="relative">
+                    <span
+                        class="absolute inset-y-0 left-0 flex items-center pl-3 text-gray-500 z-10 w-8 h-8 pointer-events-none self-center">
+                        <svg class="w-4 h-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <rect x="5" y="2" width="14" height="20" rx="2" ry="2"></rect>
+                            <line x1="12" y1="18" x2="12.01" y2="18"></line>
+                        </svg>
+                    </span>
+                    <input type="text" formControlName="phone" placeholder="021 1234 5678"
+                        class="block w-full pl-10 pr-3 py-2 border border-gray-200 rounded-md text-sm focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 transition-colors" />
                 </div>
             </div>
-            @if (doctorForm.get('availability')?.invalid && doctorForm.get('availability')?.touched) {
-                <span class="text-[10px] text-red-500 font-medium tracking-wide">Status is required.</span>
-            }
-        </div>
 
+            <!-- Availability Status -->
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1.5">Availability Status *</label>
+                <div class="relative">
+                    <select formControlName="availability"
+                        class="block w-full px-3 py-2 border border-gray-200 rounded-md text-sm focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 transition-colors appearance-none bg-white">
+                        <option value="" disabled selected>Select</option>
+                        <option value="Available">Available</option>
+                        <option value="On Leave">On Leave</option>
+                    </select>
+                    <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-500">
+                        <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7">
+                            </path>
+                        </svg>
+                    </div>
+                </div>
+            </div>
+
+        </div>
     </form>
 
-    <!-- Footer Actions -->
-    <ng-container modal-footer>
-        <button (click)="onCancel()"
-            class="px-5 py-2.5 text-sm font-semibold text-gray-600 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-gray-100 transition-colors">
+    <div modal-footer class="w-full flex items-center justify-end gap-3">
+        <button type="button" (click)="onCancel()"
+            class="px-5 py-2.5 bg-white border border-gray-200 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors">
             Cancel
         </button>
-        <button (click)="onSave()"
-            class="px-6 py-2.5 text-sm font-semibold text-white bg-[#159EEC] rounded-lg hover:bg-[#1282C4] shadow-[0_2px_10px_rgba(21,158,236,0.3)] focus:outline-none focus:ring-2 focus:ring-[#159EEC]/50 transition-colors">
-            Add Doctor
+        <button type="button" (click)="onSubmit()" [disabled]="doctorForm.invalid"
+            class="px-5 py-2.5 bg-blue-600 disabled:bg-gray-400 disabled:cursor-not-allowed text-white rounded-md text-sm font-medium hover:bg-blue-700 transition-colors shadow-sm">
+            {{ doctorToEdit() ? 'Save Changes' : 'Add Doctor' }}
         </button>
-    </ng-container>
-
+    </div>
 </app-modal>

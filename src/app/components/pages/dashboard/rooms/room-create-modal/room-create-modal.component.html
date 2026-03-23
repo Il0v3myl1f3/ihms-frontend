@@ -1,0 +1,90 @@
+<app-modal [isOpen]="isOpen()" title="{{ roomToEdit() ? 'Edit Room' : 'Add New Room' }}" (close)="onCancel()">
+
+    <form [formGroup]="roomForm" modal-body>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-5">
+
+            <!-- Room Number -->
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1.5">Room Number *</label>
+                <input type="text" formControlName="roomNumber" placeholder="e.g. A-101"
+                    class="block w-full px-3 py-2 border border-gray-200 rounded-md text-sm focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 transition-colors" />
+            </div>
+
+            <!-- Type -->
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1.5">Type *</label>
+                <div class="relative">
+                    <select formControlName="type"
+                        class="block w-full px-3 py-2 border border-gray-200 rounded-md text-sm focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 transition-colors appearance-none bg-white">
+                        <option value="" disabled selected>Select</option>
+                        <option value="Single">Single</option>
+                        <option value="Double">Double</option>
+                        <option value="Suite">Suite</option>
+                        <option value="ICU">ICU</option>
+                        <option value="Operating">Operating</option>
+                    </select>
+                    <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-500">
+                        <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7">
+                            </path>
+                        </svg>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Floor -->
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1.5">Floor *</label>
+                <input type="number" formControlName="floor" placeholder="e.g. 1"
+                    class="block w-full px-3 py-2 border border-gray-200 rounded-md text-sm focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 transition-colors" />
+            </div>
+
+            <!-- Capacity -->
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1.5">Capacity *</label>
+                <input type="number" formControlName="capacity" placeholder="e.g. 2"
+                    class="block w-full px-3 py-2 border border-gray-200 rounded-md text-sm focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 transition-colors" />
+            </div>
+
+            <!-- Status -->
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1.5">Status *</label>
+                <div class="relative">
+                    <select formControlName="status"
+                        class="block w-full px-3 py-2 border border-gray-200 rounded-md text-sm focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 transition-colors appearance-none bg-white">
+                        <option value="" disabled selected>Select</option>
+                        <option value="Available">Available</option>
+                        <option value="Occupied">Occupied</option>
+                        <option value="Maintenance">Maintenance</option>
+                        <option value="Reserved">Reserved</option>
+                    </select>
+                    <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-500">
+                        <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7">
+                            </path>
+                        </svg>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Price Per Day -->
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1.5">Price/Day ($) *</label>
+                <input type="number" formControlName="pricePerDay" placeholder="e.g. 250.00" step="0.01"
+                    class="block w-full px-3 py-2 border border-gray-200 rounded-md text-sm focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 transition-colors" />
+            </div>
+
+        </div>
+    </form>
+
+    <div modal-footer class="w-full flex items-center justify-end gap-3">
+        <button type="button" (click)="onCancel()"
+            class="px-5 py-2.5 bg-white border border-gray-200 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors">
+            Cancel
+        </button>
+        <button type="button" (click)="onSubmit()" [disabled]="roomForm.invalid"
+            class="px-5 py-2.5 bg-blue-600 disabled:bg-gray-400 disabled:cursor-not-allowed text-white rounded-md text-sm font-medium hover:bg-blue-700 transition-colors shadow-sm">
+            {{ roomToEdit() ? 'Save Changes' : 'Add Room' }}
+        </button>
+    </div>
+</app-modal>
