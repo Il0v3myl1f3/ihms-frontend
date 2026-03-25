@@ -1,14 +1,13 @@
 <section class="relative h-[180px] md:h-[240px] lg:h-[300px] flex items-center overflow-hidden">
-    <!-- Background with overlay -->
-    <div class="absolute inset-0 bg-[#1F2B6C]/20 z-0">
-        <div class="absolute inset-0 bg-white/40"></div>
-        <!-- Placeholder for background image -->
-        <div class="w-full h-full bg-[#1F2B6C]/10 flex items-center justify-center">
-            <span class="text-gray-400 font-bold uppercase tracking-widest opacity-20">Background Image
-                Placeholder</span>
-        </div>
+    <!-- Background image -->
+    <div class="absolute inset-0 z-0">
+        <img [ngSrc]="backgroundImage()" alt="" fill priority class="object-cover object-center" />
     </div>
 
+    <!-- White overlay for readability -->
+    <div class="absolute inset-0 bg-white/50 z-1"></div>
+
+    <!-- Content -->
     <div class="container mx-auto px-4 relative z-10">
         <div class="max-w-2xl">
             <nav aria-label="Breadcrumb" class="mb-4">
@@ -27,4 +26,5 @@
             </h1>
         </div>
     </div>
+
 </section>
