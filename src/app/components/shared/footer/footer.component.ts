@@ -1,5 +1,5 @@
 import { Component, ChangeDetectionStrategy } from '@angular/core';
-import { LucideAngularModule, Facebook, Instagram, Linkedin, Phone, Mail, MapPin, Send } from 'lucide-angular';
+import { LucideAngularModule, Facebook, Instagram } from 'lucide-angular';
 import { RouterLink } from '@angular/router';
 
 @Component({
@@ -11,9 +11,4 @@ import { RouterLink } from '@angular/router';
 export class FooterComponent {
   readonly Facebook = Facebook;
   readonly Instagram = Instagram;
-  readonly Linkedin = Linkedin;
-  readonly Phone = Phone;
-  readonly Mail = Mail;
-  readonly MapPin = MapPin;
-  readonly Send = Send;
 }
