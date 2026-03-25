@@ -124,7 +124,7 @@
                         }
                     </div>
                     <!-- Desktop sidebar -->
-                    <div class="hidden lg:flex flex-col border border-gray-100 rounded-xl overflow-hidden shadow-sm">
+                    <div class="hidden lg:flex flex-col border border-gray-100 rounded-xl overflow-hidden">
                         @for (item of servicesData; track item.id) {
                             <div (click)="selectService(item)"
                                 class="flex flex-col items-center gap-2 py-6 px-4 cursor-pointer transition-all border-b border-gray-100 last:border-0"
