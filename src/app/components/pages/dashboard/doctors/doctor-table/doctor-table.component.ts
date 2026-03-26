@@ -244,9 +244,6 @@ export class DoctorTableComponent implements OnInit, OnDestroy {
         }
     }
 
-    getAvatarInitialsName(name: string): string {
-        return name.replace('Dr. ', '').replace(' ', '+');
-    }
 
     onEdit(doctor: DoctorRow): void {
         this.editDoctor.emit(doctor);
