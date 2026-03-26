@@ -3,25 +3,21 @@
 
     <section class="py-16 bg-white">
         <div class="container mx-auto px-4">
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
                 @for (doc of doctors; track doc.name) {
                     <div class="flex flex-col group items-center">
-                        <div
-                            class="relative mb-0 overflow-hidden rounded-t-xl w-full bg-gray-100 aspect-3/4 flex items-center justify-center">
-                            <span class="text-gray-400 font-bold opacity-30">Doctor Image Placeholder</span>
+                        <div class="relative mb-0 overflow-hidden rounded-t-xl w-full bg-gray-100 aspect-3/4 flex items-center justify-center">
+                            @if (doc.image) {
+                                <img [ngSrc]="doc.image" [alt]="'Photo of ' + doc.name" fill class="object-cover object-center" sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 25vw" />
+                            } @else {
+                                <span class="text-gray-400 font-bold opacity-30">No Image</span>
+                            }
                         </div>
                         <div class="w-full bg-[#1F2B6C] p-6 text-center rounded-b-xl border-b-[6px] border-[#1F2B6C]">
                             <h3 class="text-body-2 font-bold text-white">{{ doc.name }}</h3>
                             <p class="text-white text-small font-bold uppercase tracking-widest mt-1 mb-4">
                                 {{ doc.role }}</p>
-                            <div class="flex justify-center gap-4 mb-6">
-                                <lucide-icon [img]="Facebook"
-                                    class="w-4 h-4 text-white cursor-pointer hover:scale-110 transition-transform"></lucide-icon>
-                                <lucide-icon [img]="Twitter"
-                                    class="w-4 h-4 text-white cursor-pointer hover:scale-110 transition-transform"></lucide-icon>
-                                <lucide-icon [img]="Linkedin"
-                                    class="w-4 h-4 text-white cursor-pointer hover:scale-110 transition-transform"></lucide-icon>
-                            </div>
+
                             <a class="text-white text-body font-bold cursor-pointer hover:text-gray-200 transition-colors">View Profile</a>
                         </div>
                     </div>

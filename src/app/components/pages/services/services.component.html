@@ -12,27 +12,20 @@
                         @for (service of servicesList; track service.id) {
                             <button (click)="setActiveService(service.id)"
                                 class="shrink-0 px-4 py-2 rounded-full font-bold text-sm cursor-pointer transition-all whitespace-nowrap"
-                                [class.bg-\[#1F2B6C\]]="activeServiceId === service.id"
-                                [class.text-white]="activeServiceId === service.id"
-                                [class.bg-gray-100]="activeServiceId !== service.id"
-                                [class.text-\[#1F2B6C\]]="activeServiceId !== service.id"
-                                [class.hover:bg-gray-200]="activeServiceId !== service.id">
+                                [style.background-color]="activeServiceId === service.id ? '#1F2B6C' : '#f3f4f6'"
+                                [style.color]="activeServiceId === service.id ? 'white' : '#1F2B6C'">
                                 {{ service.name }}
                             </button>
                         }
                     </div>
                     <!-- Desktop: vertical sidebar -->
-                    <div class="hidden lg:flex flex-col border border-gray-100 rounded-xl overflow-hidden shadow-sm">
+                    <div class="hidden lg:flex flex-col border border-gray-100 rounded-xl overflow-hidden">
                         @for (service of servicesList; track service.id) {
                             <button (click)="setActiveService(service.id)"
                                 class="flex items-center gap-4 p-6 transition-all border-b border-gray-100 last:border-0 w-full text-left font-bold"
-                                [class.bg-\[#1F2B6C\]]="activeServiceId === service.id"
-                                [class.text-white]="activeServiceId === service.id"
-                                [class.bg-white]="activeServiceId !== service.id"
-                                [class.text-\[#1F2B6C\]]="activeServiceId !== service.id"
-                                [class.hover:bg-gray-50]="activeServiceId !== service.id">
-                                <span [class.text-\[#BFD2F8\]]="activeServiceId === service.id"
-                                      [class.text-\[#159EEC\]]="activeServiceId !== service.id">
+                                [style.background-color]="activeServiceId === service.id ? '#1F2B6C' : 'white'"
+                                [style.color]="activeServiceId === service.id ? 'white' : '#1F2B6C'">
+                                <span [style.color]="activeServiceId === service.id ? '#BFD2F8' : '#159EEC'">
                                     <lucide-icon [img]="service.icon" class="w-5 h-5"></lucide-icon>
                                 </span>
                                 {{ service.name }}
@@ -86,7 +79,7 @@
     </section>
 
     <!-- Team Section (Carousel) -->
-    <section class="py-16 bg-white border-t border-gray-100">
+    <section class="py-16 bg-white">
         <div class="container mx-auto px-4">
             <div class="text-center mb-10 md:mb-16">
                 <h5 class="text-[#159EEC] font-bold text-sm tracking-[0.2em] uppercase mb-4">Meet the</h5>
