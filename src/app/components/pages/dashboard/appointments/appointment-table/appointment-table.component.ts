@@ -27,6 +27,8 @@ export interface Appointment {
 })
 export class AppointmentTableComponent implements OnInit, OnDestroy {
     appointments = input<Appointment[]>([]);
+    compactMode = input<boolean>(false);
+    readOnly = input<boolean>(false);
     editAppointment = output<Appointment>();
     deleteAppointment = output<Appointment>();
     deleteSelected = output<Appointment[]>();

@@ -27,6 +27,8 @@ export interface Payment {
 })
 export class PaymentTableComponent implements OnInit, OnDestroy {
     payments = input<Payment[]>([]);
+    compactMode = input<boolean>(false);
+    readOnly = input<boolean>(false);
     editPayment = output<Payment>();
     deletePayment = output<Payment>();
     deleteSelected = output<Payment[]>();
