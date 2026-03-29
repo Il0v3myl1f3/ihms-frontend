@@ -24,7 +24,7 @@
     </div>
 
     <!-- Main Content Area -->
-    <div class="bg-white rounded-[20px] border border-gray-100 shadow-sm flex-1 flex flex-col md:flex-row overflow-hidden min-h-[600px]">
+    <div class="bg-white rounded-[20px] border border-gray-100 flex-1 flex flex-col md:flex-row overflow-hidden min-h-[600px]">
         
         <!-- Sidebar Navigation -->
         <div class="w-full md:w-56 shrink-0 border-b md:border-b-0 md:border-r border-gray-100 p-4 bg-gray-50/30 overflow-y-auto">
@@ -133,7 +133,7 @@
                         </div>
                     </div>
 
-                    <div class="rounded-lg border border-gray-200 overflow-hidden bg-white shadow-sm flex-1">
+                    <div class="rounded-lg border border-gray-200 overflow-hidden bg-white flex-1">
                         <app-appointment-table [appointments]="patientAppointments()" [compactMode]="true" [readOnly]="true"></app-appointment-table>
                     </div>
                 </div>
@@ -149,7 +149,7 @@
                         </div>
                     </div>
 
-                    <div class="rounded-lg border border-gray-200 overflow-hidden bg-white shadow-sm flex-1">
+                    <div class="rounded-lg border border-gray-200 overflow-hidden bg-white flex-1">
                         <app-payment-table [payments]="patientPayments()" [compactMode]="true" [readOnly]="true"></app-payment-table>
                     </div>
                 </div>

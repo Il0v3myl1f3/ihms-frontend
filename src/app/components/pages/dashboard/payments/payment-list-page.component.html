@@ -8,7 +8,7 @@
     </div>
 
     <!-- Table Container -->
-    <div class="bg-white rounded-[20px] border border-gray-100 flex-1 flex flex-col relative shadow-sm">
+    <div class="bg-white rounded-[20px] border border-gray-100 flex-1 flex flex-col relative">
         <app-payment-table class="flex-1 flex flex-col h-full" [payments]="payments"
             (editPayment)="onEditPayment($event)" (deletePayment)="onDeletePayment($event)"
             (deleteSelected)="onDeleteSelectedPayments($event)"
