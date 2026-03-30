@@ -1,4 +1,4 @@
-import { Component, input, output, inject, OnInit, OnChanges, SimpleChanges, ChangeDetectionStrategy } from '@angular/core';
+import { Component, input, output, inject, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ModalComponent } from '../../../../shared/modal/modal.component';
 import { Patient } from '../patient-table/patient-table.component';
@@ -10,35 +10,30 @@ import { Patient } from '../patient-table/patient-table.component';
     styleUrl: './patient-create-modal.component.css',
     changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class PatientCreateModalComponent implements OnInit, OnChanges {
+export class PatientCreateModalComponent implements OnInit {
     isOpen = input(false);
     patientToEdit = input<Patient | null>(null);
     closeModal = output<void>();
     savePatient = output<Record<string, string>>();
 
-    patientForm!: FormGroup;
-
     private fb = inject(FormBuilder);
 
-    ngOnInit(): void {
-        this.patientForm = this.fb.group({
-            name: ['', Validators.required],
-            gender: ['', Validators.required],
-            dob: ['', Validators.required],
-            bloodType: ['', Validators.required],
-            phone: ['', Validators.required],
-            emergencyContact: ['', Validators.required],
-            address: ['', Validators.required]
-        });
-    }
+    patientForm: FormGroup = this.fb.group({
+        name: ['', Validators.required],
+        gender: ['', Validators.required],
+        dob: ['', Validators.required],
+        bloodType: ['', Validators.required],
+        phone: ['', Validators.required],
+        address: ['', Validators.required]
+    });
 
-    ngOnChanges(changes: SimpleChanges): void {
-        if (changes['isOpen'] && this.isOpen()) {
-            if (this.patientToEdit()) {
-                this.patientForm?.patchValue(this.patientToEdit()!);
-            } else {
-                this.patientForm?.reset({ gender: '', bloodType: '' });
-            }
+    ngOnInit(): void {
+        const patient = this.patientToEdit();
+        if (patient) {
+            this.patientForm.patchValue({
+                ...patient,
+                dob: this.toInputDate(patient.dob)
+            });
         }
     }
 
@@ -49,10 +44,32 @@ export class PatientCreateModalComponent implements OnInit, OnChanges {
 
     onSubmit(): void {
         if (this.patientForm.valid) {
-            this.savePatient.emit(this.patientForm.value);
+            const formValue = { ...this.patientForm.value };
+            if (formValue['dob']) {
+                formValue['dob'] = this.toDisplayDate(formValue['dob']);
+            }
+            this.savePatient.emit(formValue);
             this.patientForm.reset();
         } else {
             this.patientForm.markAllAsTouched();
         }
+    }
+
+    /** Convert DD/MM/YYYY → YYYY-MM-DD (for <input type="date">) */
+    private toInputDate(dob: string): string {
+        const parts = dob.split('/');
+        if (parts.length === 3) {
+            return `${parts[2]}-${parts[1]}-${parts[0]}`;
+        }
+        return dob;
+    }
+
+    /** Convert YYYY-MM-DD → DD/MM/YYYY (for storage) */
+    private toDisplayDate(dob: string): string {
+        const parts = dob.split('-');
+        if (parts.length === 3) {
+            return `${parts[2]}/${parts[1]}/${parts[0]}`;
+        }
+        return dob;
     }
 }

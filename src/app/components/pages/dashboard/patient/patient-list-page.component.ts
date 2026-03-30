@@ -1,6 +1,9 @@
-import { Component, ViewChild, ChangeDetectionStrategy } from '@angular/core';
+import { Component, ViewChild, ChangeDetectionStrategy, inject } from '@angular/core';
+import { Router } from '@angular/router';
 import { PatientTableComponent, Patient } from './patient-table/patient-table.component';
 import { PatientCreateModalComponent } from './patient-create-modal/patient-create-modal.component';
+import { Appointment } from '../appointments/appointment-table/appointment-table.component';
+import { Payment } from '../payments/payment-table/payment-table.component';
 
 @Component({
     selector: 'app-patient-list-page',
@@ -10,6 +13,7 @@ import { PatientCreateModalComponent } from './patient-create-modal/patient-crea
     changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class PatientListPageComponent {
+    private router = inject(Router);
     @ViewChild(PatientTableComponent) patientTable!: PatientTableComponent;
 
     patients: Patient[] = [
@@ -58,6 +62,32 @@ export class PatientListPageComponent {
     selectedPatientForEdit: Patient | null = null;
     isAddPatientModalOpen = false;
 
+    appointments: Appointment[] = [
+        { id: 1, no: 1, patientName: 'Jane Robertson', notes: "I've been feeling unwell for a few...", doctorName: 'Dr. Mia Kensington', doctorImage: '', appointmentDate: 'January 10, 2026', status: 'Completed', selected: false },
+        { id: 2, no: 2, patientName: 'Jacob Jones', notes: 'Recurring headaches and dizziness...', doctorName: 'Dr. Oliver Westwood', doctorImage: '', appointmentDate: 'January 25, 2026', status: 'Completed', selected: false },
+        { id: 3, no: 3, patientName: 'Eleanor Pena', notes: "I've noticed some unusual br...", doctorName: 'Dr. Sophia Langley', doctorImage: '', appointmentDate: 'February 8, 2026', status: 'Completed', selected: false },
+        { id: 4, no: 4, patientName: 'Leslie Alexander', notes: 'I feel short of breath even w...', doctorName: 'Dr. Amelia Hawthorne', doctorImage: '', appointmentDate: 'February 20, 2026', status: 'Cancelled', selected: false },
+        { id: 5, no: 5, patientName: 'Dianne Russell', notes: "I've been having stomach pa...", doctorName: 'Dr. Clara Whitmore', doctorImage: '', appointmentDate: 'March 5, 2026', status: 'Scheduled', selected: false },
+        { id: 6, no: 6, patientName: 'Devon Lane', notes: 'I keep experiencing sharp ch...', doctorName: 'Dr. Elijah Stone', doctorImage: '', appointmentDate: 'March 15, 2026', status: 'Scheduled', selected: false },
+        { id: 7, no: 7, patientName: 'Kristin Watson', notes: "I've had a cough that lingers...", doctorName: 'Dr. Nathaniel Rivers', doctorImage: '', appointmentDate: 'March 22, 2026', status: 'Scheduled', selected: false },
+        { id: 8, no: 8, patientName: 'Floyd Miles', notes: "I'm feeling unusually anxious...", doctorName: 'Dr. Victoria Ashford', doctorImage: '', appointmentDate: 'April 1, 2026', status: 'Cancelled', selected: false },
+        { id: 9, no: 9, patientName: 'Courtney Henry', notes: "I've been getting night sweat...", doctorName: 'Dr. Lily Fairchild', doctorImage: '', appointmentDate: 'April 12, 2026', status: 'Scheduled', selected: false },
+        { id: 10, no: 10, patientName: 'Albert Flores', notes: 'I feel like my heart is racing f...', doctorName: 'Dr. Samuel Brightman', doctorImage: '', appointmentDate: 'April 23, 2026', status: 'Scheduled', selected: false },
+    ];
+
+    payments: Payment[] = [
+        { id: 1, no: 1, invoiceNumber: 'INV-2024-001', patientName: 'Jane Robertson', amount: 350.00, date: '15/01/2024', method: 'Credit Card', status: 'Paid', selected: false },
+        { id: 2, no: 2, invoiceNumber: 'INV-2024-002', patientName: 'Jacob Jones', amount: 1200.00, date: '15/01/2024', method: 'Insurance', status: 'Paid', selected: false },
+        { id: 3, no: 3, invoiceNumber: 'INV-2024-003', patientName: 'Eleanor Pena', amount: 450.00, date: '16/01/2024', method: 'Debit Card', status: 'Pending', selected: false },
+        { id: 4, no: 4, invoiceNumber: 'INV-2024-004', patientName: 'Leslie Alexander', amount: 800.00, date: '17/01/2024', method: 'Cash', status: 'Paid', selected: false },
+        { id: 5, no: 5, invoiceNumber: 'INV-2024-005', patientName: 'Dianne Russell', amount: 275.00, date: '18/01/2024', method: 'Credit Card', status: 'Failed', selected: false },
+        { id: 6, no: 6, invoiceNumber: 'INV-2024-006', patientName: 'Devon Lane', amount: 950.00, date: '19/01/2024', method: 'Insurance', status: 'Paid', selected: false },
+        { id: 7, no: 7, invoiceNumber: 'INV-2024-007', patientName: 'Kristin Watson', amount: 150.00, date: '20/01/2024', method: 'Bank Transfer', status: 'Pending', selected: false },
+        { id: 8, no: 8, invoiceNumber: 'INV-2024-008', patientName: 'Floyd Miles', amount: 2100.00, date: '21/01/2024', method: 'Insurance', status: 'Paid', selected: false },
+        { id: 9, no: 9, invoiceNumber: 'INV-2024-009', patientName: 'Courtney Henry', amount: 325.00, date: '22/01/2024', method: 'Credit Card', status: 'Refunded', selected: false },
+        { id: 10, no: 10, invoiceNumber: 'INV-2024-010', patientName: 'Albert Flores', amount: 500.00, date: '23/01/2024', method: 'Debit Card', status: 'Paid', selected: false },
+    ];
+
     openAddPatientModal() {
         this.selectedPatientForEdit = null;
         this.isAddPatientModalOpen = true;
@@ -70,6 +100,10 @@ export class PatientListPageComponent {
     onEditPatient(patient: Patient) {
         this.selectedPatientForEdit = patient;
         this.isAddPatientModalOpen = true;
+    }
+
+    onViewPatient(patient: Patient) {
+        this.router.navigate(['/dashboard/patient', patient.id]);
     }
 
     onDeletePatient(patient: Patient) {

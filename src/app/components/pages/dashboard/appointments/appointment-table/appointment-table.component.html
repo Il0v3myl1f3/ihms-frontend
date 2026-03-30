@@ -1,4 +1,5 @@
 <!-- Table Header Configuration Bar -->
+@if (!compactMode()) {
 <div class="p-4 lg:p-6 border-b border-gray-100 flex flex-col lg:flex-row lg:items-center justify-between gap-4">
     <div class="flex flex-wrap flex-1 items-center gap-3">
         <!-- Search -->
@@ -81,6 +82,7 @@
         </button>
     </div>
 </div>
+}
 
 <!-- Table Body (Scrollable) -->
 <div class="flex-auto overflow-x-auto overflow-y-auto w-full">
@@ -90,8 +92,10 @@
                 <th
                     class="px-4 py-4 text-sm font-normal text-gray-600 whitespace-nowrap overflow-hidden w-[6%] min-w-16">
                     <div class="flex items-center gap-3">
+                        @if (!readOnly()) {
                         <input type="checkbox" [(ngModel)]="selectAll" (change)="toggleSelectAll()"
                             class="w-3.5 h-3.5 rounded border-gray-100 text-[#159EEC] focus:ring-0 focus:ring-offset-0 cursor-pointer" />
+                        }
                         <span (click)="handleSort('no')"
                             class="flex items-center gap-1 group/th cursor-pointer pl-1 select-none hover:text-[#1F2B6C] transition-colors"
                             [class.text-[#1F2B6C]]="sortColumn() === 'no'"
@@ -106,6 +110,7 @@
                         </span>
                     </div>
                 </th>
+                @if (!compactMode()) {
                 <th class="px-4 py-4 text-sm font-normal text-gray-600 whitespace-nowrap overflow-hidden w-[18%]">
                     <div (click)="handleSort('patientName')"
                         class="flex items-center gap-1 group/th cursor-pointer pl-1 select-none hover:text-[#1F2B6C] transition-colors"
@@ -125,6 +130,7 @@
                         Notes
                     </div>
                 </th>
+                }
                 <th class="px-4 py-4 text-sm font-normal text-gray-600 whitespace-nowrap overflow-hidden w-[18%]">
                     <div (click)="handleSort('doctorName')"
                         class="flex items-center gap-1 group/th cursor-pointer select-none hover:text-[#1F2B6C] transition-colors"
@@ -176,15 +182,19 @@
                 class="hover:bg-gray-50/30 group whitespace-nowrap transition-colors border-b border-gray-200 last:border-0 text-sm">
                 <td class="px-4 py-4">
                     <div class="flex items-center gap-3">
+                        @if (!readOnly()) {
                         <input type="checkbox" [(ngModel)]="appt.selected" (change)="updateSelectAllState()"
                             class="w-3.5 h-3.5 rounded border-gray-100 text-[#159EEC] focus:ring-0 focus:ring-offset-0 cursor-pointer" />
+                        }
                         <span class="font-normal text-gray-900 tracking-tight pl-1">{{ appt.no }}</span>
                     </div>
                 </td>
+                @if (!compactMode()) {
                 <td class="px-4 py-4 pl-5">
                     <span class="text-gray-900 tracking-tight">{{ appt.patientName }}</span>
                 </td>
                 <td class="px-4 py-4 text-gray-900 truncate max-w-[220px]">{{ appt.notes }}</td>
+                }
                 <td class="px-4 py-4">
                     <div class="flex items-center gap-3">
                         <img src="https://ui-avatars.com/api/?name={{ getAvatarInitialsName(appt.doctorName) }}&background=EAF6FD&color=1F2B6C&rounded=true"
@@ -213,7 +223,7 @@
 
             @if (paginatedAppointments().length === 0) {
             <tr>
-                <td colspan="7" class="py-12 text-center text-gray-400 text-sm">
+                <td [attr.colspan]="7 - (readOnly() ? 0 : 0) - (compactMode() ? 2 : 0)" class="py-12 text-center text-gray-400 text-sm">
                     No appointments found matching your criteria.
                 </td>
             </tr>
