@@ -8,7 +8,7 @@
     </div>
 
     <!-- Table Container -->
-    <div class="bg-white rounded-[20px] border border-gray-100 flex-1 flex flex-col relative shadow-sm">
+    <div class="bg-white rounded-[20px] border border-gray-100 flex-1 flex flex-col relative">
         <app-appointment-table class="flex-1 flex flex-col h-full" [appointments]="appointments"
             (editAppointment)="onEditAppointment($event)" (deleteAppointment)="onDeleteAppointment($event)"
             (deleteSelected)="onDeleteSelectedAppointments($event)"
