@@ -3,6 +3,31 @@ import { MedicalService, Doctor } from '../../../../services/medical.service';
 import { AppointmentTableComponent, Appointment } from './appointment-table/appointment-table.component';
 import { AppointmentCreateModalComponent } from './appointment-create-modal/appointment-create-modal.component';
 
+
+export const MOCK_APPOINTMENTS: Appointment[] = [
+    { id: 1, no: 1, patientName: 'Jane Robertson', notes: "I've been feeling unwell for a few days. The symptoms include persistent headaches, fatigue, and a mild fever that comes and goes entirely  entirely  entirely  entirely  entirely  entirely  entirely unpredictably. I've been feeling unwell for a few days. The symptoms include persistent headaches, fatigue, and a mild fever that comes and goes entirely unpredictably.", doctorName: 'Dr. Mia Kensington', doctorImage: '', appointmentDate: 'January 10, 2026', status: 'Scheduled', selected: false },
+    { id: 2, no: 2, patientName: 'Jane Robertson', notes: "Recurring headaches and dizziness mostly in the mornings. Patient also reports occasional blurry vision and sensitivity to bright lights over the past two weeks.", doctorName: 'Dr. Oliver Westwood', doctorImage: '', appointmentDate: 'January 25, 2026', status: 'Scheduled', selected: false },
+    { id: 3, no: 3, patientName: 'Eleanor Pena', notes: "I've noticed some unusual bruising on my arms and legs even without major trauma. Also feeling quite physically exhausted after doing basic daily activities.", doctorName: 'Dr. Sophia Langley', doctorImage: '', appointmentDate: 'February 8, 2026', status: 'Scheduled', selected: false },
+    { id: 4, no: 4, patientName: 'Leslie Alexander', notes: "I feel short of breath even when doing light physical work. There is a slight chest tightness during the night which makes it very hard to get a good sleep.", doctorName: 'Dr. Amelia Hawthorne', doctorImage: '', appointmentDate: 'February 20, 2026', status: 'Scheduled', selected: false },
+    { id: 5, no: 5, patientName: 'Dianne Russell', notes: "I've been having stomach pains after every single meal for the past month. The pain is sharp and usually localized to the lower right abdomen, lasting hours.", doctorName: 'Dr. Clara Whitmore', doctorImage: '', appointmentDate: 'March 5, 2026', status: 'Scheduled', selected: false },
+    { id: 6, no: 6, patientName: 'Devon Lane', notes: 'I keep experiencing sharp ch...', doctorName: 'Dr. Elijah Stone', doctorImage: '', appointmentDate: 'March 15, 2026', status: 'Scheduled', selected: false },
+    { id: 7, no: 7, patientName: 'Kristin Watson', notes: "I've had a cough that lingers...", doctorName: 'Dr. Nathaniel Rivers', doctorImage: '', appointmentDate: 'March 22, 2026', status: 'Scheduled', selected: false },
+    { id: 8, no: 8, patientName: 'Floyd Miles', notes: "I'm feeling unusually anxious...", doctorName: 'Dr. Victoria Ashford', doctorImage: '', appointmentDate: 'April 1, 2026', status: 'Cancelled', selected: false },
+    { id: 9, no: 9, patientName: 'Courtney Henry', notes: "I've been getting night sweat...", doctorName: 'Dr. Lily Fairchild', doctorImage: '', appointmentDate: 'April 12, 2026', status: 'Scheduled', selected: false },
+    { id: 10, no: 10, patientName: 'Albert Flores', notes: 'I feel like my heart is racing f...', doctorName: 'Dr. Samuel Brightman', doctorImage: '', appointmentDate: 'April 23, 2026', status: 'Scheduled', selected: false },
+    { id: 11, no: 11, patientName: 'Sabrina Gomez', notes: "I've been feeling really fatigu...", doctorName: 'Dr. Mia Kensington', doctorImage: '', appointmentDate: 'May 5, 2026', status: 'Scheduled', selected: false },
+    { id: 12, no: 12, patientName: 'Alexandra Smith', notes: 'I have a persistent headache...', doctorName: 'Dr. Oliver Westwood', doctorImage: '', appointmentDate: 'May 18, 2026', status: 'Cancelled', selected: false },
+    { id: 13, no: 13, patientName: 'Benjamin Johnson', notes: "I've noticed some unusual br...", doctorName: 'Dr. Sophia Langley', doctorImage: '', appointmentDate: 'June 2, 2026', status: 'Scheduled', selected: false },
+    { id: 14, no: 14, patientName: 'Avery Thompson', notes: 'I feel short of breath even w...', doctorName: 'Dr. Amelia Hawthorne', doctorImage: '', appointmentDate: 'June 15, 2026', status: 'Scheduled', selected: false },
+    { id: 15, no: 15, patientName: 'Olivia Brown', notes: "I've been having stomach pa...", doctorName: 'Dr. Clara Whitmore', doctorImage: '', appointmentDate: 'July 1, 2026', status: 'Cancelled', selected: false },
+    { id: 16, no: 16, patientName: 'Brandon Davis', notes: 'I keep experiencing sharp ch...', doctorName: 'Dr. Elijah Stone', doctorImage: '', appointmentDate: 'August 30, 2026', status: 'Scheduled', selected: false },
+    { id: 17, no: 17, patientName: 'Amelia Wilson', notes: "I've had a cough that lingers...", doctorName: 'Dr. Nathaniel Rivers', doctorImage: '', appointmentDate: 'September 15, 2026', status: 'Cancelled', selected: false },
+    { id: 18, no: 18, patientName: 'Charlotte Martinez', notes: "I'm feeling unusually anxious...", doctorName: 'Dr. Victoria Ashford', doctorImage: '', appointmentDate: 'October 22, 2026', status: 'Cancelled', selected: false },
+    { id: 19, no: 19, patientName: 'Ethan Garcia', notes: "I've been getting night sweat...", doctorName: 'Dr. Lily Fairchild', doctorImage: '', appointmentDate: 'November 18, 2026', status: 'Scheduled', selected: false },
+    { id: 20, no: 20, patientName: 'Sophia Rodriguez', notes: 'I feel like my heart is racing f...', doctorName: 'Dr. Samuel Brightman', doctorImage: '', appointmentDate: 'December 5, 2026', status: 'Scheduled', selected: false },
+    { id: 21, no: 21, patientName: 'Lucas Lee', notes: "I've been experiencing frequ...", doctorName: 'Dr. Lucas Pendleton', doctorImage: '', appointmentDate: 'January 12, 2027', status: 'Completed', selected: false },
+];
+
 @Component({
     selector: 'app-appointments-page',
     imports: [AppointmentTableComponent, AppointmentCreateModalComponent],
@@ -26,29 +51,7 @@ export class AppointmentsPageComponent {
         'Lucas Lee'
     ];
 
-    appointments: Appointment[] = [
-        { id: 1, no: 1, patientName: 'Jane Robertson', notes: "I've been feeling unwell for a few...", doctorName: 'Dr. Mia Kensington', doctorImage: '', appointmentDate: 'January 10, 2026', status: 'Completed', selected: false },
-        { id: 2, no: 2, patientName: 'Jacob Jones', notes: 'Recurring headaches and dizziness...', doctorName: 'Dr. Oliver Westwood', doctorImage: '', appointmentDate: 'January 25, 2026', status: 'Completed', selected: false },
-        { id: 3, no: 3, patientName: 'Eleanor Pena', notes: "I've noticed some unusual br...", doctorName: 'Dr. Sophia Langley', doctorImage: '', appointmentDate: 'February 8, 2026', status: 'Completed', selected: false },
-        { id: 4, no: 4, patientName: 'Leslie Alexander', notes: 'I feel short of breath even w...', doctorName: 'Dr. Amelia Hawthorne', doctorImage: '', appointmentDate: 'February 20, 2026', status: 'Cancelled', selected: false },
-        { id: 5, no: 5, patientName: 'Dianne Russell', notes: "I've been having stomach pa...", doctorName: 'Dr. Clara Whitmore', doctorImage: '', appointmentDate: 'March 5, 2026', status: 'Scheduled', selected: false },
-        { id: 6, no: 6, patientName: 'Devon Lane', notes: 'I keep experiencing sharp ch...', doctorName: 'Dr. Elijah Stone', doctorImage: '', appointmentDate: 'March 15, 2026', status: 'Scheduled', selected: false },
-        { id: 7, no: 7, patientName: 'Kristin Watson', notes: "I've had a cough that lingers...", doctorName: 'Dr. Nathaniel Rivers', doctorImage: '', appointmentDate: 'March 22, 2026', status: 'Scheduled', selected: false },
-        { id: 8, no: 8, patientName: 'Floyd Miles', notes: "I'm feeling unusually anxious...", doctorName: 'Dr. Victoria Ashford', doctorImage: '', appointmentDate: 'April 1, 2026', status: 'Cancelled', selected: false },
-        { id: 9, no: 9, patientName: 'Courtney Henry', notes: "I've been getting night sweat...", doctorName: 'Dr. Lily Fairchild', doctorImage: '', appointmentDate: 'April 12, 2026', status: 'Scheduled', selected: false },
-        { id: 10, no: 10, patientName: 'Albert Flores', notes: 'I feel like my heart is racing f...', doctorName: 'Dr. Samuel Brightman', doctorImage: '', appointmentDate: 'April 23, 2026', status: 'Scheduled', selected: false },
-        { id: 11, no: 11, patientName: 'Sabrina Gomez', notes: "I've been feeling really fatigu...", doctorName: 'Dr. Mia Kensington', doctorImage: '', appointmentDate: 'May 5, 2026', status: 'Scheduled', selected: false },
-        { id: 12, no: 12, patientName: 'Alexandra Smith', notes: 'I have a persistent headache...', doctorName: 'Dr. Oliver Westwood', doctorImage: '', appointmentDate: 'May 18, 2026', status: 'Cancelled', selected: false },
-        { id: 13, no: 13, patientName: 'Benjamin Johnson', notes: "I've noticed some unusual br...", doctorName: 'Dr. Sophia Langley', doctorImage: '', appointmentDate: 'June 2, 2026', status: 'Scheduled', selected: false },
-        { id: 14, no: 14, patientName: 'Avery Thompson', notes: 'I feel short of breath even w...', doctorName: 'Dr. Amelia Hawthorne', doctorImage: '', appointmentDate: 'June 15, 2026', status: 'Scheduled', selected: false },
-        { id: 15, no: 15, patientName: 'Olivia Brown', notes: "I've been having stomach pa...", doctorName: 'Dr. Clara Whitmore', doctorImage: '', appointmentDate: 'July 1, 2026', status: 'Cancelled', selected: false },
-        { id: 16, no: 16, patientName: 'Brandon Davis', notes: 'I keep experiencing sharp ch...', doctorName: 'Dr. Elijah Stone', doctorImage: '', appointmentDate: 'August 30, 2026', status: 'Scheduled', selected: false },
-        { id: 17, no: 17, patientName: 'Amelia Wilson', notes: "I've had a cough that lingers...", doctorName: 'Dr. Nathaniel Rivers', doctorImage: '', appointmentDate: 'September 15, 2026', status: 'Cancelled', selected: false },
-        { id: 18, no: 18, patientName: 'Charlotte Martinez', notes: "I'm feeling unusually anxious...", doctorName: 'Dr. Victoria Ashford', doctorImage: '', appointmentDate: 'October 22, 2026', status: 'Cancelled', selected: false },
-        { id: 19, no: 19, patientName: 'Ethan Garcia', notes: "I've been getting night sweat...", doctorName: 'Dr. Lily Fairchild', doctorImage: '', appointmentDate: 'November 18, 2026', status: 'Scheduled', selected: false },
-        { id: 20, no: 20, patientName: 'Sophia Rodriguez', notes: 'I feel like my heart is racing f...', doctorName: 'Dr. Samuel Brightman', doctorImage: '', appointmentDate: 'December 5, 2026', status: 'Scheduled', selected: false },
-        { id: 21, no: 21, patientName: 'Lucas Lee', notes: "I've been experiencing frequ...", doctorName: 'Dr. Lucas Pendleton', doctorImage: '', appointmentDate: 'January 12, 2027', status: 'Completed', selected: false },
-    ];
+    appointments: Appointment[] = [...MOCK_APPOINTMENTS];
 
     selectedAppointmentForEdit: Appointment | null = null;
     isModalOpen = false;

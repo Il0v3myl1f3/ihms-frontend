@@ -96,55 +96,114 @@
 
                     <!-- Upcoming Appointments -->
                     <div class="mb-6">
-                        <h5 class="text-[12px] font-bold text-gray-400 mb-3 uppercase tracking-wider">Upcoming</h5>
                         <div class="space-y-2.5">
                             @for (a of upcomingAppointments(); track a.id) {
-                            <div class="bg-white rounded-lg p-3 border border-gray-100 shadow-xs">
-                                <div class="flex justify-between items-start gap-4 mb-1.5">
-                                    <span class="text-sm font-semibold text-[#1F2B6C]/80 leading-snug">{{ a.notes
-                                        }}</span>
+                            <div class="bg-white rounded-lg p-3 border border-gray-100">
+                                <div class="flex justify-between items-start gap-4 mb-2">
+                                    <h5 class="text-[15px] font-bold text-[#1F2B6C] leading-snug">{{ a.doctorName }}</h5>
                                     <span
-                                        class="text-[9px] font-bold px-1.5 py-0.5 rounded-full bg-emerald-50 text-emerald-600 uppercase shrink-0">Confirmed</span>
-                                </div>
-                                <div class="mb-1.5">
-                                    <p class="text-sm font-semibold text-gray-900">{{ a.doctorName }}</p>
+                                        class="text-[9px] font-bold px-1.5 py-0.5 rounded-full bg-emerald-50 text-emerald-600 uppercase shrink-0 border border-emerald-100">Confirmed</span>
                                 </div>
                                 <div class="flex items-center gap-2 text-[#6B7280]">
                                     <lucide-icon [img]="Calendar" class="w-3 h-3"></lucide-icon>
                                     <span class="text-[12px] font-medium">{{ a.appointmentDate }}</span>
                                 </div>
+
+                                @if (a.notes) {
+                                <div class="mt-2.5 pt-2.5 border-t border-gray-100/80">
+                                    <div class="mb-1.5">
+                                        <span class="text-[13px] font-bold text-[#1F2B6C]">Pacient Notes</span>
+                                    </div>
+                                    <p class="text-[13px] font-semibold text-[#6B7280] leading-relaxed line-clamp-6">
+                                        {{ a.notes }}
+                                    </p>
+                                </div>
+                                }
                             </div>
                             } @empty {
                             <p class="text-xs text-gray-400 italic">No upcoming appointments</p>
                             }
                         </div>
                     </div>
+                </div>
+            </div>
 
-                    <!-- History -->
-                    <div>
-                        <h5 class="text-[12px] font-bold text-gray-400 mb-3 uppercase tracking-wider">History</h5>
-                        <div class="space-y-2.5">
-                            @for (a of historyAppointments(); track a.id) {
-                            <div class="bg-white rounded-lg p-3 border border-gray-100 shadow-xs">
-                                <div class="flex justify-between items-start gap-4 mb-1.5">
-                                    <span class="text-sm font-semibold text-[#1F2B6C]/80 leading-snug">{{ a.notes
-                                        }}</span>
-                                    <span
-                                        class="text-[9px] font-bold px-1.5 py-0.5 rounded-full bg-[#1F2B6C] text-white uppercase shrink-0">Completed</span>
-                                </div>
-                                <div class="mb-1.5">
-                                    <p class="text-sm font-semibold text-gray-900">{{ a.doctorName }}</p>
-                                </div>
-                                <div class="flex items-center gap-2 text-[#6B7280]">
-                                    <lucide-icon [img]="Calendar" class="w-3 h-3"></lucide-icon>
-                                    <span class="text-[12px] font-medium">{{ a.appointmentDate }}</span>
-                                </div>
-                            </div>
-                            } @empty {
-                            <p class="text-xs text-gray-400 italic">No previous records</p>
+            <!-- Current Prescriptions Section -->
+            <div class="mt-5 bg-gray-50/40 rounded-xl border border-gray-100 p-6">
+                <div class="flex items-center justify-between mb-4">
+                    <h4 class="text-lg font-bold text-[#1F2B6C]">Current Prescriptions</h4>
+                    <button (click)="setTab('Prescriptions')"
+                        class="text-[12px] font-bold text-[#1F2B6C] hover:text-[#1F2B6C]/80 transition-all cursor-pointer">
+                        View All
+                    </button>
+                </div>
+
+                <div class="space-y-3">
+                    @for (rx of patientPrescriptions(); track rx.id) {
+                    <div
+                        class="flex items-center gap-4 bg-white rounded-lg p-4 border border-gray-100 shadow-xs hover:shadow-sm transition-all">
+                        <!-- Icon -->
+                        <div
+                            class="w-11 h-11 rounded-xl flex items-center justify-center shrink-0"
+                            [class.bg-indigo-50]="rx.status === 'Active'"
+                            [class.bg-gray-100]="rx.status !== 'Active'">
+                            @if (rx.id % 2 === 1) {
+                            <lucide-icon [img]="Pill"
+                                class="w-5 h-5"
+                                [class.text-indigo-500]="rx.status === 'Active'"
+                                [class.text-gray-400]="rx.status !== 'Active'"></lucide-icon>
+                            } @else {
+                            <span class="text-lg font-bold"
+                                [class.text-indigo-500]="rx.status === 'Active'"
+                                [class.text-gray-400]="rx.status !== 'Active'">Rx</span>
                             }
                         </div>
+
+                        <!-- Details (following image 2 info except doctor) -->
+                        <div class="flex-1 flex flex-wrap items-center justify-between gap-4">
+                            <div class="flex flex-1 flex-wrap items-center gap-x-8 gap-y-2">
+                                <div class="min-w-[100px]">
+                                    <p class="text-sm font-bold text-[#1F2B6C]">{{ rx.medication }}</p>
+                                </div>
+                                <div class="min-w-[60px]">
+                                    <p class="text-sm text-[#4B5563] font-medium">{{ rx.dosage }}</p>
+                                </div>
+                                <div class="min-w-[100px]">
+                                    <p class="text-sm text-[#4B5563] font-medium">{{ rx.frequency }}</p>
+                                </div>
+                                <div class="min-w-[120px]">
+                                    <p class="text-sm text-[#4B5563] font-medium">{{ rx.startDate }}</p>
+                                </div>
+                                <div class="min-w-[120px]">
+                                    <p class="text-sm text-[#4B5563] font-medium">{{ rx.endDate }}</p>
+                                </div>
+                            </div>
+
+                            <div class="shrink-0">
+                                <span class="px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider border"
+                                    [class.bg-emerald-50]="rx.status === 'Active'"
+                                    [class.text-emerald-500]="rx.status === 'Active'"
+                                    [class.border-emerald-100]="rx.status === 'Active'"
+                                    [class.bg-blue-50]="rx.status === 'Completed'"
+                                    [class.text-blue-500]="rx.status === 'Completed'"
+                                    [class.border-blue-100]="rx.status === 'Completed'"
+                                    [class.bg-gray-50]="rx.status === 'Expired'"
+                                    [class.text-gray-400]="rx.status === 'Expired'"
+                                    [class.border-gray-100]="rx.status === 'Expired'">
+                                    {{ rx.status }}
+                                </span>
+                            </div>
+                        </div>
                     </div>
+                    } @empty {
+                    <div class="text-center py-6">
+                        <div
+                            class="w-12 h-12 bg-gray-50 border border-gray-100 rounded-full flex items-center justify-center mx-auto mb-3">
+                            <lucide-icon [img]="Pill" class="w-5 h-5 text-gray-300"></lucide-icon>
+                        </div>
+                        <p class="text-sm text-gray-400">No prescriptions on file</p>
+                    </div>
+                    }
                 </div>
             </div>
             }
