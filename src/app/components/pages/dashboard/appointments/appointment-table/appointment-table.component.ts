@@ -283,8 +283,4 @@ export class AppointmentTableComponent implements OnInit, OnDestroy {
             default: return 'bg-gray-50 text-gray-700';
         }
     }
-
-    getAvatarInitialsName(name: string): string {
-        return name.replace('Dr. ', '').replace(' ', '+');
-    }
 }
