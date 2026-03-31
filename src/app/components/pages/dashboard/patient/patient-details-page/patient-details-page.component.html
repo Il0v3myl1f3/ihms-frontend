@@ -3,23 +3,15 @@
     <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
         <div class="flex items-center gap-4">
             <button (click)="goBack()"
-                class="w-9 h-9 flex items-center justify-center rounded-lg border border-gray-200 text-gray-400 hover:text-[#1F2B6C] hover:bg-gray-50 transition-all cursor-pointer">
-                <lucide-icon [img]="ArrowLeft" class="w-4 h-4"></lucide-icon>
+                class="w-10 h-10 flex items-center justify-center rounded-xl border border-gray-100 bg-white text-gray-400 hover:text-gray-600 transition-all active:scale-95 shadow-xs cursor-pointer">
+                <lucide-icon [img]="ArrowLeft" class="w-5 h-5"></lucide-icon>
             </button>
-            <div class="flex items-center gap-3">
-                <div class="w-10 h-10 rounded-full bg-[#EAF6FD] flex items-center justify-center text-[#1F2B6C] font-bold text-sm">
-                    {{ patient()?.name?.charAt(0) }}
-                </div>
-                <div>
-                    <h2 class="text-dashboard-title text-[#1F2B6C] tracking-tight mb-0.5">{{ patient()?.name }}</h2>
-                    <p class="text-sm text-gray-500">Patient Profile</p>
-                </div>
+            <div>
+                <p class="text-[12px] font-medium text-gray-400 mb-0.5">Back to Patient List</p>
+                <h2 class="text-2xl font-bold text-[#1F2B6C] tracking-tight">Patient Details</h2>
             </div>
         </div>
         <div class="flex items-center gap-3">
-            <button class="bg-[#1F2B6C] hover:bg-[#151D4A] text-white px-5 py-2.5 rounded-lg text-sm font-medium transition-colors shadow-sm cursor-pointer">
-                Edit Profile
-            </button>
         </div>
     </div>
 
