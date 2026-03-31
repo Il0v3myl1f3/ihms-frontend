@@ -7,95 +7,95 @@ import { PaymentTableComponent, Payment } from '../../payments/payment-table/pay
 import { Patient } from '../patient-table/patient-table.component';
 
 @Component({
-  selector: 'app-patient-details-page',
-  standalone: true,
-  imports: [CommonModule, LucideAngularModule, AppointmentTableComponent, PaymentTableComponent],
-  templateUrl: './patient-details-page.component.html',
-  changeDetection: ChangeDetectionStrategy.OnPush
+    selector: 'app-patient-details-page',
+    standalone: true,
+    imports: [CommonModule, LucideAngularModule, AppointmentTableComponent, PaymentTableComponent],
+    templateUrl: './patient-details-page.component.html',
+    changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class PatientDetailsPageComponent implements OnInit {
-   route = inject(ActivatedRoute);
-   router = inject(Router);
+    route = inject(ActivatedRoute);
+    router = inject(Router);
 
-   // Icons
-   User = User;
-   Calendar = Calendar;
-   Droplet = Droplet;
-   Phone = Phone;
-   MapPin = MapPin;
-   ArrowLeft = ArrowLeft;
-   MoreHorizontal = MoreHorizontal;
+    // Icons
+    User = User;
+    Calendar = Calendar;
+    Droplet = Droplet;
+    Phone = Phone;
+    MapPin = MapPin;
+    ArrowLeft = ArrowLeft;
+    MoreHorizontal = MoreHorizontal;
 
-   activeTab = signal('General Info');
-   tabs = ['General Info', 'Appointments', 'Payments', 'Medical Records', 'Prescriptions'];
+    activeTab = signal('General Info');
+    tabs = ['General Info', 'Appointments', 'Payments', 'Medical Records', 'Prescriptions'];
 
-   patient = signal<Patient | null>(null);
+    patient = signal<Patient | null>(null);
 
-   // Mock data (we will pull based on route id, ideally from a service)
-   patientAppointments = signal<Appointment[]>([]);
-   patientPayments = signal<Payment[]>([]);
+    // Mock data (we will pull based on route id, ideally from a service)
+    patientAppointments = signal<Appointment[]>([]);
+    patientPayments = signal<Payment[]>([]);
 
-   totalBookings = computed(() => this.patientAppointments().length);
-   
-   lastVisited = computed(() => {
-       const completed = this.patientAppointments()
-           .filter(a => a.status === 'Completed')
-           .sort((a, b) => new Date(b.appointmentDate).getTime() - new Date(a.appointmentDate).getTime());
-       return completed.length > 0 ? completed[0].appointmentDate : 'No visits yet';
-   });
+    totalBookings = computed(() => this.patientAppointments().length);
 
-   upcomingAppointments = computed(() => 
-       this.patientAppointments().filter(a => a.status === 'Scheduled')
-   );
+    lastVisited = computed(() => {
+        const completed = this.patientAppointments()
+            .filter(a => a.status === 'Completed')
+            .sort((a, b) => new Date(b.appointmentDate).getTime() - new Date(a.appointmentDate).getTime());
+        return completed.length > 0 ? completed[0].appointmentDate : 'No visits yet';
+    });
 
-   historyAppointments = computed(() => 
-       this.patientAppointments().filter(a => a.status === 'Completed')
-   );
+    upcomingAppointments = computed(() =>
+        this.patientAppointments().filter(a => a.status === 'Scheduled')
+    );
 
-   ngOnInit() {
-       this.route.paramMap.subscribe(params => {
-           const idParam = params.get('id');
-           if (idParam) {
-               const id = parseInt(idParam, 10);
-               this.loadPatientData(id);
-           }
-       });
-   }
+    historyAppointments = computed(() =>
+        this.patientAppointments().filter(a => a.status === 'Completed')
+    );
 
-   loadPatientData(id: number) {
-       // Mock fetch based on ID - normally this would call a PatientService
-       // For this UI demo, we'll just populate some static/semi-dynamic data based on the ID.
-       const mockPatient: Patient = { 
-           id: id, 
-           no: id, 
-           name: 'Jane Robertson', // Mocked name
-           gender: 'Female', 
-           dob: '11/12/1990', 
-           address: '3891 Ranchview Dr.', 
-           phone: '(217) 555-0113', 
-           bloodType: 'A+', 
-           selected: false 
-       };
-       this.patient.set(mockPatient);
+    ngOnInit() {
+        this.route.paramMap.subscribe(params => {
+            const idParam = params.get('id');
+            if (idParam) {
+                const id = parseInt(idParam, 10);
+                this.loadPatientData(id);
+            }
+        });
+    }
 
-       // Mock appointments
-       this.patientAppointments.set([
-           { id: 1, no: 1, patientName: mockPatient.name, notes: "I've been feeling unwell for a few days...", doctorName: 'Dr. Mia Kensington', doctorImage: '', appointmentDate: 'January 10, 2026', status: 'Completed', selected: false },
-           { id: 2, no: 2, patientName: mockPatient.name, notes: "Routine checkup follow-up.", doctorName: 'Dr. Sophia Langley', doctorImage: '', appointmentDate: 'February 8, 2026', status: 'Scheduled', selected: false }
-       ]);
+    loadPatientData(id: number) {
+        // Mock fetch based on ID - normally this would call a PatientService
+        // For this UI demo, we'll just populate some static/semi-dynamic data based on the ID.
+        const mockPatient: Patient = {
+            id: id,
+            no: id,
+            name: 'Jane Robertson', // Mocked name
+            gender: 'Female',
+            dob: '11/12/1990',
+            address: '3891 Ranchview Dr.',
+            phone: '(217) 555-0113',
+            bloodType: 'A+',
+            selected: false
+        };
+        this.patient.set(mockPatient);
 
-       // Mock payments
-       this.patientPayments.set([
-           { id: 1, no: 1, invoiceNumber: 'INV-2024-001', patientName: mockPatient.name, amount: 350.00, date: '15/01/2024', method: 'Credit Card', status: 'Paid', selected: false },
-           { id: 2, no: 2, invoiceNumber: 'INV-2024-005', patientName: mockPatient.name, amount: 120.00, date: '18/02/2024', method: 'Insurance', status: 'Pending', selected: false }
-       ]);
-   }
+        // Mock appointments
+        this.patientAppointments.set([
+            { id: 1, no: 1, patientName: mockPatient.name, notes: "I've been feeling unwell for a few days...", doctorName: 'Dr. Mia Kensington', doctorImage: '', appointmentDate: 'January 10, 2026', status: 'Completed', selected: false },
+            { id: 2, no: 2, patientName: mockPatient.name, notes: "Routine checkup follow-up.", doctorName: 'Dr. Sophia Langley', doctorImage: '', appointmentDate: 'February 8, 2026', status: 'Scheduled', selected: false }
+        ]);
 
-   setTab(tab: string) {
-       this.activeTab.set(tab);
-   }
+        // Mock payments
+        this.patientPayments.set([
+            { id: 1, no: 1, invoiceNumber: 'INV-2024-001', patientName: mockPatient.name, amount: 350.00, date: '15/01/2024', method: 'Credit Card', status: 'Paid', selected: false },
+            { id: 2, no: 2, invoiceNumber: 'INV-2024-005', patientName: mockPatient.name, amount: 120.00, date: '18/02/2024', method: 'Insurance', status: 'Pending', selected: false }
+        ]);
+    }
 
-   goBack() {
-       this.router.navigate(['/dashboard/patient']);
-   }
+    setTab(tab: string) {
+        this.activeTab.set(tab);
+    }
+
+    goBack() {
+        this.router.navigate(['/dashboard/patient']);
+    }
 }

@@ -17,19 +17,15 @@
 
     <!-- Main Content Area -->
     <div class="bg-white rounded-xl border border-gray-100 flex-1 flex flex-col overflow-hidden min-h-[500px]">
-        
+
         <!-- Horizontal Tab Navigation -->
         <div class="w-full border-b border-gray-100 bg-white sticky top-0 z-10 transition-colors">
             <div class="flex items-center gap-2 px-5 py-3 overflow-x-auto no-scrollbar scroll-smooth">
                 @for (tab of tabs; track tab) {
-                <button (click)="setTab(tab)" 
-                    [class.bg-[#1F2B6C]]="activeTab() === tab" 
-                    [class.text-white]="activeTab() === tab" 
-                    [class.border-[#1F2B6C]]="activeTab() === tab"
-                    [class.shadow-md]="activeTab() === tab"
-                    [class.bg-gray-50/50]="activeTab() !== tab"
-                    [class.text-[#4B5563]]="activeTab() !== tab"
-                    [class.border-gray-200/80]="activeTab() !== tab"
+                <button (click)="setTab(tab)" [class.bg-[#1F2B6C]]="activeTab() === tab"
+                    [class.text-white]="activeTab() === tab" [class.border-[#1F2B6C]]="activeTab() === tab"
+                    [class.shadow-md]="activeTab() === tab" [class.bg-gray-50/50]="activeTab() !== tab"
+                    [class.text-[#4B5563]]="activeTab() !== tab" [class.border-gray-200/80]="activeTab() !== tab"
                     [class.hover:border-[#1F2B6C]/30]="activeTab() !== tab"
                     [class.hover:bg-gray-50]="activeTab() !== tab"
                     class="px-4 py-1.5 rounded-md text-sm font-medium transition-all cursor-pointer whitespace-nowrap border active:scale-[0.98]">
@@ -41,152 +37,162 @@
 
         <!-- Content Area -->
         <div class="flex-1 p-4 md:p-6 bg-white overflow-y-auto view-scroll">
-            
+
             <!-- General Info Tab -->
-             @if (activeTab() === 'General Info') {
-                <div class="flex flex-col lg:flex-row gap-5 items-start">
-                    <!-- Left: Patient Info Card -->
-                    <div class="flex-1 bg-gray-50/40 rounded-xl border border-gray-100 p-6 w-full">
-                        <!-- Patient Profile Header -->
-                        <div class="mb-4 pb-1">
-                            <h3 class="text-xl font-bold text-[#1F2B6C] mb-1">{{ patient()?.name }}</h3>
-                            <p class="text-sm text-[#6B7280] font-medium">Last Visited : <span class="text-[#4B5563]">{{ lastVisited() }}</span></p>
-                        </div>
+            @if (activeTab() === 'General Info') {
+            <div class="flex flex-col lg:flex-row gap-5 items-start">
+                <!-- Left: Patient Info Card -->
+                <div class="flex-1 bg-gray-50/40 rounded-xl border border-gray-100 p-6 w-full">
+                    <!-- Patient Profile Header -->
+                    <div class="mb-4 pb-1">
+                        <h3 class="text-xl font-bold text-[#1F2B6C] mb-1">{{ patient()?.name }}</h3>
+                        <p class="text-sm text-[#6B7280] font-medium">Last Visited : <span class="text-[#4B5563]">{{
+                                lastVisited() }}</span></p>
+                    </div>
 
-                        <!-- Basic Information Section -->
-                        <div class="mb-6">
-                            <h4 class="text-base font-bold text-[#1F2B6C] mb-3">Basic Information</h4>
-                            <div class="space-y-3">
-                                <div class="flex justify-between items-center">
-                                    <span class="text-sm font-medium text-[#6B7280]">DOB</span>
-                                    <span class="text-sm font-semibold text-[#1F2B6C]">{{ patient()?.dob }}</span>
-                                </div>
-                                <div class="flex justify-between items-center">
-                                    <span class="text-sm font-medium text-[#6B7280]">Gender</span>
-                                    <span class="text-sm font-semibold text-[#1F2B6C]">{{ patient()?.gender }}</span>
-                                </div>
-                                <div class="flex justify-between items-center">
-                                    <span class="text-sm font-medium text-[#6B7280]">Blood Group</span>
-                                    <span class="text-sm font-semibold text-[#1F2B6C]">{{ patient()?.bloodType }}</span>
-                                </div>
-                                <div class="flex justify-between items-center">
-                                    <span class="text-sm font-medium text-[#6B7280]">Phone Number</span>
-                                    <span class="text-sm font-semibold text-[#1F2B6C]">{{ patient()?.phone }}</span>
-                                </div>
-                                <div class="flex justify-between items-center">
-                                    <span class="text-sm font-medium text-[#6B7280]">Total No of Bookings</span>
-                                    <span class="text-sm font-semibold text-[#1F2B6C]">{{ totalBookings() }}</span>
-                                </div>
+                    <!-- Basic Information Section -->
+                    <div class="mb-6">
+                        <h4 class="text-base font-bold text-[#1F2B6C] mb-3">Basic Information</h4>
+                        <div class="space-y-3">
+                            <div class="flex justify-between items-center">
+                                <span class="text-sm font-medium text-[#6B7280]">DOB</span>
+                                <span class="text-sm font-semibold text-[#1F2B6C]">{{ patient()?.dob }}</span>
                             </div>
-                        </div>
-
-                        <!-- Address Information Section -->
-                        <div class="pt-4 border-t border-gray-100/60">
-                            <h4 class="text-base font-bold text-[#1F2B6C] mb-2">Address Information</h4>
-                            <p class="text-sm font-semibold text-[#4B5563] leading-relaxed">{{ patient()?.address }}</p>
+                            <div class="flex justify-between items-center">
+                                <span class="text-sm font-medium text-[#6B7280]">Gender</span>
+                                <span class="text-sm font-semibold text-[#1F2B6C]">{{ patient()?.gender }}</span>
+                            </div>
+                            <div class="flex justify-between items-center">
+                                <span class="text-sm font-medium text-[#6B7280]">Blood Group</span>
+                                <span class="text-sm font-semibold text-[#1F2B6C]">{{ patient()?.bloodType }}</span>
+                            </div>
+                            <div class="flex justify-between items-center">
+                                <span class="text-sm font-medium text-[#6B7280]">Phone Number</span>
+                                <span class="text-sm font-semibold text-[#1F2B6C]">{{ patient()?.phone }}</span>
+                            </div>
+                            <div class="flex justify-between items-center">
+                                <span class="text-sm font-medium text-[#6B7280]">Total No of Bookings</span>
+                                <span class="text-sm font-semibold text-[#1F2B6C]">{{ totalBookings() }}</span>
+                            </div>
                         </div>
                     </div>
 
-                    <!-- Right: Appointment Sidebar -->
-                    <div class="w-full lg:w-80 shrink-0 bg-gray-50/40 rounded-xl border border-gray-100 p-5">
-                        <div class="flex items-center justify-between mb-4">
-                            <h4 class="text-lg font-bold text-[#1F2B6C]">Appointment</h4>
-                            <button class="text-gray-400 hover:text-gray-600 transition-colors">
-                                <lucide-icon [img]="MoreHorizontal" class="w-4 h-4"></lucide-icon>
-                            </button>
-                        </div>
+                    <!-- Address Information Section -->
+                    <div class="pt-4 border-t border-gray-100/60">
+                        <h4 class="text-base font-bold text-[#1F2B6C] mb-2">Address Information</h4>
+                        <p class="text-sm font-semibold text-[#4B5563] leading-relaxed">{{ patient()?.address }}</p>
+                    </div>
+                </div>
 
-                        <!-- Upcoming Appointments -->
-                        <div class="mb-6">
-                            <h5 class="text-[12px] font-bold text-gray-400 mb-3 uppercase tracking-wider">Upcoming</h5>
-                            <div class="space-y-2.5">
-                                @for (a of upcomingAppointments(); track a.id) {
-                                    <div class="bg-white rounded-lg p-3 border border-gray-100 shadow-xs">
-                                        <div class="flex justify-between items-start gap-4 mb-1.5">
-                                            <span class="text-sm font-semibold text-[#1F2B6C]/80 leading-snug">{{ a.notes }}</span>
-                                            <span class="text-[9px] font-bold px-1.5 py-0.5 rounded-full bg-emerald-50 text-emerald-600 uppercase shrink-0">Confirmed</span>
-                                        </div>
-                                        <div class="mb-1.5">
-                                            <p class="text-sm font-semibold text-gray-900">{{ a.doctorName }}</p>
-                                        </div>
-                                        <div class="flex items-center gap-2 text-[#6B7280]">
-                                            <lucide-icon [img]="Calendar" class="w-3 h-3"></lucide-icon>
-                                            <span class="text-[12px] font-medium">{{ a.appointmentDate }}</span>
-                                        </div>
-                                    </div>
-                                } @empty {
-                                    <p class="text-xs text-gray-400 italic">No upcoming appointments</p>
-                                }
-                            </div>
-                        </div>
+                <!-- Right: Appointment Sidebar -->
+                <div class="w-full lg:w-[30%] shrink-0 bg-gray-50/40 rounded-xl border border-gray-100 p-5">
+                    <div class="flex items-center justify-between mb-4">
+                        <h4 class="text-lg font-bold text-[#1F2B6C]">Appointment</h4>
+                        <button class="text-gray-400 hover:text-gray-600 transition-colors">
+                            <lucide-icon [img]="MoreHorizontal" class="w-4 h-4"></lucide-icon>
+                        </button>
+                    </div>
 
-                        <!-- History -->
-                        <div>
-                            <h5 class="text-[12px] font-bold text-gray-400 mb-3 uppercase tracking-wider">History</h5>
-                            <div class="space-y-2.5">
-                                @for (a of historyAppointments(); track a.id) {
-                                    <div class="bg-white rounded-lg p-3 border border-gray-100 shadow-xs">
-                                        <div class="flex justify-between items-start gap-4 mb-1.5">
-                                            <span class="text-sm font-semibold text-[#1F2B6C]/80 leading-snug">{{ a.notes }}</span>
-                                            <span class="text-[9px] font-bold px-1.5 py-0.5 rounded-full bg-[#1F2B6C] text-white uppercase shrink-0">Completed</span>
-                                        </div>
-                                        <div class="mb-1.5">
-                                            <p class="text-sm font-semibold text-gray-900">{{ a.doctorName }}</p>
-                                        </div>
-                                        <div class="flex items-center gap-2 text-[#6B7280]">
-                                            <lucide-icon [img]="Calendar" class="w-3 h-3"></lucide-icon>
-                                            <span class="text-[12px] font-medium">{{ a.appointmentDate }}</span>
-                                        </div>
-                                    </div>
-                                } @empty {
-                                    <p class="text-xs text-gray-400 italic">No previous records</p>
-                                }
+                    <!-- Upcoming Appointments -->
+                    <div class="mb-6">
+                        <h5 class="text-[12px] font-bold text-gray-400 mb-3 uppercase tracking-wider">Upcoming</h5>
+                        <div class="space-y-2.5">
+                            @for (a of upcomingAppointments(); track a.id) {
+                            <div class="bg-white rounded-lg p-3 border border-gray-100 shadow-xs">
+                                <div class="flex justify-between items-start gap-4 mb-1.5">
+                                    <span class="text-sm font-semibold text-[#1F2B6C]/80 leading-snug">{{ a.notes
+                                        }}</span>
+                                    <span
+                                        class="text-[9px] font-bold px-1.5 py-0.5 rounded-full bg-emerald-50 text-emerald-600 uppercase shrink-0">Confirmed</span>
+                                </div>
+                                <div class="mb-1.5">
+                                    <p class="text-sm font-semibold text-gray-900">{{ a.doctorName }}</p>
+                                </div>
+                                <div class="flex items-center gap-2 text-[#6B7280]">
+                                    <lucide-icon [img]="Calendar" class="w-3 h-3"></lucide-icon>
+                                    <span class="text-[12px] font-medium">{{ a.appointmentDate }}</span>
+                                </div>
                             </div>
+                            } @empty {
+                            <p class="text-xs text-gray-400 italic">No upcoming appointments</p>
+                            }
+                        </div>
+                    </div>
+
+                    <!-- History -->
+                    <div>
+                        <h5 class="text-[12px] font-bold text-gray-400 mb-3 uppercase tracking-wider">History</h5>
+                        <div class="space-y-2.5">
+                            @for (a of historyAppointments(); track a.id) {
+                            <div class="bg-white rounded-lg p-3 border border-gray-100 shadow-xs">
+                                <div class="flex justify-between items-start gap-4 mb-1.5">
+                                    <span class="text-sm font-semibold text-[#1F2B6C]/80 leading-snug">{{ a.notes
+                                        }}</span>
+                                    <span
+                                        class="text-[9px] font-bold px-1.5 py-0.5 rounded-full bg-[#1F2B6C] text-white uppercase shrink-0">Completed</span>
+                                </div>
+                                <div class="mb-1.5">
+                                    <p class="text-sm font-semibold text-gray-900">{{ a.doctorName }}</p>
+                                </div>
+                                <div class="flex items-center gap-2 text-[#6B7280]">
+                                    <lucide-icon [img]="Calendar" class="w-3 h-3"></lucide-icon>
+                                    <span class="text-[12px] font-medium">{{ a.appointmentDate }}</span>
+                                </div>
+                            </div>
+                            } @empty {
+                            <p class="text-xs text-gray-400 italic">No previous records</p>
+                            }
                         </div>
                     </div>
                 </div>
+            </div>
             }
 
             <!-- Appointments Tab -->
             @if (activeTab() === 'Appointments') {
-                <div class="h-full flex flex-col">
-                    <div class="border-b border-gray-100 pb-4 mb-6 flex justify-between items-center shrink-0">
-                        <div>
-                            <h4 class="text-lg font-bold text-[#1F2B6C]">Appointments</h4>
-                            <p class="text-[13px] text-gray-500 mt-0.5 font-medium">Recent and upcoming appointments for this patient</p>
-                        </div>
-                    </div>
-
-                    <div class="rounded-lg border border-gray-200 overflow-hidden bg-white flex-1">
-                        <app-appointment-table [appointments]="patientAppointments()" [compactMode]="true" [readOnly]="true"></app-appointment-table>
+            <div class="h-full flex flex-col">
+                <div class="border-b border-gray-100 pb-4 mb-6 flex justify-between items-center shrink-0">
+                    <div>
+                        <h4 class="text-lg font-bold text-[#1F2B6C]">Appointments</h4>
+                        <p class="text-[13px] text-gray-500 mt-0.5 font-medium">Recent and upcoming appointments for
+                            this patient</p>
                     </div>
                 </div>
+
+                <div class="rounded-lg border border-gray-200 overflow-hidden bg-white flex-1">
+                    <app-appointment-table [appointments]="patientAppointments()" [compactMode]="true"
+                        [readOnly]="true"></app-appointment-table>
+                </div>
+            </div>
             }
 
             <!-- Payments Tab -->
             @if (activeTab() === 'Payments') {
-                <div class="h-full flex flex-col">
-                    <div class="border-b border-gray-100 pb-4 mb-6 flex justify-between items-center shrink-0">
-                        <div>
-                            <h4 class="text-lg font-bold text-[#1F2B6C]">Payments</h4>
-                            <p class="text-[13px] text-gray-500 mt-0.5 font-medium">Billing history and payment status</p>
-                        </div>
-                    </div>
-
-                    <div class="rounded-lg border border-gray-200 overflow-hidden bg-white flex-1">
-                        <app-payment-table [payments]="patientPayments()" [compactMode]="true" [readOnly]="true"></app-payment-table>
+            <div class="h-full flex flex-col">
+                <div class="border-b border-gray-100 pb-4 mb-6 flex justify-between items-center shrink-0">
+                    <div>
+                        <h4 class="text-lg font-bold text-[#1F2B6C]">Payments</h4>
+                        <p class="text-[13px] text-gray-500 mt-0.5 font-medium">Billing history and payment status</p>
                     </div>
                 </div>
+
+                <div class="rounded-lg border border-gray-200 overflow-hidden bg-white flex-1">
+                    <app-payment-table [payments]="patientPayments()" [compactMode]="true"
+                        [readOnly]="true"></app-payment-table>
+                </div>
+            </div>
             }
 
-             @if (activeTab() === 'Medical Records' || activeTab() === 'Prescriptions') {
-                <div class="h-full flex flex-col items-center justify-center text-center">
-                    <div class="w-16 h-16 bg-gray-50 border border-gray-100 rounded-full flex items-center justify-center mb-4">
-                        <lucide-icon [img]="Calendar" class="w-7 h-7 text-gray-300"></lucide-icon>
-                    </div>
-                    <h4 class="text-lg font-bold text-[#1F2B6C] mb-1">No Data Available</h4>
-                    <p class="text-sm text-gray-500 max-w-sm">This section is currently empty. You can add new records or documents anytime.</p>
+            @if (activeTab() === 'Medical Records' || activeTab() === 'Prescriptions') {
+            <div class="h-full flex flex-col items-center justify-center text-center">
+                <div
+                    class="w-16 h-16 bg-gray-50 border border-gray-100 rounded-full flex items-center justify-center mb-4">
+                    <lucide-icon [img]="Calendar" class="w-7 h-7 text-gray-300"></lucide-icon>
                 </div>
+                <h4 class="text-lg font-bold text-[#1F2B6C] mb-1">No Data Available</h4>
+                <p class="text-sm text-gray-500 max-w-sm">This section is currently empty. You can add new records or
+                    documents anytime.</p>
+            </div>
             }
         </div>
     </div>
