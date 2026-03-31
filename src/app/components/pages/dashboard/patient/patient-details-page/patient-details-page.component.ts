@@ -1,4 +1,4 @@
-import { Component, OnInit, ChangeDetectionStrategy, inject, signal } from '@angular/core';
+import { Component, OnInit, ChangeDetectionStrategy, inject, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router } from '@angular/router';
 import { LucideAngularModule, User, Calendar, Droplet, Phone, MapPin, ArrowLeft } from 'lucide-angular';
@@ -33,6 +33,15 @@ export class PatientDetailsPageComponent implements OnInit {
    // Mock data (we will pull based on route id, ideally from a service)
    patientAppointments = signal<Appointment[]>([]);
    patientPayments = signal<Payment[]>([]);
+
+   totalBookings = computed(() => this.patientAppointments().length);
+   
+   lastVisited = computed(() => {
+       const completed = this.patientAppointments()
+           .filter(a => a.status === 'Completed')
+           .sort((a, b) => new Date(b.appointmentDate).getTime() - new Date(a.appointmentDate).getTime());
+       return completed.length > 0 ? completed[0].appointmentDate : 'No visits yet';
+   });
 
    ngOnInit() {
        this.route.paramMap.subscribe(params => {

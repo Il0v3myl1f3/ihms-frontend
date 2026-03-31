@@ -37,80 +37,44 @@
             
             <!-- General Info Tab -->
             @if (activeTab() === 'General Info') {
-                <div class="max-w-3xl">
-                    <div class="border-b border-gray-100 pb-4 mb-6 flex justify-between items-center">
-                        <div>
-                            <h4 class="text-lg font-bold text-[#1F2B6C]">General Information</h4>
-                            <p class="text-[13px] text-gray-500 mt-0.5 font-medium">Patient personal details and contact information</p>
+                <div class="max-w-2xl bg-gray-50/40 rounded-[24px] border border-gray-100 p-8">
+                    <!-- Patient Profile Header -->
+                    <div class="mb-6 pb-2">
+                        <h3 class="text-2xl font-bold text-[#1F2B6C] mb-1">{{ patient()?.name }}</h3>
+                        <p class="text-sm text-[#6B7280] font-medium">Last Visited : <span class="text-[#4B5563]">{{ lastVisited() }}</span></p>
+                    </div>
+
+                    <!-- Basic Information Section -->
+                    <div class="mb-8">
+                        <h4 class="text-lg font-bold text-[#1F2B6C] mb-4">Basic Information</h4>
+                        <div class="space-y-4">
+                            <div class="flex justify-between items-center">
+                                <span class="text-sm font-medium text-[#6B7280]">DOB</span>
+                                <span class="text-sm font-semibold text-[#1F2B6C]">{{ patient()?.dob }}</span>
+                            </div>
+                            <div class="flex justify-between items-center">
+                                <span class="text-sm font-medium text-[#6B7280]">Gender</span>
+                                <span class="text-sm font-semibold text-[#1F2B6C]">{{ patient()?.gender }}</span>
+                            </div>
+                            <div class="flex justify-between items-center">
+                                <span class="text-sm font-medium text-[#6B7280]">Blood Group</span>
+                                <span class="text-sm font-semibold text-[#1F2B6C]">{{ patient()?.bloodType }}</span>
+                            </div>
+                            <div class="flex justify-between items-center">
+                                <span class="text-sm font-medium text-[#6B7280]">Phone Number</span>
+                                <span class="text-sm font-semibold text-[#1F2B6C]">{{ patient()?.phone }}</span>
+                            </div>
+                            <div class="flex justify-between items-center">
+                                <span class="text-sm font-medium text-[#6B7280]">Total No of Bookings</span>
+                                <span class="text-sm font-semibold text-[#1F2B6C]">{{ totalBookings() }}</span>
+                            </div>
                         </div>
                     </div>
 
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-7">
-                        <!-- Full Name -->
-                        <div class="flex items-start gap-4">
-                            <div class="w-10 h-10 rounded-lg bg-blue-50 flex items-center justify-center text-blue-500 shrink-0">
-                                <lucide-icon [img]="User" class="w-4.5 h-4.5"></lucide-icon>
-                            </div>
-                            <div class="pt-0.5">
-                                <p class="text-[11px] text-gray-400 font-bold uppercase tracking-wider mb-0.5">Full Name</p>
-                                <p class="text-sm text-gray-900 font-medium">{{ patient()?.name }}</p>
-                            </div>
-                        </div>
-
-                        <!-- Gender -->
-                        <div class="flex items-start gap-4">
-                            <div class="w-10 h-10 rounded-lg bg-purple-50 flex items-center justify-center text-purple-500 shrink-0">
-                                <lucide-icon [img]="User" class="w-4.5 h-4.5"></lucide-icon>
-                            </div>
-                            <div class="pt-0.5">
-                                <p class="text-[11px] text-gray-400 font-bold uppercase tracking-wider mb-0.5">Gender</p>
-                                <p class="text-sm text-gray-900 font-medium">{{ patient()?.gender }}</p>
-                            </div>
-                        </div>
-
-                        <!-- Date of Birth -->
-                        <div class="flex items-start gap-4">
-                            <div class="w-10 h-10 rounded-lg bg-amber-50 flex items-center justify-center text-amber-500 shrink-0">
-                                <lucide-icon [img]="Calendar" class="w-4.5 h-4.5"></lucide-icon>
-                            </div>
-                            <div class="pt-0.5">
-                                <p class="text-[11px] text-gray-400 font-bold uppercase tracking-wider mb-0.5">Date of Birth</p>
-                                <p class="text-sm text-gray-900 font-medium">{{ patient()?.dob }}</p>
-                            </div>
-                        </div>
-
-                        <!-- Blood Type -->
-                        <div class="flex items-start gap-4">
-                            <div class="w-10 h-10 rounded-lg bg-red-50 flex items-center justify-center text-red-500 shrink-0">
-                                <lucide-icon [img]="Droplet" class="w-4.5 h-4.5"></lucide-icon>
-                            </div>
-                            <div class="pt-0.5">
-                                <p class="text-[11px] text-gray-400 font-bold uppercase tracking-wider mb-0.5">Blood Type</p>
-                                <p class="text-sm text-gray-900 font-medium">{{ patient()?.bloodType }}</p>
-                            </div>
-                        </div>
-
-                        <!-- Phone -->
-                        <div class="flex items-start gap-4">
-                            <div class="w-10 h-10 rounded-lg bg-emerald-50 flex items-center justify-center text-emerald-500 shrink-0">
-                                <lucide-icon [img]="Phone" class="w-4.5 h-4.5"></lucide-icon>
-                            </div>
-                            <div class="pt-0.5">
-                                <p class="text-[11px] text-gray-400 font-bold uppercase tracking-wider mb-0.5">Phone Number</p>
-                                <p class="text-sm text-gray-900 font-medium">{{ patient()?.phone }}</p>
-                            </div>
-                        </div>
-
-                        <!-- Address -->
-                        <div class="flex items-start gap-4">
-                            <div class="w-10 h-10 rounded-lg bg-indigo-50 flex items-center justify-center text-indigo-500 shrink-0">
-                                <lucide-icon [img]="MapPin" class="w-4.5 h-4.5"></lucide-icon>
-                            </div>
-                            <div class="pt-0.5">
-                                <p class="text-[11px] text-gray-400 font-bold uppercase tracking-wider mb-0.5">Address</p>
-                                <p class="text-sm text-gray-900 font-medium">{{ patient()?.address }}</p>
-                            </div>
-                        </div>
+                    <!-- Address Information Section -->
+                    <div class="pt-6 border-t border-gray-100/60">
+                        <h4 class="text-lg font-bold text-[#1F2B6C] mb-3">Address Information</h4>
+                        <p class="text-sm font-semibold text-[#4B5563] leading-relaxed">{{ patient()?.address }}</p>
                     </div>
                 </div>
             }
