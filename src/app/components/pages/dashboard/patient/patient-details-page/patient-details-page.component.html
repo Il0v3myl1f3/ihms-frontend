@@ -1,14 +1,14 @@
 <div class="h-full flex flex-col w-full">
     <!-- Page Header -->
-    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
-        <div class="flex items-center gap-4">
+    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4">
+        <div class="flex items-center gap-3">
             <button (click)="goBack()"
-                class="w-10 h-10 flex items-center justify-center rounded-xl border border-gray-100 bg-white text-gray-400 hover:text-gray-600 transition-all active:scale-95 shadow-xs cursor-pointer">
-                <lucide-icon [img]="ArrowLeft" class="w-5 h-5"></lucide-icon>
+                class="w-9 h-9 flex items-center justify-center rounded-lg border border-gray-100 bg-white text-gray-400 hover:text-gray-600 transition-all active:scale-95 shadow-xs cursor-pointer">
+                <lucide-icon [img]="ArrowLeft" class="w-4 h-4"></lucide-icon>
             </button>
             <div>
-                <p class="text-[12px] font-medium text-gray-400 mb-0.5">Back to Patient List</p>
-                <h2 class="text-2xl font-bold text-[#1F2B6C] tracking-tight">Patient Details</h2>
+                <p class="text-sm font-medium text-gray-400 mb-0.5">Back to Patient List</p>
+                <h2 class="text-xl font-bold text-[#1F2B6C] tracking-tight">Patient Details</h2>
             </div>
         </div>
         <div class="flex items-center gap-3">
@@ -16,16 +16,23 @@
     </div>
 
     <!-- Main Content Area -->
-    <div class="bg-white rounded-[20px] border border-gray-100 flex-1 flex flex-col md:flex-row overflow-hidden min-h-[600px]">
+    <div class="bg-white rounded-xl border border-gray-100 flex-1 flex flex-col overflow-hidden min-h-[500px]">
         
-        <!-- Sidebar Navigation -->
-        <div class="w-full md:w-56 shrink-0 border-b md:border-b-0 md:border-r border-gray-100 p-4 bg-gray-50/30 overflow-y-auto">
-            <div class="flex flex-row md:flex-col gap-1 w-full">
+        <!-- Horizontal Tab Navigation -->
+        <div class="w-full border-b border-gray-100 bg-white sticky top-0 z-10 transition-colors">
+            <div class="flex items-center gap-2 px-5 py-3 overflow-x-auto no-scrollbar scroll-smooth">
                 @for (tab of tabs; track tab) {
                 <button (click)="setTab(tab)" 
-                    [class.bg-blue-50]="activeTab() === tab" [class.text-blue-600]="activeTab() === tab" [class.font-medium]="activeTab() === tab"
-                    [class.text-gray-500]="activeTab() !== tab" [class.hover:bg-gray-100]="activeTab() !== tab"
-                    class="w-full text-left px-4 py-2.5 rounded-lg text-sm transition-colors cursor-pointer whitespace-nowrap">
+                    [class.bg-[#1F2B6C]]="activeTab() === tab" 
+                    [class.text-white]="activeTab() === tab" 
+                    [class.border-[#1F2B6C]]="activeTab() === tab"
+                    [class.shadow-md]="activeTab() === tab"
+                    [class.bg-gray-50/50]="activeTab() !== tab"
+                    [class.text-[#4B5563]]="activeTab() !== tab"
+                    [class.border-gray-200/80]="activeTab() !== tab"
+                    [class.hover:border-[#1F2B6C]/30]="activeTab() !== tab"
+                    [class.hover:bg-gray-50]="activeTab() !== tab"
+                    class="px-4 py-1.5 rounded-md text-sm font-medium transition-all cursor-pointer whitespace-nowrap border active:scale-[0.98]">
                     {{ tab }}
                 </button>
                 }
@@ -33,48 +40,109 @@
         </div>
 
         <!-- Content Area -->
-        <div class="flex-1 p-6 md:p-8 bg-white overflow-y-auto view-scroll">
+        <div class="flex-1 p-4 md:p-6 bg-white overflow-y-auto view-scroll">
             
             <!-- General Info Tab -->
-            @if (activeTab() === 'General Info') {
-                <div class="max-w-2xl bg-gray-50/40 rounded-[24px] border border-gray-100 p-8">
-                    <!-- Patient Profile Header -->
-                    <div class="mb-6 pb-2">
-                        <h3 class="text-2xl font-bold text-[#1F2B6C] mb-1">{{ patient()?.name }}</h3>
-                        <p class="text-sm text-[#6B7280] font-medium">Last Visited : <span class="text-[#4B5563]">{{ lastVisited() }}</span></p>
-                    </div>
+             @if (activeTab() === 'General Info') {
+                <div class="flex flex-col lg:flex-row gap-5 items-start">
+                    <!-- Left: Patient Info Card -->
+                    <div class="flex-1 bg-gray-50/40 rounded-xl border border-gray-100 p-6 w-full">
+                        <!-- Patient Profile Header -->
+                        <div class="mb-4 pb-1">
+                            <h3 class="text-xl font-bold text-[#1F2B6C] mb-1">{{ patient()?.name }}</h3>
+                            <p class="text-sm text-[#6B7280] font-medium">Last Visited : <span class="text-[#4B5563]">{{ lastVisited() }}</span></p>
+                        </div>
 
-                    <!-- Basic Information Section -->
-                    <div class="mb-8">
-                        <h4 class="text-lg font-bold text-[#1F2B6C] mb-4">Basic Information</h4>
-                        <div class="space-y-4">
-                            <div class="flex justify-between items-center">
-                                <span class="text-sm font-medium text-[#6B7280]">DOB</span>
-                                <span class="text-sm font-semibold text-[#1F2B6C]">{{ patient()?.dob }}</span>
+                        <!-- Basic Information Section -->
+                        <div class="mb-6">
+                            <h4 class="text-base font-bold text-[#1F2B6C] mb-3">Basic Information</h4>
+                            <div class="space-y-3">
+                                <div class="flex justify-between items-center">
+                                    <span class="text-sm font-medium text-[#6B7280]">DOB</span>
+                                    <span class="text-sm font-semibold text-[#1F2B6C]">{{ patient()?.dob }}</span>
+                                </div>
+                                <div class="flex justify-between items-center">
+                                    <span class="text-sm font-medium text-[#6B7280]">Gender</span>
+                                    <span class="text-sm font-semibold text-[#1F2B6C]">{{ patient()?.gender }}</span>
+                                </div>
+                                <div class="flex justify-between items-center">
+                                    <span class="text-sm font-medium text-[#6B7280]">Blood Group</span>
+                                    <span class="text-sm font-semibold text-[#1F2B6C]">{{ patient()?.bloodType }}</span>
+                                </div>
+                                <div class="flex justify-between items-center">
+                                    <span class="text-sm font-medium text-[#6B7280]">Phone Number</span>
+                                    <span class="text-sm font-semibold text-[#1F2B6C]">{{ patient()?.phone }}</span>
+                                </div>
+                                <div class="flex justify-between items-center">
+                                    <span class="text-sm font-medium text-[#6B7280]">Total No of Bookings</span>
+                                    <span class="text-sm font-semibold text-[#1F2B6C]">{{ totalBookings() }}</span>
+                                </div>
                             </div>
-                            <div class="flex justify-between items-center">
-                                <span class="text-sm font-medium text-[#6B7280]">Gender</span>
-                                <span class="text-sm font-semibold text-[#1F2B6C]">{{ patient()?.gender }}</span>
-                            </div>
-                            <div class="flex justify-between items-center">
-                                <span class="text-sm font-medium text-[#6B7280]">Blood Group</span>
-                                <span class="text-sm font-semibold text-[#1F2B6C]">{{ patient()?.bloodType }}</span>
-                            </div>
-                            <div class="flex justify-between items-center">
-                                <span class="text-sm font-medium text-[#6B7280]">Phone Number</span>
-                                <span class="text-sm font-semibold text-[#1F2B6C]">{{ patient()?.phone }}</span>
-                            </div>
-                            <div class="flex justify-between items-center">
-                                <span class="text-sm font-medium text-[#6B7280]">Total No of Bookings</span>
-                                <span class="text-sm font-semibold text-[#1F2B6C]">{{ totalBookings() }}</span>
-                            </div>
+                        </div>
+
+                        <!-- Address Information Section -->
+                        <div class="pt-4 border-t border-gray-100/60">
+                            <h4 class="text-base font-bold text-[#1F2B6C] mb-2">Address Information</h4>
+                            <p class="text-sm font-semibold text-[#4B5563] leading-relaxed">{{ patient()?.address }}</p>
                         </div>
                     </div>
 
-                    <!-- Address Information Section -->
-                    <div class="pt-6 border-t border-gray-100/60">
-                        <h4 class="text-lg font-bold text-[#1F2B6C] mb-3">Address Information</h4>
-                        <p class="text-sm font-semibold text-[#4B5563] leading-relaxed">{{ patient()?.address }}</p>
+                    <!-- Right: Appointment Sidebar -->
+                    <div class="w-full lg:w-80 shrink-0 bg-gray-50/40 rounded-xl border border-gray-100 p-5">
+                        <div class="flex items-center justify-between mb-4">
+                            <h4 class="text-lg font-bold text-[#1F2B6C]">Appointment</h4>
+                            <button class="text-gray-400 hover:text-gray-600 transition-colors">
+                                <lucide-icon [img]="MoreHorizontal" class="w-4 h-4"></lucide-icon>
+                            </button>
+                        </div>
+
+                        <!-- Upcoming Appointments -->
+                        <div class="mb-6">
+                            <h5 class="text-[12px] font-bold text-gray-400 mb-3 uppercase tracking-wider">Upcoming</h5>
+                            <div class="space-y-2.5">
+                                @for (a of upcomingAppointments(); track a.id) {
+                                    <div class="bg-white rounded-lg p-3 border border-gray-100 shadow-xs">
+                                        <div class="flex justify-between items-start gap-4 mb-1.5">
+                                            <span class="text-sm font-semibold text-[#1F2B6C]/80 leading-snug">{{ a.notes }}</span>
+                                            <span class="text-[9px] font-bold px-1.5 py-0.5 rounded-full bg-emerald-50 text-emerald-600 uppercase shrink-0">Confirmed</span>
+                                        </div>
+                                        <div class="mb-1.5">
+                                            <p class="text-sm font-semibold text-gray-900">{{ a.doctorName }}</p>
+                                        </div>
+                                        <div class="flex items-center gap-2 text-[#6B7280]">
+                                            <lucide-icon [img]="Calendar" class="w-3 h-3"></lucide-icon>
+                                            <span class="text-[12px] font-medium">{{ a.appointmentDate }}</span>
+                                        </div>
+                                    </div>
+                                } @empty {
+                                    <p class="text-xs text-gray-400 italic">No upcoming appointments</p>
+                                }
+                            </div>
+                        </div>
+
+                        <!-- History -->
+                        <div>
+                            <h5 class="text-[12px] font-bold text-gray-400 mb-3 uppercase tracking-wider">History</h5>
+                            <div class="space-y-2.5">
+                                @for (a of historyAppointments(); track a.id) {
+                                    <div class="bg-white rounded-lg p-3 border border-gray-100 shadow-xs">
+                                        <div class="flex justify-between items-start gap-4 mb-1.5">
+                                            <span class="text-sm font-semibold text-[#1F2B6C]/80 leading-snug">{{ a.notes }}</span>
+                                            <span class="text-[9px] font-bold px-1.5 py-0.5 rounded-full bg-[#1F2B6C] text-white uppercase shrink-0">Completed</span>
+                                        </div>
+                                        <div class="mb-1.5">
+                                            <p class="text-sm font-semibold text-gray-900">{{ a.doctorName }}</p>
+                                        </div>
+                                        <div class="flex items-center gap-2 text-[#6B7280]">
+                                            <lucide-icon [img]="Calendar" class="w-3 h-3"></lucide-icon>
+                                            <span class="text-[12px] font-medium">{{ a.appointmentDate }}</span>
+                                        </div>
+                                    </div>
+                                } @empty {
+                                    <p class="text-xs text-gray-400 italic">No previous records</p>
+                                }
+                            </div>
+                        </div>
                     </div>
                 </div>
             }
@@ -111,7 +179,7 @@
                 </div>
             }
 
-            @if (activeTab() === 'Medical Records' || activeTab() === 'Prescriptions') {
+             @if (activeTab() === 'Medical Records' || activeTab() === 'Prescriptions') {
                 <div class="h-full flex flex-col items-center justify-center text-center">
                     <div class="w-16 h-16 bg-gray-50 border border-gray-100 rounded-full flex items-center justify-center mb-4">
                         <lucide-icon [img]="Calendar" class="w-7 h-7 text-gray-300"></lucide-icon>

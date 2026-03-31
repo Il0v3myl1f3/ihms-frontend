@@ -1,7 +1,7 @@
 import { Component, OnInit, ChangeDetectionStrategy, inject, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router } from '@angular/router';
-import { LucideAngularModule, User, Calendar, Droplet, Phone, MapPin, ArrowLeft } from 'lucide-angular';
+import { LucideAngularModule, User, Calendar, Droplet, Phone, MapPin, ArrowLeft, MoreHorizontal } from 'lucide-angular';
 import { AppointmentTableComponent, Appointment } from '../../appointments/appointment-table/appointment-table.component';
 import { PaymentTableComponent, Payment } from '../../payments/payment-table/payment-table.component';
 import { Patient } from '../patient-table/patient-table.component';
@@ -24,6 +24,7 @@ export class PatientDetailsPageComponent implements OnInit {
    Phone = Phone;
    MapPin = MapPin;
    ArrowLeft = ArrowLeft;
+   MoreHorizontal = MoreHorizontal;
 
    activeTab = signal('General Info');
    tabs = ['General Info', 'Appointments', 'Payments', 'Medical Records', 'Prescriptions'];
@@ -42,6 +43,14 @@ export class PatientDetailsPageComponent implements OnInit {
            .sort((a, b) => new Date(b.appointmentDate).getTime() - new Date(a.appointmentDate).getTime());
        return completed.length > 0 ? completed[0].appointmentDate : 'No visits yet';
    });
+
+   upcomingAppointments = computed(() => 
+       this.patientAppointments().filter(a => a.status === 'Scheduled')
+   );
+
+   historyAppointments = computed(() => 
+       this.patientAppointments().filter(a => a.status === 'Completed')
+   );
 
    ngOnInit() {
        this.route.paramMap.subscribe(params => {
