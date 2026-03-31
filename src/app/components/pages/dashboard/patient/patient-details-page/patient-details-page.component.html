@@ -88,8 +88,9 @@
                 <div class="w-full lg:w-[30%] shrink-0 bg-gray-50/40 rounded-xl border border-gray-100 p-5">
                     <div class="flex items-center justify-between mb-4">
                         <h4 class="text-lg font-bold text-[#1F2B6C]">Appointment</h4>
-                        <button class="text-gray-400 hover:text-gray-600 transition-colors">
-                            <lucide-icon [img]="MoreHorizontal" class="w-4 h-4"></lucide-icon>
+                        <button (click)="setTab('Appointments')"
+                            class="text-[12px] font-bold text-[#1F2B6C] hover:text-[#1F2B6C]/80 transition-all cursor-pointer">
+                            View All
                         </button>
                     </div>
 
