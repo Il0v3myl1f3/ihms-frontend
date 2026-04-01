@@ -4,15 +4,17 @@
   <div (click)="isMobileSidebarOpen.set(false)"
     class="fixed inset-0 bg-black/20 backdrop-blur-sm z-30 lg:hidden transition-opacity duration-300"></div>
   }
-  
+
   <!-- Sidebar -->
-  <app-sidebar [collapsed]="isMobileSidebarOpen() ? false : isSidebarCollapsed()" [mobileOpen]="isMobileSidebarOpen()" (onToggle)="toggleSidebar()" (onMenuClick)="isMobileSidebarOpen.set(false)"></app-sidebar>
+  <app-sidebar [collapsed]="isMobileSidebarOpen() ? false : isSidebarCollapsed()" [mobileOpen]="isMobileSidebarOpen()"
+    (onToggle)="toggleSidebar()" (onMenuClick)="isMobileSidebarOpen.set(false)"></app-sidebar>
 
   <!-- Main Content Area -->
   <main class="dashboard-main transition-all duration-300 min-h-screen flex flex-col relative"
     [class.ml-[250px]]="!isSidebarCollapsed()" [class.ml-[72px]]="isSidebarCollapsed()">
     <!-- Top Header Bar (Absolute to overlay on the content) -->
-    <header class="absolute top-0 w-full flex items-start justify-between px-4 sm:px-8 py-8 shrink-0 z-20 pointer-events-none transition-all duration-300">
+    <header
+      class="absolute top-0 w-full flex items-start justify-between px-4 sm:px-8 py-8 shrink-0 z-20 pointer-events-none transition-all duration-300">
       <!-- Mobile Menu Toggle -->
       <button (click)="toggleMobileSidebar()"
         class="lg:hidden p-2 text-gray-400 hover:text-[#1F2B6C] bg-white border border-gray-100 rounded-xl transition-all active:scale-95 pointer-events-auto">

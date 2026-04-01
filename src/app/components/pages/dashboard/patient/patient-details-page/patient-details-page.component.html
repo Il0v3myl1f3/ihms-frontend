@@ -3,12 +3,12 @@
     <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4">
         <div class="flex items-center gap-3">
             <button (click)="goBack()"
-                class="w-9 h-9 flex items-center justify-center rounded-lg border border-gray-100 bg-white text-gray-400 hover:text-gray-600 transition-all active:scale-95 shadow-xs cursor-pointer">
+                class="w-9 h-9 flex items-center justify-center rounded-lg border border-[#DADCE0] bg-white text-gray-400 hover:text-gray-600 transition-all active:scale-95 shadow-xs cursor-pointer">
                 <lucide-icon [img]="ArrowLeft" class="w-4 h-4"></lucide-icon>
             </button>
             <div>
                 <p class="text-sm font-medium text-gray-400 mb-0.5">Back to Patient List</p>
-                <h2 class="text-xl font-bold text-[#1F2B6C] tracking-tight">Patient Details</h2>
+                <h2 class="text-xl font-bold text-[#202124] tracking-tight">Patient Details</h2>
             </div>
         </div>
         <div class="flex items-center gap-3">
@@ -16,19 +16,18 @@
     </div>
 
     <!-- Main Content Area -->
-    <div class="bg-white rounded-xl border border-gray-100 flex-1 flex flex-col overflow-hidden min-h-[500px]">
+    <div class="bg-white rounded-xl border border-[#DADCE0] flex-1 flex flex-col overflow-hidden min-h-[500px]">
 
         <!-- Horizontal Tab Navigation -->
-        <div class="w-full border-b border-gray-100 bg-white sticky top-0 z-10 transition-colors">
+        <div class="w-full border-b border-[#DADCE0] bg-white sticky top-0 z-10 transition-colors">
             <div class="flex items-center gap-2 px-5 py-3 overflow-x-auto no-scrollbar scroll-smooth">
                 @for (tab of tabs; track tab) {
-                <button (click)="setTab(tab)" [class.bg-[#1F2B6C]]="activeTab() === tab"
-                    [class.text-white]="activeTab() === tab" [class.border-[#1F2B6C]]="activeTab() === tab"
-                    [class.shadow-md]="activeTab() === tab" [class.bg-gray-50/50]="activeTab() !== tab"
-                    [class.text-[#4B5563]]="activeTab() !== tab" [class.border-gray-200/80]="activeTab() !== tab"
-                    [class.hover:border-[#1F2B6C]/30]="activeTab() !== tab"
-                    [class.hover:bg-gray-50]="activeTab() !== tab"
-                    class="px-4 py-1.5 rounded-md text-sm font-medium transition-all cursor-pointer whitespace-nowrap border active:scale-[0.98]">
+                <button (click)="setTab(tab)" [class.bg-[#E8F0FE]]="activeTab() === tab"
+                    [class.text-[#1A73E8]]="activeTab() === tab" [class.border-transparent]="activeTab() === tab"
+                    [class.shadow-none]="activeTab() === tab" [class.bg-white]="activeTab() !== tab"
+                    [class.text-[#3C4043]]="activeTab() !== tab" [class.border-gray-200/80]="activeTab() !== tab"
+                    [class.hover:border-gray-300]="activeTab() !== tab" [class.hover:bg-gray-50]="activeTab() !== tab"
+                    class="px-4 py-1.5 rounded-full text-sm font-medium transition-all cursor-pointer whitespace-nowrap border active:scale-[0.98]">
                     {{ tab }}
                 </button>
                 }
@@ -42,54 +41,54 @@
             @if (activeTab() === 'General Info') {
             <div class="flex flex-col lg:flex-row gap-5 items-start">
                 <!-- Left: Patient Info Card -->
-                <div class="w-full lg:w-[30%] shrink-0 bg-[#F9FAFB] rounded-xl p-6">
+                <div class="w-full lg:w-[30%] shrink-0 bg-white border border-[#DADCE0] rounded-xl p-6">
                     <!-- Patient Profile Header -->
                     <div class="mb-4 pb-1">
-                        <h3 class="text-xl font-bold text-[#1F2B6C] mb-1">{{ patient()?.name }}</h3>
-                        <p class="text-sm text-[#6B7280] font-medium">Last Visited : <span class="text-[#4B5563]">{{
+                        <h3 class="text-xl font-bold text-[#202124] mb-1">{{ patient()?.name }}</h3>
+                        <p class="text-sm text-[#5F6368] font-medium">Last Visited : <span class="text-[#3C4043]">{{
                                 lastVisited() }}</span></p>
                     </div>
 
                     <!-- Basic Information Section -->
                     <div class="mb-6">
-                        <h4 class="text-base font-bold text-[#1F2B6C] mb-3">Basic Information</h4>
+                        <h4 class="text-base font-bold text-[#202124] mb-3">Basic Information</h4>
                         <div class="space-y-3">
                             <div class="flex justify-between items-center">
-                                <span class="text-sm font-medium text-[#6B7280]">DOB</span>
-                                <span class="text-sm font-semibold text-[#1F2B6C]">{{ patient()?.dob }}</span>
+                                <span class="text-sm font-medium text-[#5F6368]">DOB</span>
+                                <span class="text-sm font-semibold text-[#202124]">{{ patient()?.dob }}</span>
                             </div>
                             <div class="flex justify-between items-center">
-                                <span class="text-sm font-medium text-[#6B7280]">Gender</span>
-                                <span class="text-sm font-semibold text-[#1F2B6C]">{{ patient()?.gender }}</span>
+                                <span class="text-sm font-medium text-[#5F6368]">Gender</span>
+                                <span class="text-sm font-semibold text-[#202124]">{{ patient()?.gender }}</span>
                             </div>
                             <div class="flex justify-between items-center">
-                                <span class="text-sm font-medium text-[#6B7280]">Blood Group</span>
-                                <span class="text-sm font-semibold text-[#1F2B6C]">{{ patient()?.bloodType }}</span>
+                                <span class="text-sm font-medium text-[#5F6368]">Blood Group</span>
+                                <span class="text-sm font-semibold text-[#202124]">{{ patient()?.bloodType }}</span>
                             </div>
                             <div class="flex justify-between items-center">
-                                <span class="text-sm font-medium text-[#6B7280]">Phone Number</span>
-                                <span class="text-sm font-semibold text-[#1F2B6C]">{{ patient()?.phone }}</span>
+                                <span class="text-sm font-medium text-[#5F6368]">Phone Number</span>
+                                <span class="text-sm font-semibold text-[#202124]">{{ patient()?.phone }}</span>
                             </div>
                             <div class="flex justify-between items-center">
-                                <span class="text-sm font-medium text-[#6B7280]">Total No of Bookings</span>
-                                <span class="text-sm font-semibold text-[#1F2B6C]">{{ totalBookings() }}</span>
+                                <span class="text-sm font-medium text-[#5F6368]">Total No of Bookings</span>
+                                <span class="text-sm font-semibold text-[#202124]">{{ totalBookings() }}</span>
                             </div>
                         </div>
                     </div>
 
                     <!-- Address Information Section -->
-                    <div class="pt-4 border-t border-gray-100/60">
-                        <h4 class="text-base font-bold text-[#1F2B6C] mb-2">Address Information</h4>
-                        <p class="text-sm font-semibold text-[#4B5563] leading-relaxed">{{ patient()?.address }}</p>
+                    <div class="pt-4 border-t border-[#DADCE0]/60">
+                        <h4 class="text-base font-bold text-[#202124] mb-2">Address Information</h4>
+                        <p class="text-sm font-semibold text-[#3C4043] leading-relaxed">{{ patient()?.address }}</p>
                     </div>
                 </div>
 
                 <!-- Right: Appointment Sidebar -->
-                <div class="flex-1 w-full bg-[#F9FAFB] rounded-xl p-6">
+                <div class="flex-1 w-full bg-[#F1F3F4] rounded-xl p-6">
                     <div class="flex items-center justify-between mb-5">
-                        <h4 class="text-xl font-bold text-[#1F2B6C]">Appointment</h4>
+                        <h4 class="text-xl font-bold text-[#202124]">Appointment</h4>
                         <button (click)="setTab('Appointments')"
-                            class="text-[13px] font-bold text-[#1F2B6C] hover:text-[#1F2B6C]/80 transition-all cursor-pointer">
+                            class="text-[13px] font-bold text-[#1A73E8] hover:text-[#174EA6] transition-all cursor-pointer">
                             View All
                         </button>
                     </div>
@@ -98,21 +97,23 @@
                     <div class="mb-0">
                         <div class="grid grid-cols-1 xl:grid-cols-2 gap-5 items-start">
                             @for (a of upcomingAppointments(); track a.id) {
-                            <div class="bg-white rounded-xl p-5 border border-gray-100 flex flex-col hover:border-gray-300 transition-all">
+                            <div
+                                class="bg-white rounded-xl p-5 border border-gray-100 flex flex-col hover:border-gray-300 transition-all cursor-pointer">
                                 <div class="flex justify-between items-start gap-4 mb-3">
-                                    <h5 class="text-[15px] font-bold text-[#1F2B6C] leading-snug">{{ a.doctorName }}</h5>
+                                    <h5 class="text-[15px] font-bold text-[#202124] leading-snug">{{ a.doctorName }}
+                                    </h5>
                                     <span
                                         class="text-[9px] font-bold px-1.5 py-0.5 rounded-full bg-emerald-50 text-emerald-600 uppercase shrink-0 border border-emerald-100">Confirmed</span>
                                 </div>
-                                <div class="flex items-center gap-2 text-[#6B7280]">
+                                <div class="flex items-center gap-2 text-[#5F6368]">
                                     <lucide-icon [img]="Calendar" class="w-3 h-3"></lucide-icon>
                                     <span class="text-[13px] font-medium">{{ a.appointmentDate }}</span>
                                 </div>
 
                                 @if (a.notes) {
-                                <div class="mt-4 pt-4 border-t border-gray-100/80">
+                                <div class="mt-4 pt-4 border-t border-[#DADCE0]/80">
                                     <div class="mb-1.5">
-                                        <span class="text-[13px] font-bold text-[#1F2B6C]">Pacient Notes</span>
+                                        <span class="text-[13px] font-bold text-[#202124]">Pacient Notes</span>
                                     </div>
                                     <p class="text-[14px] font-medium text-[#6B7280] leading-relaxed line-clamp-6">
                                         {{ a.notes }}
@@ -129,11 +130,11 @@
             </div>
 
             <!-- Current Prescriptions Section -->
-            <div class="mt-5 bg-[#F9FAFB] rounded-xl p-6">
+            <div class="mt-5 bg-[#F1F3F4] rounded-xl p-6">
                 <div class="flex items-center justify-between mb-4">
-                    <h4 class="text-lg font-bold text-[#1F2B6C]">Current Prescriptions</h4>
+                    <h4 class="text-lg font-bold text-[#202124]">Current Prescriptions</h4>
                     <button (click)="setTab('Prescriptions')"
-                        class="text-[12px] font-bold text-[#1F2B6C] hover:text-[#1F2B6C]/80 transition-all cursor-pointer">
+                        class="text-[12px] font-bold text-[#1A73E8] hover:text-[#174EA6] transition-all cursor-pointer">
                         View All
                     </button>
                 </div>
@@ -141,20 +142,15 @@
                 <div class="space-y-3">
                     @for (rx of patientPrescriptions(); track rx.id) {
                     <div
-                        class="flex items-center gap-4 bg-white rounded-lg p-4 border border-gray-100 hover:border-gray-300 transition-all">
+                        class="flex items-center gap-4 bg-white rounded-lg p-4 border border-gray-100 hover:border-gray-300 transition-all cursor-pointer">
                         <!-- Icon -->
-                        <div
-                            class="w-11 h-11 rounded-xl flex items-center justify-center shrink-0"
-                            [class.bg-indigo-50]="rx.status === 'Active'"
-                            [class.bg-gray-100]="rx.status !== 'Active'">
+                        <div class="w-11 h-11 rounded-xl flex items-center justify-center shrink-0"
+                            [class.bg-indigo-50]="rx.status === 'Active'" [class.bg-gray-100]="rx.status !== 'Active'">
                             @if (rx.id % 2 === 1) {
-                            <lucide-icon [img]="Pill"
-                                class="w-5 h-5"
-                                [class.text-indigo-500]="rx.status === 'Active'"
+                            <lucide-icon [img]="Pill" class="w-5 h-5" [class.text-indigo-500]="rx.status === 'Active'"
                                 [class.text-gray-400]="rx.status !== 'Active'"></lucide-icon>
                             } @else {
-                            <span class="text-lg font-bold"
-                                [class.text-indigo-500]="rx.status === 'Active'"
+                            <span class="text-lg font-bold" [class.text-indigo-500]="rx.status === 'Active'"
                                 [class.text-gray-400]="rx.status !== 'Active'">Rx</span>
                             }
                         </div>
@@ -163,24 +159,25 @@
                         <div class="flex-1 flex flex-wrap items-center justify-between gap-4">
                             <div class="flex flex-1 flex-wrap items-center gap-x-8 gap-y-2">
                                 <div class="min-w-[100px]">
-                                    <p class="text-sm font-bold text-[#1F2B6C]">{{ rx.medication }}</p>
+                                    <p class="text-sm font-bold text-[#202124]">{{ rx.medication }}</p>
                                 </div>
                                 <div class="min-w-[60px]">
-                                    <p class="text-sm text-[#4B5563] font-medium">{{ rx.dosage }}</p>
+                                    <p class="text-sm text-[#3C4043] font-medium">{{ rx.dosage }}</p>
                                 </div>
                                 <div class="min-w-[100px]">
-                                    <p class="text-sm text-[#4B5563] font-medium">{{ rx.frequency }}</p>
+                                    <p class="text-sm text-[#3C4043] font-medium">{{ rx.frequency }}</p>
                                 </div>
                                 <div class="min-w-[120px]">
-                                    <p class="text-sm text-[#4B5563] font-medium">{{ rx.startDate }}</p>
+                                    <p class="text-sm text-[#3C4043] font-medium">{{ rx.startDate }}</p>
                                 </div>
                                 <div class="min-w-[120px]">
-                                    <p class="text-sm text-[#4B5563] font-medium">{{ rx.endDate }}</p>
+                                    <p class="text-sm text-[#3C4043] font-medium">{{ rx.endDate }}</p>
                                 </div>
                             </div>
 
                             <div class="shrink-0">
-                                <span class="px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider border"
+                                <span
+                                    class="px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider border"
                                     [class.bg-emerald-50]="rx.status === 'Active'"
                                     [class.text-emerald-500]="rx.status === 'Active'"
                                     [class.border-emerald-100]="rx.status === 'Active'"
@@ -189,7 +186,7 @@
                                     [class.border-blue-100]="rx.status === 'Completed'"
                                     [class.bg-gray-50]="rx.status === 'Expired'"
                                     [class.text-gray-400]="rx.status === 'Expired'"
-                                    [class.border-gray-100]="rx.status === 'Expired'">
+                                    [class.border-[#DADCE0]]="rx.status === 'Expired'">
                                     {{ rx.status }}
                                 </span>
                             </div>
@@ -198,7 +195,7 @@
                     } @empty {
                     <div class="text-center py-6">
                         <div
-                            class="w-12 h-12 bg-gray-50 border border-gray-100 rounded-full flex items-center justify-center mx-auto mb-3">
+                            class="w-12 h-12 bg-gray-50 border border-[#DADCE0] rounded-full flex items-center justify-center mx-auto mb-3">
                             <lucide-icon [img]="Pill" class="w-5 h-5 text-gray-300"></lucide-icon>
                         </div>
                         <p class="text-sm text-gray-400">No prescriptions on file</p>
@@ -211,9 +208,9 @@
             <!-- Appointments Tab -->
             @if (activeTab() === 'Appointments') {
             <div class="h-full flex flex-col">
-                <div class="border-b border-gray-100 pb-4 mb-6 flex justify-between items-center shrink-0">
+                <div class="border-b border-[#DADCE0] pb-4 mb-6 flex justify-between items-center shrink-0">
                     <div>
-                        <h4 class="text-lg font-bold text-[#1F2B6C]">Appointments</h4>
+                        <h4 class="text-lg font-bold text-[#202124]">Appointments</h4>
                         <p class="text-[13px] text-gray-500 mt-0.5 font-medium">Recent and upcoming appointments for
                             this patient</p>
                     </div>
@@ -229,9 +226,9 @@
             <!-- Payments Tab -->
             @if (activeTab() === 'Payments') {
             <div class="h-full flex flex-col">
-                <div class="border-b border-gray-100 pb-4 mb-6 flex justify-between items-center shrink-0">
+                <div class="border-b border-[#DADCE0] pb-4 mb-6 flex justify-between items-center shrink-0">
                     <div>
-                        <h4 class="text-lg font-bold text-[#1F2B6C]">Payments</h4>
+                        <h4 class="text-lg font-bold text-[#202124]">Payments</h4>
                         <p class="text-[13px] text-gray-500 mt-0.5 font-medium">Billing history and payment status</p>
                     </div>
                 </div>
@@ -246,10 +243,10 @@
             @if (activeTab() === 'Medical Records' || activeTab() === 'Prescriptions') {
             <div class="h-full flex flex-col items-center justify-center text-center">
                 <div
-                    class="w-16 h-16 bg-gray-50 border border-gray-100 rounded-full flex items-center justify-center mb-4">
+                    class="w-16 h-16 bg-gray-50 border border-[#DADCE0] rounded-full flex items-center justify-center mb-4">
                     <lucide-icon [img]="Calendar" class="w-7 h-7 text-gray-300"></lucide-icon>
                 </div>
-                <h4 class="text-lg font-bold text-[#1F2B6C] mb-1">No Data Available</h4>
+                <h4 class="text-lg font-bold text-[#202124] mb-1">No Data Available</h4>
                 <p class="text-sm text-gray-500 max-w-sm">This section is currently empty. You can add new records or
                     documents anytime.</p>
             </div>
