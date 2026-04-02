@@ -78,7 +78,7 @@ export const routes: Routes = [
       },
       {
         path: 'inpatient',
-        loadComponent: () => import('./components/pages/dashboard/home/dashboard-home.component').then(m => m.DashboardHomeComponent),
+        loadComponent: () => import('./components/pages/dashboard/inpatient/inpatient-list-page.component').then(m => m.InpatientListPageComponent),
         canActivate: [roleGuard],
         data: { allowedRoles: ['admin', 'doctor'] }
       },
