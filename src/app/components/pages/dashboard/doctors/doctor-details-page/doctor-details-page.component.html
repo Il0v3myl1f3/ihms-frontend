@@ -1,0 +1,197 @@
+<div class="h-full flex flex-col w-full">
+    <!-- Page Header -->
+    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4">
+        <div class="flex items-center gap-3">
+            <button (click)="goBack()"
+                class="w-9 h-9 flex items-center justify-center rounded-lg border border-[#DADCE0] bg-white text-gray-400 hover:text-gray-600 transition-all active:scale-95 shadow-xs cursor-pointer">
+                <lucide-icon [img]="ArrowLeft" class="w-4 h-4"></lucide-icon>
+            </button>
+            <div>
+                <p class="text-sm font-medium text-gray-400 mb-0.5">Back to Doctor List</p>
+                <h2 class="text-xl font-bold text-[#202124] tracking-tight">Doctor Details</h2>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content Area -->
+    <div class="bg-white rounded-xl border border-[#DADCE0] flex-1 flex flex-col overflow-hidden min-h-[500px]">
+
+        <!-- Horizontal Tab Navigation -->
+        <div class="w-full border-b border-[#DADCE0] bg-white sticky top-0 z-10 transition-colors">
+            <div class="flex items-center gap-2 px-5 py-3 overflow-x-auto no-scrollbar scroll-smooth">
+                @for (tab of tabs; track tab) {
+                <button (click)="setTab(tab)" [class.bg-[#E8F0FE]]="activeTab() === tab"
+                    [class.text-[#1A73E8]]="activeTab() === tab" [class.border-transparent]="activeTab() === tab"
+                    [class.shadow-none]="activeTab() === tab" [class.bg-white]="activeTab() !== tab"
+                    [class.text-[#3C4043]]="activeTab() !== tab" [class.border-gray-200/80]="activeTab() !== tab"
+                    [class.hover:border-gray-300]="activeTab() !== tab" [class.hover:bg-gray-50]="activeTab() !== tab"
+                    class="px-4 py-1.5 rounded-full text-sm font-medium transition-all cursor-pointer whitespace-nowrap border active:scale-[0.98]">
+                    {{ tab }}
+                </button>
+                }
+            </div>
+        </div>
+
+        <!-- Content Area -->
+        <div class="flex-1 p-4 md:p-6 bg-white overflow-y-auto view-scroll">
+
+            <!-- General Info Tab -->
+            @if (activeTab() === 'General Info') {
+            <div class="flex flex-col lg:flex-row gap-5 items-start">
+                <!-- Left: Doctor Info Card -->
+                <div class="w-full lg:w-[30%] shrink-0 bg-white border border-[#DADCE0] rounded-xl p-6">
+                    <div class="flex flex-col items-center text-center mb-6 pt-2">
+                        <div class="w-24 h-24 rounded-full bg-indigo-50 border-2 border-indigo-100 flex items-center justify-center mb-4 overflow-hidden">
+                            @if (doctor()?.image) {
+                                <img [src]="doctor()?.image" class="w-full h-full object-cover" alt="Doctor profile" />
+                            } @else {
+                                <lucide-icon [img]="User" class="w-10 h-10 text-indigo-400"></lucide-icon>
+                            }
+                        </div>
+                        <h3 class="text-xl font-bold text-[#202124] mb-1">{{ doctor()?.name }}</h3>
+                        <span class="px-3 py-1 rounded-full text-xs font-semibold" [ngClass]="getStatusClasses(doctor()?.availability)">
+                            {{ doctor()?.availability }}
+                        </span>
+                    </div>
+
+                    <div class="space-y-4">
+                        <div>
+                            <h4 class="text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Professional Info</h4>
+                            <div class="space-y-3">
+                                <div class="flex items-center gap-3">
+                                    <div class="w-8 h-8 rounded-lg bg-blue-50 flex items-center justify-center text-blue-600">
+                                        <lucide-icon [img]="Award" class="w-4 h-4"></lucide-icon>
+                                    </div>
+                                    <div>
+                                        <p class="text-xs text-gray-500 font-medium leading-none mb-1">Specialty</p>
+                                        <p class="text-sm font-bold text-[#202124]">{{ doctor()?.specialty }}</p>
+                                    </div>
+                                </div>
+                                <div class="flex items-center gap-3">
+                                    <div class="w-8 h-8 rounded-lg bg-purple-50 flex items-center justify-center text-purple-600">
+                                        <lucide-icon [img]="Building2" class="w-4 h-4"></lucide-icon>
+                                    </div>
+                                    <div>
+                                        <p class="text-xs text-gray-500 font-medium leading-none mb-1">Department</p>
+                                        <p class="text-sm font-bold text-[#202124]">{{ doctor()?.role }}</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="pt-4 border-t border-gray-100">
+                            <h4 class="text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Contact Info</h4>
+                            <div class="flex items-center gap-3">
+                                <div class="w-8 h-8 rounded-lg bg-emerald-50 flex items-center justify-center text-emerald-600">
+                                    <lucide-icon [img]="Phone" class="w-4 h-4"></lucide-icon>
+                                </div>
+                                <div>
+                                    <p class="text-xs text-gray-500 font-medium leading-none mb-1">Phone Number</p>
+                                    <p class="text-sm font-bold text-[#202124]">{{ doctor()?.phone }}</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Right: Stats & Highlights -->
+                <div class="flex-1 w-full space-y-5">
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div class="bg-indigo-50/50 border border-indigo-100 rounded-xl p-5">
+                            <div class="flex justify-between items-start mb-2">
+                                <div class="w-10 h-10 rounded-lg bg-indigo-100 flex items-center justify-center text-indigo-600">
+                                    <lucide-icon [img]="Calendar" class="w-5 h-5"></lucide-icon>
+                                </div>
+                            </div>
+                            <h4 class="text-2xl font-bold text-indigo-900">{{ totalAppointments() }}</h4>
+                            <p class="text-sm font-medium text-indigo-600">Total Appointments</p>
+                        </div>
+                        <div class="bg-emerald-50/50 border border-emerald-100 rounded-xl p-5">
+                            <div class="flex justify-between items-start mb-2">
+                                <div class="w-10 h-10 rounded-lg bg-emerald-100 flex items-center justify-center text-emerald-600">
+                                    <lucide-icon [img]="User" class="w-5 h-5"></lucide-icon>
+                                </div>
+                            </div>
+                            <h4 class="text-2xl font-bold text-emerald-900">{{ uniquePatientsCount() }}</h4>
+                            <p class="text-sm font-medium text-emerald-600">Associated Patients</p>
+                        </div>
+                    </div>
+
+                    <div class="bg-[#F1F3F4] rounded-xl p-6">
+                        <div class="flex items-center justify-between mb-5">
+                            <h4 class="text-lg font-bold text-[#202124]">Upcoming Appointments</h4>
+                            <button (click)="setTab('Appointments')"
+                                class="text-[13px] font-bold text-[#1A73E8] hover:text-[#174EA6] transition-all cursor-pointer">
+                                View All
+                            </button>
+                        </div>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            @for (a of doctorAppointments().slice(0, 4); track a.id) {
+                            <div (click)="onViewAppointment(a)"
+                                class="bg-white rounded-xl p-4 border border-gray-100 hover:border-[#1A73E8] hover:shadow-sm transition-all cursor-pointer group/card">
+                                <div class="flex justify-between items-start mb-2">
+                                    <h5 class="text-sm font-bold text-[#202124] group-hover/card:text-[#1A73E8] transition-colors">{{ a.patientName }}</h5>
+                                    <span class="text-[10px] px-1.5 py-0.5 rounded bg-blue-50 text-blue-600 font-bold uppercase tracking-tighter">Scheduled</span>
+                                </div>
+                                <div class="flex items-center gap-2 text-gray-500">
+                                    <lucide-icon [img]="Calendar" class="w-3.5 h-3.5"></lucide-icon>
+                                    <span class="text-xs font-medium">{{ a.appointmentDate }}</span>
+                                </div>
+                            </div>
+                            } @empty {
+                                <p class="text-sm text-gray-400 italic">No upcoming appointments found.</p>
+                            }
+                        </div>
+                    </div>
+                </div>
+            </div>
+            }
+
+            <!-- Appointments Tab -->
+            @if (activeTab() === 'Appointments') {
+            <div class="h-full flex flex-col">
+                <div class="border-b border-[#DADCE0] pb-4 mb-6">
+                    <h4 class="text-lg font-bold text-[#202124]">Appointments</h4>
+                    <p class="text-[13px] text-gray-500 mt-0.5 font-medium">Full schedule for {{ doctor()?.name }}</p>
+                </div>
+                <div class="rounded-lg border border-gray-200 overflow-hidden bg-white flex-1 min-h-[400px]">
+                    <app-appointment-table 
+                        [appointments]="doctorAppointments()" 
+                        [compactMode]="true"
+                        (viewAppointment)="onViewAppointment($event)"
+                        (editAppointment)="onEditAppointment($event)"
+                        (deleteAppointment)="onDeleteAppointment($event)">
+                    </app-appointment-table>
+                </div>
+            </div>
+            }
+
+            <!-- Patients Tab -->
+            @if (activeTab() === 'Patients') {
+            <div class="h-full flex flex-col">
+                <div class="border-b border-[#DADCE0] pb-4 mb-6">
+                    <h4 class="text-lg font-bold text-[#202124]">Associated Patients</h4>
+                    <p class="text-[13px] text-gray-500 mt-0.5 font-medium">Patients treated by {{ doctor()?.name }}</p>
+                </div>
+                <div class="rounded-lg border border-gray-200 overflow-hidden bg-white flex-1 min-h-[400px]">
+                    <app-patient-table 
+                        [patients]="doctorPatients()"
+                        [readOnly]="true">
+                    </app-patient-table>
+                </div>
+            </div>
+            }
+        </div>
+    </div>
+
+    <!-- Modals -->
+    <app-appointment-create-modal
+        [isOpen]="isAppointmentModalOpen()"
+        [appointmentToEdit]="selectedAppointmentForEdit()"
+        [readOnly]="isAppointmentReadOnly()"
+        [doctors]="allDoctors()"
+        [patientNames]="patientNames()"
+        (closeModal)="isAppointmentModalOpen.set(false)"
+        (saveAppointment)="onAppointmentSaved($event)">
+    </app-appointment-create-modal>
+</div>

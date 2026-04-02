@@ -3,14 +3,15 @@
     <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
         <div>
             <h2 class="text-dashboard-title text-[#1F2B6C] tracking-tight mb-1">List Doctors</h2>
-            <p class="text-sm text-gray-500">There is the latest update for the last 7 days, check now.</p>
         </div>
     </div>
 
     <!-- Table Container -->
     <div class="bg-white rounded-[20px] border border-gray-100 flex-1 flex flex-col relative">
-        <app-doctor-table class="flex-1 flex flex-col h-full" [doctors]="doctors()"
-            (editDoctor)="onEditDoctor($event)" (deleteDoctor)="onDeleteDoctor($event)"
+        <app-doctor-table class="flex-1 flex flex-col h-full" [doctors]="doctors()" 
+            (editDoctor)="onEditDoctor($event)"
+            (viewDoctor)="onViewDoctor($event)"
+            (deleteDoctor)="onDeleteDoctor($event)" 
             (deleteSelected)="onDeleteSelectedDoctors($event)"
             (addDoctor)="openAddDoctorModal()"></app-doctor-table>
     </div>
@@ -18,7 +19,10 @@
 
 <!-- Modal Overlay -->
 @if (isAddDoctorModalOpen) {
-<app-doctor-create-modal [isOpen]="isAddDoctorModalOpen" [doctorToEdit]="selectedDoctorForEdit"
-    (closeModal)="closeAddDoctorModal()" (saveDoctor)="onDoctorSaved($event)">
+<app-doctor-create-modal [isOpen]="isAddDoctorModalOpen" 
+    [doctorToEdit]="selectedDoctorForEdit"
+    [readOnly]="isDoctorReadOnly()"
+    (closeModal)="closeAddDoctorModal()" 
+    (saveDoctor)="onDoctorSaved($event)">
 </app-doctor-create-modal>
 }

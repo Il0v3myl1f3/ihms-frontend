@@ -1,4 +1,4 @@
-import { Component, ViewChild, ChangeDetectionStrategy, inject } from '@angular/core';
+import { Component, ViewChild, ChangeDetectionStrategy, inject, signal } from '@angular/core';
 import { MedicalService, Doctor } from '../../../../services/medical.service';
 import { AppointmentTableComponent, Appointment } from './appointment-table/appointment-table.component';
 import { AppointmentCreateModalComponent } from './appointment-create-modal/appointment-create-modal.component';
@@ -55,6 +55,7 @@ export class AppointmentsPageComponent {
 
     selectedAppointmentForEdit: Appointment | null = null;
     isModalOpen = false;
+    isAppointmentReadOnly = signal(false);
 
     constructor() {
         this.medicalService.getDoctors().subscribe(docs => {
@@ -64,6 +65,7 @@ export class AppointmentsPageComponent {
 
     openCreateModal(): void {
         this.selectedAppointmentForEdit = null;
+        this.isAppointmentReadOnly.set(false);
         this.isModalOpen = true;
     }
 
@@ -73,6 +75,13 @@ export class AppointmentsPageComponent {
 
     onEditAppointment(appointment: Appointment): void {
         this.selectedAppointmentForEdit = appointment;
+        this.isAppointmentReadOnly.set(false);
+        this.isModalOpen = true;
+    }
+
+    onViewAppointment(appointment: Appointment): void {
+        this.selectedAppointmentForEdit = appointment;
+        this.isAppointmentReadOnly.set(true);
         this.isModalOpen = true;
     }
 

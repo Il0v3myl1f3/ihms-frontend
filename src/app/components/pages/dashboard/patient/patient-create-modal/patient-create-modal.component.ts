@@ -1,11 +1,12 @@
 import { Component, input, output, inject, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ModalComponent } from '../../../../shared/modal/modal.component';
+import { CustomSelectComponent } from '../../../../shared/custom-select/custom-select.component';
 import { Patient } from '../patient-table/patient-table.component';
 
 @Component({
     selector: 'app-patient-create-modal',
-    imports: [ReactiveFormsModule, ModalComponent],
+    imports: [ReactiveFormsModule, ModalComponent, CustomSelectComponent],
     templateUrl: './patient-create-modal.component.html',
     styleUrl: './patient-create-modal.component.css',
     changeDetection: ChangeDetectionStrategy.OnPush
@@ -17,6 +18,25 @@ export class PatientCreateModalComponent implements OnInit {
     savePatient = output<Record<string, string>>();
 
     private fb = inject(FormBuilder);
+
+    genderOptions = [
+        { value: '', label: 'Select', disabled: true },
+        { value: 'Male', label: 'Male' },
+        { value: 'Female', label: 'Female' },
+        { value: 'Other', label: 'Other' }
+    ];
+
+    bloodTypeOptions = [
+        { value: '', label: 'Select', disabled: true },
+        { value: 'A+', label: 'A+' },
+        { value: 'A-', label: 'A-' },
+        { value: 'B+', label: 'B+' },
+        { value: 'B-', label: 'B-' },
+        { value: 'O+', label: 'O+' },
+        { value: 'O-', label: 'O-' },
+        { value: 'AB+', label: 'AB+' },
+        { value: 'AB-', label: 'AB-' }
+    ];
 
     patientForm: FormGroup = this.fb.group({
         name: ['', Validators.required],
