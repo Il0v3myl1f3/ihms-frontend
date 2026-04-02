@@ -186,7 +186,7 @@
                 <td class="px-4 py-4 w-[6%] text-center text-gray-400">
                     <div class="flex items-center justify-center">
                         <button (click)="toggleDropdown(doc, $event)"
-                            class="p-1.5 hover:text-gray-600 rounded-md transition-colors cursor-pointer"
+                            class="p-1.5 hover:text-gray-600 rounded-lg transition-colors cursor-pointer"
                             title="More Actions">
                             <lucide-icon [img]="MoreHorizontal" class="w-4 h-4"></lucide-icon>
                         </button>
@@ -200,7 +200,7 @@
 
 <!-- Action Dropdown — rendered outside the table to escape stacking context -->
 @if (activeItem) {
-<div class="fixed z-9999 w-28 bg-white rounded-md shadow-[0_4px_20px_rgba(0,0,0,0.08)] border border-gray-100 py-1"
+<div class="fixed z-9999 w-28 bg-white rounded-lg shadow-[0_4px_20px_rgba(0,0,0,0.08)] border border-gray-100 py-1"
     [style.top.px]="dropdownPos.top" [style.right.px]="dropdownPos.right">
     <button (click)="onView(activeItem); closeDropdown()"
         class="w-full px-3 py-1.5 text-xs font-normal text-left text-gray-700 hover:bg-gray-50 flex items-center gap-2 transition-colors">

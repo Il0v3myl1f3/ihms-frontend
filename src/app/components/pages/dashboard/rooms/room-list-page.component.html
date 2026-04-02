@@ -10,7 +10,9 @@
     <!-- Table Container -->
     <div class="bg-white rounded-[20px] border border-gray-100 flex-1 flex flex-col relative">
         <app-room-table class="flex-1 flex flex-col h-full" [rooms]="rooms"
-            (editRoom)="onEditRoom($event)" (deleteRoom)="onDeleteRoom($event)"
+            (editRoom)="onEditRoom($event)" 
+            (viewRoom)="onViewRoom($event)"
+            (deleteRoom)="onDeleteRoom($event)"
             (deleteSelected)="onDeleteSelectedRooms($event)"
             (addRoom)="openAddRoomModal()"></app-room-table>
     </div>
@@ -18,7 +20,9 @@
 
 <!-- Modal Overlay -->
 @if (isAddRoomModalOpen) {
-<app-room-create-modal [isOpen]="isAddRoomModalOpen" [roomToEdit]="selectedRoomForEdit"
+<app-room-create-modal [isOpen]="isAddRoomModalOpen" 
+    [roomToEdit]="selectedRoomForEdit"
+    [readOnly]="isRoomReadOnly()"
     (closeModal)="closeAddRoomModal()" (saveRoom)="onRoomSaved($event)">
 </app-room-create-modal>
 }

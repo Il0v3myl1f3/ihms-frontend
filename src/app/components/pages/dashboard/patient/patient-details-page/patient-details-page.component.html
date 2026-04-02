@@ -217,8 +217,14 @@
                 </div>
 
                 <div class="rounded-lg border border-gray-200 overflow-hidden bg-white flex-1">
-                    <app-appointment-table [appointments]="patientAppointments()" [compactMode]="true"
-                        [readOnly]="true"></app-appointment-table>
+                    <app-appointment-table 
+                        [appointments]="patientAppointments()" 
+                        [compactMode]="true"
+                        [readOnly]="true"
+                        (viewAppointment)="onViewAppointment($event)"
+                        (editAppointment)="onEditAppointment($event)"
+                        (deleteAppointment)="onDeleteAppointment($event)">
+                    </app-appointment-table>
                 </div>
             </div>
             }
@@ -234,8 +240,14 @@
                 </div>
 
                 <div class="rounded-lg border border-gray-200 overflow-hidden bg-white flex-1">
-                    <app-payment-table [payments]="patientPayments()" [compactMode]="true"
-                        [readOnly]="true"></app-payment-table>
+                    <app-payment-table 
+                        [payments]="patientPayments()" 
+                        [compactMode]="true"
+                        [readOnly]="true"
+                        (viewPayment)="onViewPayment($event)"
+                        (editPayment)="onEditPayment($event)"
+                        (deletePayment)="onDeletePayment($event)">
+                    </app-payment-table>
                 </div>
             </div>
             }
@@ -253,4 +265,23 @@
             }
         </div>
     </div>
+
+    <!-- Modals -->
+    <app-appointment-create-modal
+        [isOpen]="isAppointmentModalOpen()"
+        [appointmentToEdit]="selectedAppointmentForEdit()"
+        [readOnly]="isAppointmentReadOnly()"
+        [doctors]="doctors"
+        [patientNames]="[patient()?.name || '']"
+        (closeModal)="isAppointmentModalOpen.set(false)"
+        (saveAppointment)="onAppointmentSaved($event)">
+    </app-appointment-create-modal>
+
+    <app-payment-create-modal
+        [isOpen]="isPaymentModalOpen()"
+        [paymentToEdit]="selectedPaymentForEdit()"
+        [readOnly]="isPaymentReadOnly()"
+        (closeModal)="isPaymentModalOpen.set(false)"
+        (savePayment)="onPaymentSaved($event)">
+    </app-payment-create-modal>
 </div>

@@ -1,4 +1,4 @@
-import { Component, ViewChild, ChangeDetectionStrategy } from '@angular/core';
+import { Component, ViewChild, ChangeDetectionStrategy, signal } from '@angular/core';
 import { RoomTableComponent, Room } from './room-table/room-table.component';
 import { RoomCreateModalComponent } from './room-create-modal/room-create-modal.component';
 
@@ -42,9 +42,11 @@ export class RoomListPageComponent {
 
     selectedRoomForEdit: Room | null = null;
     isAddRoomModalOpen = false;
+    isRoomReadOnly = signal(false);
 
     openAddRoomModal() {
         this.selectedRoomForEdit = null;
+        this.isRoomReadOnly.set(false);
         this.isAddRoomModalOpen = true;
     }
 
@@ -54,6 +56,13 @@ export class RoomListPageComponent {
 
     onEditRoom(room: Room) {
         this.selectedRoomForEdit = room;
+        this.isRoomReadOnly.set(false);
+        this.isAddRoomModalOpen = true;
+    }
+
+    onViewRoom(room: Room) {
+        this.selectedRoomForEdit = room;
+        this.isRoomReadOnly.set(true);
         this.isAddRoomModalOpen = true;
     }
 

@@ -3,36 +3,35 @@ import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { LucideAngularModule, Pencil, Trash2, MoreHorizontal, Search, Filter, ChevronLeft, ChevronRight, Plus, ChevronDown, ChevronUp, Eye } from 'lucide-angular';
 
-export interface Patient {
+export interface Inpatient {
     id: number;
     no: number;
-    name: string;
-    gender: 'Male' | 'Female';
-    dob: string;
-    address: string;
-    phone: string;
-    bloodType: string;
+    patientName: string;
+    roomNumber: string;
+    doctorName: string;
+    admissionDate: string;
+    dischargeDate: string;
+    status: 'Admitted' | 'Discharged' | 'Transferred' | 'Critical';
+    diagnosis: string;
     selected: boolean;
 }
 
 @Component({
-    selector: 'app-patient-table',
+    selector: 'app-inpatient-table',
     imports: [FormsModule, LucideAngularModule, CommonModule],
-    templateUrl: './patient-table.component.html',
-    styleUrl: './patient-table.component.css',
+    templateUrl: './inpatient-table.component.html',
+    styleUrl: './inpatient-table.component.css',
     changeDetection: ChangeDetectionStrategy.OnPush,
     host: {
         '(document:click)': 'closeDropdown()'
     }
 })
-export class PatientTableComponent implements OnInit, OnDestroy {
-    patients = input<Patient[]>([]);
-    readOnly = input<boolean>(false);
-    editPatient = output<Patient>();
-    deletePatient = output<Patient>();
-    deleteSelected = output<Patient[]>();
-    addPatient = output<void>();
-    viewPatient = output<Patient>();
+export class InpatientTableComponent implements OnInit, OnDestroy {
+    inpatients = input<Inpatient[]>([]);
+    editInpatient = output<Inpatient>();
+    deleteInpatient = output<Inpatient>();
+    deleteSelected = output<Inpatient[]>();
+    addInpatient = output<void>();
 
     readonly Pencil = Pencil;
     readonly Trash2 = Trash2;
@@ -46,7 +45,7 @@ export class PatientTableComponent implements OnInit, OnDestroy {
     readonly ChevronUp = ChevronUp;
     readonly Eye = Eye;
 
-    activeItem: Patient | null = null;
+    activeItem: Inpatient | null = null;
     dropdownPos = { top: 0, right: 0 };
     isPageSizeMenuOpen = false;
 
@@ -56,50 +55,51 @@ export class PatientTableComponent implements OnInit, OnDestroy {
     searchQuery = signal('');
     sortColumn = signal<string>('no');
     sortDirection = signal<'asc' | 'desc'>('asc');
-    filterGender = signal<string>('All');
-    filterBloodType = signal<string>('All');
+    filterStatus = signal<string>('All');
+    filterDoctor = signal<string>('All');
     activeFilterMenu = signal<string | null>(null);
 
-    availableGenders = computed(() => {
-        const genders = this.patients().map(p => p.gender).filter(s => !!s);
-        return ['All', ...Array.from(new Set(genders)).sort()];
+    availableStatuses = computed(() => {
+        const statuses = this.inpatients().map(i => i.status).filter(s => !!s);
+        return ['All', ...Array.from(new Set(statuses)).sort()];
     });
 
-    availableBloodTypes = computed(() => {
-        const types = this.patients().map(p => p.bloodType).filter(s => !!s);
-        return ['All', ...Array.from(new Set(types)).sort()];
+    availableDoctors = computed(() => {
+        const doctors = this.inpatients().map(i => i.doctorName).filter(s => !!s);
+        return ['All', ...Array.from(new Set(doctors)).sort()];
     });
 
     constructor() {
-        // Reset to page 1 when search query changes
         effect(() => {
             this.searchQuery();
             untracked(() => this.currentPage.set(1));
         });
     }
 
-    filteredPatients = computed(() => {
+    filteredInpatients = computed(() => {
         const query = this.searchQuery().toLowerCase().trim();
-        let result = this.patients();
+        let result = this.inpatients();
 
-        const genderFilter = this.filterGender();
-        if (genderFilter !== 'All') {
-            result = result.filter(p => p.gender === genderFilter);
+        const statusFilter = this.filterStatus();
+        if (statusFilter !== 'All') {
+            result = result.filter(i => i.status === statusFilter);
         }
 
-        const typeFilter = this.filterBloodType();
-        if (typeFilter !== 'All') {
-            result = result.filter(p => p.bloodType === typeFilter);
+        const doctorFilter = this.filterDoctor();
+        if (doctorFilter !== 'All') {
+            result = result.filter(i => i.doctorName === doctorFilter);
         }
 
         if (query) {
-            result = result.filter(p =>
-                p.name.toLowerCase().includes(query) ||
-                p.gender.toLowerCase().includes(query) ||
-                (p.address?.toLowerCase().includes(query)) ||
-                (p.phone?.toLowerCase().includes(query)) ||
-                (p.bloodType?.toLowerCase().includes(query)) ||
-                p.no.toString().includes(query)
+            result = result.filter(i =>
+                i.patientName.toLowerCase().includes(query) ||
+                i.roomNumber.toLowerCase().includes(query) ||
+                i.doctorName.toLowerCase().includes(query) ||
+                i.diagnosis.toLowerCase().includes(query) ||
+                i.admissionDate.toLowerCase().includes(query) ||
+                i.dischargeDate.toLowerCase().includes(query) ||
+                i.status.toLowerCase().includes(query) ||
+                i.no.toString().includes(query)
             );
         }
 
@@ -108,22 +108,8 @@ export class PatientTableComponent implements OnInit, OnDestroy {
 
         if (col) {
             result = [...result].sort((a, b) => {
-                let aVal: any = a[col as keyof Patient];
-                let bVal: any = b[col as keyof Patient];
-
-                if (col === 'dob') {
-                    // Custom parser for DD/MM/YYYY
-                    const parseDate = (d: string) => {
-                        if (!d) return 0;
-                        const parts = d.split('/');
-                        if (parts.length === 3) {
-                            return new Date(Number(parts[2]), Number(parts[1]) - 1, Number(parts[0])).getTime();
-                        }
-                        return new Date(d).getTime();
-                    };
-                    aVal = parseDate(aVal);
-                    bVal = parseDate(bVal);
-                }
+                let aVal: any = a[col as keyof Inpatient];
+                let bVal: any = b[col as keyof Inpatient];
 
                 if (aVal < bVal) return -1 * dir;
                 if (aVal > bVal) return 1 * dir;
@@ -167,9 +153,9 @@ export class PatientTableComponent implements OnInit, OnDestroy {
         this.isPageSizeMenuOpen = false;
     }
 
-    setFilter(type: 'gender' | 'bloodType', value: string): void {
-        if (type === 'gender') this.filterGender.set(value);
-        if (type === 'bloodType') this.filterBloodType.set(value);
+    setFilter(type: 'status' | 'doctor', value: string): void {
+        if (type === 'status') this.filterStatus.set(value);
+        if (type === 'doctor') this.filterDoctor.set(value);
         this.activeFilterMenu.set(null);
         this.currentPage.set(1);
     }
@@ -180,15 +166,15 @@ export class PatientTableComponent implements OnInit, OnDestroy {
         this.activeItem = null;
     }
 
-    toggleDropdown(patient: Patient, event: Event): void {
+    toggleDropdown(inpatient: Inpatient, event: Event): void {
         event.stopPropagation();
-        if (this.activeItem?.id === patient.id) {
+        if (this.activeItem?.id === inpatient.id) {
             this.activeItem = null;
             return;
         }
         const btn = (event.currentTarget as HTMLElement).getBoundingClientRect();
         this.dropdownPos = { top: btn.bottom + 4, right: window.innerWidth - btn.right };
-        this.activeItem = patient;
+        this.activeItem = inpatient;
     }
 
     ngOnDestroy(): void { }
@@ -211,27 +197,25 @@ export class PatientTableComponent implements OnInit, OnDestroy {
         }
     }
 
-
-
     toggleSelectAll(): void {
-        this.patients().forEach(p => p.selected = this.selectAll);
+        this.inpatients().forEach(i => i.selected = this.selectAll);
     }
 
     updateSelectAllState(): void {
-        this.selectAll = this.patients().every(p => p.selected);
+        this.selectAll = this.inpatients().every(i => i.selected);
     }
 
-    get hasSelectedPatients(): boolean {
-        return this.patients().some(p => p.selected);
+    get hasSelectedInpatients(): boolean {
+        return this.inpatients().some(i => i.selected);
     }
 
     totalPages = computed(() => {
-        return Math.max(1, Math.ceil(this.filteredPatients().length / this.pageSize()));
+        return Math.max(1, Math.ceil(this.filteredInpatients().length / this.pageSize()));
     });
 
-    paginatedPatients = computed(() => {
+    paginatedInpatients = computed(() => {
         const startIndex = (this.currentPage() - 1) * this.pageSize();
-        return this.filteredPatients().slice(startIndex, startIndex + this.pageSize());
+        return this.filteredInpatients().slice(startIndex, startIndex + this.pageSize());
     });
 
     visiblePages = computed(() => {
@@ -268,26 +252,32 @@ export class PatientTableComponent implements OnInit, OnDestroy {
         }
     }
 
-    onEdit(patient: Patient): void {
-        this.editPatient.emit(patient);
+    onEdit(inpatient: Inpatient): void {
+        this.editInpatient.emit(inpatient);
     }
 
-    onView(patient: Patient): void {
-        this.viewPatient.emit(patient);
-    }
-
-    onDelete(patient: Patient): void {
-        if (confirm(`Are you sure you want to delete patient "${patient.name}"?`)) {
-            this.deletePatient.emit(patient);
+    onDelete(inpatient: Inpatient): void {
+        if (confirm(`Are you sure you want to delete inpatient record for "${inpatient.patientName}"?`)) {
+            this.deleteInpatient.emit(inpatient);
         }
     }
 
     onDeleteSelected(): void {
-        const selected = this.patients().filter(p => p.selected);
+        const selected = this.inpatients().filter(i => i.selected);
         if (selected.length === 0) return;
-        if (confirm(`Are you sure you want to delete ${selected.length} selected patient(s)?`)) {
+        if (confirm(`Are you sure you want to delete ${selected.length} selected inpatient record(s)?`)) {
             this.deleteSelected.emit(selected);
             this.selectAll = false;
+        }
+    }
+
+    getStatusClasses(status: string): string {
+        switch (status) {
+            case 'Admitted': return 'bg-blue-50 text-blue-700';
+            case 'Discharged': return 'bg-emerald-50 text-emerald-700';
+            case 'Transferred': return 'bg-purple-50 text-purple-700';
+            case 'Critical': return 'bg-red-50 text-red-700';
+            default: return 'bg-gray-50 text-gray-700';
         }
     }
 }

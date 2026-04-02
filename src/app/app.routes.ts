@@ -65,6 +65,12 @@ export const routes: Routes = [
         data: { allowedRoles: ['admin'] }
       },
       {
+        path: 'doctors/:id',
+        loadComponent: () => import('./components/pages/dashboard/doctors/doctor-details-page/doctor-details-page.component').then(m => m.DoctorDetailsPageComponent),
+        canActivate: [roleGuard],
+        data: { allowedRoles: ['admin'] }
+      },
+      {
         path: 'patient',
         loadComponent: () => import('./components/pages/dashboard/patient/patient-list-page.component').then(m => m.PatientListPageComponent),
         canActivate: [roleGuard],
@@ -78,7 +84,7 @@ export const routes: Routes = [
       },
       {
         path: 'inpatient',
-        loadComponent: () => import('./components/pages/dashboard/home/dashboard-home.component').then(m => m.DashboardHomeComponent),
+        loadComponent: () => import('./components/pages/dashboard/inpatient/inpatient-list-page.component').then(m => m.InpatientListPageComponent),
         canActivate: [roleGuard],
         data: { allowedRoles: ['admin', 'doctor'] }
       },
