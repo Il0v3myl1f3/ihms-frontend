@@ -1,11 +1,11 @@
 <div class="min-h-screen bg-white">
-  @if (!isDashboard()) {
+  @if (!isDashboard() && !isAuthPage()) {
   <app-header></app-header>
   }
   <main>
     <router-outlet></router-outlet>
   </main>
-  @if (!isDashboard()) {
+  @if (!isDashboard() && !isAuthPage()) {
   <app-footer></app-footer>
   <!-- Global Back to Top Button -->
   <app-back-to-top></app-back-to-top>

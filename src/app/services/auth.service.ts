@@ -1,4 +1,4 @@
-﻿import { Injectable } from '@angular/core';
+import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable, throwError, of } from 'rxjs';
 import { map, catchError, tap } from 'rxjs/operators';
 
@@ -27,7 +27,7 @@ export class AuthService {
   private readonly USER_KEY = 'current_user';
 
   // Mock accounts data - embedded for now, will be replaced with backend API later
-  private readonly MOCK_ACCOUNTS: Account[] = [
+  private MOCK_ACCOUNTS: Account[] = [
     {
       id: '1',
       email: 'admin@example.com',
@@ -186,6 +186,65 @@ export class AuthService {
     const token = localStorage.getItem(this.TOKEN_KEY);
     const user = this.getUserFromStorage();
     return !!(token && user);
+  }
+
+  /**
+   * Register a new user account (mock)
+   */
+  public register(name: string, email: string, password: string): Observable<AuthResponse> {
+    return of(null).pipe(
+      map(() => {
+        const exists = this.MOCK_ACCOUNTS.some(
+          acc => acc.email.toLowerCase() === email.toLowerCase()
+        );
+        if (exists) {
+          throw new Error('An account with this email already exists');
+        }
+
+        const newAccount: Account = {
+          id: String(this.MOCK_ACCOUNTS.length + 1),
+          email,
+          password,
+          name,
+          role: 'user'
+        };
+        this.MOCK_ACCOUNTS.push(newAccount);
+
+        return { success: true };
+      }),
+      catchError((error: unknown) => {
+        const err = error as { message?: string };
+        return throwError(() => ({ success: false, error: err.message || 'Registration failed' }));
+      })
+    );
+  }
+
+  /**
+   * Send a password reset link (mock)
+   */
+  public forgotPassword(email: string): Observable<{ success: boolean; message?: string; error?: string }> {
+    return of(null).pipe(
+      map(() => {
+        const exists = this.MOCK_ACCOUNTS.some(
+          acc => acc.email.toLowerCase() === email.toLowerCase()
+        );
+        if (!exists) {
+          throw new Error('No account found with this email address');
+        }
+        return { success: true, message: 'A password reset link has been sent to your email.' };
+      }),
+      catchError((error: unknown) => {
+        const err = error as { message?: string };
+        return throwError(() => ({ success: false, error: err.message || 'Request failed' }));
+      })
+    );
+  }
+
+  /**
+   * Reset password with token (mock — always succeeds)
+   */
+  public resetPassword(newPassword: string): Observable<{ success: boolean; message?: string }> {
+    return of({ success: true, message: 'Your password has been reset successfully.' });
   }
 
   /**

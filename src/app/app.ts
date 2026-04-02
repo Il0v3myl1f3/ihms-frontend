@@ -15,6 +15,9 @@ import { filter } from 'rxjs/operators';
 export class App {
   protected readonly title = signal('ihms-frontend');
   isDashboard = signal(false);
+  isAuthPage = signal(false);
+
+  private readonly AUTH_ROUTES = ['/login', '/register', '/forgot-password', '/reset-password'];
 
   private router = inject(Router);
 
@@ -22,7 +25,9 @@ export class App {
     this.router.events
       .pipe(filter((event): event is NavigationEnd => event instanceof NavigationEnd))
       .subscribe((event) => {
-        this.isDashboard.set(event.urlAfterRedirects.startsWith('/dashboard'));
+        const url = event.urlAfterRedirects;
+        this.isDashboard.set(url.startsWith('/dashboard'));
+        this.isAuthPage.set(this.AUTH_ROUTES.some(r => url === r || url.startsWith(r + '?')));
       });
   }
 }

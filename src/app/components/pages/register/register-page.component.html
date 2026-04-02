@@ -1,0 +1,159 @@
+<div class="auth-page">
+  <!-- Top bar with logo -->
+  <header class="auth-topbar">
+    <a routerLink="/" class="auth-logo">
+      Med<span class="auth-logo-accent">ical</span>
+    </a>
+  </header>
+
+  <!-- Centered card -->
+  <main class="auth-main">
+    <div class="auth-card">
+
+      <!-- Header -->
+      <div class="auth-card-header">
+        <div class="auth-icon-circle">
+          <lucide-icon [img]="UserPlus" class="w-6 h-6 text-[#159EEC]"></lucide-icon>
+        </div>
+        <h2 class="auth-title">Create Your Account</h2>
+        <p class="auth-subtitle">Join us to book appointments and manage your health.</p>
+      </div>
+
+      <!-- Error Message -->
+      @if (errorMessage()) {
+        <div class="error-banner">
+          <p>{{ errorMessage() }}</p>
+        </div>
+      }
+
+      <!-- Form -->
+      <form [formGroup]="registerForm" (ngSubmit)="onSubmit()" class="auth-form">
+
+        <!-- Full Name -->
+        <div class="form-group">
+          <label for="register-name" class="form-label">Full Name</label>
+          <div class="input-wrapper">
+            <input
+              id="register-name"
+              type="text"
+              formControlName="name"
+              placeholder="Enter your full name"
+              class="form-input"
+              [class.input-error]="nameErrors && registerForm.get('name')?.touched"
+              autocomplete="name">
+          </div>
+          @if (nameErrors && registerForm.get('name')?.touched) {
+            <div class="field-error">
+              @if (nameErrors['required']) { <p>Full name is required</p> }
+              @if (nameErrors['minlength']) { <p>Name must be at least 2 characters</p> }
+            </div>
+          }
+        </div>
+
+        <!-- Email -->
+        <div class="form-group">
+          <label for="register-email" class="form-label">Email Address</label>
+          <div class="input-wrapper">
+            <input
+              id="register-email"
+              type="email"
+              formControlName="email"
+              placeholder="Enter your email"
+              class="form-input"
+              [class.input-error]="emailErrors && registerForm.get('email')?.touched"
+              autocomplete="email">
+          </div>
+          @if (emailErrors && registerForm.get('email')?.touched) {
+            <div class="field-error">
+              @if (emailErrors['required']) { <p>Email is required</p> }
+              @if (emailErrors['email']) { <p>Please enter a valid email</p> }
+            </div>
+          }
+        </div>
+
+        <!-- Password -->
+        <div class="form-group">
+          <label for="register-password" class="form-label">Password</label>
+          <div class="input-wrapper">
+            <input
+              id="register-password"
+              [type]="showPassword() ? 'text' : 'password'"
+              formControlName="password"
+              placeholder="Create a password (min 6 characters)"
+              class="form-input with-toggle"
+              [class.input-error]="passwordErrors && registerForm.get('password')?.touched"
+              autocomplete="new-password">
+            <button
+              type="button"
+              (click)="togglePasswordVisibility()"
+              class="password-toggle"
+              [attr.aria-label]="showPassword() ? 'Hide password' : 'Show password'">
+              <lucide-icon [img]="showPassword() ? EyeOff : Eye" class="w-4 h-4"></lucide-icon>
+            </button>
+          </div>
+          @if (passwordErrors && registerForm.get('password')?.touched) {
+            <div class="field-error">
+              @if (passwordErrors['required']) { <p>Password is required</p> }
+              @if (passwordErrors['minlength']) { <p>Password must be at least 6 characters</p> }
+            </div>
+          }
+        </div>
+
+        <!-- Confirm Password -->
+        <div class="form-group">
+          <label for="register-confirm-password" class="form-label">Confirm Password</label>
+          <div class="input-wrapper">
+            <input
+              id="register-confirm-password"
+              [type]="showConfirmPassword() ? 'text' : 'password'"
+              formControlName="confirmPassword"
+              placeholder="Confirm your password"
+              class="form-input with-toggle"
+              [class.input-error]="confirmPasswordErrors && registerForm.get('confirmPassword')?.touched"
+              autocomplete="new-password">
+            <button
+              type="button"
+              (click)="toggleConfirmPasswordVisibility()"
+              class="password-toggle"
+              [attr.aria-label]="showConfirmPassword() ? 'Hide password' : 'Show password'">
+              <lucide-icon [img]="showConfirmPassword() ? EyeOff : Eye" class="w-4 h-4"></lucide-icon>
+            </button>
+          </div>
+          @if (confirmPasswordErrors && registerForm.get('confirmPassword')?.touched) {
+            <div class="field-error">
+              @if (confirmPasswordErrors['required']) { <p>Please confirm your password</p> }
+              @if (confirmPasswordErrors['passwordMismatch']) { <p>Passwords do not match</p> }
+            </div>
+          }
+        </div>
+
+        <!-- Submit Button -->
+        <button
+          type="submit"
+          [disabled]="isLoading()"
+          class="auth-submit-btn">
+          @if (isLoading()) {
+            <span class="spinner"></span>
+            Creating account...
+          } @else {
+            Create Account
+          }
+        </button>
+      </form>
+
+      <!-- Footer -->
+      <div class="auth-card-footer">
+        <p>Already have an account?
+          <a routerLink="/login" class="auth-link">Sign in</a>
+        </p>
+      </div>
+
+    </div>
+  </main>
+
+  <!-- Bottom bar -->
+  <footer class="auth-bottombar">
+    <p>&copy; 2025 Medical. All rights reserved.</p>
+    <a routerLink="/" class="help-link">&#9432; Get help</a>
+  </footer>
+</div>
