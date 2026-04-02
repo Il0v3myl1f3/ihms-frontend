@@ -14,6 +14,7 @@ import { Room } from '../room-table/room-table.component';
 export class RoomCreateModalComponent implements OnInit, OnChanges {
     isOpen = input(false);
     roomToEdit = input<Room | null>(null);
+    readOnly = input(false);
     closeModal = output<void>();
     saveRoom = output<Record<string, string>>();
 
@@ -47,15 +48,33 @@ export class RoomCreateModalComponent implements OnInit, OnChanges {
             status: ['', Validators.required],
             pricePerDay: ['', [Validators.required, Validators.min(0)]]
         });
+
+        if (this.isOpen()) {
+            this.syncFormWithInputs();
+        }
     }
 
     ngOnChanges(changes: SimpleChanges): void {
-        if (changes['isOpen'] && this.isOpen()) {
-            if (this.roomToEdit()) {
-                this.roomForm?.patchValue(this.roomToEdit()!);
-            } else {
-                this.roomForm?.reset({ type: '', status: '' });
+        if (this.roomForm && (changes['isOpen'] || changes['roomToEdit'] || changes['readOnly'])) {
+            if (this.isOpen()) {
+                this.syncFormWithInputs();
             }
+        }
+    }
+
+    private syncFormWithInputs(): void {
+        if (!this.roomForm) return;
+
+        if (this.roomToEdit()) {
+            this.roomForm.patchValue(this.roomToEdit()!);
+        } else {
+            this.roomForm.reset({ type: '', status: '' });
+        }
+
+        if (this.readOnly()) {
+            this.roomForm.disable();
+        } else {
+            this.roomForm.enable();
         }
     }
 
