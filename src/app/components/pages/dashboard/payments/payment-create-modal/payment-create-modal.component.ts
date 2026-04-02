@@ -1,11 +1,12 @@
 import { Component, input, output, inject, OnInit, OnChanges, SimpleChanges, ChangeDetectionStrategy } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ModalComponent } from '../../../../shared/modal/modal.component';
+import { CustomSelectComponent } from '../../../../shared/custom-select/custom-select.component';
 import { Payment } from '../payment-table/payment-table.component';
 
 @Component({
     selector: 'app-payment-create-modal',
-    imports: [ReactiveFormsModule, ModalComponent],
+    imports: [ReactiveFormsModule, ModalComponent, CustomSelectComponent],
     templateUrl: './payment-create-modal.component.html',
     styleUrl: './payment-create-modal.component.css',
     changeDetection: ChangeDetectionStrategy.OnPush
@@ -19,6 +20,23 @@ export class PaymentCreateModalComponent implements OnInit, OnChanges {
     paymentForm!: FormGroup;
 
     private fb = inject(FormBuilder);
+
+    methodOptions = [
+        { value: '', label: 'Select', disabled: true },
+        { value: 'Cash', label: 'Cash' },
+        { value: 'Credit Card', label: 'Credit Card' },
+        { value: 'Debit Card', label: 'Debit Card' },
+        { value: 'Insurance', label: 'Insurance' },
+        { value: 'Bank Transfer', label: 'Bank Transfer' }
+    ];
+
+    statusOptions = [
+        { value: '', label: 'Select', disabled: true },
+        { value: 'Paid', label: 'Paid' },
+        { value: 'Pending', label: 'Pending' },
+        { value: 'Failed', label: 'Failed' },
+        { value: 'Refunded', label: 'Refunded' }
+    ];
 
     ngOnInit(): void {
         this.paymentForm = this.fb.group({

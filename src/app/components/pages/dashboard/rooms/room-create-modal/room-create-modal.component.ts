@@ -1,11 +1,12 @@
 import { Component, input, output, inject, OnInit, OnChanges, SimpleChanges, ChangeDetectionStrategy } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ModalComponent } from '../../../../shared/modal/modal.component';
+import { CustomSelectComponent } from '../../../../shared/custom-select/custom-select.component';
 import { Room } from '../room-table/room-table.component';
 
 @Component({
     selector: 'app-room-create-modal',
-    imports: [ReactiveFormsModule, ModalComponent],
+    imports: [ReactiveFormsModule, ModalComponent, CustomSelectComponent],
     templateUrl: './room-create-modal.component.html',
     styleUrl: './room-create-modal.component.css',
     changeDetection: ChangeDetectionStrategy.OnPush
@@ -15,6 +16,23 @@ export class RoomCreateModalComponent implements OnInit, OnChanges {
     roomToEdit = input<Room | null>(null);
     closeModal = output<void>();
     saveRoom = output<Record<string, string>>();
+
+    typeOptions = [
+        { value: '', label: 'Select', disabled: true },
+        { value: 'Single', label: 'Single' },
+        { value: 'Double', label: 'Double' },
+        { value: 'Suite', label: 'Suite' },
+        { value: 'ICU', label: 'ICU' },
+        { value: 'Operating', label: 'Operating' }
+    ];
+
+    statusOptions = [
+        { value: '', label: 'Select', disabled: true },
+        { value: 'Available', label: 'Available' },
+        { value: 'Occupied', label: 'Occupied' },
+        { value: 'Maintenance', label: 'Maintenance' },
+        { value: 'Reserved', label: 'Reserved' }
+    ];
 
     roomForm!: FormGroup;
 

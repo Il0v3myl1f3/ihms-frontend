@@ -1,12 +1,13 @@
-import { Component, input, output, inject, OnInit, OnChanges, SimpleChanges, ChangeDetectionStrategy } from '@angular/core';
+import { Component, input, output, inject, OnInit, OnChanges, SimpleChanges, ChangeDetectionStrategy, computed } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ModalComponent } from '../../../../shared/modal/modal.component';
+import { CustomSelectComponent } from '../../../../shared/custom-select/custom-select.component';
 import { Appointment } from '../appointment-table/appointment-table.component';
 import { Doctor } from '../../../../../services/medical.service';
 
 @Component({
     selector: 'app-appointment-create-modal',
-    imports: [ReactiveFormsModule, ModalComponent],
+    imports: [ReactiveFormsModule, ModalComponent, CustomSelectComponent],
     templateUrl: './appointment-create-modal.component.html',
     styleUrl: './appointment-create-modal.component.css',
     changeDetection: ChangeDetectionStrategy.OnPush
@@ -22,6 +23,28 @@ export class AppointmentCreateModalComponent implements OnInit, OnChanges {
     appointmentForm!: FormGroup;
 
     private fb = inject(FormBuilder);
+
+    statusOptions = [
+        { value: 'Scheduled', label: 'Scheduled' },
+        { value: 'Cancelled', label: 'Cancelled' },
+        { value: 'Completed', label: 'Completed' }
+    ];
+
+    patientOptions = computed(() => {
+        const opts: {value: string, label: string, disabled?: boolean}[] = [
+            { value: '', label: 'Select Patient', disabled: true }
+        ];
+        this.patientNames().forEach(n => opts.push({ value: n, label: n }));
+        return opts;
+    });
+
+    doctorOptions = computed(() => {
+        const opts: {value: string, label: string, disabled?: boolean}[] = [
+            { value: '', label: 'Select Doctor', disabled: true }
+        ];
+        this.doctors().forEach(d => opts.push({ value: d.name, label: d.name }));
+        return opts;
+    });
 
     ngOnInit(): void {
         this.appointmentForm = this.fb.group({

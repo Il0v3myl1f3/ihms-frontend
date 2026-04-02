@@ -7,36 +7,15 @@
             <div>
                 <label class="block text-sm font-medium text-gray-700 mb-1.5">Name *</label>
                 <input type="text" formControlName="name" placeholder="E.g. Dr. John Doe"
-                    class="block w-full px-3 py-2 border border-gray-200 rounded-md text-sm focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 transition-colors" />
+                    class="block w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 transition-colors" />
             </div>
 
             <!-- Specialization -->
             <div>
                 <label class="block text-sm font-medium text-gray-700 mb-1.5">Specialization *</label>
-                <div class="relative">
-                    <select formControlName="specialty"
-                        class="block w-full px-3 py-2 border border-gray-200 rounded-md text-sm focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 transition-colors appearance-none bg-white">
-                        <option value="" disabled selected>Select</option>
-                        <option value="Anesthesiology">Anesthesiology</option>
-                        <option value="Cardiology">Cardiology</option>
-                        <option value="Dermatology">Dermatology</option>
-                        <option value="Endocrinology">Endocrinology</option>
-                        <option value="Gastroenterology">Gastroenterology</option>
-                        <option value="Neurology">Neurology</option>
-                        <option value="Oncology">Oncology</option>
-                        <option value="Ophthalmology">Ophthalmology</option>
-                        <option value="Orthopedics">Orthopedics</option>
-                        <option value="Pediatrics">Pediatrics</option>
-                        <option value="Psychiatry">Psychiatry</option>
-                        <option value="Urology">Urology</option>
-                    </select>
-                    <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-500">
-                        <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7">
-                            </path>
-                        </svg>
-                    </div>
-                </div>
+                <app-custom-select formControlName="specialty" placeholder="Select"
+                    [options]="specialtyOptions">
+                </app-custom-select>
             </div>
 
             <!-- Phone Number -->
@@ -52,27 +31,16 @@
                         </svg>
                     </span>
                     <input type="text" formControlName="phone" placeholder="021 1234 5678"
-                        class="block w-full pl-10 pr-3 py-2 border border-gray-200 rounded-md text-sm focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 transition-colors" />
+                        class="block w-full pl-10 pr-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 transition-colors" />
                 </div>
             </div>
 
             <!-- Availability Status -->
             <div>
                 <label class="block text-sm font-medium text-gray-700 mb-1.5">Availability Status *</label>
-                <div class="relative">
-                    <select formControlName="availability"
-                        class="block w-full px-3 py-2 border border-gray-200 rounded-md text-sm focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 transition-colors appearance-none bg-white">
-                        <option value="" disabled selected>Select</option>
-                        <option value="Available">Available</option>
-                        <option value="On Leave">On Leave</option>
-                    </select>
-                    <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-500">
-                        <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7">
-                            </path>
-                        </svg>
-                    </div>
-                </div>
+                <app-custom-select formControlName="availability" placeholder="Select"
+                    [options]="availabilityOptions">
+                </app-custom-select>
             </div>
 
         </div>
@@ -80,11 +48,11 @@
 
     <div modal-footer class="w-full flex items-center justify-end gap-3">
         <button type="button" (click)="onCancel()"
-            class="px-5 py-2.5 bg-white border border-gray-200 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors">
+            class="px-5 py-2.5 bg-white border border-gray-200 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors">
             Cancel
         </button>
         <button type="button" (click)="onSubmit()" [disabled]="doctorForm.invalid"
-            class="px-5 py-2.5 bg-blue-600 disabled:bg-gray-400 disabled:cursor-not-allowed text-white rounded-md text-sm font-medium hover:bg-blue-700 transition-colors shadow-sm">
+            class="px-5 py-2.5 bg-blue-600 disabled:bg-gray-400 disabled:cursor-not-allowed text-white rounded-lg text-sm font-medium hover:bg-blue-700 transition-colors shadow-sm">
             {{ doctorToEdit() ? 'Save Changes' : 'Add Doctor' }}
         </button>
     </div>

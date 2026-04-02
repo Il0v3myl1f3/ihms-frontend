@@ -1,11 +1,12 @@
 import { Component, input, output, inject, OnInit, OnChanges, SimpleChanges, ChangeDetectionStrategy } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ModalComponent } from '../../../../shared/modal/modal.component';
+import { CustomSelectComponent } from '../../../../shared/custom-select/custom-select.component';
 import { Inpatient } from '../inpatient-table/inpatient-table.component';
 
 @Component({
     selector: 'app-inpatient-create-modal',
-    imports: [ReactiveFormsModule, ModalComponent],
+    imports: [ReactiveFormsModule, ModalComponent, CustomSelectComponent],
     templateUrl: './inpatient-create-modal.component.html',
     styleUrl: './inpatient-create-modal.component.css',
     changeDetection: ChangeDetectionStrategy.OnPush
@@ -19,6 +20,14 @@ export class InpatientCreateModalComponent implements OnInit, OnChanges {
     inpatientForm!: FormGroup;
 
     private fb = inject(FormBuilder);
+
+    statusOptions = [
+        { value: '', label: 'Select', disabled: true },
+        { value: 'Admitted', label: 'Admitted' },
+        { value: 'Discharged', label: 'Discharged' },
+        { value: 'Transferred', label: 'Transferred' },
+        { value: 'Critical', label: 'Critical' }
+    ];
 
     ngOnInit(): void {
         this.inpatientForm = this.fb.group({
