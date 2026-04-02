@@ -8,15 +8,21 @@
 
     <!-- Table Container -->
     <div class="bg-white rounded-[20px] border border-gray-100 flex-1 flex flex-col relative">
-        <app-doctor-table class="flex-1 flex flex-col h-full" [doctors]="doctors()" (editDoctor)="onEditDoctor($event)"
-            (deleteDoctor)="onDeleteDoctor($event)" (deleteSelected)="onDeleteSelectedDoctors($event)"
+        <app-doctor-table class="flex-1 flex flex-col h-full" [doctors]="doctors()" 
+            (editDoctor)="onEditDoctor($event)"
+            (viewDoctor)="onViewDoctor($event)"
+            (deleteDoctor)="onDeleteDoctor($event)" 
+            (deleteSelected)="onDeleteSelectedDoctors($event)"
             (addDoctor)="openAddDoctorModal()"></app-doctor-table>
     </div>
 </div>
 
 <!-- Modal Overlay -->
 @if (isAddDoctorModalOpen) {
-<app-doctor-create-modal [isOpen]="isAddDoctorModalOpen" [doctorToEdit]="selectedDoctorForEdit"
-    (closeModal)="closeAddDoctorModal()" (saveDoctor)="onDoctorSaved($event)">
+<app-doctor-create-modal [isOpen]="isAddDoctorModalOpen" 
+    [doctorToEdit]="selectedDoctorForEdit"
+    [readOnly]="isDoctorReadOnly()"
+    (closeModal)="closeAddDoctorModal()" 
+    (saveDoctor)="onDoctorSaved($event)">
 </app-doctor-create-modal>
 }

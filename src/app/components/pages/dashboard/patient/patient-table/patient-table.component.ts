@@ -27,6 +27,7 @@ export interface Patient {
 })
 export class PatientTableComponent implements OnInit, OnDestroy {
     patients = input<Patient[]>([]);
+    readOnly = input<boolean>(false);
     editPatient = output<Patient>();
     deletePatient = output<Patient>();
     deleteSelected = output<Patient[]>();

@@ -69,7 +69,7 @@
             }
         </div>
     </div>
-    <div class="flex items-center gap-3 shrink-0">
+    <div class="flex items-center gap-3 shrink-0" *ngIf="!readOnly()">
         @if (hasSelectedPatients) {
         <button (click)="onDeleteSelected()"
             class="bg-red-50 hover:bg-red-100 text-red-600 px-4 py-2.5 rounded-lg text-sm font-medium transition-colors border border-red-200 flex items-center gap-2">
@@ -88,7 +88,7 @@
     <table class="w-full text-left border-collapse table-auto">
         <thead class="bg-gray-50/50 border-b border-gray-200">
             <tr>
-                <th
+                <th *ngIf="!readOnly()"
                     class="px-4 py-4 text-sm font-normal text-gray-600 whitespace-nowrap overflow-hidden w-[8%] min-w-16">
                     <div class="flex items-center gap-3">
                         <input type="checkbox" [(ngModel)]="selectAll" (change)="toggleSelectAll()"
@@ -105,6 +105,20 @@
                             <lucide-icon *ngIf="sortColumn() === 'no' && sortDirection() === 'asc'" [img]="ChevronUp"
                                 class="w-3 h-3 text-[#1F2B6C]"></lucide-icon>
                         </span>
+                    </div>
+                </th>
+                <th *ngIf="readOnly()" class="px-4 py-4 text-sm font-normal text-gray-600 whitespace-nowrap overflow-hidden w-[8%] min-w-16">
+                    <div (click)="handleSort('no')"
+                        class="flex items-center gap-1 group/th cursor-pointer pl-1 select-none hover:text-[#1F2B6C] transition-colors"
+                        [class.text-[#1F2B6C]]="sortColumn() === 'no'"
+                        [class.font-semibold]="sortColumn() === 'no'">
+                        No
+                        <lucide-icon *ngIf="sortColumn() !== 'no'" [img]="ChevronDown"
+                            class="w-3 h-3 text-gray-300"></lucide-icon>
+                        <lucide-icon *ngIf="sortColumn() === 'no' && sortDirection() === 'desc'" [img]="ChevronDown"
+                            class="w-3 h-3 text-[#1F2B6C]"></lucide-icon>
+                        <lucide-icon *ngIf="sortColumn() === 'no' && sortDirection() === 'asc'" [img]="ChevronUp"
+                            class="w-3 h-3 text-[#1F2B6C]"></lucide-icon>
                     </div>
                 </th>
                 <th class="px-4 py-4 text-sm font-normal text-gray-600 whitespace-nowrap overflow-hidden w-[23%]">
@@ -168,19 +182,22 @@
                             class="w-3 h-3 text-[#1F2B6C]"></lucide-icon>
                     </div>
                 </th>
-                <th class="px-4 py-4 text-sm font-normal text-gray-600 text-center w-[6%]">Action</th>
+                <th *ngIf="!readOnly()" class="px-4 py-4 text-sm font-normal text-gray-600 text-center w-[6%]">Action</th>
             </tr>
         </thead>
         <tbody class="text-sm text-gray-900 font-normal bg-white">
             @for (patient of paginatedPatients(); track patient.id; let i = $index) {
             <tr
                 class="hover:bg-gray-50/30 group whitespace-nowrap transition-colors border-b border-gray-200 last:border-0 text-sm">
-                <td class="px-4 py-4">
+                <td class="px-4 py-4" *ngIf="!readOnly()">
                     <div class="flex items-center gap-3">
                         <input type="checkbox" [(ngModel)]="patient.selected" (change)="updateSelectAllState()"
                             class="w-3.5 h-3.5 rounded border-gray-100 text-[#159EEC] focus:ring-0 focus:ring-offset-0 cursor-pointer" />
                         <span class="font-normal text-gray-900 tracking-tight pl-1">{{ patient.no }}</span>
                     </div>
+                </td>
+                <td class="px-4 py-4" *ngIf="readOnly()">
+                    <span class="font-normal text-gray-900 tracking-tight pl-1">{{ patient.no }}</span>
                 </td>
                 <td class="px-4 py-4 pl-5">
                     <span class="text-gray-900 tracking-tight">{{ patient.name }}</span>
@@ -189,7 +206,7 @@
                 <td class="px-4 py-4 text-gray-900">{{ patient.dob }}</td>
                 <td class="px-4 py-4 text-gray-900 truncate max-w-[200px]">{{ patient.address }}</td>
                 <td class="px-4 py-4 text-gray-900">{{ patient.bloodType }}</td>
-                <td class="px-4 py-4 w-[6%] text-center text-gray-400">
+                <td class="px-4 py-4 w-[6%] text-center text-gray-400" *ngIf="!readOnly()">
                     <div class="flex items-center justify-center">
                         <button (click)="toggleDropdown(patient, $event)"
                             class="p-1.5 hover:text-gray-600 rounded-lg transition-colors cursor-pointer"

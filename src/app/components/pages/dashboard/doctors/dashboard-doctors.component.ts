@@ -1,4 +1,5 @@
 import { Component, OnInit, inject, ViewChild, ChangeDetectionStrategy, signal } from '@angular/core';
+import { Router } from '@angular/router';
 import { MedicalService, Doctor } from '../../../../services/medical.service';
 import { AddDoctorComponent } from './add-doctor/add-doctor.component';
 import { DoctorTableComponent, DoctorRow } from './doctor-table/doctor-table.component';
@@ -16,8 +17,10 @@ export class DashboardDoctorsComponent implements OnInit {
     doctors = signal<DoctorRow[]>([]);
     isAddDoctorModalOpen = false;
     selectedDoctorForEdit: DoctorRow | null = null;
+    isDoctorReadOnly = signal(false);
 
     private medicalService = inject(MedicalService);
+    private router = inject(Router);
 
     ngOnInit(): void {
         this.loadDoctors();
@@ -37,6 +40,7 @@ export class DashboardDoctorsComponent implements OnInit {
 
     openAddDoctorModal(): void {
         this.selectedDoctorForEdit = null;
+        this.isDoctorReadOnly.set(false);
         this.isAddDoctorModalOpen = true;
     }
 
@@ -46,7 +50,12 @@ export class DashboardDoctorsComponent implements OnInit {
 
     onEditDoctor(doctor: DoctorRow): void {
         this.selectedDoctorForEdit = doctor;
+        this.isDoctorReadOnly.set(false);
         this.isAddDoctorModalOpen = true;
+    }
+
+    onViewDoctor(doctor: DoctorRow): void {
+        this.router.navigate(['/dashboard/doctors', doctor.id]);
     }
 
     onDeleteDoctor(doctor: DoctorRow): void {

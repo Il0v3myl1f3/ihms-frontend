@@ -15,6 +15,7 @@ import { Doctor } from '../../../../../services/medical.service';
 export class AppointmentCreateModalComponent implements OnInit, OnChanges {
     isOpen = input(false);
     appointmentToEdit = input<Appointment | null>(null);
+    readOnly = input(false);
     doctors = input<Doctor[]>([]);
     patientNames = input<string[]>([]);
     closeModal = output<void>();
@@ -62,12 +63,18 @@ export class AppointmentCreateModalComponent implements OnInit, OnChanges {
                 this.appointmentForm?.patchValue({
                     patientName: this.appointmentToEdit()!.patientName,
                     doctorName: this.appointmentToEdit()!.doctorName,
-                    date: '',
+                    date: '', // Date is usually not in the table, would need it from some source
                     status: this.appointmentToEdit()!.status,
                     notes: this.appointmentToEdit()!.notes
                 });
             } else {
                 this.appointmentForm?.reset({ patientName: '', doctorName: '', date: '', status: 'Scheduled', notes: '' });
+            }
+
+            if (this.readOnly()) {
+                this.appointmentForm?.disable();
+            } else {
+                this.appointmentForm?.enable();
             }
         }
     }

@@ -1,6 +1,9 @@
-<app-modal [isOpen]="isOpen()" title="{{ doctorToEdit() ? 'Edit Doctor' : 'Add New Doctor' }}" (close)="onCancel()">
+<app-modal [isOpen]="isOpen()" 
+    title="{{ readOnly() ? 'View Doctor' : (doctorToEdit() ? 'Edit Doctor' : 'Add New Doctor') }}" 
+    (close)="onCancel()">
 
     <form [formGroup]="doctorForm" modal-body>
+        <!-- ... existing form ... -->
         <div class="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-5">
 
             <!-- Name -->
@@ -47,13 +50,20 @@
     </form>
 
     <div modal-footer class="w-full flex items-center justify-end gap-3">
-        <button type="button" (click)="onCancel()"
-            class="px-5 py-2.5 bg-white border border-gray-200 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors">
-            Cancel
-        </button>
-        <button type="button" (click)="onSubmit()" [disabled]="doctorForm.invalid"
-            class="px-5 py-2.5 bg-blue-600 disabled:bg-gray-400 disabled:cursor-not-allowed text-white rounded-lg text-sm font-medium hover:bg-blue-700 transition-colors shadow-sm">
-            {{ doctorToEdit() ? 'Save Changes' : 'Add Doctor' }}
-        </button>
+        @if (readOnly()) {
+            <button type="button" (click)="onCancel()"
+                class="px-8 py-2.5 bg-[#1F2B6C] text-white rounded-lg text-sm font-medium hover:bg-[#151D4A] transition-colors shadow-sm">
+                Close
+            </button>
+        } @else {
+            <button type="button" (click)="onCancel()"
+                class="px-5 py-2.5 bg-white border border-gray-200 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors">
+                Cancel
+            </button>
+            <button type="button" (click)="onSubmit()" [disabled]="doctorForm.invalid"
+                class="px-5 py-2.5 bg-blue-600 disabled:bg-gray-400 disabled:cursor-not-allowed text-white rounded-lg text-sm font-medium hover:bg-blue-700 transition-colors shadow-sm">
+                {{ doctorToEdit() ? 'Save Changes' : 'Add Doctor' }}
+            </button>
+        }
     </div>
 </app-modal>

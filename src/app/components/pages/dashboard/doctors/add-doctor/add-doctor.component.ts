@@ -14,6 +14,7 @@ import { DoctorRow } from '../doctor-table/doctor-table.component';
 export class AddDoctorComponent implements OnInit, OnChanges {
     isOpen = input(false);
     doctorToEdit = input<DoctorRow | null>(null);
+    readOnly = input(false);
     closeModal = output<void>();
     saveDoctor = output<Record<string, string>>();
 
@@ -58,6 +59,12 @@ export class AddDoctorComponent implements OnInit, OnChanges {
                 this.doctorForm?.patchValue(this.doctorToEdit()!);
             } else {
                 this.doctorForm?.reset({ specialty: '', availability: '' });
+            }
+
+            if (this.readOnly()) {
+                this.doctorForm?.disable();
+            } else {
+                this.doctorForm?.enable();
             }
         }
     }

@@ -14,6 +14,7 @@ import { Payment } from '../payment-table/payment-table.component';
 export class PaymentCreateModalComponent implements OnInit, OnChanges {
     isOpen = input(false);
     paymentToEdit = input<Payment | null>(null);
+    readOnly = input(false);
     closeModal = output<void>();
     savePayment = output<Record<string, string>>();
 
@@ -55,6 +56,12 @@ export class PaymentCreateModalComponent implements OnInit, OnChanges {
                 this.paymentForm?.patchValue(this.paymentToEdit()!);
             } else {
                 this.paymentForm?.reset({ method: '', status: '' });
+            }
+
+            if (this.readOnly()) {
+                this.paymentForm?.disable();
+            } else {
+                this.paymentForm?.enable();
             }
         }
     }
