@@ -55,27 +55,39 @@ export class AppointmentCreateModalComponent implements OnInit, OnChanges {
             status: ['Scheduled', Validators.required],
             notes: ['']
         });
+
+        if (this.isOpen()) {
+            this.syncFormWithInputs();
+        }
     }
 
     ngOnChanges(changes: SimpleChanges): void {
-        if (changes['isOpen'] && this.isOpen()) {
-            if (this.appointmentToEdit()) {
-                this.appointmentForm?.patchValue({
-                    patientName: this.appointmentToEdit()!.patientName,
-                    doctorName: this.appointmentToEdit()!.doctorName,
-                    date: '', // Date is usually not in the table, would need it from some source
-                    status: this.appointmentToEdit()!.status,
-                    notes: this.appointmentToEdit()!.notes
-                });
-            } else {
-                this.appointmentForm?.reset({ patientName: '', doctorName: '', date: '', status: 'Scheduled', notes: '' });
+        if (this.appointmentForm && (changes['isOpen'] || changes['appointmentToEdit'] || changes['readOnly'])) {
+            if (this.isOpen()) {
+                this.syncFormWithInputs();
             }
+        }
+    }
 
-            if (this.readOnly()) {
-                this.appointmentForm?.disable();
-            } else {
-                this.appointmentForm?.enable();
-            }
+    private syncFormWithInputs(): void {
+        if (!this.appointmentForm) return;
+
+        if (this.appointmentToEdit()) {
+            this.appointmentForm.patchValue({
+                patientName: this.appointmentToEdit()!.patientName,
+                doctorName: this.appointmentToEdit()!.doctorName,
+                date: '', // Date is usually not in the table, would need it from some source
+                status: this.appointmentToEdit()!.status,
+                notes: this.appointmentToEdit()!.notes
+            });
+        } else {
+            this.appointmentForm.reset({ patientName: '', doctorName: '', date: '', status: 'Scheduled', notes: '' });
+        }
+
+        if (this.readOnly()) {
+            this.appointmentForm.disable();
+        } else {
+            this.appointmentForm.enable();
         }
     }
 

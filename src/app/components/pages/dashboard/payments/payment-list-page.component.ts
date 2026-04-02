@@ -1,4 +1,4 @@
-import { Component, ViewChild, ChangeDetectionStrategy } from '@angular/core';
+import { Component, ViewChild, ChangeDetectionStrategy, signal } from '@angular/core';
 import { PaymentTableComponent, Payment } from './payment-table/payment-table.component';
 import { PaymentCreateModalComponent } from './payment-create-modal/payment-create-modal.component';
 
@@ -42,9 +42,11 @@ export class PaymentListPageComponent {
 
     selectedPaymentForEdit: Payment | null = null;
     isAddPaymentModalOpen = false;
+    isPaymentReadOnly = signal(false);
 
     openAddPaymentModal() {
         this.selectedPaymentForEdit = null;
+        this.isPaymentReadOnly.set(false);
         this.isAddPaymentModalOpen = true;
     }
 
@@ -54,6 +56,13 @@ export class PaymentListPageComponent {
 
     onEditPayment(payment: Payment) {
         this.selectedPaymentForEdit = payment;
+        this.isPaymentReadOnly.set(false);
+        this.isAddPaymentModalOpen = true;
+    }
+
+    onViewPayment(payment: Payment) {
+        this.selectedPaymentForEdit = payment;
+        this.isPaymentReadOnly.set(true);
         this.isAddPaymentModalOpen = true;
     }
 

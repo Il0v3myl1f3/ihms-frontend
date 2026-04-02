@@ -48,21 +48,34 @@ export class PaymentCreateModalComponent implements OnInit, OnChanges {
             method: ['', Validators.required],
             status: ['', Validators.required]
         });
+        
+        // Initial sync if already open
+        if (this.isOpen()) {
+            this.syncFormWithInputs();
+        }
     }
 
     ngOnChanges(changes: SimpleChanges): void {
-        if (changes['isOpen'] && this.isOpen()) {
-            if (this.paymentToEdit()) {
-                this.paymentForm?.patchValue(this.paymentToEdit()!);
-            } else {
-                this.paymentForm?.reset({ method: '', status: '' });
+        if (this.paymentForm && (changes['isOpen'] || changes['paymentToEdit'] || changes['readOnly'])) {
+            if (this.isOpen()) {
+                this.syncFormWithInputs();
             }
+        }
+    }
 
-            if (this.readOnly()) {
-                this.paymentForm?.disable();
-            } else {
-                this.paymentForm?.enable();
-            }
+    private syncFormWithInputs(): void {
+        if (!this.paymentForm) return;
+
+        if (this.paymentToEdit()) {
+            this.paymentForm.patchValue(this.paymentToEdit()!);
+        } else {
+            this.paymentForm.reset({ method: '', status: '' });
+        }
+
+        if (this.readOnly()) {
+            this.paymentForm.disable();
+        } else {
+            this.paymentForm.enable();
         }
     }
 
