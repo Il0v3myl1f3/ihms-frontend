@@ -1,5 +1,6 @@
 import { Routes } from '@angular/router';
 import { roleGuard } from './guards/role.guard';
+import { authGuard } from './guards/auth.guard';
 
 export const routes: Routes = [
   {
@@ -21,6 +22,26 @@ export const routes: Routes = [
   {
     path: 'contact',
     loadComponent: () => import('./components/pages/contact/contact.component').then(m => m.ContactComponent)
+  },
+  {
+    path: 'login',
+    loadComponent: () => import('./components/pages/login/login-page.component').then(m => m.LoginPageComponent),
+    canActivate: [authGuard]
+  },
+  {
+    path: 'register',
+    loadComponent: () => import('./components/pages/register/register-page.component').then(m => m.RegisterPageComponent),
+    canActivate: [authGuard]
+  },
+  {
+    path: 'forgot-password',
+    loadComponent: () => import('./components/pages/forgot-password/forgot-password-page.component').then(m => m.ForgotPasswordPageComponent),
+    canActivate: [authGuard]
+  },
+  {
+    path: 'reset-password',
+    loadComponent: () => import('./components/pages/reset-password/reset-password-page.component').then(m => m.ResetPasswordPageComponent),
+    canActivate: [authGuard]
   },
   {
     path: 'dashboard',
@@ -102,3 +123,4 @@ export const routes: Routes = [
   },
   { path: '**', redirectTo: '' }
 ];
+

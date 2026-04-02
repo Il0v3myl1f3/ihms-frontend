@@ -1,0 +1,126 @@
+<div class="auth-page">
+  <!-- Top bar with logo -->
+  <header class="auth-topbar">
+    <a routerLink="/" class="auth-logo">
+      Med<span class="auth-logo-accent">ical</span>
+    </a>
+  </header>
+
+  <!-- Centered card -->
+  <main class="auth-main">
+    <div class="auth-card">
+
+      <!-- Header -->
+      <div class="auth-card-header">
+        <div class="auth-icon-circle">
+          <lucide-icon [img]="User" class="w-6 h-6 text-[#159EEC]"></lucide-icon>
+        </div>
+        <h2 class="auth-title">Welcome Back</h2>
+        <p class="auth-subtitle">Glad to see you again. Log in to your account.</p>
+      </div>
+
+      <!-- Success Message -->
+      @if (successMessage()) {
+        <div class="success-banner">
+          <p>{{ successMessage() }}</p>
+        </div>
+      }
+
+      <!-- Error Message -->
+      @if (errorMessage()) {
+        <div class="error-banner">
+          <p>{{ errorMessage() }}</p>
+        </div>
+      }
+
+      <!-- Form -->
+      <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="auth-form">
+
+        <!-- Email Field -->
+        <div class="form-group">
+          <label for="login-email" class="form-label">Email Address</label>
+          <div class="input-wrapper">
+            <input
+              id="login-email"
+              type="email"
+              formControlName="email"
+              placeholder="Enter your email"
+              class="form-input"
+              [class.input-error]="emailErrors && loginForm.get('email')?.touched"
+              autocomplete="email">
+          </div>
+          @if (emailErrors && loginForm.get('email')?.touched) {
+            <div class="field-error">
+              @if (emailErrors['required']) { <p>Email is required</p> }
+              @if (emailErrors['email']) { <p>Please enter a valid email</p> }
+            </div>
+          }
+        </div>
+
+        <!-- Password Field -->
+        <div class="form-group">
+          <label for="login-password" class="form-label">Password</label>
+          <div class="input-wrapper">
+            <input
+              id="login-password"
+              [type]="showPassword() ? 'text' : 'password'"
+              formControlName="password"
+              placeholder="Enter your password"
+              class="form-input with-toggle"
+              [class.input-error]="passwordErrors && loginForm.get('password')?.touched"
+              autocomplete="current-password">
+            <button
+              type="button"
+              (click)="togglePasswordVisibility()"
+              class="password-toggle"
+              [attr.aria-label]="showPassword() ? 'Hide password' : 'Show password'">
+              <lucide-icon [img]="showPassword() ? EyeOff : Eye" class="w-4 h-4"></lucide-icon>
+            </button>
+          </div>
+          @if (passwordErrors && loginForm.get('password')?.touched) {
+            <div class="field-error">
+              @if (passwordErrors['required']) { <p>Password is required</p> }
+              @if (passwordErrors['minlength']) { <p>Password must be at least 6 characters</p> }
+            </div>
+          }
+        </div>
+
+        <!-- Options row -->
+        <div class="form-options">
+          <label class="keep-login">
+            <input type="checkbox" class="keep-login-checkbox">
+            <span>Keep me logged in</span>
+          </label>
+          <a routerLink="/forgot-password" class="forgot-link">Forgot Password?</a>
+        </div>
+
+        <!-- Submit Button -->
+        <button
+          type="submit"
+          [disabled]="isLoading()"
+          class="auth-submit-btn">
+          @if (isLoading()) {
+            <span class="spinner"></span>
+            Signing in...
+          } @else {
+            Login
+          }
+        </button>
+      </form>
+
+      <!-- Footer -->
+      <div class="auth-card-footer">
+        <p>Don't have account?
+          <a routerLink="/register" class="auth-link">Register</a>
+        </p>
+      </div>
+
+    </div>
+  </main>
+
+  <!-- Bottom bar -->
+  <footer class="auth-bottombar">
+    <p>&copy; 2025 Medical. All rights reserved.</p>
+    <a routerLink="/" class="help-link">&#9432; Get help</a>
+  </footer>
+</div>
