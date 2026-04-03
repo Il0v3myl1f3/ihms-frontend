@@ -1,0 +1,63 @@
+<div class="relative w-full block">
+    <!-- Trigger Button -->
+    <button type="button"
+        (click)="toggle($event)"
+        [disabled]="isDisabled()"
+        class="flex items-center justify-between w-full px-3 py-2 border border-gray-200 rounded-lg bg-white text-sm text-gray-800 cursor-pointer transition-all duration-200 outline-none text-left min-h-[38px] focus:border-blue-500 focus:ring-1 focus:ring-blue-500 hover:border-gray-300 disabled:opacity-50 disabled:cursor-not-allowed disabled:bg-gray-50 disabled:hover:border-gray-200"
+        [class.border-blue-500]="isOpen()"
+        [class.ring-1]="isOpen()"
+        [class.ring-blue-500]="isOpen()">
+        <span [class.text-gray-400]="!selectedValue()">
+            {{ selectedLabel() || placeholder() }}
+        </span>
+        <lucide-icon [img]="CalendarDays" class="w-4 h-4 text-gray-500 shrink-0 transition-colors duration-200" [class.text-blue-500]="isOpen()"></lucide-icon>
+    </button>
+
+    <!-- Dropdown -->
+    @if (isOpen()) {
+    <div class="z-[99999] bg-white border border-gray-200 rounded-2xl shadow-[0_4px_24px_rgba(31,43,108,0.12)] p-4 w-[280px] origin-top"
+        [style.position]="'fixed'"
+        [style.top.px]="dropdownPos.top"
+        [style.left.px]="dropdownPos.left">
+        
+        <!-- Header -->
+        <div class="flex items-center justify-between mb-4">
+            <button type="button" (click)="prevMonth($event)" class="p-1.5 rounded-xl hover:bg-[#159EEC]/10 hover:text-[#159EEC] transition-colors text-gray-500">
+                <lucide-icon [img]="ChevronLeft" class="w-5 h-5"></lucide-icon>
+            </button>
+            <span class="text-[15px] font-extrabold text-[#1F2B6C] tracking-wide">{{ currentMonthName() }}</span>
+            <button type="button" (click)="nextMonth($event)" class="p-1.5 rounded-xl hover:bg-[#159EEC]/10 hover:text-[#159EEC] transition-colors text-gray-500">
+                <lucide-icon [img]="ChevronRight" class="w-5 h-5"></lucide-icon>
+            </button>
+        </div>
+
+        <!-- Days of week -->
+        <div class="grid grid-cols-7 gap-1 mb-2">
+            @for (day of ['Mo','Tu','We','Th','Fr','Sa','Su']; track day) {
+                <div class="text-center text-[11px] font-bold text-gray-400 tracking-wider uppercase">{{ day }}</div>
+            }
+        </div>
+
+        <!-- Calendar Grid -->
+        <div class="grid grid-cols-7 gap-1">
+            @for (day of days(); track day.dateString) {
+                <button type="button"
+                    (click)="selectDate(day, $event)"
+                    class="h-8 w-full flex items-center justify-center rounded-xl text-[13px] transition-all duration-200 font-medium active:scale-90"
+                    [class.text-gray-300]="!day.isCurrentMonth"
+                    [class.text-gray-700]="day.isCurrentMonth && day.dateString !== selectedValue()"
+                    [class.bg-[#159EEC]]="day.dateString === selectedValue()"
+                    [class.text-white]="day.dateString === selectedValue()"
+                    [class.shadow-md]="day.dateString === selectedValue() && day.isCurrentMonth"
+                    [class.shadow-[#159EEC]/40]="day.dateString === selectedValue()"
+                    [class.font-bold]="day.dateString === selectedValue()"
+                    [class.hover:bg-[#159EEC]/10]="day.dateString !== selectedValue() && day.isCurrentMonth"
+                    [class.hover:text-[#159EEC]]="day.dateString !== selectedValue() && day.isCurrentMonth"
+                    [class.hover:bg-gray-50]="day.dateString !== selectedValue() && !day.isCurrentMonth">
+                    {{ day.num }}
+                </button>
+            }
+        </div>
+    </div>
+    }
+</div>

@@ -27,15 +27,13 @@
             <!-- Admission Date -->
             <div>
                 <label class="block text-sm font-medium text-gray-700 mb-1.5">Admission Date *</label>
-                <input type="date" formControlName="admissionDate"
-                    class="block w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 transition-colors" />
+                <app-custom-datepicker formControlName="admissionDate"></app-custom-datepicker>
             </div>
 
             <!-- Discharge Date -->
             <div>
                 <label class="block text-sm font-medium text-gray-700 mb-1.5">Discharge Date</label>
-                <input type="date" formControlName="dischargeDate"
-                    class="block w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 transition-colors" />
+                <app-custom-datepicker formControlName="dischargeDate"></app-custom-datepicker>
             </div>
 
             <!-- Status -->

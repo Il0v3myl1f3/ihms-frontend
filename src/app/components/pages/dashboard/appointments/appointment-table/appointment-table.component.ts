@@ -19,7 +19,6 @@ export interface Appointment {
     selector: 'app-appointment-table',
     imports: [FormsModule, LucideAngularModule, CommonModule],
     templateUrl: './appointment-table.component.html',
-    styleUrl: './appointment-table.component.css',
     changeDetection: ChangeDetectionStrategy.OnPush,
     host: {
         '(document:click)': 'closeDropdown()'

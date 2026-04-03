@@ -8,7 +8,6 @@ import { DoctorRow } from '../doctor-table/doctor-table.component';
     selector: 'app-doctor-create-modal',
     imports: [ReactiveFormsModule, ModalComponent, CustomSelectComponent],
     templateUrl: './add-doctor.component.html',
-    styleUrl: './add-doctor.component.css',
     changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class AddDoctorComponent implements OnInit, OnChanges {

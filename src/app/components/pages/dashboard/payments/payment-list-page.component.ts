@@ -6,7 +6,6 @@ import { PaymentCreateModalComponent } from './payment-create-modal/payment-crea
     selector: 'app-payment-list-page',
     imports: [PaymentTableComponent, PaymentCreateModalComponent],
     templateUrl: './payment-list-page.component.html',
-    styleUrl: './payment-list-page.component.css',
     changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class PaymentListPageComponent {

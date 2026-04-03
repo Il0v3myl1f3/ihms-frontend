@@ -6,7 +6,6 @@ import { RoomCreateModalComponent } from './room-create-modal/room-create-modal.
     selector: 'app-room-list-page',
     imports: [RoomTableComponent, RoomCreateModalComponent],
     templateUrl: './room-list-page.component.html',
-    styleUrl: './room-list-page.component.css',
     changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class RoomListPageComponent {

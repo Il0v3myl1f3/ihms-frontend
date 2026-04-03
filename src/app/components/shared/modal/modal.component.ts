@@ -5,7 +5,6 @@ import { LucideAngularModule, X } from 'lucide-angular';
     selector: 'app-modal',
     imports: [LucideAngularModule],
     templateUrl: './modal.component.html',
-    styleUrls: ['./modal.component.css'],
     changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class ModalComponent implements OnChanges, OnDestroy {

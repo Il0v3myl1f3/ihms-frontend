@@ -8,7 +8,6 @@ import { Room } from '../room-table/room-table.component';
     selector: 'app-room-create-modal',
     imports: [ReactiveFormsModule, ModalComponent, CustomSelectComponent],
     templateUrl: './room-create-modal.component.html',
-    styleUrl: './room-create-modal.component.css',
     changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class RoomCreateModalComponent implements OnInit, OnChanges {

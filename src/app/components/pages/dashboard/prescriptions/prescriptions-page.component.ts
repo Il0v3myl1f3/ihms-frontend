@@ -19,7 +19,6 @@ export interface Prescription {
     selector: 'app-prescriptions-page',
     imports: [CommonModule, FormsModule, LucideAngularModule],
     templateUrl: './prescriptions-page.component.html',
-    styleUrl: './prescriptions-page.component.css',
     changeDetection: ChangeDetectionStrategy.OnPush,
     host: {
         '(document:click)': 'closeAllDropdowns()'

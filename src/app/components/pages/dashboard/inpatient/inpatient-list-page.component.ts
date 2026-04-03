@@ -6,7 +6,6 @@ import { InpatientCreateModalComponent } from './inpatient-create-modal/inpatien
     selector: 'app-inpatient-list-page',
     imports: [InpatientTableComponent, InpatientCreateModalComponent],
     templateUrl: './inpatient-list-page.component.html',
-    styleUrl: './inpatient-list-page.component.css',
     changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class InpatientListPageComponent {

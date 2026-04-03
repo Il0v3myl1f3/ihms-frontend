@@ -19,7 +19,6 @@ export interface Patient {
     selector: 'app-patient-table',
     imports: [FormsModule, LucideAngularModule, CommonModule],
     templateUrl: './patient-table.component.html',
-    styleUrl: './patient-table.component.css',
     changeDetection: ChangeDetectionStrategy.OnPush,
     host: {
         '(document:click)': 'closeDropdown()'

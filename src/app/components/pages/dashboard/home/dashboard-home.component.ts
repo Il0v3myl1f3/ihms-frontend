@@ -8,7 +8,6 @@ import { RouterModule } from '@angular/router';
     selector: 'app-dashboard-home',
     imports: [LucideAngularModule, RouterModule],
     templateUrl: './dashboard-home.component.html',
-    styleUrls: ['./dashboard-home.component.css'],
     changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class DashboardHomeComponent implements OnInit {

@@ -8,7 +8,6 @@ import { DoctorTableComponent, DoctorRow } from './doctor-table/doctor-table.com
     selector: 'app-dashboard-doctors',
     imports: [AddDoctorComponent, DoctorTableComponent],
     templateUrl: './dashboard-doctors.component.html',
-    styleUrls: ['./dashboard-doctors.component.css'],
     changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class DashboardDoctorsComponent implements OnInit {

@@ -10,7 +10,6 @@ import { RouterModule } from '@angular/router';
   selector: 'app-dashboard',
   imports: [SidebarComponent, LucideAngularModule, RouterModule],
   templateUrl: './dashboard.component.html',
-  styleUrl: './dashboard.component.css',
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class DashboardComponent implements OnInit {

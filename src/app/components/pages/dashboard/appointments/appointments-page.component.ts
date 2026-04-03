@@ -32,7 +32,6 @@ export const MOCK_APPOINTMENTS: Appointment[] = [
     selector: 'app-appointments-page',
     imports: [AppointmentTableComponent, AppointmentCreateModalComponent],
     templateUrl: './appointments-page.component.html',
-    styleUrl: './appointments-page.component.css',
     changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class AppointmentsPageComponent {

@@ -12,7 +12,6 @@ export interface SelectOption {
     selector: 'app-custom-select',
     imports: [LucideAngularModule],
     templateUrl: './custom-select.component.html',
-    styleUrl: './custom-select.component.css',
     changeDetection: ChangeDetectionStrategy.OnPush,
     providers: [
         {
@@ -45,7 +44,6 @@ export class CustomSelectComponent implements ControlValueAccessor, OnDestroy {
     dropdownPos = { top: 0, left: 0, width: 0 };
 
     toggle(event: Event): void {
-        event.stopPropagation();
         if (this.isDisabled()) return;
         
         if (!this.isOpen()) {
@@ -61,7 +59,6 @@ export class CustomSelectComponent implements ControlValueAccessor, OnDestroy {
     }
 
     selectOption(option: SelectOption, event: Event): void {
-        event.stopPropagation();
         if (option.disabled) return;
         this.selectedValue.set(option.value);
         this.onChange(option.value);
@@ -81,8 +78,12 @@ export class CustomSelectComponent implements ControlValueAccessor, OnDestroy {
         this.isOpen.set(false);
     }
 
-    private scrollListener = () => {
+    private scrollListener = (event: Event) => {
         if (this.isOpen()) {
+            const target = event.target as Node;
+            if (this.el.nativeElement.contains(target)) {
+                return;
+            }
             this.isOpen.set(false);
         }
     };
