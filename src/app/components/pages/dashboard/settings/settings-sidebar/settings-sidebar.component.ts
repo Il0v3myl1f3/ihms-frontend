@@ -4,7 +4,6 @@ import { Component, input, output, ChangeDetectionStrategy } from '@angular/core
   selector: 'app-settings-sidebar',
   imports: [],
   templateUrl: './settings-sidebar.component.html',
-  styleUrl: './settings-sidebar.component.css',
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class SettingsSidebarComponent {

@@ -20,7 +20,6 @@ export interface Inpatient {
     selector: 'app-inpatient-table',
     imports: [FormsModule, LucideAngularModule, CommonModule],
     templateUrl: './inpatient-table.component.html',
-    styleUrl: './inpatient-table.component.css',
     changeDetection: ChangeDetectionStrategy.OnPush,
     host: {
         '(document:click)': 'closeDropdown()'

@@ -19,7 +19,6 @@ export interface Room {
     selector: 'app-room-table',
     imports: [FormsModule, LucideAngularModule, CommonModule],
     templateUrl: './room-table.component.html',
-    styleUrl: './room-table.component.css',
     changeDetection: ChangeDetectionStrategy.OnPush,
     host: {
         '(document:click)': 'closeDropdown()'

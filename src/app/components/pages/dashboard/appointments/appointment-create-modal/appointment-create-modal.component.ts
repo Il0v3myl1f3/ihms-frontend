@@ -1,3 +1,4 @@
+import { CustomDatepickerComponent } from '../../../../shared/custom-datepicker/custom-datepicker.component';
 import { Component, input, output, inject, OnInit, OnChanges, SimpleChanges, ChangeDetectionStrategy, computed } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ModalComponent } from '../../../../shared/modal/modal.component';
@@ -7,9 +8,8 @@ import { Doctor } from '../../../../../services/medical.service';
 
 @Component({
     selector: 'app-appointment-create-modal',
-    imports: [ReactiveFormsModule, ModalComponent, CustomSelectComponent],
+    imports: [ReactiveFormsModule, ModalComponent, CustomSelectComponent, CustomDatepickerComponent],
     templateUrl: './appointment-create-modal.component.html',
-    styleUrl: './appointment-create-modal.component.css',
     changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class AppointmentCreateModalComponent implements OnInit, OnChanges {

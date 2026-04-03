@@ -1,7 +1,10 @@
 <aside
-    class="sidebar fixed left-0 top-0 bottom-0 z-40 flex flex-col bg-white border-r border-gray-100 transition-all duration-300 ease-in-out"
-    [class.sidebar--collapsed]="collapsed()"
-    [class.sidebar--active]="mobileOpen()">
+    class="fixed left-0 top-0 bottom-0 z-40 flex flex-col bg-white border-r border-gray-100 transition-all duration-300 ease-in-out shadow-[2px_0_12px_rgba(31,43,108,0.06)] max-lg:-translate-x-full max-lg:pointer-events-none max-lg:opacity-0"
+    [class.w-[250px]]="!collapsed()"
+    [class.w-[72px]]="collapsed()"
+    [class.max-lg:translate-x-0]="mobileOpen()"
+    [class.max-lg:pointer-events-auto]="mobileOpen()"
+    [class.max-lg:opacity-100]="mobileOpen()">
     <!-- Brand + Toggle -->
     <div class="flex items-center justify-between px-5 w-full h-24 shrink-0 bg-gray-50/10">
         <a routerLink="/" class="flex items-center gap-3 cursor-pointer overflow-hidden transition-all duration-300"
@@ -26,7 +29,7 @@
     </div>
 
     <!-- Menu Sections -->
-    <nav class="flex-1 overflow-y-auto overflow-x-hidden py-4 px-3">
+    <nav class="flex-1 overflow-y-auto overflow-x-hidden py-4 px-3 sidebar-scroll">
         @for (section of menuSections; track section.title) {
         <div class="mb-6">
             <!-- Section Title -->

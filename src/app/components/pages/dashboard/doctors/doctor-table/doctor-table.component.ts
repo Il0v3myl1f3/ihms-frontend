@@ -13,7 +13,6 @@ export interface DoctorRow extends Doctor {
     selector: 'app-doctor-table',
     imports: [CommonModule, FormsModule, LucideAngularModule],
     templateUrl: './doctor-table.component.html',
-    styleUrl: './doctor-table.component.css',
     changeDetection: ChangeDetectionStrategy.OnPush,
     host: {
         '(document:click)': 'closeDropdown()'

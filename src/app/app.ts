@@ -10,7 +10,6 @@ import { filter } from 'rxjs/operators';
   imports: [RouterOutlet, HeaderComponent, FooterComponent, BackToTopComponent],
   templateUrl: './app.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  styleUrl: './app.css',
 })
 export class App {
   protected readonly title = signal('ihms-frontend');

@@ -52,7 +52,6 @@ export const MOCK_PATIENTS: Patient[] = [
     selector: 'app-patient-list-page',
     imports: [PatientTableComponent, PatientCreateModalComponent],
     templateUrl: './patient-list-page.component.html',
-    styleUrl: './patient-list-page.component.css',
     changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class PatientListPageComponent {

@@ -44,7 +44,6 @@ export interface MenuSection {
     selector: 'app-sidebar',
     imports: [RouterModule, LucideAngularModule],
     templateUrl: './sidebar.component.html',
-    styleUrl: './sidebar.component.css',
     changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class SidebarComponent implements OnInit, OnDestroy {

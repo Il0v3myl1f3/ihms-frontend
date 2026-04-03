@@ -11,7 +11,6 @@ type ViewTab = 'General Info' | 'Appointments' | 'Payments';
     selector: 'app-patient-view-modal',
     imports: [CommonModule, LucideAngularModule, AppointmentTableComponent, PaymentTableComponent],
     templateUrl: './patient-view-modal.component.html',
-    styleUrl: './patient-view-modal.component.css',
     changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class PatientViewModalComponent implements OnInit, OnDestroy {

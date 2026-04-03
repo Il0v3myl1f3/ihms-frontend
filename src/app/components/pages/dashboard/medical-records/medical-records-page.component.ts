@@ -17,7 +17,6 @@ export interface MedicalRecord {
     selector: 'app-medical-records-page',
     imports: [CommonModule, FormsModule, LucideAngularModule],
     templateUrl: './medical-records-page.component.html',
-    styleUrl: './medical-records-page.component.css',
     changeDetection: ChangeDetectionStrategy.OnPush,
     host: {
         '(document:click)': 'closeAllDropdowns()'

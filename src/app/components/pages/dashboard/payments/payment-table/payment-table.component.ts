@@ -19,7 +19,6 @@ export interface Payment {
     selector: 'app-payment-table',
     imports: [FormsModule, LucideAngularModule, CommonModule],
     templateUrl: './payment-table.component.html',
-    styleUrl: './payment-table.component.css',
     changeDetection: ChangeDetectionStrategy.OnPush,
     host: {
         '(document:click)': 'closeDropdown()'

@@ -5,7 +5,6 @@ import { LucideAngularModule, ArrowUp } from 'lucide-angular';
   selector: 'app-back-to-top',
   imports: [LucideAngularModule],
   templateUrl: './back-to-top.component.html',
-  styleUrl: './back-to-top.component.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: {
     '(window:scroll)': 'onWindowScroll()'
