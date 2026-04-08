@@ -20,11 +20,8 @@
         <div class="w-full border-b border-[#DADCE0] bg-white sticky top-0 z-10 transition-colors">
             <div class="flex items-center gap-2 px-5 py-3 overflow-x-auto no-scrollbar scroll-smooth">
                 @for (tab of tabs; track tab) {
-                <button (click)="setTab(tab)" [class.bg-[#E8F0FE]]="activeTab() === tab"
-                    [class.text-[#1A73E8]]="activeTab() === tab" [class.border-transparent]="activeTab() === tab"
-                    [class.shadow-none]="activeTab() === tab" [class.bg-white]="activeTab() !== tab"
-                    [class.text-[#3C4043]]="activeTab() !== tab" [class.border-gray-200/80]="activeTab() !== tab"
-                    [class.hover:border-gray-300]="activeTab() !== tab" [class.hover:bg-gray-50]="activeTab() !== tab"
+                <button (click)="setTab(tab)"
+                    [ngClass]="activeTab() === tab ? 'bg-[#E8F0FE] text-[#1A73E8] border-transparent shadow-none' : 'bg-white text-[#3C4043] border-gray-200/80 hover:border-gray-300 hover:bg-gray-50'"
                     class="px-4 py-1.5 rounded-full text-sm font-medium transition-all cursor-pointer whitespace-nowrap border active:scale-[0.98]">
                     {{ tab }}
                 </button>
@@ -147,6 +144,143 @@
             </div>
             }
 
+            <!-- Schedule Tab -->
+            @if (activeTab() === 'Schedule') {
+            <div class="h-full flex flex-col space-y-6">
+                <!-- Header -->
+                <div class="border-b border-[#DADCE0] pb-4">
+                    <h4 class="text-lg font-bold text-[#202124]">Doctor's Schedule</h4>
+                    <p class="text-[13px] text-gray-500 mt-0.5 font-medium">Weekly working hours and location for {{ doctor()?.name }}</p>
+                </div>
+
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                    <!-- Cabinet Info Card -->
+                    <div class="lg:col-span-1 bg-[#F8F9FA] border border-[#DADCE0] rounded-xl p-6 flex flex-col">
+                        <div class="flex items-center gap-3 mb-6">
+                            <div class="w-10 h-10 rounded-full bg-blue-50 flex items-center justify-center text-blue-600">
+                                <lucide-icon [img]="DoorOpen" class="w-5 h-5"></lucide-icon>
+                            </div>
+                            <div>
+                                <h5 class="text-sm font-bold text-[#202124]">Assigned Cabinet</h5>
+                                <p class="text-xs text-gray-500">Consultation Room</p>
+                            </div>
+                        </div>
+
+                        <div class="mb-6">
+                            <div class="text-3xl font-bold text-blue-700 tracking-tight mb-1">
+                                {{ doctor()?.cabinet || 'Not Assigned' }}
+                            </div>
+                            <div class="flex items-center gap-2 text-gray-500 text-sm">
+                                <lucide-icon [img]="MapPin" class="w-4 h-4"></lucide-icon>
+                                <span>Main Clinic Building, Floor 2</span>
+                            </div>
+                        </div>
+
+                        <div class="space-y-4 pt-6 border-t border-gray-200">
+                            <div>
+                                <h6 class="text-[11px] font-bold text-gray-400 uppercase tracking-wider mb-2 flex items-center gap-2">
+                                    <lucide-icon [img]="Info" class="w-3 h-3"></lucide-icon>
+                                    Room Equipment
+                                </h6>
+                                <div class="flex flex-wrap gap-2">
+                                    <span class="px-2 py-1 bg-white border border-gray-200 rounded text-[10px] font-medium text-gray-600 flex items-center gap-1">
+                                        <lucide-icon [img]="ShieldCheck" class="w-3 h-3 text-emerald-500"></lucide-icon>
+                                        Standard Kit
+                                    </span>
+                                    <span class="px-2 py-1 bg-white border border-gray-200 rounded text-[10px] font-medium text-gray-600 flex items-center gap-1">
+                                        <lucide-icon [img]="Printer" class="w-3 h-3 text-blue-500"></lucide-icon>
+                                        Workstation
+                                    </span>
+                                </div>
+                            </div>
+
+                            <div class="bg-blue-50/50 rounded-lg p-3 border border-blue-100">
+                                <p class="text-[11px] text-blue-700 leading-relaxed font-medium">
+                                    This cabinet is equipped with real-time patient monitoring systems and HIPAA-compliant access.
+                                </p>
+                            </div>
+                        </div>
+
+                        <!-- Added Quick Actions / Helpful Info to fill bottom space -->
+                        <div class="mt-6 space-y-3 pt-6 border-t border-dashed border-gray-200">
+                            <h6 class="text-[11px] font-bold text-gray-400 uppercase tracking-wider mb-2 flex items-center gap-2">
+                                <lucide-icon [img]="ShieldCheck" class="w-3 h-3"></lucide-icon>
+                                Daily Access
+                            </h6>
+                            <div class="flex items-start gap-3">
+                                <div class="w-1.5 h-1.5 rounded-full bg-emerald-400 mt-1.5"></div>
+                                <p class="text-[11px] text-gray-500 font-medium">RFID Badge Required for Entry</p>
+                            </div>
+                            <div class="flex items-start gap-3">
+                                <div class="w-1.5 h-1.5 rounded-full bg-blue-400 mt-1.5"></div>
+                                <p class="text-[11px] text-gray-500 font-medium">Assigned Nurse: Sarah Jenkins</p>
+                            </div>
+                            <div class="flex items-start gap-3">
+                                <div class="w-1.5 h-1.5 rounded-full bg-indigo-400 mt-1.5"></div>
+                                <p class="text-[11px] text-gray-500 font-medium">Telehealth Syncing Active</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Weekly Schedule Card -->
+                    <div class="lg:col-span-2 bg-white border border-[#DADCE0] rounded-xl overflow-hidden">
+                        <table class="w-full text-left border-collapse">
+                            <thead>
+                                <tr class="bg-gray-50 border-b border-[#DADCE0]">
+                                    <th class="px-6 py-3.5 text-xs font-bold text-gray-500 uppercase tracking-wider">Day</th>
+                                    <th class="px-6 py-3.5 text-xs font-bold text-gray-500 uppercase tracking-wider">Status</th>
+                                    <th class="px-6 py-3.5 text-xs font-bold text-gray-500 uppercase tracking-wider">Working Hours</th>
+                                    <th class="px-6 py-3.5 text-xs font-bold text-gray-500 uppercase tracking-wider">Lunch Break</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-gray-100">
+                                @for (day of ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday']; track day) {
+                                <tr class="hover:bg-gray-50/50 transition-colors">
+                                    <td class="px-6 py-4">
+                                        <span class="text-sm font-bold text-[#202124]">{{ day }}</span>
+                                    </td>
+                                    <td class="px-6 py-4">
+                                        <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-bold bg-emerald-50 text-emerald-700">Available</span>
+                                    </td>
+                                    <td class="px-6 py-4">
+                                        <div class="flex items-center gap-2 text-gray-600">
+                                            <lucide-icon [img]="Clock" class="w-3.5 h-3.5 text-gray-400"></lucide-icon>
+                                            <span class="text-sm font-medium">08:00 - 16:00</span>
+                                        </div>
+                                    </td>
+                                    <td class="px-6 py-4">
+                                        <div class="flex items-center gap-2 text-gray-500">
+                                            <lucide-icon [img]="Coffee" class="w-3.5 h-3.5 text-gray-400"></lucide-icon>
+                                            <span class="text-sm">12:00 - 13:00</span>
+                                        </div>
+                                    </td>
+                                </tr>
+                                }
+                                <tr class="bg-gray-50/30">
+                                    <td class="px-6 py-4">
+                                        <span class="text-sm font-bold text-gray-400">Saturday</span>
+                                    </td>
+                                    <td class="px-6 py-4">
+                                        <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-bold bg-gray-100 text-gray-500">Closed</span>
+                                    </td>
+                                    <td colspan="2" class="px-6 py-4 text-xs italic text-gray-400">Weekend - No appointments</td>
+                                </tr>
+                                <tr class="bg-gray-50/30">
+                                    <td class="px-6 py-4">
+                                        <span class="text-sm font-bold text-gray-400">Sunday</span>
+                                    </td>
+                                    <td class="px-6 py-4">
+                                        <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-bold bg-gray-100 text-gray-500">Closed</span>
+                                    </td>
+                                    <td colspan="2" class="px-6 py-4 text-xs italic text-gray-400">Weekend - No appointments</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            }
+
             <!-- Appointments Tab -->
             @if (activeTab() === 'Appointments') {
             <div class="h-full flex flex-col">
@@ -155,8 +289,8 @@
                     <p class="text-[13px] text-gray-500 mt-0.5 font-medium">Full schedule for {{ doctor()?.name }}</p>
                 </div>
                 <div class="rounded-lg border border-gray-200 overflow-hidden bg-white flex-1 min-h-[400px]">
-                    <app-appointment-table 
-                        [appointments]="doctorAppointments()" 
+                    <app-appointment-table
+                        [appointments]="doctorAppointments()"
                         [compactMode]="true"
                         (viewAppointment)="onViewAppointment($event)"
                         (editAppointment)="onEditAppointment($event)"
@@ -174,7 +308,7 @@
                     <p class="text-[13px] text-gray-500 mt-0.5 font-medium">Patients treated by {{ doctor()?.name }}</p>
                 </div>
                 <div class="rounded-lg border border-gray-200 overflow-hidden bg-white flex-1 min-h-[400px]">
-                    <app-patient-table 
+                    <app-patient-table
                         [patients]="doctorPatients()"
                         [readOnly]="true">
                     </app-patient-table>
