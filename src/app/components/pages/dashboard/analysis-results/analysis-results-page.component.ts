@@ -1,12 +1,13 @@
 import { Component, OnInit, inject, signal, computed, ChangeDetectionStrategy, effect, untracked } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { LaboratoryService, AnalysisResult } from '../../../../services/laboratory.service';
-import { LucideAngularModule, Search, ChevronDown, ChevronUp, ClipboardCheck, MoreHorizontal, Download, FileText } from 'lucide-angular';
+import { LucideAngularModule, Search, ChevronDown, ChevronUp, ClipboardCheck, MoreHorizontal, Download, FileText, User, Stethoscope, Calendar, Activity, FlaskConical } from 'lucide-angular';
 import { FormsModule } from '@angular/forms';
+import { ModalComponent } from '../../../shared/modal/modal.component';
 
 @Component({
   selector: 'app-analysis-results-page',
-  imports: [CommonModule, LucideAngularModule, FormsModule],
+  imports: [CommonModule, LucideAngularModule, FormsModule, ModalComponent],
   templateUrl: './analysis-results-page.component.html',
   styleUrls: ['./analysis-results-page.component.css'],
   changeDetection: ChangeDetectionStrategy.OnPush
@@ -20,6 +21,11 @@ export class AnalysisResultsPageComponent implements OnInit {
   readonly MoreHorizontal = MoreHorizontal;
   readonly Download = Download;
   readonly FileText = FileText;
+  readonly User = User;
+  readonly Stethoscope = Stethoscope;
+  readonly Calendar = Calendar;
+  readonly Activity = Activity;
+  readonly FlaskConical = FlaskConical;
 
   private labService = inject(LaboratoryService);
   
@@ -103,6 +109,20 @@ export class AnalysisResultsPageComponent implements OnInit {
       this.sortColumn.set(column);
       this.sortDirection.set('asc');
     }
+  }
+
+  // Report Modal
+  isReportModalOpen = signal(false);
+  selectedResult = signal<AnalysisResult | null>(null);
+
+  openReport(item: AnalysisResult): void {
+    this.selectedResult.set(item);
+    this.isReportModalOpen.set(true);
+  }
+
+  closeReport(): void {
+    this.isReportModalOpen.set(false);
+    this.selectedResult.set(null);
   }
 
   getStatusBadgeClass(status: string): string {
