@@ -89,6 +89,36 @@ export class HelpCenterComponent {
             question: 'What payment methods are accepted?',
             answer: 'We accept all major credit cards, debit cards, and secure online payments. You can also pay via insurance if your provider is partnered with us.',
             isOpen: false
+        },
+        {
+            category: 'General',
+            question: 'How do I update my personal information?',
+            answer: 'You can update your contact details, address, and profile picture in the "Settings" section of the dashboard.',
+            isOpen: false
+        },
+        {
+            category: 'Medical Records',
+            question: 'Are my medical records secure?',
+            answer: 'Yes, all your data is encrypted and stored according to HIPAA regulations. Only you and your authorized healthcare providers have access to your records.',
+            isOpen: false
+        },
+        {
+            category: 'Insurance',
+            question: 'How do I add my insurance information?',
+            answer: 'Go to the "Settings" tab and select "Insurance". You can upload a photo of your insurance card and enter the policy details for verification.',
+            isOpen: false
+        },
+        {
+            category: 'Emergency',
+            question: 'What should I do in case of a medical emergency?',
+            answer: 'If you are experiencing a life-threatening emergency, please call 112 (or your local emergency number) immediately or go to the nearest emergency room. This portal is not for emergency use.',
+            isOpen: false
+        },
+        {
+            category: 'Laboratory',
+            question: 'Do I need to fast before my lab test?',
+            answer: 'Fasting requirements depend on the specific test. Usually, blood sugar and cholesterol tests require 8-12 hours of fasting. Please check the instructions provided in your "Schedule Analysis" card.',
+            isOpen: false
         }
     ]);
 
@@ -115,4 +145,3 @@ export class HelpCenterComponent {
         );
     }
 }
-
