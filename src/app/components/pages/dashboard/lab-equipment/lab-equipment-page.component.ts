@@ -1,7 +1,7 @@
-import { Component, OnInit, inject, signal, computed, ChangeDetectionStrategy, effect, untracked } from '@angular/core';
+import { Component, OnInit, inject, signal, computed, ChangeDetectionStrategy, effect, untracked, HostListener } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { LaboratoryService, LabEquipment } from '../../../../services/laboratory.service';
-import { LucideAngularModule, Search, ChevronDown, ChevronUp, Microscope, MoreHorizontal, Plus, Trash2, Edit2, Settings } from 'lucide-angular';
+import { LucideAngularModule, Search, ChevronDown, ChevronUp, Microscope, MoreHorizontal, Plus, Trash2, Edit2, Settings, Eye } from 'lucide-angular';
 import { FormsModule } from '@angular/forms';
 
 @Component({
@@ -9,7 +9,10 @@ import { FormsModule } from '@angular/forms';
   imports: [CommonModule, LucideAngularModule, FormsModule],
   templateUrl: './lab-equipment-page.component.html',
   styleUrls: ['./lab-equipment-page.component.css'],
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  host: {
+    '(document:click)': 'closeDropdown()'
+  }
 })
 export class LabEquipmentPageComponent implements OnInit {
   // Icons
@@ -22,6 +25,31 @@ export class LabEquipmentPageComponent implements OnInit {
   readonly Trash2 = Trash2;
   readonly Edit2 = Edit2;
   readonly Settings = Settings;
+  readonly Eye = Eye;
+
+  // Dropdown state
+  activeItem: LabEquipment | null = null;
+  dropdownPos = { top: 0, right: 0 };
+
+  toggleDropdown(item: LabEquipment, event: Event): void {
+    event.stopPropagation();
+    if (this.activeItem?.id === item.id) {
+      this.activeItem = null;
+      return;
+    }
+    const btn = (event.currentTarget as HTMLElement).getBoundingClientRect();
+    this.dropdownPos = { top: btn.bottom + 4, right: window.innerWidth - btn.right };
+    this.activeItem = item;
+  }
+
+  closeDropdown(): void {
+    this.activeItem = null;
+  }
+
+  @HostListener('window:scroll')
+  onWindowScroll(): void {
+    this.activeItem = null;
+  }
 
   private labService = inject(LaboratoryService);
   

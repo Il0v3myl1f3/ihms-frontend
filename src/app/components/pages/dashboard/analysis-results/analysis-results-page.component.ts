@@ -1,7 +1,7 @@
-import { Component, OnInit, inject, signal, computed, ChangeDetectionStrategy, effect, untracked } from '@angular/core';
+import { Component, OnInit, inject, signal, computed, ChangeDetectionStrategy, effect, untracked, HostListener } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { LaboratoryService, AnalysisResult } from '../../../../services/laboratory.service';
-import { LucideAngularModule, Search, ChevronDown, ChevronUp, ClipboardCheck, MoreHorizontal, Download, FileText, User, Stethoscope, Calendar, Activity, FlaskConical } from 'lucide-angular';
+import { LucideAngularModule, Search, ChevronDown, ChevronUp, ClipboardCheck, MoreHorizontal, Download, FileText, User, Stethoscope, Calendar, Activity, FlaskConical, Eye, Pencil, Trash2 } from 'lucide-angular';
 import { FormsModule } from '@angular/forms';
 import { ModalComponent } from '../../../shared/modal/modal.component';
 
@@ -10,7 +10,10 @@ import { ModalComponent } from '../../../shared/modal/modal.component';
   imports: [CommonModule, LucideAngularModule, FormsModule, ModalComponent],
   templateUrl: './analysis-results-page.component.html',
   styleUrls: ['./analysis-results-page.component.css'],
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  host: {
+    '(document:click)': 'closeDropdown()'
+  }
 })
 export class AnalysisResultsPageComponent implements OnInit {
   // Icons
@@ -26,6 +29,33 @@ export class AnalysisResultsPageComponent implements OnInit {
   readonly Calendar = Calendar;
   readonly Activity = Activity;
   readonly FlaskConical = FlaskConical;
+  readonly Eye = Eye;
+  readonly Pencil = Pencil;
+  readonly Trash2 = Trash2;
+
+  // Dropdown state
+  activeItem: AnalysisResult | null = null;
+  dropdownPos = { top: 0, right: 0 };
+
+  toggleDropdown(item: AnalysisResult, event: Event): void {
+    event.stopPropagation();
+    if (this.activeItem?.id === item.id) {
+      this.activeItem = null;
+      return;
+    }
+    const btn = (event.currentTarget as HTMLElement).getBoundingClientRect();
+    this.dropdownPos = { top: btn.bottom + 4, right: window.innerWidth - btn.right };
+    this.activeItem = item;
+  }
+
+  closeDropdown(): void {
+    this.activeItem = null;
+  }
+
+  @HostListener('window:scroll')
+  onWindowScroll(): void {
+    this.activeItem = null;
+  }
 
   private labService = inject(LaboratoryService);
   
