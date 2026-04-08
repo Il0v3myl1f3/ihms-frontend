@@ -1,0 +1,90 @@
+<div class="h-full flex flex-col w-full">
+    <!-- Page Header -->
+    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
+        <div>
+            <h2 class="text-dashboard-title text-[#1F2B6C] tracking-tight mb-1">Laboratory Availability</h2>
+            <p class="text-sm text-gray-500">Real-time status of hospital laboratories and medical resources.</p>
+        </div>
+    </div>
+
+    <!-- Toolbar -->
+    <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4 mb-6">
+        <div class="relative flex-1 lg:max-w-sm">
+            <span class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                <lucide-icon [img]="Search" class="h-4 w-4 text-gray-400"></lucide-icon>
+            </span>
+            <input type="text"
+                   placeholder="Search lab name or location..."
+                   (input)="searchQuery.set($any($event.target).value)"
+                   class="block w-full pl-10 pr-3 py-2.5 border border-gray-200 rounded-xl text-sm placeholder-gray-400 focus:outline-hidden focus:ring-2 focus:ring-[#159EEC]/20 focus:border-[#159EEC] bg-white transition-all">
+        </div>
+
+        <div class="flex items-center gap-3">
+            <select (change)="statusFilter.set($any($event.target).value)"
+                    class="px-4 py-2.5 bg-white border border-gray-200 rounded-xl text-sm text-gray-600 focus:outline-hidden focus:ring-2 focus:ring-[#159EEC]/20 focus:border-[#159EEC] transition-all cursor-pointer">
+                <option value="All">All Statuses</option>
+                <option value="Available">Available</option>
+                <option value="Occupied">Occupied</option>
+                <option value="Maintenance">Maintenance</option>
+            </select>
+        </div>
+    </div>
+
+    <!-- Labs Grid -->
+    <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6 overflow-y-auto pr-1 slim-scroll pb-6">
+        @for (lab of filteredLabs(); track lab.id) {
+        <div class="bg-white rounded-3xl border border-gray-100 p-6 shadow-sm hover:shadow-md transition-all group relative overflow-hidden">
+            <div class="absolute top-0 right-0 p-4">
+                <span [class]="'px-3 py-1 rounded-full text-[11px] font-bold border ' + getStatusClass(lab.status)">
+                    {{ lab.status }}
+                </span>
+            </div>
+
+            <div class="flex items-start gap-4 mb-6">
+                <div class="w-12 h-12 rounded-2xl bg-[#1F2B6C]/5 flex items-center justify-center text-[#1F2B6C] group-hover:bg-[#1F2B6C] group-hover:text-white transition-colors duration-300">
+                    <lucide-icon [img]="FlaskConical" class="w-6 h-6"></lucide-icon>
+                </div>
+                <div>
+                    <h3 class="font-bold text-gray-900 group-hover:text-[#1F2B6C] transition-colors">{{ lab.name }}</h3>
+                    <div class="flex items-center gap-1.5 text-xs text-gray-400 mt-1">
+                        <lucide-icon [img]="MapPin" class="w-3 h-3"></lucide-icon>
+                        {{ lab.location }}
+                    </div>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-2 gap-4">
+                <div class="bg-gray-50/50 rounded-2xl p-3 border border-gray-50">
+                    <div class="flex items-center gap-2 text-gray-400 mb-1">
+                        <lucide-icon [img]="Activity" class="w-3.5 h-3.5"></lucide-icon>
+                        <span class="text-[11px] font-semibold uppercase tracking-wider">Equipment</span>
+                    </div>
+                    <span class="text-lg font-bold text-gray-900">{{ lab.equipmentCount }} units</span>
+                </div>
+                <div class="bg-gray-50/50 rounded-2xl p-3 border border-gray-50">
+                    <div class="flex items-center gap-2 text-gray-400 mb-1">
+                        <lucide-icon [img]="Users" class="w-3.5 h-3.5"></lucide-icon>
+                        <span class="text-[11px] font-semibold uppercase tracking-wider">Capacity</span>
+                    </div>
+                    <span class="text-lg font-bold text-gray-900">{{ lab.capacity }} stations</span>
+                </div>
+            </div>
+
+            <div class="mt-6 pt-5 border-t border-gray-50 flex items-center justify-between">
+                <div class="flex items-center gap-2">
+                    <div [class]="'w-2 h-2 rounded-full ' + getStatusDotClass(lab.status)"></div>
+                    <span class="text-[13px] font-medium text-gray-600">{{ lab.status === 'Available' ? 'Ready for new tests' : lab.status === 'Occupied' ? 'At full capacity' : 'System update in progress' }}</span>
+                </div>
+                <button class="text-[#159EEC] hover:text-[#1F2B6C] text-[13px] font-bold transition-colors cursor-pointer">
+                    View Details
+                </button>
+            </div>
+        </div>
+        } @empty {
+        <div class="col-span-full py-20 text-center bg-white rounded-3xl border border-dashed border-gray-200">
+            <lucide-icon [img]="FlaskConical" class="w-12 h-12 text-gray-200 mx-auto mb-4"></lucide-icon>
+            <p class="text-gray-500 font-medium">No laboratories found matching your search.</p>
+        </div>
+        }
+    </div>
+</div>

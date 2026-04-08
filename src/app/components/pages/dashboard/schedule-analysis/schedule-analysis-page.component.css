@@ -1,0 +1,13 @@
+:host {
+    display: block;
+    height: 100%;
+}
+
+.table-wrapper {
+    scrollbar-gutter: stable;
+}
+
+/* Ensure sticky column shadow is visible */
+th.sticky, td.sticky {
+    box-shadow: -4px 0 8px -4px rgba(0,0,0,0.06);
+}

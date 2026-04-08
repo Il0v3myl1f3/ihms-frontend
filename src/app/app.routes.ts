@@ -116,6 +116,24 @@ export const routes: Routes = [
         data: { allowedRoles: ['admin'] }
       },
       {
+        path: 'laboratory',
+        loadComponent: () => import('./components/pages/dashboard/laboratory/laboratory-page.component').then(m => m.LaboratoryPageComponent)
+      },
+      {
+        path: 'schedule-analysis',
+        loadComponent: () => import('./components/pages/dashboard/schedule-analysis/schedule-analysis-page.component').then(m => m.ScheduleAnalysisPageComponent)
+      },
+      {
+        path: 'analysis-results',
+        loadComponent: () => import('./components/pages/dashboard/analysis-results/analysis-results-page.component').then(m => m.AnalysisResultsPageComponent)
+      },
+      {
+        path: 'lab-equipment',
+        loadComponent: () => import('./components/pages/dashboard/lab-equipment/lab-equipment-page.component').then(m => m.LabEquipmentPageComponent),
+        canActivate: [roleGuard],
+        data: { allowedRoles: ['admin'] }
+      },
+      {
         path: 'settings',
         loadComponent: () => import('./components/pages/dashboard/settings/dashboard-settings.component').then(m => m.DashboardSettingsComponent)
       }

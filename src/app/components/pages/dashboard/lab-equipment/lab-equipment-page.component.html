@@ -1,0 +1,223 @@
+<div class="h-full flex flex-col w-full">
+  <!-- Page Header -->
+  <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
+    <div>
+      <h2 class="text-dashboard-title text-[#1F2B6C] tracking-tight mb-1">Lab Equipment Management</h2>
+      <p class="text-sm text-gray-500">Inventory and maintenance control for laboratory assets.</p>
+    </div>
+  </div>
+
+  <!-- Table Container -->
+  <div class="bg-white rounded-[20px] border border-gray-100 flex-1 flex flex-col overflow-hidden shadow-sm">
+    <!-- Toolbar -->
+    <div class="p-4 lg:p-6 flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+      <div class="flex flex-col sm:flex-row items-center gap-3 flex-1 lg:max-w-2xl">
+        <div class="relative w-full sm:max-w-sm">
+          <span class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+            <lucide-icon [img]="Search" class="h-4 w-4 text-gray-400"></lucide-icon>
+          </span>
+          <input type="text"
+                 placeholder="Search equipment, lab, type..."
+                 (input)="searchQuery.set($any($event.target).value)"
+                 class="block w-full pl-9 pr-3 py-2 border border-gray-200 rounded-lg text-sm placeholder-gray-400 bg-gray-50/20 focus:ring-1 focus:ring-[#159EEC] focus:border-[#159EEC]">
+        </div>
+        
+        <select (change)="statusFilter.set($any($event.target).value)" 
+                class="w-full sm:w-48 px-3 py-2 border border-gray-200 rounded-lg text-sm text-gray-500 bg-white cursor-pointer focus:ring-1 focus:ring-[#159EEC]">
+          <option value="All">All Statuses</option>
+          <option value="Operational">Operational</option>
+          <option value="Under Maintenance">Under Maintenance</option>
+          <option value="Out of Service">Out of Service</option>
+        </select>
+      </div>
+
+      <div class="flex items-center gap-3">
+        @if (selectedCount() > 0) {
+        <button (click)="deleteSelected()"
+                class="bg-red-50 hover:bg-red-100 text-red-600 px-4 py-2.5 rounded-lg text-sm font-medium border border-red-200 flex items-center gap-2 transition-colors">
+          <lucide-icon [img]="Trash2" class="w-4 h-4"></lucide-icon>
+          Decommission ({{selectedCount()}})
+        </button>
+        }
+        <button class="bg-[#1F2B6C] hover:bg-[#151D4A] text-white px-5 py-2.5 rounded-lg text-sm font-medium shadow-sm flex items-center gap-2 transition-all active:scale-95">
+          <lucide-icon [img]="Plus" class="w-4 h-4"></lucide-icon>
+          Add Asset
+        </button>
+      </div>
+    </div>
+
+    <!-- Table -->
+    <div class="flex-1 overflow-x-auto">
+      <table class="w-full border-collapse">
+        <thead class="bg-gray-50/50 border-b border-gray-200">
+          <tr>
+            <th class="px-4 py-4 text-left w-[60px]">
+              <div class="flex items-center gap-3">
+                <input type="checkbox" 
+                       [checked]="allSelected()" 
+                       (change)="toggleSelectAll()"
+                       class="w-3.5 h-3.5 rounded border-gray-100 text-[#159EEC] focus:ring-0 cursor-pointer">
+                <span class="text-xs font-semibold text-gray-400 uppercase tracking-wider">No</span>
+              </div>
+            </th>
+            <th (click)="toggleSort('name')" class="px-4 py-4 text-sm font-normal text-gray-600 whitespace-nowrap cursor-pointer hover:text-[#1F2B6C] group">
+              <div class="flex items-center gap-1">
+                Equipment Name
+                <lucide-icon [img]="sortColumn() === 'name' ? (sortDirection() === 'asc' ? ChevronUp : ChevronDown) : ChevronDown" 
+                            [class]="sortColumn() === 'name' ? 'text-[#1F2B6C]' : 'text-gray-300 group-hover:text-gray-400'"
+                            class="w-3 h-3"></lucide-icon>
+              </div>
+            </th>
+            <th (click)="toggleSort('labName')" class="px-4 py-4 text-sm font-normal text-gray-600 whitespace-nowrap cursor-pointer hover:text-[#1F2B6C] group">
+              <div class="flex items-center gap-1">
+                Laboratory
+                <lucide-icon [img]="sortColumn() === 'labName' ? (sortDirection() === 'asc' ? ChevronUp : ChevronDown) : ChevronDown" 
+                            [class]="sortColumn() === 'labName' ? 'text-[#1F2B6C]' : 'text-gray-300 group-hover:text-gray-400'"
+                            class="w-3 h-3"></lucide-icon>
+              </div>
+            </th>
+            <th (click)="toggleSort('type')" class="px-4 py-4 text-sm font-normal text-gray-600 whitespace-nowrap cursor-pointer hover:text-[#1F2B6C] group">
+              <div class="flex items-center gap-1">
+                Type
+                <lucide-icon [img]="sortColumn() === 'type' ? (sortDirection() === 'asc' ? ChevronUp : ChevronDown) : ChevronDown" 
+                            [class]="sortColumn() === 'type' ? 'text-[#1F2B6C]' : 'text-gray-300 group-hover:text-gray-400'"
+                            class="w-3 h-3"></lucide-icon>
+              </div>
+            </th>
+            <th (click)="toggleSort('nextMaintenanceDate')" class="px-4 py-4 text-sm font-normal text-gray-600 whitespace-nowrap cursor-pointer hover:text-[#1F2B6C] group">
+              <div class="flex items-center gap-1">
+                Next Maintenance
+                <lucide-icon [img]="sortColumn() === 'nextMaintenanceDate' ? (sortDirection() === 'asc' ? ChevronUp : ChevronDown) : ChevronDown" 
+                            [class]="sortColumn() === 'nextMaintenanceDate' ? 'text-[#1F2B6C]' : 'text-gray-300 group-hover:text-gray-400'"
+                            class="w-3 h-3"></lucide-icon>
+              </div>
+            </th>
+            <th (click)="toggleSort('status')" class="px-4 py-4 text-sm font-normal text-gray-600 whitespace-nowrap cursor-pointer hover:text-[#1F2B6C] group">
+              <div class="flex items-center gap-1">
+                Status
+                <lucide-icon [img]="sortColumn() === 'status' ? (sortDirection() === 'asc' ? ChevronUp : ChevronDown) : ChevronDown" 
+                            [class]="sortColumn() === 'status' ? 'text-[#1F2B6C]' : 'text-gray-300 group-hover:text-gray-400'"
+                            class="w-3 h-3"></lucide-icon>
+              </div>
+            </th>
+            <th class="px-4 py-4 text-center w-[100px] sticky right-0 bg-gray-50/50">Actions</th>
+          </tr>
+        </thead>
+        <tbody class="text-sm text-gray-900 font-normal bg-white">
+          @for (item of paginatedItems(); track item.id) {
+          <tr class="hover:bg-gray-50/30 group transition-colors border-b border-gray-200 last:border-0 hover:z-1">
+            <td class="px-4 py-4 border-r border-gray-200">
+              <div class="flex items-center gap-3">
+                <input type="checkbox" 
+                       [checked]="item.selected" 
+                       (change)="toggleSelectItem(item.id)"
+                       class="w-3.5 h-3.5 rounded border-gray-100 text-[#159EEC] focus:ring-0 cursor-pointer">
+                <span class="text-sm text-gray-600">{{ item.no }}</span>
+              </div>
+            </td>
+            <td class="px-4 py-4 border-r border-gray-200 font-medium">
+                <div class="flex items-center gap-3">
+                    <div class="w-8 h-8 rounded-lg bg-gray-50 flex items-center justify-center text-[#1F2B6C] border border-gray-100">
+                        <lucide-icon [img]="Microscope" class="w-4 h-4"></lucide-icon>
+                    </div>
+                    {{ item.name }}
+                </div>
+            </td>
+            <td class="px-4 py-4 border-r border-gray-200 text-gray-600">{{ item.labName }}</td>
+            <td class="px-4 py-4 border-r border-gray-200">{{ item.type }}</td>
+            <td class="px-4 py-4 border-r border-gray-200 text-gray-600">
+                <div class="flex flex-col">
+                    <span class="font-medium">{{ item.nextMaintenanceDate }}</span>
+                    <span class="text-[11px] text-gray-400">Last: {{ item.lastMaintenanceDate }}</span>
+                </div>
+            </td>
+            <td class="px-4 py-4 border-r border-gray-200">
+              <span [class]="'px-3 py-1 rounded-full text-[11px] font-bold border ' + getStatusBadgeClass(item.status)">
+                {{ item.status }}
+              </span>
+            </td>
+            <td class="px-4 py-4 text-center sticky right-0 bg-white group-hover:bg-[#f9fafb] shadow-[-4px_0_8px_-4px_rgba(0,0,0,0.06)]">
+              <button (click)="toggleDropdown(item, $event)"
+                      class="p-1.5 text-gray-400 hover:text-[#1F2B6C] hover:bg-gray-100 rounded-lg transition-all cursor-pointer"
+                      title="More Actions">
+                <lucide-icon [img]="MoreHorizontal" class="w-4 h-4"></lucide-icon>
+              </button>
+            </td>
+          </tr>
+          } @empty {
+          <tr>
+            <td colspan="7" class="py-20 text-center">
+              <lucide-icon [img]="Microscope" class="w-12 h-12 text-gray-200 mx-auto mb-4"></lucide-icon>
+              <p class="text-gray-500 font-medium">No equipment found.</p>
+            </td>
+          </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Pagination -->
+    <div class="px-4 lg:px-5 py-4 border-t border-gray-100 flex flex-col sm:flex-row items-center justify-between gap-4">
+      <div class="flex items-center gap-3">
+        <select (change)="pageSize.set($any($event.target).value)" 
+                class="px-3 py-1.5 border border-gray-200 rounded-lg bg-white text-gray-700 text-[13px] focus:ring-1 focus:ring-[#159EEC]">
+          <option [value]="5">5</option>
+          <option [value]="7" selected>7</option>
+          <option [value]="10">10</option>
+        </select>
+        <span class="text-[13px] text-gray-500">Items per page</span>
+      </div>
+
+      <div class="flex items-center gap-1.5">
+        <button (click)="currentPage.set(currentPage() - 1)" 
+                [disabled]="currentPage() === 1"
+                class="w-8 h-8 rounded-lg border border-gray-200 flex items-center justify-center bg-white hover:bg-gray-50 disabled:opacity-50">
+          <lucide-icon [img]="ChevronDown" class="w-4 h-4 rotate-90"></lucide-icon>
+        </button>
+
+        @for (page of visiblePages(); track $index) {
+          @if (page === '...') {
+            <span class="text-gray-400 text-[13px] px-2">...</span>
+          } @else {
+            <button (click)="currentPage.set($any(page))"
+                   [class]="page === currentPage() ? 'bg-[#1F2B6C] text-white border-[#1F2B6C]' : 'bg-white text-gray-600 border-gray-200 hover:bg-gray-50'"
+                   class="w-8 h-8 rounded-lg border text-[13px] font-medium transition-all">
+              {{ page }}
+            </button>
+          }
+        }
+
+        <button (click)="currentPage.set(currentPage() + 1)" 
+                [disabled]="currentPage() === totalPages()"
+                class="w-8 h-8 rounded-lg border border-gray-200 flex items-center justify-center bg-white hover:bg-gray-50 disabled:opacity-50">
+          <lucide-icon [img]="ChevronDown" class="w-4 h-4 -rotate-90"></lucide-icon>
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Actions Dropdown — fixed outside table to escape stacking context -->
+@if (activeItem) {
+<div class="fixed z-9999 w-40 bg-white rounded-lg shadow-[0_4px_20px_rgba(0,0,0,0.08)] border border-gray-100 py-1"
+    [style.top.px]="dropdownPos.top" [style.right.px]="dropdownPos.right">
+  <button class="w-full px-3 py-1.5 text-xs font-normal text-left text-gray-700 hover:bg-gray-50 flex items-center gap-2 transition-colors">
+    <lucide-icon [img]="Eye" class="w-3.5 h-3.5"></lucide-icon>
+    View Details
+  </button>
+  <button class="w-full px-3 py-1.5 text-xs font-normal text-left text-gray-700 hover:bg-gray-50 flex items-center gap-2 transition-colors">
+    <lucide-icon [img]="Edit2" class="w-3.5 h-3.5"></lucide-icon>
+    Edit
+  </button>
+  <button class="w-full px-3 py-1.5 text-xs font-normal text-left text-gray-700 hover:bg-gray-50 flex items-center gap-2 transition-colors">
+    <lucide-icon [img]="Settings" class="w-3.5 h-3.5"></lucide-icon>
+    Set Status
+  </button>
+  <div class="h-px bg-gray-100 my-1 w-full"></div>
+  <button (click)="closeDropdown()"
+      class="w-full px-3 py-1.5 text-xs font-normal text-left text-red-600 hover:bg-red-50 flex items-center gap-2 transition-colors">
+    <lucide-icon [img]="Trash2" class="w-3.5 h-3.5"></lucide-icon>
+    Decommission
+  </button>
+</div>
+}

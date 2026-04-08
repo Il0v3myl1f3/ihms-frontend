@@ -21,6 +21,10 @@ import {
     Pill,
     FolderHeart,
     ClipboardList,
+    FlaskConical,
+    CalendarPlus,
+    ClipboardCheck,
+    Microscope,
 } from 'lucide-angular';
 
 import { AuthService, User } from '../../../services/auth.service';
@@ -85,6 +89,15 @@ export class SidebarComponent implements OnInit, OnDestroy {
             items: [
                 { label: 'Prescriptions', icon: Pill, route: '/dashboard/prescriptions', roles: ['user'] },
                 { label: 'Medical Records', icon: FolderHeart, route: '/dashboard/medical-records', roles: ['user'] },
+            ],
+        },
+        {
+            title: 'Laboratory',
+            items: [
+                { label: 'Lab Availability', icon: FlaskConical, route: '/dashboard/laboratory' },
+                { label: 'Schedule Analysis', icon: CalendarPlus, route: '/dashboard/schedule-analysis' },
+                { label: 'Analysis Results', icon: ClipboardCheck, route: '/dashboard/analysis-results' },
+                { label: 'Lab Equipment', icon: Microscope, route: '/dashboard/lab-equipment', roles: ['admin'] },
             ],
         },
     ];

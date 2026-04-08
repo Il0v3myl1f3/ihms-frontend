@@ -1,0 +1,9 @@
+:host {
+    display: block;
+    height: 100%;
+}
+
+/* Custom styles for components if needed, though Tailwind covers most */
+.grid {
+    scrollbar-gutter: stable;
+}
