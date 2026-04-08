@@ -105,17 +105,21 @@ export class SidebarComponent implements OnInit, OnDestroy {
     /** Filtered menu sections visible to the current user */
     menuSections: MenuSection[] = [];
 
+    /** Filtered bottom items visible to the current user */
+    filteredBottomItems: MenuItem[] = [];
+
     bottomItems: MenuItem[] = [
-        { label: 'Help Center', icon: HelpCircle },
+        { label: 'Help Center', icon: HelpCircle, route: '/dashboard/help-center', roles: ['user'] },
     ];
 
     private userSub?: Subscription;
-    private router = inject(Router);
+    public router = inject(Router);
     private authService = inject(AuthService);
 
     ngOnInit(): void {
         this.userSub = this.authService.currentUser$.subscribe((user) => {
             this.menuSections = this.filterMenuByRole(user);
+            this.filteredBottomItems = this.filterBottomItemsByRole(user);
         });
     }
 
@@ -147,5 +151,15 @@ export class SidebarComponent implements OnInit, OnDestroy {
                 ),
             }))
             .filter((section) => section.items.length > 0);
+    }
+
+    /**
+     * Filters bottom items based on the user's role.
+     */
+    private filterBottomItemsByRole(user: User | null): MenuItem[] {
+        const role = user?.role ?? 'user';
+        return this.bottomItems.filter(
+            (item) => !item.roles || item.roles.includes(role)
+        );
     }
 }

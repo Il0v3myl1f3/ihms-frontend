@@ -67,17 +67,24 @@
 
     <!-- Bottom Section -->
     <div class="px-3 py-4 space-y-1 mb-2">
-        <!-- Help Center -->
-        <button (click)="onMenuClick.emit()"
+        <!-- Help Center & Other Bottom Items -->
+        @for (item of filteredBottomItems; track item.label) {
+        <button [routerLink]="item.route" routerLinkActive="bg-blue-50 text-blue-600" [routerLinkActiveOptions]="{exact: true}"
+            (click)="item.action ? item.action() : null; onMenuClick.emit()"
             class="flex items-center w-full rounded-2xl transition-all duration-200 cursor-pointer hover:bg-gray-50 overflow-hidden"
             [style.padding]="collapsed() ? '12px 14px' : '12px 16px'"
-            [title]="collapsed() ? 'Help Center' : ''">
-            <lucide-icon [img]="HelpCircle" class="w-5 h-5 text-gray-500 shrink-0"></lucide-icon>
-            <span class="text-sm font-medium text-gray-700 whitespace-nowrap transition-all duration-300 overflow-hidden"
+            [title]="collapsed() ? item.label : ''">
+            <lucide-icon [img]="item.icon" class="w-5 h-5 shrink-0"
+                [class.text-blue-600]="router.url === item.route"
+                [class.text-gray-500]="router.url !== item.route"></lucide-icon>
+            <span class="text-sm font-medium whitespace-nowrap transition-all duration-300 overflow-hidden"
+                [class.text-blue-600]="router.url === item.route"
+                [class.text-gray-700]="router.url !== item.route"
                 [class.w-0]="collapsed()" [class.opacity-0]="collapsed()" [class.ml-3]="!collapsed()">
-                Help Center
+                {{ item.label }}
             </span>
         </button>
+        }
 
         <!-- Logout -->
         <button (click)="logout(); onMenuClick.emit()"

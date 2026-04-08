@@ -1,7 +1,7 @@
 import { Component, OnInit, ChangeDetectionStrategy, inject, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router } from '@angular/router';
-import { LucideAngularModule, User, Calendar, Phone, MapPin, ArrowLeft, MoreHorizontal, GraduationCap, Award, Building2 } from 'lucide-angular';
+import { LucideAngularModule, User, Calendar, Phone, MapPin, ArrowLeft, MoreHorizontal, GraduationCap, Award, Building2, Clock, Coffee, DoorOpen, Info, ShieldCheck, Printer } from 'lucide-angular';
 import { MedicalService, Doctor } from '../../../../../services/medical.service';
 import { AppointmentTableComponent, Appointment } from '../../appointments/appointment-table/appointment-table.component';
 import { AppointmentCreateModalComponent } from '../../appointments/appointment-create-modal/appointment-create-modal.component';
@@ -31,10 +31,16 @@ export class DoctorDetailsPageComponent implements OnInit {
     GraduationCap = GraduationCap;
     Award = Award;
     Building2 = Building2;
+    Clock = Clock;
+    Coffee = Coffee;
+    DoorOpen = DoorOpen;
+    Info = Info;
+    ShieldCheck = ShieldCheck;
+    Printer = Printer;
 
     doctor = signal<Doctor | null>(null);
     activeTab = signal('General Info');
-    tabs = ['General Info', 'Appointments', 'Patients'];
+    tabs = ['General Info', 'Schedule', 'Appointments', 'Patients'];
 
     doctorAppointments = signal<Appointment[]>([]);
     doctorPatients = signal<Patient[]>([]);
@@ -43,7 +49,7 @@ export class DoctorDetailsPageComponent implements OnInit {
     isAppointmentModalOpen = signal(false);
     selectedAppointmentForEdit = signal<Appointment | null>(null);
     isAppointmentReadOnly = signal(false);
-    
+
     // Dropdown data for modal
     allDoctors = signal<Doctor[]>([]);
     patientNames = signal<string[]>([]);
@@ -71,7 +77,7 @@ export class DoctorDetailsPageComponent implements OnInit {
         this.medicalService.getDoctorById(id).subscribe(doc => {
             if (doc) {
                 this.doctor.set(doc);
-                
+
                 // Filter appointments for this doctor
                 const filteredApps = MOCK_APPOINTMENTS.filter(a => a.doctorName === doc.name);
                 this.doctorAppointments.set(filteredApps);
