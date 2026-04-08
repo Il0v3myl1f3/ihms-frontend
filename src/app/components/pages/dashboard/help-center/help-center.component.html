@@ -1,0 +1,150 @@
+﻿﻿<div class="h-full flex flex-col w-full">
+    <!-- Page Header -->
+    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-6">
+        <div>
+            <p class="text-sm font-medium text-gray-400 mb-0.5">Resources & Support</p>
+            <h2 class="text-2xl font-bold text-[#202124] tracking-tight">Help Center</h2>
+        </div>
+        <div class="relative w-full sm:w-80 pointer-events-auto">
+            <lucide-icon [img]="Search" class="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400"></lucide-icon>
+            <input
+                (input)="onSearch($event)"
+                type="text"
+                placeholder="Search for articles, FAQs..."
+                class="w-full pl-10 pr-4 py-2.5 bg-white border border-[#DADCE0] rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all shadow-xs"
+            >
+        </div>
+    </div>
+
+    <div class="flex-1 space-y-6 overflow-y-auto no-scrollbar pb-10">
+        <!-- Banner -->
+        <div class="bg-linear-to-r from-blue-600 to-indigo-700 rounded-2xl p-8 relative overflow-hidden shadow-lg border border-blue-400/20">
+            <div class="relative z-10 max-w-xl">
+                <h3 class="text-2xl font-bold text-white mb-2">How can we help you today?</h3>
+                <p class="text-blue-100 text-sm leading-relaxed mb-6">
+                    Find answers to common questions about your appointments, medical records, and more. If you can't find what you're looking for, our support team is just a click away.
+                </p>
+                <div class="flex flex-wrap gap-3">
+                    <button class="bg-white text-blue-700 px-5 py-2.5 rounded-xl font-bold text-sm hover:bg-blue-50 transition-all flex items-center gap-2 cursor-pointer shadow-sm active:scale-95">
+                        <lucide-icon [img]="MessageCircle" class="w-4 h-4"></lucide-icon>
+                        Start Live Chat
+                    </button>
+                    <button class="bg-blue-500/30 text-white backdrop-blur-md px-5 py-2.5 rounded-xl font-bold text-sm hover:bg-blue-500/40 transition-all flex items-center gap-2 cursor-pointer border border-blue-400/30 active:scale-95">
+                        <lucide-icon [img]="Phone" class="w-4 h-4"></lucide-icon>
+                        Call Support
+                    </button>
+                </div>
+            </div>
+            <!-- Decorative Icon -->
+            <lucide-icon [img]="HelpCircle" class="absolute -right-5 -bottom-5 w-64 h-64 text-white/5 rotate-12 pointer-events-none"></lucide-icon>
+        </div>
+
+        <!-- Category Grid -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+            @for (cat of categories; track cat.name) {
+            <div class="bg-white border border-[#DADCE0] rounded-xl p-5 hover:border-blue-500 hover:shadow-md transition-all cursor-pointer group">
+                <div [class]="'w-12 h-12 rounded-xl flex items-center justify-center mb-4 transition-transform group-hover:scale-110 ' + cat.bg + ' ' + cat.color">
+                    <lucide-icon [img]="cat.icon" class="w-6 h-6"></lucide-icon>
+                </div>
+                <h4 class="font-bold text-[#202124] group-hover:text-blue-600 transition-colors">{{ cat.name }}</h4>
+                <p class="text-xs text-gray-500 mt-1 leading-relaxed">
+                    {{ 'Learn more about your ' + cat.name.toLowerCase() + ' and more.' }}
+                </p>
+            </div>
+            }
+        </div>
+
+        <!-- Main Content Grid -->
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <!-- FAQ Section -->
+            <div class="lg:col-span-2 space-y-4">
+                <div class="flex items-center justify-between px-2">
+                    <h3 class="text-lg font-bold text-[#202124]">Frequently Asked Questions</h3>
+                    <span class="text-xs font-medium text-gray-400">{{ filteredFaqs.length }} Results</span>
+                </div>
+
+                <div class="space-y-3">
+                    @for (faq of filteredFaqs; track $index) {
+                    <div class="bg-white border border-[#DADCE0] rounded-xl overflow-hidden transition-all duration-300"
+                         [ngClass]="faq.isOpen ? 'ring-2 ring-blue-500/10 border-blue-500/30' : ''">
+                        <button (click)="toggleFaq($index)"
+                                class="w-full px-5 py-4 text-left flex items-center justify-between hover:bg-gray-50/50 transition-colors cursor-pointer group">
+                            <div class="flex items-center gap-3">
+                                <span class="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-gray-100 text-gray-500 group-hover:bg-blue-100 group-hover:text-blue-600 transition-colors">
+                                    {{ faq.category }}
+                                </span>
+                                <span class="font-bold text-[#202124] text-sm">{{ faq.question }}</span>
+                            </div>
+                            <lucide-icon [img]="faq.isOpen ? ChevronUp : ChevronDown" class="w-4 h-4 text-gray-400 group-hover:text-blue-600 transition-colors"></lucide-icon>
+                        </button>
+                        <div class="transition-all duration-300 overflow-hidden"
+                             [style.max-height]="faq.isOpen ? '200px' : '0'">
+                            <div class="px-5 pb-5 text-sm text-gray-500 leading-relaxed border-t border-gray-50 pt-4">
+                                {{ faq.answer }}
+                            </div>
+                        </div>
+                    </div>
+                    } @empty {
+                    <div class="p-10 text-center bg-white border border-dashed border-gray-200 rounded-2xl">
+                        <lucide-icon [img]="Search" class="w-10 h-10 text-gray-300 mx-auto mb-3"></lucide-icon>
+                        <p class="text-sm font-medium text-gray-400">No results found for your search</p>
+                    </div>
+                    }
+                </div>
+            </div>
+
+            <!-- Articles & Guides -->
+            <div class="space-y-4">
+                <h3 class="text-lg font-bold text-[#202124] px-2">Knowledge Base</h3>
+                <div class="bg-white border border-[#DADCE0] rounded-xl p-6 space-y-4">
+                    <div class="flex items-center gap-3 group cursor-pointer pb-4 border-b border-gray-50 last:border-0 last:pb-0">
+                        <div class="w-10 h-10 rounded-lg bg-emerald-50 text-emerald-600 flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
+                            <lucide-icon [img]="FileText" class="w-5 h-5"></lucide-icon>
+                        </div>
+                        <div class="flex-1 min-w-0">
+                            <h5 class="text-sm font-bold text-[#202124] truncate group-hover:text-emerald-600 transition-colors">Digital Health Guide</h5>
+                            <p class="text-[11px] text-gray-400">PDF Guide • 2.4 MB</p>
+                        </div>
+                        <lucide-icon [img]="ExternalLink" class="w-4 h-4 text-gray-300 group-hover:text-emerald-600"></lucide-icon>
+                    </div>
+
+                    <div class="flex items-center gap-3 group cursor-pointer pb-4 border-b border-gray-50 last:border-0 last:pb-0">
+                        <div class="w-10 h-10 rounded-lg bg-amber-50 text-amber-600 flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
+                            <lucide-icon [img]="BookOpen" class="w-5 h-5"></lucide-icon>
+                        </div>
+                        <div class="flex-1 min-w-0">
+                            <h5 class="text-sm font-bold text-[#202124] truncate group-hover:text-amber-600 transition-colors">Patient Portal manual</h5>
+                            <p class="text-[11px] text-gray-400">Online Wiki • Read now</p>
+                        </div>
+                        <lucide-icon [img]="ExternalLink" class="w-4 h-4 text-gray-300 group-hover:text-amber-600"></lucide-icon>
+                    </div>
+
+                    <div class="flex items-center gap-3 group cursor-pointer pb-4 border-b border-gray-50 last:border-0 last:pb-0">
+                        <div class="w-10 h-10 rounded-lg bg-pink-50 text-pink-600 flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
+                            <lucide-icon [img]="HelpCircle" class="w-5 h-5"></lucide-icon>
+                        </div>
+                        <div class="flex-1 min-w-0">
+                            <h5 class="text-sm font-bold text-[#202124] truncate group-hover:text-pink-600 transition-colors">Privacy Information</h5>
+                            <p class="text-[11px] text-gray-400">Last updated Aug 2023</p>
+                        </div>
+                        <lucide-icon [img]="ExternalLink" class="w-4 h-4 text-gray-300 group-hover:text-pink-600"></lucide-icon>
+                    </div>
+
+                    <button class="w-full mt-4 py-3 bg-gray-50 text-gray-700 rounded-xl text-sm font-bold hover:bg-gray-100 transition-colors cursor-pointer active:scale-[0.98]">
+                        Browse All Articles
+                    </button>
+                </div>
+
+                <!-- Support Ticket Banner -->
+                <div class="bg-[#F8F9FA] border-2 border-dashed border-[#DADCE0] rounded-xl p-6 text-center">
+                    <h5 class="text-sm font-bold text-[#202124] mb-2">Can't find your answer?</h5>
+                    <p class="text-xs text-gray-500 mb-4 px-2">Our support specialists are typically online during business hours.</p>
+                    <button class="w-full py-3 bg-white border border-[#DADCE0] text-blue-600 rounded-xl text-sm font-bold hover:shadow-sm hover:border-blue-300 transition-all cursor-pointer active:scale-[0.98]">
+                        Open Support Ticket
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+

@@ -109,11 +109,11 @@ export class SidebarComponent implements OnInit, OnDestroy {
     filteredBottomItems: MenuItem[] = [];
 
     bottomItems: MenuItem[] = [
-        { label: 'Help Center', icon: HelpCircle, roles: ['user'] },
+        { label: 'Help Center', icon: HelpCircle, route: '/dashboard/help-center', roles: ['user'] },
     ];
 
     private userSub?: Subscription;
-    private router = inject(Router);
+    public router = inject(Router);
     private authService = inject(AuthService);
 
     ngOnInit(): void {
