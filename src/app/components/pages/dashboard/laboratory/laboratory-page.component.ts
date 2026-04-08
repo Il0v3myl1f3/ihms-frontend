@@ -1,7 +1,7 @@
 import { Component, OnInit, inject, signal, computed, ChangeDetectionStrategy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { LaboratoryService, Laboratory } from '../../../../services/laboratory.service';
-import { LucideAngularModule, FlaskConical, MapPin, Users, Activity } from 'lucide-angular';
+import { LucideAngularModule, FlaskConical, MapPin, Users, Activity, Search } from 'lucide-angular';
 
 @Component({
   selector: 'app-laboratory-page',
@@ -15,6 +15,7 @@ export class LaboratoryPageComponent implements OnInit {
   readonly MapPin = MapPin;
   readonly Users = Users;
   readonly Activity = Activity;
+  readonly Search = Search;
 
   private labService = inject(LaboratoryService);
   
