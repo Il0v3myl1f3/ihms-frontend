@@ -1,7 +1,7 @@
 import { Component, OnInit, inject, signal, computed, ChangeDetectionStrategy, effect, untracked } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { LaboratoryService, MedicalAnalysis } from '../../../../services/laboratory.service';
-import { LucideAngularModule, Search, ChevronDown, ChevronUp, CalendarPlus, Clock, User, Microscope, Eye } from 'lucide-angular';
+import { LucideAngularModule, Search, ChevronDown, ChevronUp, CalendarPlus, Clock, User, Microscope, Eye, Plus, Trash2, MoreHorizontal } from 'lucide-angular';
 import { AnalysisViewModalComponent } from './analysis-view-modal/analysis-view-modal.component';
 import { FormsModule } from '@angular/forms';
 
@@ -19,6 +19,9 @@ export class ScheduleAnalysisPageComponent implements OnInit {
   readonly ChevronUp = ChevronUp;
   readonly CalendarPlus = CalendarPlus;
   readonly Eye = Eye;
+  readonly Plus = Plus;
+  readonly Trash2 = Trash2;
+  readonly MoreHorizontal = MoreHorizontal;
 
   readonly readOnly = signal(true);
 
@@ -30,6 +33,9 @@ export class ScheduleAnalysisPageComponent implements OnInit {
   // Table State
   searchQuery = signal('');
   statusFilter = signal<string>('All');
+  currentPage = signal(1);
+  pageSize = signal(7);
+  sortColumn = signal<keyof MedicalAnalysis | null>(null);
   sortDirection = signal<'asc' | 'desc'>('asc');
   
   isViewModalOpen = signal(false);
@@ -135,6 +141,11 @@ export class ScheduleAnalysisPageComponent implements OnInit {
     this.isViewModalOpen.set(false);
     this.selectedAnalysis.set(null);
   }
+
+  // Placeholder methods to satisfy template bindings (hidden by @if)
+  deleteSelected() {}
+  openModal() {}
+  closeModal() {}
 
   getStatusBadgeClass(status: string): string {
     switch (status) {

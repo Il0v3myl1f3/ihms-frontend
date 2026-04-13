@@ -1,7 +1,7 @@
 import { Component, input, output } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { LucideAngularModule, X, User, Calendar, Clock, Microscope, MapPin, Info, ClipboardCheck } from 'lucide-angular';
-import { MedicalAnalysis } from '../../../../services/laboratory.service';
+import { MedicalAnalysis } from '../../../../../services/laboratory.service';
 
 @Component({
   selector: 'app-analysis-view-modal',
