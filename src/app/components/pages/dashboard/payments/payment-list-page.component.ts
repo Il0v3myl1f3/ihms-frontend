@@ -43,96 +43,13 @@ export class PaymentListPageComponent {
     isAddPaymentModalOpen = false;
     isPaymentReadOnly = signal(false);
 
-    openAddPaymentModal() {
-        this.selectedPaymentForEdit = null;
-        this.isPaymentReadOnly.set(false);
-        this.isAddPaymentModalOpen = true;
-    }
-
-    closeAddPaymentModal() {
-        this.isAddPaymentModalOpen = false;
-    }
-
-    onEditPayment(payment: Payment) {
-        this.selectedPaymentForEdit = payment;
-        this.isPaymentReadOnly.set(false);
-        this.isAddPaymentModalOpen = true;
-    }
-
     onViewPayment(payment: Payment) {
         this.selectedPaymentForEdit = payment;
         this.isPaymentReadOnly.set(true);
         this.isAddPaymentModalOpen = true;
     }
 
-    onDeletePayment(payment: Payment) {
-        this.payments = this.payments.filter(p => p.id !== payment.id);
-
-        this.payments = this.payments.map((p, index) => ({
-            ...p,
-            no: index + 1
-        }));
-
-        if (this.paymentTable) {
-            const totalPages = this.paymentTable.totalPages();
-            if (this.paymentTable.currentPage() > totalPages && totalPages > 0) {
-                this.paymentTable.currentPage.set(totalPages);
-            } else if (totalPages === 0) {
-                this.paymentTable.currentPage.set(1);
-            }
-        }
-    }
-
-    onDeleteSelectedPayments(selectedPayments: Payment[]) {
-        const selectedIds = new Set(selectedPayments.map(p => p.id));
-        this.payments = this.payments.filter(p => !selectedIds.has(p.id));
-
-        this.payments = this.payments.map((p, index) => ({
-            ...p,
-            no: index + 1
-        }));
-
-        if (this.paymentTable) {
-            const totalPages = this.paymentTable.totalPages();
-            if (this.paymentTable.currentPage() > totalPages && totalPages > 0) {
-                this.paymentTable.currentPage.set(totalPages);
-            } else if (totalPages === 0) {
-                this.paymentTable.currentPage.set(1);
-            }
-        }
-    }
-
-    onPaymentSaved(paymentData: Record<string, string>) {
-        if (this.selectedPaymentForEdit) {
-            const index = this.payments.findIndex(p => p.id === this.selectedPaymentForEdit!.id);
-            if (index !== -1) {
-                const updatedPayments = [...this.payments];
-                updatedPayments[index] = { ...updatedPayments[index], ...paymentData };
-                this.payments = updatedPayments;
-            }
-        } else {
-            const newId = this.payments.length > 0 ? Math.max(...this.payments.map(p => p.id)) + 1 : 1;
-            const newNo = this.payments.length > 0 ? Math.max(...this.payments.map(p => p.no)) + 1 : 1;
-            const newPayment: Payment = {
-                id: newId,
-                no: newNo,
-                invoiceNumber: paymentData['invoiceNumber'],
-                patientName: paymentData['patientName'],
-                amount: Number(paymentData['amount']),
-                date: paymentData['date'],
-                method: paymentData['method'] as Payment['method'],
-                status: paymentData['status'] as Payment['status'],
-                selected: false
-            };
-            this.payments = [...this.payments, newPayment];
-        }
-
+    closeAddPaymentModal() {
         this.isAddPaymentModalOpen = false;
-
-        if (this.paymentTable) {
-            if (!this.selectedPaymentForEdit) {
-                this.paymentTable.goToPage(this.paymentTable.totalPages());
-            }
-        }
     }
 }
