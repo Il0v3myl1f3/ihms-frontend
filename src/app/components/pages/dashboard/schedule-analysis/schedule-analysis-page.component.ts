@@ -1,12 +1,13 @@
 import { Component, OnInit, inject, signal, computed, ChangeDetectionStrategy, effect, untracked } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { LaboratoryService, MedicalAnalysis } from '../../../../services/laboratory.service';
-import { LucideAngularModule, Search, ChevronDown, ChevronUp, Plus, Trash2, MoreHorizontal, CalendarPlus, Clock, User, Microscope } from 'lucide-angular';
+import { LucideAngularModule, Search, ChevronDown, ChevronUp, CalendarPlus, Clock, User, Microscope, Eye } from 'lucide-angular';
+import { AnalysisViewModalComponent } from './analysis-view-modal/analysis-view-modal.component';
 import { FormsModule } from '@angular/forms';
 
 @Component({
   selector: 'app-schedule-analysis-page',
-  imports: [CommonModule, LucideAngularModule, FormsModule],
+  imports: [CommonModule, LucideAngularModule, FormsModule, AnalysisViewModalComponent],
   templateUrl: './schedule-analysis-page.component.html',
   styleUrls: ['./schedule-analysis-page.component.css'],
   changeDetection: ChangeDetectionStrategy.OnPush
@@ -16,10 +17,10 @@ export class ScheduleAnalysisPageComponent implements OnInit {
   readonly Search = Search;
   readonly ChevronDown = ChevronDown;
   readonly ChevronUp = ChevronUp;
-  readonly Plus = Plus;
-  readonly Trash2 = Trash2;
-  readonly MoreHorizontal = MoreHorizontal;
   readonly CalendarPlus = CalendarPlus;
+  readonly Eye = Eye;
+
+  readonly readOnly = signal(true);
 
   private labService = inject(LaboratoryService);
   
@@ -29,10 +30,10 @@ export class ScheduleAnalysisPageComponent implements OnInit {
   // Table State
   searchQuery = signal('');
   statusFilter = signal<string>('All');
-  currentPage = signal(1);
-  pageSize = signal(7);
-  sortColumn = signal<keyof MedicalAnalysis | null>(null);
   sortDirection = signal<'asc' | 'desc'>('asc');
+  
+  isViewModalOpen = signal(false);
+  selectedAnalysis = signal<MedicalAnalysis | null>(null);
   
   // Selection
   selectedCount = computed(() => this.items().filter(i => i.selected).length);
@@ -125,14 +126,15 @@ export class ScheduleAnalysisPageComponent implements OnInit {
     ));
   }
 
-  deleteSelected() {
-    this.items.update(items => items.filter(i => !i.selected));
+  onView(analysis: MedicalAnalysis) {
+    this.selectedAnalysis.set(analysis);
+    this.isViewModalOpen.set(true);
   }
 
-  // Modals (Placeholders for now)
-  isModalOpen = signal(false);
-  openModal() { this.isModalOpen.set(true); }
-  closeModal() { this.isModalOpen.set(false); }
+  onCloseViewModal() {
+    this.isViewModalOpen.set(false);
+    this.selectedAnalysis.set(null);
+  }
 
   getStatusBadgeClass(status: string): string {
     switch (status) {
