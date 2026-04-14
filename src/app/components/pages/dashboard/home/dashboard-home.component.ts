@@ -64,21 +64,22 @@ export class DashboardHomeComponent implements OnInit {
         { name: 'Financials', link: '/dashboard/payments', icon: CreditCard, status: 'Stable', color: 'emerald' },
     ];
 
-    // Data for non-admin dashboards
-    upcomingAppointment = {
-        day: '22',
-        month: 'Mar',
-        title: 'General Checkup',
-        time: '10:00 AM — 10:30 AM',
-        doctorName: 'Dr. Mia Kensington',
-        cabinet: 'Cabinet 3, Floor 2'
+    // Real-time data for non-admin dashboards
+    doctorData = {
+        myPatients: 0,
+        todayAppointments: 0,
+        todaySchedule: [] as any[],
+        recentPatients: [] as any[]
     };
 
-    activePrescriptions = [
-        { name: 'Lisinopril', dosage: '10mg · Once daily', doctor: 'Dr. Benjamin Carter' },
-        { name: 'Metformin', dosage: '850mg · 2x/day', doctor: 'Dr. Elijah Stone' },
-        { name: 'Omeprazole', dosage: '20mg · Once daily', doctor: 'Dr. Clara Whitmore' },
-    ];
+    patientData = {
+        upcoming: null as any,
+        prescriptions: [] as any[]
+    };
+
+    // Data for non-admin dashboards (Legacy placeholders, will be shadowed by dynamic data)
+    upcomingAppointment: any = null;
+    activePrescriptions: any[] = [];
 
     ngOnInit(): void {
         this.currentUser$ = this.authService.currentUser$;
@@ -100,6 +101,49 @@ export class DashboardHomeComponent implements OnInit {
         this.laboratoryService.getAnalyses().subscribe(ans => {
             this.stats.pendingTests = ans.filter(a => a.status === 'Scheduled' || a.status === 'InProgress').length;
             this.stats.completedTests = ans.filter(a => a.status === 'Completed').length;
+        });
+
+        // Load Role-Specific Reality
+        this.appointmentService.getAppointments().subscribe(apps => {
+            if (this.currentUser?.role === 'doctor') {
+                const myApps = apps.filter(a => a.doctorName === this.currentUser?.name);
+                this.doctorData.todayAppointments = myApps.length;
+                this.doctorData.myPatients = new Set(myApps.map(a => a.patientName)).size;
+                this.doctorData.todaySchedule = myApps.slice(0, 3).map(a => ({
+                    time: '09:00', // Mock time
+                    period: 'AM',
+                    title: a.notes.split('.')[0],
+                    patient: a.patientName,
+                    status: a.status
+                }));
+                this.doctorData.recentPatients = [...new Set(myApps.map(a => a.patientName))].slice(0, 3).map(name => ({
+                    name,
+                    specialty: 'General Medicine',
+                    time: 'Today'
+                }));
+            }
+
+            if (this.currentUser?.role === 'user') {
+                const myApps = apps.filter(a => a.patientName === this.currentUser?.name);
+                if (myApps.length > 0) {
+                    const next = myApps[0]; // Simplistic "next"
+                    const dateParts = next.appointmentDate.split(' ');
+                    this.upcomingAppointment = {
+                        day: dateParts[1]?.replace(',', '') || '10',
+                        month: dateParts[0]?.substring(0, 3) || 'Jan',
+                        title: next.notes.split('.')[0] || 'Medical Consultation',
+                        time: '10:00 AM — 10:30 AM',
+                        doctorName: next.doctorName,
+                        cabinet: 'Cabinet 3, Floor 2'
+                    };
+                }
+                
+                // Active Prescriptions (Still mock until service exists, but linked to patient context)
+                this.activePrescriptions = [
+                    { name: 'Lisinopril', dosage: '10mg · Once daily', doctor: 'Dr. Benjamin Carter' },
+                    { name: 'Metformin', dosage: '850mg · 2x/day', doctor: 'Dr. Elijah Stone' },
+                ];
+            }
         });
     }
 
