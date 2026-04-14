@@ -39,7 +39,8 @@
           Decommission ({{selectedCount()}})
         </button>
         }
-        <button class="bg-[#1F2B6C] hover:bg-[#151D4A] text-white px-5 py-2.5 rounded-lg text-sm font-medium shadow-sm flex items-center gap-2 transition-all active:scale-95">
+        <button (click)="openAddModal()"
+                class="bg-[#1F2B6C] hover:bg-[#151D4A] text-white px-5 py-2.5 rounded-lg text-sm font-medium shadow-sm flex items-center gap-2 transition-all active:scale-95">
           <lucide-icon [img]="Plus" class="w-4 h-4"></lucide-icon>
           Add Asset
         </button>
@@ -395,6 +396,81 @@
     <button (click)="saveEdit()"
             class="bg-[#159EEC] hover:bg-[#1282C4] text-white px-8 py-2 rounded-lg text-sm font-bold shadow-lg shadow-blue-200 transition-all active:scale-95">
       Save Changes
+    </button>
+  </div>
+</app-modal>
+
+<app-modal [isOpen]="isAddModalOpen()" title="Add New Asset" (close)="closeAddModal()">
+  <div modal-body>
+    @if (newItem()) {
+      @let data = newItem()!;
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+        <!-- Name -->
+        <div class="md:col-span-2">
+          <label class="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Equipment Name</label>
+          <input type="text" [(ngModel)]="data.name" placeholder="Enter equipment name..."
+                 class="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:ring-2 focus:ring-[#159EEC]/20 focus:border-[#159EEC] outline-none transition-all">
+        </div>
+
+        <!-- Laboratory -->
+        <div>
+          <label class="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Laboratory</label>
+          <select [(ngModel)]="data.labId"
+                  class="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:ring-2 focus:ring-[#159EEC]/20 focus:border-[#159EEC] outline-none transition-all appearance-none">
+            <option [value]="undefined" disabled>Select Laboratory</option>
+            @for (lab of availableLabs(); track lab.id) {
+              <option [value]="lab.id">{{ lab.name }}</option>
+            }
+          </select>
+        </div>
+
+        <!-- Type -->
+        <div>
+          <label class="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Type</label>
+          <input type="text" [(ngModel)]="data.type" placeholder="e.g., Microscope, Analyzer..."
+                 class="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:ring-2 focus:ring-[#159EEC]/20 focus:border-[#159EEC] outline-none transition-all">
+        </div>
+
+        <!-- Status -->
+        <div>
+          <label class="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Status</label>
+          <select [(ngModel)]="data.status"
+                  class="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:ring-2 focus:ring-[#159EEC]/20 focus:border-[#159EEC] outline-none transition-all appearance-none">
+            <option value="Operational">Operational</option>
+            <option value="Under Maintenance">Under Maintenance</option>
+            <option value="Out of Service">Out of Service</option>
+          </select>
+        </div>
+
+        <div class="hidden md:block"></div>
+
+        <!-- Last Maintenance -->
+        <div>
+          <label class="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Last Maintenance</label>
+          <input type="date" [(ngModel)]="data.lastMaintenanceDate"
+                 class="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:ring-2 focus:ring-[#159EEC]/20 focus:border-[#159EEC] outline-none transition-all">
+        </div>
+
+        <!-- Next Maintenance -->
+        <div>
+          <label class="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Next Maintenance</label>
+          <input type="date" [(ngModel)]="data.nextMaintenanceDate"
+                 class="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:ring-2 focus:ring-[#159EEC]/20 focus:border-[#159EEC] outline-none transition-all">
+        </div>
+      </div>
+    }
+  </div>
+  <div modal-footer>
+    <button (click)="closeAddModal()"
+            class="px-6 py-2 rounded-lg text-sm font-medium text-gray-500 hover:bg-gray-100 transition-all">
+      Cancel
+    </button>
+    <button (click)="saveAdd()"
+            [disabled]="!newItem().name || !newItem().labId || !newItem().type"
+            [class.opacity-50]="!newItem().name || !newItem().labId || !newItem().type"
+            [class.cursor-not-allowed]="!newItem().name || !newItem().labId || !newItem().type"
+            class="bg-[#1F2B6C] hover:bg-[#151D4A] text-white px-8 py-2 rounded-lg text-sm font-bold shadow-lg transition-all active:scale-95">
+      Add Asset
     </button>
   </div>
 </app-modal>

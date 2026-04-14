@@ -50,6 +50,10 @@ export class LabEquipmentPageComponent implements OnInit {
   selectedItemForEdit = signal<LabEquipment | null>(null);
   availableLabs = signal<any[]>([]);
 
+  // Add Asset state
+  isAddModalOpen = signal(false);
+  newItem = signal<Partial<LabEquipment>>({});
+
   viewDetails(item: LabEquipment): void {
     this.selectedItemForDetails.set(item);
     this.isDetailsModalOpen.set(true);
@@ -71,6 +75,51 @@ export class LabEquipmentPageComponent implements OnInit {
   closeEditModal(): void {
     this.isEditModalOpen.set(false);
     setTimeout(() => this.selectedItemForEdit.set(null), 300);
+  }
+
+  openAddModal(): void {
+    const today = new Date().toISOString().split('T')[0];
+    const nextSixMonths = new Date(new Date().setMonth(new Date().getMonth() + 6)).toISOString().split('T')[0];
+
+    this.newItem.set({
+      name: '',
+      type: '',
+      status: 'Operational',
+      labId: this.availableLabs()[0]?.id,
+      lastMaintenanceDate: today,
+      nextMaintenanceDate: nextSixMonths
+    });
+    this.isAddModalOpen.set(true);
+  }
+
+  closeAddModal(): void {
+    this.isAddModalOpen.set(false);
+  }
+
+  saveAdd(): void {
+    const data = this.newItem();
+    if (data.name && data.labId && data.type) {
+      const selectedLab = this.availableLabs().find(l => l.id === Number(data.labId));
+      const currentItems = this.items();
+      const maxId = currentItems.length > 0 ? Math.max(...currentItems.map(i => i.id)) : 0;
+      const maxNo = currentItems.length > 0 ? Math.max(...currentItems.map(i => i.no)) : 0;
+
+      const fullNewItem: LabEquipment = {
+        id: maxId + 1,
+        no: maxNo + 1,
+        name: data.name,
+        labId: Number(data.labId),
+        labName: selectedLab?.name || 'Unknown Lab',
+        type: data.type,
+        status: (data.status as any) || 'Operational',
+        lastMaintenanceDate: data.lastMaintenanceDate || '',
+        nextMaintenanceDate: data.nextMaintenanceDate || '',
+        selected: false
+      };
+
+      this.items.update(prev => [fullNewItem, ...prev]);
+      this.closeAddModal();
+    }
   }
 
   saveEdit(): void {
