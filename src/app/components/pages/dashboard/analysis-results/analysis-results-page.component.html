@@ -21,14 +21,37 @@
                  (input)="searchQuery.set($any($event.target).value)"
                  class="block w-full pl-9 pr-3 py-2 border border-gray-200 rounded-lg text-sm placeholder-gray-400 bg-gray-50/20 focus:ring-1 focus:ring-[#159EEC] focus:border-[#159EEC]">
         </div>
-        
-        <select (change)="statusFilter.set($any($event.target).value)" 
-                class="w-full sm:w-40 px-3 py-2 border border-gray-200 rounded-lg text-sm text-gray-500 bg-white cursor-pointer focus:ring-1 focus:ring-[#159EEC]">
-          <option value="All">All Results</option>
-          <option value="Normal">Normal</option>
-          <option value="Abnormal">Abnormal</option>
-          <option value="Critical">Critical</option>
-        </select>
+
+        <div class="relative">
+          <button (click)="toggleFilterMenu($event)"
+                  class="flex items-center gap-2 px-4 py-2 border border-gray-200 rounded-lg text-sm text-gray-500 hover:bg-gray-50 transition-colors bg-white shadow-[0_1px_2px_rgba(0,0,0,0.02)] min-w-[140px]"
+                  [class.ring-1]="activeFilterMenu()"
+                  [class.ring-[#159EEC]]="activeFilterMenu()">
+            <lucide-icon [img]="Filter" class="w-3.5 h-3.5 text-gray-400"></lucide-icon>
+            <span class="flex-1 text-left">
+              {{ statusFilter() === 'All' ? 'All Results' : statusFilter() }}
+            </span>
+            <lucide-icon [img]="ChevronDown" class="w-3.5 h-3.5 text-gray-400 ml-1 transition-transform duration-200"
+                        [class.rotate-180]="activeFilterMenu()"></lucide-icon>
+          </button>
+
+          @if (activeFilterMenu()) {
+          <div class="absolute top-full mt-1 left-0 z-50 w-44 bg-white border border-gray-100 rounded-lg shadow-lg py-1 overflow-hidden">
+            <button (click)="setFilter('All')"
+                    class="w-full text-left px-4 py-2 text-sm transition-colors hover:bg-gray-50"
+                    [class.bg-blue-50]="statusFilter() === 'All'" [class.text-blue-700]="statusFilter() === 'All'">
+              All Results
+            </button>
+            @for (status of ['Normal', 'Abnormal', 'Critical']; track status) {
+            <button (click)="setFilter(status)"
+                    class="w-full text-left px-4 py-2 text-sm transition-colors hover:bg-gray-50"
+                    [class.bg-blue-50]="statusFilter() === status" [class.text-blue-700]="statusFilter() === status">
+              {{ status }}
+            </button>
+            }
+          </div>
+          }
+        </div>
       </div>
 
       <button class="bg-white hover:bg-gray-50 text-gray-700 px-5 py-2.5 rounded-lg text-sm font-medium border border-gray-200 shadow-sm flex items-center gap-2 transition-all">
@@ -46,7 +69,7 @@
             <th (click)="toggleSort('patientName')" class="px-4 py-4 text-sm font-normal text-gray-600 whitespace-nowrap overflow-hidden w-[18%] border-r border-b border-gray-200 max-lg:px-2 max-lg:text-[13px] max-lg:overflow-visible cursor-pointer hover:text-[#1F2B6C] group">
               <div class="flex items-center gap-1">
                 Patient
-                <lucide-icon [img]="sortColumn() === 'patientName' ? (sortDirection() === 'asc' ? ChevronUp : ChevronDown) : ChevronDown" 
+                <lucide-icon [img]="sortColumn() === 'patientName' ? (sortDirection() === 'asc' ? ChevronUp : ChevronDown) : ChevronDown"
                             [class]="sortColumn() === 'patientName' ? 'text-[#1F2B6C]' : 'text-gray-300 group-hover:text-gray-400'"
                             class="w-3 h-3"></lucide-icon>
               </div>
@@ -54,7 +77,7 @@
             <th (click)="toggleSort('analysisType')" class="px-4 py-4 text-sm font-normal text-gray-600 whitespace-nowrap overflow-hidden w-[18%] border-r border-b border-gray-200 max-lg:px-2 max-lg:text-[13px] max-lg:overflow-visible cursor-pointer hover:text-[#1F2B6C] group">
               <div class="flex items-center gap-1">
                 Analysis Type
-                <lucide-icon [img]="sortColumn() === 'analysisType' ? (sortDirection() === 'asc' ? ChevronUp : ChevronDown) : ChevronDown" 
+                <lucide-icon [img]="sortColumn() === 'analysisType' ? (sortDirection() === 'asc' ? ChevronUp : ChevronDown) : ChevronDown"
                             [class]="sortColumn() === 'analysisType' ? 'text-[#1F2B6C]' : 'text-gray-300 group-hover:text-gray-400'"
                             class="w-3 h-3"></lucide-icon>
               </div>
@@ -62,7 +85,7 @@
             <th (click)="toggleSort('resultDate')" class="px-4 py-4 text-sm font-normal text-gray-600 whitespace-nowrap overflow-hidden w-[14%] border-r border-b border-gray-200 max-lg:px-2 max-lg:text-[13px] max-lg:overflow-visible cursor-pointer hover:text-[#1F2B6C] group">
               <div class="flex items-center gap-1">
                 Processed Date
-                <lucide-icon [img]="sortColumn() === 'resultDate' ? (sortDirection() === 'asc' ? ChevronUp : ChevronDown) : ChevronDown" 
+                <lucide-icon [img]="sortColumn() === 'resultDate' ? (sortDirection() === 'asc' ? ChevronUp : ChevronDown) : ChevronDown"
                             [class]="sortColumn() === 'resultDate' ? 'text-[#1F2B6C]' : 'text-gray-300 group-hover:text-gray-400'"
                             class="w-3 h-3"></lucide-icon>
               </div>
@@ -72,7 +95,7 @@
             <th (click)="toggleSort('status')" class="px-4 py-4 text-sm font-normal text-gray-600 whitespace-nowrap overflow-hidden w-[10%] border-r border-b border-gray-200 max-lg:px-2 max-lg:text-[13px] max-lg:overflow-visible cursor-pointer hover:text-[#1F2B6C] group">
               <div class="flex items-center gap-1">
                 Status
-                <lucide-icon [img]="sortColumn() === 'status' ? (sortDirection() === 'asc' ? ChevronUp : ChevronDown) : ChevronDown" 
+                <lucide-icon [img]="sortColumn() === 'status' ? (sortDirection() === 'asc' ? ChevronUp : ChevronDown) : ChevronDown"
                             [class]="sortColumn() === 'status' ? 'text-[#1F2B6C]' : 'text-gray-300 group-hover:text-gray-400'"
                             class="w-3 h-3"></lucide-icon>
               </div>
@@ -197,8 +220,8 @@
 
 <!-- Report Detail Modal -->
 @if (isReportModalOpen()) {
-<app-modal [isOpen]="isReportModalOpen()" 
-    title="Analysis Report" 
+<app-modal [isOpen]="isReportModalOpen()"
+    title="Analysis Report"
     (close)="closeReport()">
 
     <div modal-body>

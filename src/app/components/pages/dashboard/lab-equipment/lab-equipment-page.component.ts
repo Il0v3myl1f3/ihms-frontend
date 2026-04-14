@@ -1,7 +1,7 @@
 import { Component, OnInit, inject, signal, computed, ChangeDetectionStrategy, effect, untracked, HostListener } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { LaboratoryService, LabEquipment } from '../../../../services/laboratory.service';
-import { LucideAngularModule, Search, ChevronDown, ChevronUp, Microscope, MoreHorizontal, Plus, Trash2, Edit2, Settings, Eye, ChevronLeft, ChevronRight, Calendar, MapPin, Tag, Activity } from 'lucide-angular';
+import { LucideAngularModule, Search, ChevronDown, ChevronUp, Microscope, MoreHorizontal, Plus, Trash2, Edit2, Settings, Eye, ChevronLeft, ChevronRight, Calendar, MapPin, Tag, Activity, Filter } from 'lucide-angular';
 import { FormsModule } from '@angular/forms';
 import { ModalComponent } from '../../../shared/modal/modal.component';
 
@@ -36,6 +36,7 @@ export class LabEquipmentPageComponent implements OnInit {
   readonly MapPin = MapPin;
   readonly Tag = Tag;
   readonly Activity = Activity;
+  readonly Filter = Filter;
 
   // Dropdown state
   activeItem: LabEquipment | null = null;
@@ -53,6 +54,12 @@ export class LabEquipmentPageComponent implements OnInit {
   // Add Asset state
   isAddModalOpen = signal(false);
   newItem = signal<Partial<LabEquipment>>({});
+
+  // Modal Dropdown signals
+  activeEditLabDropdown = signal(false);
+  activeEditStatusDropdown = signal(false);
+  activeAddLabDropdown = signal(false);
+  activeAddStatusDropdown = signal(false);
 
   viewDetails(item: LabEquipment): void {
     this.selectedItemForDetails.set(item);
@@ -81,11 +88,13 @@ export class LabEquipmentPageComponent implements OnInit {
     const today = new Date().toISOString().split('T')[0];
     const nextSixMonths = new Date(new Date().setMonth(new Date().getMonth() + 6)).toISOString().split('T')[0];
 
+    const firstLab = this.availableLabs()[0];
     this.newItem.set({
       name: '',
       type: '',
       status: 'Operational',
-      labId: this.availableLabs()[0]?.id,
+      labId: firstLab?.id,
+      labName: firstLab?.name,
       lastMaintenanceDate: today,
       nextMaintenanceDate: nextSixMonths
     });
@@ -139,6 +148,42 @@ export class LabEquipmentPageComponent implements OnInit {
     }
   }
 
+  toggleModalDropdown(type: string, event: Event): void {
+    event.stopPropagation();
+    switch (type) {
+      case 'editLab': this.activeEditLabDropdown.set(!this.activeEditLabDropdown()); break;
+      case 'editStatus': this.activeEditStatusDropdown.set(!this.activeEditStatusDropdown()); break;
+      case 'addLab': this.activeAddLabDropdown.set(!this.activeAddLabDropdown()); break;
+      case 'addStatus': this.activeAddStatusDropdown.set(!this.activeAddStatusDropdown()); break;
+    }
+  }
+
+  selectLab(lab: any, isEdit: boolean): void {
+    if (isEdit) {
+      const current = this.selectedItemForEdit();
+      if (current) {
+        this.selectedItemForEdit.set({ ...current, labId: lab.id, labName: lab.name });
+      }
+      this.activeEditLabDropdown.set(false);
+    } else {
+      this.newItem.update(prev => ({ ...prev, labId: lab.id, labName: lab.name }));
+      this.activeAddLabDropdown.set(false);
+    }
+  }
+
+  selectStatus(status: string, isEdit: boolean): void {
+    if (isEdit) {
+      const current = this.selectedItemForEdit();
+      if (current) {
+        this.selectedItemForEdit.set({ ...current, status: status as any });
+      }
+      this.activeEditStatusDropdown.set(false);
+    } else {
+      this.newItem.update(prev => ({ ...prev, status: status as any }));
+      this.activeAddStatusDropdown.set(false);
+    }
+  }
+
   toggleDropdown(item: LabEquipment, event: Event): void {
     event.stopPropagation();
     if (this.activeItem?.id === item.id) {
@@ -152,6 +197,11 @@ export class LabEquipmentPageComponent implements OnInit {
 
   closeDropdown(): void {
     this.activeItem = null;
+    this.activeFilterMenu.set(false);
+    this.activeEditLabDropdown.set(false);
+    this.activeEditStatusDropdown.set(false);
+    this.activeAddLabDropdown.set(false);
+    this.activeAddStatusDropdown.set(false);
   }
 
   @HostListener('window:scroll')
@@ -172,6 +222,20 @@ export class LabEquipmentPageComponent implements OnInit {
   sortColumn = signal<keyof LabEquipment | null>(null);
   sortDirection = signal<'asc' | 'desc'>('asc');
   isPageSizeMenuOpen = false;
+
+  // Dropdown state
+  activeFilterMenu = signal<boolean>(false);
+
+  toggleFilterMenu(event: Event): void {
+    event.stopPropagation();
+    this.activeFilterMenu.set(!this.activeFilterMenu());
+  }
+
+  setFilter(value: string): void {
+    this.statusFilter.set(value);
+    this.activeFilterMenu.set(false);
+    this.currentPage.set(1);
+  }
 
   togglePageSizeMenu(event: Event): void {
     event.stopPropagation();
@@ -308,3 +372,5 @@ export class LabEquipmentPageComponent implements OnInit {
     }
   }
 }
+
+
