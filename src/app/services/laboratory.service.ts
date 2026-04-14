@@ -9,6 +9,10 @@ export interface Laboratory {
     status: 'Available' | 'Occupied' | 'Maintenance';
     equipmentCount: number;
     capacity: number;
+    head: string;
+    phone: string;
+    operatingHours: string;
+    description: string;
 }
 
 export interface MedicalAnalysis {
@@ -56,11 +60,31 @@ export interface LabEquipment {
 })
 export class LaboratoryService {
     private labs: Laboratory[] = [
-        { id: 1, no: 1, name: 'Hematology Lab', location: 'Floor 1, Wing A', status: 'Available', equipmentCount: 12, capacity: 5 },
-        { id: 2, no: 2, name: 'Biochemistry Lab', location: 'Floor 1, Wing B', status: 'Occupied', equipmentCount: 15, capacity: 8 },
-        { id: 3, no: 3, name: 'Microbiology Lab', location: 'Floor 2, Wing A', status: 'Available', equipmentCount: 10, capacity: 4 },
-        { id: 4, no: 4, name: 'Genetics Lab', location: 'Floor 2, Wing C', status: 'Maintenance', equipmentCount: 8, capacity: 3 },
-        { id: 5, no: 5, name: 'Pathology Lab', location: 'Floor 3, Wing B', status: 'Available', equipmentCount: 20, capacity: 10 }
+        { 
+            id: 1, no: 1, name: 'Hematology Lab', location: 'Floor 1, Wing A', status: 'Available', 
+            equipmentCount: 12, capacity: 5, head: 'Dr. Sarah Peterson', phone: '+1 (555) 101-2030', 
+            operatingHours: '08:00 AM - 06:00 PM', description: 'Specialized in blood-related disorders, CBC, and bone marrow analysis.' 
+        },
+        { 
+            id: 2, no: 2, name: 'Biochemistry Lab', location: 'Floor 1, Wing B', status: 'Occupied', 
+            equipmentCount: 15, capacity: 8, head: 'Dr. Julian Ross', phone: '+1 (555) 101-2045', 
+            operatingHours: '24/7', description: 'Chemical process analysis in biological systems, including liver and kidney function tests.' 
+        },
+        { 
+            id: 3, no: 3, name: 'Microbiology Lab', location: 'Floor 2, Wing A', status: 'Available', 
+            equipmentCount: 10, capacity: 4, head: 'Dr. Elena Vance', phone: '+1 (555) 101-2051', 
+            operatingHours: '09:00 AM - 05:00 PM', description: 'Study of pathogenic microorganisms including bacteria, viruses, and fungi.' 
+        },
+        { 
+            id: 4, no: 4, name: 'Genetics Lab', location: 'Floor 2, Wing C', status: 'Maintenance', 
+            equipmentCount: 8, capacity: 3, head: 'Dr. Isaac Kleiner', phone: '+1 (555) 101-2062', 
+            operatingHours: '08:00 AM - 04:00 PM', description: 'Molecular testing, DNA sequencing, and profiling for hereditary conditions.' 
+        },
+        { 
+            id: 5, no: 5, name: 'Pathology Lab', location: 'Floor 3, Wing B', status: 'Available', 
+            equipmentCount: 20, capacity: 10, head: 'Dr. Judith Mossman', phone: '+1 (555) 101-2070', 
+            operatingHours: '08:00 AM - 08:00 PM', description: 'Examination of organs, tissues, and bodily fluids for disease diagnosis.' 
+        }
     ];
 
     private analyses: MedicalAnalysis[] = [

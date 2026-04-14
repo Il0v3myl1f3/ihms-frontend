@@ -2,10 +2,11 @@ import { Component, OnInit, inject, signal, computed, ChangeDetectionStrategy } 
 import { CommonModule } from '@angular/common';
 import { LaboratoryService, Laboratory } from '../../../../services/laboratory.service';
 import { LucideAngularModule, FlaskConical, MapPin, Users, Activity, Search } from 'lucide-angular';
+import { LaboratoryViewModalComponent } from './laboratory-view-modal/laboratory-view-modal.component';
 
 @Component({
   selector: 'app-laboratory-page',
-  imports: [CommonModule, LucideAngularModule],
+  imports: [CommonModule, LucideAngularModule, LaboratoryViewModalComponent],
   templateUrl: './laboratory-page.component.html',
   styleUrls: ['./laboratory-page.component.css'],
   changeDetection: ChangeDetectionStrategy.OnPush
@@ -22,6 +23,9 @@ export class LaboratoryPageComponent implements OnInit {
   labs = signal<Laboratory[]>([]);
   searchQuery = signal('');
   statusFilter = signal<string>('All');
+  
+  isDetailsModalOpen = signal(false);
+  selectedLab = signal<Laboratory | null>(null);
 
   filteredLabs = computed(() => {
     const query = this.searchQuery().toLowerCase().trim();
@@ -57,5 +61,15 @@ export class LaboratoryPageComponent implements OnInit {
       case 'Maintenance': return 'bg-red-500';
       default: return 'bg-gray-500';
     }
+  }
+
+  onViewDetails(lab: Laboratory): void {
+    this.selectedLab.set(lab);
+    this.isDetailsModalOpen.set(true);
+  }
+
+  onCloseModal(): void {
+    this.isDetailsModalOpen.set(false);
+    this.selectedLab.set(null);
   }
 }

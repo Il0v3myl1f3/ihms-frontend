@@ -33,18 +33,20 @@
       </div>
 
       <div class="flex items-center gap-3">
-        @if (selectedCount() > 0) {
-        <button (click)="deleteSelected()"
-                class="bg-red-50 hover:bg-red-100 text-red-600 px-4 py-2.5 rounded-lg text-sm font-medium border border-red-200 flex items-center gap-2 transition-colors">
-          <lucide-icon [img]="Trash2" class="w-4 h-4"></lucide-icon>
-          Delete Selected ({{selectedCount()}})
-        </button>
+        @if (!readOnly()) {
+          @if (selectedCount() > 0) {
+          <button (click)="deleteSelected()"
+                  class="bg-red-50 hover:bg-red-100 text-red-600 px-4 py-2.5 rounded-lg text-sm font-medium border border-red-200 flex items-center gap-2 transition-colors">
+            <lucide-icon [img]="Trash2" class="w-4 h-4"></lucide-icon>
+            Delete Selected ({{selectedCount()}})
+          </button>
+          }
+          <button (click)="openModal()"
+                  class="bg-[#1F2B6C] hover:bg-[#151D4A] text-white px-5 py-2.5 rounded-lg text-sm font-medium shadow-sm flex items-center gap-2 transition-all active:scale-95">
+            <lucide-icon [img]="Plus" class="w-4 h-4"></lucide-icon>
+            Schedule New
+          </button>
         }
-        <button (click)="openModal()"
-                class="bg-[#1F2B6C] hover:bg-[#151D4A] text-white px-5 py-2.5 rounded-lg text-sm font-medium shadow-sm flex items-center gap-2 transition-all active:scale-95">
-          <lucide-icon [img]="Plus" class="w-4 h-4"></lucide-icon>
-          Schedule New
-        </button>
       </div>
     </div>
 
@@ -55,10 +57,12 @@
           <tr>
             <th class="px-4 py-4 text-left w-[60px]">
               <div class="flex items-center gap-3">
-                <input type="checkbox" 
-                       [checked]="allSelected()" 
-                       (change)="toggleSelectAll()"
-                       class="w-3.5 h-3.5 rounded border-gray-100 text-[#159EEC] focus:ring-0 cursor-pointer">
+                @if (!readOnly()) {
+                  <input type="checkbox" 
+                         [checked]="allSelected()" 
+                         (change)="toggleSelectAll()"
+                         class="w-3.5 h-3.5 rounded border-gray-100 text-[#159EEC] focus:ring-0 cursor-pointer">
+                }
                 <span class="text-xs font-semibold text-gray-400 uppercase tracking-wider">No</span>
               </div>
             </th>
@@ -110,10 +114,12 @@
           <tr class="hover:bg-gray-50/30 group transition-colors border-b border-gray-200 last:border-0 hover:z-1">
             <td class="px-4 py-4 border-r border-gray-200">
               <div class="flex items-center gap-3">
-                <input type="checkbox" 
-                       [checked]="item.selected" 
-                       (change)="toggleSelectItem(item.id)"
-                       class="w-3.5 h-3.5 rounded border-gray-100 text-[#159EEC] focus:ring-0 cursor-pointer">
+                @if (!readOnly()) {
+                  <input type="checkbox" 
+                         [checked]="item.selected" 
+                         (change)="toggleSelectItem(item.id)"
+                         class="w-3.5 h-3.5 rounded border-gray-100 text-[#159EEC] focus:ring-0 cursor-pointer">
+                }
                 <span class="text-sm text-gray-600">{{ item.no }}</span>
               </div>
             </td>
@@ -127,9 +133,17 @@
               </span>
             </td>
             <td class="px-4 py-4 text-center sticky right-0 bg-white group-hover:bg-[#f9fafb] shadow-[-4px_0_8px_-4px_rgba(0,0,0,0.06)]">
-              <button class="p-1.5 text-gray-400 hover:text-[#1F2B6C] hover:bg-white rounded-lg transition-all active:scale-95 border border-transparent hover:border-gray-100">
-                <lucide-icon [img]="MoreHorizontal" class="w-4 h-4"></lucide-icon>
-              </button>
+              @if (readOnly()) {
+                <button (click)="onView(item)" 
+                        title="View Details"
+                        class="p-1.5 text-[#159EEC] hover:text-[#1F2B6C] hover:bg-blue-50/50 rounded-lg transition-all active:scale-95 border border-transparent hover:border-blue-100">
+                  <lucide-icon [img]="Eye" class="w-4 h-4"></lucide-icon>
+                </button>
+              } @else {
+                <button class="p-1.5 text-gray-400 hover:text-[#1F2B6C] hover:bg-white rounded-lg transition-all active:scale-95 border border-transparent hover:border-gray-100">
+                  <lucide-icon [img]="MoreHorizontal" class="w-4 h-4"></lucide-icon>
+                </button>
+              }
             </td>
           </tr>
           } @empty {
@@ -185,3 +199,11 @@
     </div>
   </div>
 </div>
+
+@if (isViewModalOpen()) {
+  <app-analysis-view-modal
+    [analysis]="selectedAnalysis()"
+    [isOpen]="isViewModalOpen()"
+    (closeModal)="onCloseViewModal()">
+  </app-analysis-view-modal>
+}

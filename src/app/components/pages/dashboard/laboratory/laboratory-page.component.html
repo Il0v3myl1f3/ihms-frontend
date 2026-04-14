@@ -75,7 +75,7 @@
                     <div [class]="'w-2 h-2 rounded-full ' + getStatusDotClass(lab.status)"></div>
                     <span class="text-[13px] font-medium text-gray-600">{{ lab.status === 'Available' ? 'Ready for new tests' : lab.status === 'Occupied' ? 'At full capacity' : 'System update in progress' }}</span>
                 </div>
-                <button class="text-[#159EEC] hover:text-[#1F2B6C] text-[13px] font-bold transition-colors cursor-pointer">
+                <button (click)="onViewDetails(lab)" class="text-[#159EEC] hover:text-[#1F2B6C] text-[13px] font-bold transition-colors cursor-pointer">
                     View Details
                 </button>
             </div>
@@ -88,3 +88,11 @@
         }
     </div>
 </div>
+
+@if (isDetailsModalOpen()) {
+    <app-laboratory-view-modal
+        [lab]="selectedLab()"
+        [isOpen]="isDetailsModalOpen()"
+        (closeModal)="onCloseModal()">
+    </app-laboratory-view-modal>
+}
