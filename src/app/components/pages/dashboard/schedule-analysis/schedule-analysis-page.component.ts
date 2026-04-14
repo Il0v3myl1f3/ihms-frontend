@@ -1,7 +1,7 @@
 import { Component, OnInit, inject, signal, computed, ChangeDetectionStrategy, effect, untracked } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { LaboratoryService, MedicalAnalysis } from '../../../../services/laboratory.service';
-import { LucideAngularModule, Search, ChevronDown, ChevronUp, CalendarPlus, Clock, User, Microscope, Eye, Plus, Trash2, MoreHorizontal } from 'lucide-angular';
+import { LucideAngularModule, Search, ChevronDown, ChevronUp, CalendarPlus, Clock, User, Microscope, Eye, Plus, Trash2, MoreHorizontal, ChevronLeft, ChevronRight } from 'lucide-angular';
 import { AnalysisViewModalComponent } from './analysis-view-modal/analysis-view-modal.component';
 import { FormsModule } from '@angular/forms';
 
@@ -10,9 +10,15 @@ import { FormsModule } from '@angular/forms';
   imports: [CommonModule, LucideAngularModule, FormsModule, AnalysisViewModalComponent],
   templateUrl: './schedule-analysis-page.component.html',
   styleUrls: ['./schedule-analysis-page.component.css'],
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  host: {
+    '(document:click)': 'closePageSizeMenu()'
+  }
 })
 export class ScheduleAnalysisPageComponent implements OnInit {
+  closePageSizeMenu(): void {
+    this.isPageSizeMenuOpen = false;
+  }
   // Icons
   readonly Search = Search;
   readonly ChevronDown = ChevronDown;
@@ -22,6 +28,8 @@ export class ScheduleAnalysisPageComponent implements OnInit {
   readonly Plus = Plus;
   readonly Trash2 = Trash2;
   readonly MoreHorizontal = MoreHorizontal;
+  readonly ChevronLeft = ChevronLeft;
+  readonly ChevronRight = ChevronRight;
 
   readonly readOnly = signal(true);
 
@@ -37,6 +45,36 @@ export class ScheduleAnalysisPageComponent implements OnInit {
   pageSize = signal(7);
   sortColumn = signal<keyof MedicalAnalysis | null>(null);
   sortDirection = signal<'asc' | 'desc'>('asc');
+  isPageSizeMenuOpen = false;
+
+  togglePageSizeMenu(event: Event): void {
+    event.stopPropagation();
+    this.isPageSizeMenuOpen = !this.isPageSizeMenuOpen;
+  }
+
+  changePageSize(size: number): void {
+    this.pageSize.set(size);
+    this.currentPage.set(1);
+    this.isPageSizeMenuOpen = false;
+  }
+
+  goToPage(page: number | string): void {
+    if (typeof page === 'number') {
+      this.currentPage.set(page);
+    }
+  }
+
+  prevPage(): void {
+    if (this.currentPage() > 1) {
+      this.currentPage.update(p => p - 1);
+    }
+  }
+
+  nextPage(): void {
+    if (this.currentPage() < this.totalPages()) {
+      this.currentPage.update(p => p + 1);
+    }
+  }
   
   isViewModalOpen = signal(false);
   selectedAnalysis = signal<MedicalAnalysis | null>(null);
