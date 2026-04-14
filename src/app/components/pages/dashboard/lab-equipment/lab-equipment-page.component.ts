@@ -1,12 +1,14 @@
 import { Component, OnInit, inject, signal, computed, ChangeDetectionStrategy, effect, untracked, HostListener } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { LaboratoryService, LabEquipment } from '../../../../services/laboratory.service';
-import { LucideAngularModule, Search, ChevronDown, ChevronUp, Microscope, MoreHorizontal, Plus, Trash2, Edit2, Settings, Eye, ChevronLeft, ChevronRight } from 'lucide-angular';
+import { LucideAngularModule, Search, ChevronDown, ChevronUp, Microscope, MoreHorizontal, Plus, Trash2, Edit2, Settings, Eye, ChevronLeft, ChevronRight, Calendar, MapPin, Tag, Activity, Filter } from 'lucide-angular';
 import { FormsModule } from '@angular/forms';
+import { ModalComponent } from '../../../shared/modal/modal.component';
+import { CustomDatepickerComponent } from '../../../shared/custom-datepicker/custom-datepicker.component';
 
 @Component({
   selector: 'app-lab-equipment-page',
-  imports: [CommonModule, LucideAngularModule, FormsModule],
+  imports: [CommonModule, LucideAngularModule, FormsModule, ModalComponent, CustomDatepickerComponent],
   templateUrl: './lab-equipment-page.component.html',
   styleUrls: ['./lab-equipment-page.component.css'],
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -31,10 +33,157 @@ export class LabEquipmentPageComponent implements OnInit {
   readonly Eye = Eye;
   readonly ChevronLeft = ChevronLeft;
   readonly ChevronRight = ChevronRight;
+  readonly Calendar = Calendar;
+  readonly MapPin = MapPin;
+  readonly Tag = Tag;
+  readonly Activity = Activity;
+  readonly Filter = Filter;
 
   // Dropdown state
   activeItem: LabEquipment | null = null;
   dropdownPos = { top: 0, right: 0 };
+
+  // Details Modal state
+  isDetailsModalOpen = signal(false);
+  selectedItemForDetails = signal<LabEquipment | null>(null);
+
+  // Edit Modal state
+  isEditModalOpen = signal(false);
+  selectedItemForEdit = signal<LabEquipment | null>(null);
+  availableLabs = signal<any[]>([]);
+
+  // Add Asset state
+  isAddModalOpen = signal(false);
+  newItem = signal<Partial<LabEquipment>>({});
+
+  // Modal Dropdown signals
+  activeEditLabDropdown = signal(false);
+  activeEditStatusDropdown = signal(false);
+  activeAddLabDropdown = signal(false);
+  activeAddStatusDropdown = signal(false);
+
+  viewDetails(item: LabEquipment): void {
+    this.selectedItemForDetails.set(item);
+    this.isDetailsModalOpen.set(true);
+    this.activeItem = null;
+  }
+
+  closeDetailsModal(): void {
+    this.isDetailsModalOpen.set(false);
+    // Optional: clear item after transition
+    setTimeout(() => this.selectedItemForDetails.set(null), 300);
+  }
+
+  openEditModal(item: LabEquipment): void {
+    this.selectedItemForEdit.set({ ...item });
+    this.isEditModalOpen.set(true);
+    this.activeItem = null;
+  }
+
+  closeEditModal(): void {
+    this.isEditModalOpen.set(false);
+    setTimeout(() => this.selectedItemForEdit.set(null), 300);
+  }
+
+  openAddModal(): void {
+    const today = new Date().toISOString().split('T')[0];
+    const nextSixMonths = new Date(new Date().setMonth(new Date().getMonth() + 6)).toISOString().split('T')[0];
+
+    const firstLab = this.availableLabs()[0];
+    this.newItem.set({
+      name: '',
+      type: '',
+      status: 'Operational',
+      labId: firstLab?.id,
+      labName: firstLab?.name,
+      lastMaintenanceDate: today,
+      nextMaintenanceDate: nextSixMonths
+    });
+    this.isAddModalOpen.set(true);
+  }
+
+  closeAddModal(): void {
+    this.isAddModalOpen.set(false);
+  }
+
+  saveAdd(): void {
+    const data = this.newItem();
+    if (data.name && data.labId && data.type) {
+      const selectedLab = this.availableLabs().find(l => l.id === Number(data.labId));
+      const currentItems = this.items();
+      const maxId = currentItems.length > 0 ? Math.max(...currentItems.map(i => i.id)) : 0;
+      const maxNo = currentItems.length > 0 ? Math.max(...currentItems.map(i => i.no)) : 0;
+
+      const fullNewItem: LabEquipment = {
+        id: maxId + 1,
+        no: maxNo + 1,
+        name: data.name,
+        labId: Number(data.labId),
+        labName: selectedLab?.name || 'Unknown Lab',
+        type: data.type,
+        status: (data.status as any) || 'Operational',
+        lastMaintenanceDate: data.lastMaintenanceDate || '',
+        nextMaintenanceDate: data.nextMaintenanceDate || '',
+        selected: false
+      };
+
+      this.items.update(prev => [fullNewItem, ...prev]);
+      this.closeAddModal();
+    }
+  }
+
+  saveEdit(): void {
+    const updatedItem = this.selectedItemForEdit();
+    if (updatedItem) {
+      // Find the lab name from availableLabs if it was changed
+      const selectedLab = this.availableLabs().find(l => l.id === Number(updatedItem.labId));
+      if (selectedLab) {
+        updatedItem.labName = selectedLab.name;
+        updatedItem.labId = selectedLab.id;
+      }
+
+      this.items.update(items => items.map(item =>
+        item.id === updatedItem.id ? { ...updatedItem } : item
+      ));
+      this.closeEditModal();
+    }
+  }
+
+  toggleModalDropdown(type: string, event: Event): void {
+    event.stopPropagation();
+    switch (type) {
+      case 'editLab': this.activeEditLabDropdown.set(!this.activeEditLabDropdown()); break;
+      case 'editStatus': this.activeEditStatusDropdown.set(!this.activeEditStatusDropdown()); break;
+      case 'addLab': this.activeAddLabDropdown.set(!this.activeAddLabDropdown()); break;
+      case 'addStatus': this.activeAddStatusDropdown.set(!this.activeAddStatusDropdown()); break;
+    }
+  }
+
+  selectLab(lab: any, isEdit: boolean): void {
+    if (isEdit) {
+      const current = this.selectedItemForEdit();
+      if (current) {
+        this.selectedItemForEdit.set({ ...current, labId: lab.id, labName: lab.name });
+      }
+      this.activeEditLabDropdown.set(false);
+    } else {
+      this.newItem.update(prev => ({ ...prev, labId: lab.id, labName: lab.name }));
+      this.activeAddLabDropdown.set(false);
+    }
+  }
+
+  selectStatus(status: string, isEdit: boolean): void {
+    if (isEdit) {
+      const current = this.selectedItemForEdit();
+      if (current) {
+        this.selectedItemForEdit.set({ ...current, status: status as any });
+      }
+      this.activeEditStatusDropdown.set(false);
+    } else {
+      this.newItem.update(prev => ({ ...prev, status: status as any }));
+      this.activeAddStatusDropdown.set(false);
+    }
+  }
 
   toggleDropdown(item: LabEquipment, event: Event): void {
     event.stopPropagation();
@@ -49,6 +198,11 @@ export class LabEquipmentPageComponent implements OnInit {
 
   closeDropdown(): void {
     this.activeItem = null;
+    this.activeFilterMenu.set(false);
+    this.activeEditLabDropdown.set(false);
+    this.activeEditStatusDropdown.set(false);
+    this.activeAddLabDropdown.set(false);
+    this.activeAddStatusDropdown.set(false);
   }
 
   @HostListener('window:scroll')
@@ -57,10 +211,10 @@ export class LabEquipmentPageComponent implements OnInit {
   }
 
   private labService = inject(LaboratoryService);
-  
+
   // Data State
   items = signal<LabEquipment[]>([]);
-  
+
   // Table State
   searchQuery = signal('');
   statusFilter = signal<string>('All');
@@ -69,6 +223,20 @@ export class LabEquipmentPageComponent implements OnInit {
   sortColumn = signal<keyof LabEquipment | null>(null);
   sortDirection = signal<'asc' | 'desc'>('asc');
   isPageSizeMenuOpen = false;
+
+  // Dropdown state
+  activeFilterMenu = signal<boolean>(false);
+
+  toggleFilterMenu(event: Event): void {
+    event.stopPropagation();
+    this.activeFilterMenu.set(!this.activeFilterMenu());
+  }
+
+  setFilter(value: string): void {
+    this.statusFilter.set(value);
+    this.activeFilterMenu.set(false);
+    this.currentPage.set(1);
+  }
 
   togglePageSizeMenu(event: Event): void {
     event.stopPropagation();
@@ -98,7 +266,7 @@ export class LabEquipmentPageComponent implements OnInit {
       this.currentPage.update(p => p + 1);
     }
   }
-  
+
   // Selection
   selectedCount = computed(() => this.items().filter(i => i.selected).length);
   allSelected = computed(() => this.paginatedItems().length > 0 && this.paginatedItems().every(i => i.selected));
@@ -110,8 +278,8 @@ export class LabEquipmentPageComponent implements OnInit {
     let result = this.items();
 
     if (query) {
-      result = result.filter(item => 
-        item.name.toLowerCase().includes(query) || 
+      result = result.filter(item =>
+        item.name.toLowerCase().includes(query) ||
         item.labName.toLowerCase().includes(query) ||
         item.type.toLowerCase().includes(query)
       );
@@ -145,7 +313,7 @@ export class LabEquipmentPageComponent implements OnInit {
     const total = this.totalPages();
     const current = this.currentPage();
     if (total <= 5) return Array.from({ length: total }, (_, i) => i + 1);
-    
+
     if (current <= 3) return [1, 2, 3, 4, '...', total];
     if (current >= total - 2) return [1, '...', total - 3, total - 2, total - 1, total];
     return [1, '...', current - 1, current, current + 1, '...', total];
@@ -163,6 +331,10 @@ export class LabEquipmentPageComponent implements OnInit {
     this.labService.getEquipment().subscribe(data => {
       this.items.set(data.map(item => ({ ...item, selected: false })));
     });
+
+    this.labService.getLabs().subscribe(labs => {
+      this.availableLabs.set(labs);
+    });
   }
 
   toggleSort(column: keyof LabEquipment) {
@@ -177,13 +349,13 @@ export class LabEquipmentPageComponent implements OnInit {
   toggleSelectAll() {
     const newVal = !this.allSelected();
     const paginatedIds = new Set(this.paginatedItems().map(i => i.id));
-    this.items.update(items => items.map(item => 
+    this.items.update(items => items.map(item =>
       paginatedIds.has(item.id) ? { ...item, selected: newVal } : item
     ));
   }
 
   toggleSelectItem(id: number) {
-    this.items.update(items => items.map(item => 
+    this.items.update(items => items.map(item =>
       item.id === id ? { ...item, selected: !item.selected } : item
     ));
   }
@@ -201,3 +373,5 @@ export class LabEquipmentPageComponent implements OnInit {
     }
   }
 }
+
+
