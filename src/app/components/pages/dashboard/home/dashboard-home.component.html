@@ -55,7 +55,7 @@
         </div>
 
         <!-- Room Occupancy -->
-        <div routerLink="/dashboard/rooms"
+        <div routerLink="/dashboard/room"
             class="group bg-white rounded-2xl border border-gray-100 shadow-sm p-6 hover:shadow-lg hover:border-rose-200 transition-all duration-300 cursor-pointer">
             <div class="flex items-center justify-between mb-4">
                 <div class="w-12 h-12 bg-rose-50 rounded-xl flex items-center justify-center group-hover:bg-rose-100 transition-colors">
@@ -107,7 +107,7 @@
 
         <div class="grid grid-cols-1 md:grid-cols-3 xl:grid-cols-6 gap-4">
             @for (module of systemModules; track module.name) {
-                <a [routerLink]="module.link" 
+                <a [routerLink]="module.link"
                    class="group/item flex flex-col p-4 bg-white rounded-xl border border-gray-100 shadow-sm hover:shadow-md hover:border-{{module.color}}-200 transition-all duration-200">
                     <div class="flex items-center justify-between mb-3">
                         <div class="w-9 h-9 bg-{{module.color}}-50 rounded-lg flex items-center justify-center group-hover/item:bg-{{module.color}}-100 transition-colors">
@@ -257,7 +257,7 @@
         </div>
 
         <!-- Inpatients -->
-        <div
+        <div routerLink="/dashboard/room"
             class="group bg-white rounded-2xl border border-gray-100 shadow-sm p-6 hover:shadow-lg hover:border-emerald-200 transition-all duration-300 cursor-pointer">
             <div class="flex items-center justify-between mb-4">
                 <div
