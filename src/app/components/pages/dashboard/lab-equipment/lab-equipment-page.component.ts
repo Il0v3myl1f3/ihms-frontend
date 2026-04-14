@@ -1,12 +1,13 @@
 import { Component, OnInit, inject, signal, computed, ChangeDetectionStrategy, effect, untracked, HostListener } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { LaboratoryService, LabEquipment } from '../../../../services/laboratory.service';
-import { LucideAngularModule, Search, ChevronDown, ChevronUp, Microscope, MoreHorizontal, Plus, Trash2, Edit2, Settings, Eye, ChevronLeft, ChevronRight } from 'lucide-angular';
+import { LucideAngularModule, Search, ChevronDown, ChevronUp, Microscope, MoreHorizontal, Plus, Trash2, Edit2, Settings, Eye, ChevronLeft, ChevronRight, Calendar, MapPin, Tag, Activity } from 'lucide-angular';
 import { FormsModule } from '@angular/forms';
+import { ModalComponent } from '../../../shared/modal/modal.component';
 
 @Component({
   selector: 'app-lab-equipment-page',
-  imports: [CommonModule, LucideAngularModule, FormsModule],
+  imports: [CommonModule, LucideAngularModule, FormsModule, ModalComponent],
   templateUrl: './lab-equipment-page.component.html',
   styleUrls: ['./lab-equipment-page.component.css'],
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -31,10 +32,30 @@ export class LabEquipmentPageComponent implements OnInit {
   readonly Eye = Eye;
   readonly ChevronLeft = ChevronLeft;
   readonly ChevronRight = ChevronRight;
+  readonly Calendar = Calendar;
+  readonly MapPin = MapPin;
+  readonly Tag = Tag;
+  readonly Activity = Activity;
 
   // Dropdown state
   activeItem: LabEquipment | null = null;
   dropdownPos = { top: 0, right: 0 };
+
+  // Details Modal state
+  isDetailsModalOpen = signal(false);
+  selectedItemForDetails = signal<LabEquipment | null>(null);
+
+  viewDetails(item: LabEquipment): void {
+    this.selectedItemForDetails.set(item);
+    this.isDetailsModalOpen.set(true);
+    this.activeItem = null;
+  }
+
+  closeDetailsModal(): void {
+    this.isDetailsModalOpen.set(false);
+    // Optional: clear item after transition
+    setTimeout(() => this.selectedItemForDetails.set(null), 300);
+  }
 
   toggleDropdown(item: LabEquipment, event: Event): void {
     event.stopPropagation();
@@ -57,10 +78,10 @@ export class LabEquipmentPageComponent implements OnInit {
   }
 
   private labService = inject(LaboratoryService);
-  
+
   // Data State
   items = signal<LabEquipment[]>([]);
-  
+
   // Table State
   searchQuery = signal('');
   statusFilter = signal<string>('All');
@@ -98,7 +119,7 @@ export class LabEquipmentPageComponent implements OnInit {
       this.currentPage.update(p => p + 1);
     }
   }
-  
+
   // Selection
   selectedCount = computed(() => this.items().filter(i => i.selected).length);
   allSelected = computed(() => this.paginatedItems().length > 0 && this.paginatedItems().every(i => i.selected));
@@ -110,8 +131,8 @@ export class LabEquipmentPageComponent implements OnInit {
     let result = this.items();
 
     if (query) {
-      result = result.filter(item => 
-        item.name.toLowerCase().includes(query) || 
+      result = result.filter(item =>
+        item.name.toLowerCase().includes(query) ||
         item.labName.toLowerCase().includes(query) ||
         item.type.toLowerCase().includes(query)
       );
@@ -145,7 +166,7 @@ export class LabEquipmentPageComponent implements OnInit {
     const total = this.totalPages();
     const current = this.currentPage();
     if (total <= 5) return Array.from({ length: total }, (_, i) => i + 1);
-    
+
     if (current <= 3) return [1, 2, 3, 4, '...', total];
     if (current >= total - 2) return [1, '...', total - 3, total - 2, total - 1, total];
     return [1, '...', current - 1, current, current + 1, '...', total];
@@ -177,13 +198,13 @@ export class LabEquipmentPageComponent implements OnInit {
   toggleSelectAll() {
     const newVal = !this.allSelected();
     const paginatedIds = new Set(this.paginatedItems().map(i => i.id));
-    this.items.update(items => items.map(item => 
+    this.items.update(items => items.map(item =>
       paginatedIds.has(item.id) ? { ...item, selected: newVal } : item
     ));
   }
 
   toggleSelectItem(id: number) {
-    this.items.update(items => items.map(item => 
+    this.items.update(items => items.map(item =>
       item.id === id ? { ...item, selected: !item.selected } : item
     ));
   }
