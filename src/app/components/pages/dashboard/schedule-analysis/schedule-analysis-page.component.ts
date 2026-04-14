@@ -1,13 +1,14 @@
 import { Component, OnInit, inject, signal, computed, ChangeDetectionStrategy, effect, untracked, HostListener } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { LaboratoryService, MedicalAnalysis } from '../../../../services/laboratory.service';
-import { LucideAngularModule, Search, ChevronDown, ChevronUp, Clock, User, Microscope, MoreHorizontal, Plus, Trash2, Filter, ChevronLeft, ChevronRight, Eye, Edit2, Download, CheckCircle2, XCircle, CalendarPlus } from 'lucide-angular';
+import { LucideAngularModule, Search, ChevronDown, ChevronUp, Clock, User, Microscope, MoreHorizontal, Plus, Trash2, Filter, ChevronLeft, ChevronRight, Eye, Edit2, Download, CheckCircle2, XCircle, CalendarPlus, MapPin, Activity } from 'lucide-angular';
 import { FormsModule } from '@angular/forms';
 import { AnalysisViewModalComponent } from './analysis-view-modal/analysis-view-modal.component';
+import { ModalComponent } from '../../../shared/modal/modal.component';
 
 @Component({
   selector: 'app-schedule-analysis-page',
-  imports: [CommonModule, LucideAngularModule, FormsModule, AnalysisViewModalComponent],
+  imports: [CommonModule, LucideAngularModule, FormsModule, AnalysisViewModalComponent, ModalComponent],
   templateUrl: './schedule-analysis-page.component.html',
   styleUrls: ['./schedule-analysis-page.component.css'],
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -34,6 +35,8 @@ export class ScheduleAnalysisPageComponent implements OnInit {
   readonly ChevronRight = ChevronRight;
   readonly Eye = Eye;
   readonly Edit2 = Edit2;
+  readonly MapPin = MapPin;
+  readonly Activity = Activity;
   readonly Download = Download;
   readonly CheckCircle2 = CheckCircle2;
   readonly XCircle = XCircle;
@@ -43,9 +46,35 @@ export class ScheduleAnalysisPageComponent implements OnInit {
 
   // Data State
   items = signal<MedicalAnalysis[]>([]);
+  availableLabs = signal<any[]>([]);
+  analysisTypes = [
+    'Complete Blood Count (CBC)',
+    'Lipid Profile',
+    'Urine Culture',
+    'Liver Function Test (LFT)',
+    'Blood Glucose',
+    'Renal Function Test',
+    'Thyroid Profile'
+  ];
+  
   readOnly = signal<boolean>(false);
   activeItem: MedicalAnalysis | null = null;
   dropdownPos = { top: 0, right: 0 };
+
+  // Modal State
+  isAddModalOpen = signal(false);
+  isEditModalOpen = signal(false);
+  isViewModalOpen = signal(false);
+  
+  newAnalysis = signal<Partial<MedicalAnalysis>>({});
+  selectedAnalysis = signal<MedicalAnalysis | null>(null);
+
+  // Modal Dropdown signals
+  activeAddTypeDropdown = signal(false);
+  activeAddLabDropdown = signal(false);
+  activeEditTypeDropdown = signal(false);
+  activeEditLabDropdown = signal(false);
+  activeEditStatusDropdown = signal(false);
 
   // Table State
   searchQuery = signal('');
@@ -98,9 +127,6 @@ export class ScheduleAnalysisPageComponent implements OnInit {
       this.currentPage.update(p => p + 1);
     }
   }
-
-  isViewModalOpen = signal(false);
-  selectedAnalysis = signal<MedicalAnalysis | null>(null);
 
   // Selection
   selectedCount = computed(() => this.items().filter(i => i.selected).length);
@@ -167,6 +193,10 @@ export class ScheduleAnalysisPageComponent implements OnInit {
     this.labService.getAnalyses().subscribe(data => {
       this.items.set(data.map(item => ({ ...item, selected: false })));
     });
+
+    this.labService.getLabs().subscribe(labs => {
+      this.availableLabs.set(labs);
+    });
   }
 
   // Table Actions
@@ -203,10 +233,115 @@ export class ScheduleAnalysisPageComponent implements OnInit {
     this.selectedAnalysis.set(null);
   }
 
-  // Placeholder methods to satisfy template bindings (hidden by @if)
-  deleteSelected() {}
-  openModal() {}
-  closeModal() {}
+  openAddModal(): void {
+    const nextWeek = new Date();
+    nextWeek.setDate(nextWeek.getDate() + 7);
+    const scheduledDate = nextWeek.toISOString().slice(0, 16).replace('T', ' ');
+
+    this.newAnalysis.set({
+      patientName: '',
+      analysisType: this.analysisTypes[0],
+      labId: this.availableLabs()[0]?.id,
+      labName: this.availableLabs()[0]?.name,
+      scheduledDate: scheduledDate,
+      status: 'Scheduled',
+      doctorName: ''
+    });
+    this.isAddModalOpen.set(true);
+  }
+
+  closeAddModal(): void {
+    this.isAddModalOpen.set(false);
+  }
+
+  saveAdd(): void {
+    const data = this.newAnalysis();
+    if (data.patientName && data.analysisType && data.labId) {
+      const currentItems = this.items();
+      const maxId = currentItems.length > 0 ? Math.max(...currentItems.map(i => i.id)) : 0;
+      const maxNo = currentItems.length > 0 ? Math.max(...currentItems.map(i => i.no)) : 0;
+
+      const fullItem: MedicalAnalysis = {
+        id: maxId + 1,
+        no: maxNo + 1,
+        patientName: data.patientName,
+        analysisType: data.analysisType,
+        labId: Number(data.labId),
+        labName: data.labName || 'Unknown Lab',
+        scheduledDate: data.scheduledDate || '',
+        status: 'Scheduled',
+        doctorName: data.doctorName || '',
+        selected: false
+      };
+
+      this.items.update(prev => [fullItem, ...prev]);
+      this.closeAddModal();
+    }
+  }
+
+  openEditModal(item: MedicalAnalysis): void {
+    this.selectedAnalysis.set({ ...item });
+    this.isEditModalOpen.set(true);
+    this.activeItem = null;
+  }
+
+  closeEditModal(): void {
+    this.isEditModalOpen.set(false);
+    setTimeout(() => this.selectedAnalysis.set(null), 300);
+  }
+
+  saveEdit(): void {
+    const updated = this.selectedAnalysis();
+    if (updated) {
+      this.items.update(items => items.map(item =>
+        item.id === updated.id ? { ...updated } : item
+      ));
+      this.closeEditModal();
+    }
+  }
+
+  deleteSelected(): void {
+    this.items.update(items => items.filter(i => !i.selected));
+  }
+
+  toggleModalDropdown(type: string, event: Event): void {
+    event.stopPropagation();
+    switch (type) {
+      case 'addType': this.activeAddTypeDropdown.set(!this.activeAddTypeDropdown()); break;
+      case 'addLab': this.activeAddLabDropdown.set(!this.activeAddLabDropdown()); break;
+      case 'editType': this.activeEditTypeDropdown.set(!this.activeEditTypeDropdown()); break;
+      case 'editLab': this.activeEditLabDropdown.set(!this.activeEditLabDropdown()); break;
+      case 'editStatus': this.activeEditStatusDropdown.set(!this.activeEditStatusDropdown()); break;
+    }
+  }
+
+  selectType(type: string, isEdit: boolean): void {
+    if (isEdit) {
+      const current = this.selectedAnalysis();
+      if (current) this.selectedAnalysis.set({ ...current, analysisType: type });
+      this.activeEditTypeDropdown.set(false);
+    } else {
+      this.newAnalysis.update(prev => ({ ...prev, analysisType: type }));
+      this.activeAddTypeDropdown.set(false);
+    }
+  }
+
+  selectLab(lab: any, isEdit: boolean): void {
+    if (isEdit) {
+      const current = this.selectedAnalysis();
+      if (current) this.selectedAnalysis.set({ ...current, labId: lab.id, labName: lab.name });
+      this.activeEditLabDropdown.set(false);
+    } else {
+      this.newAnalysis.update(prev => ({ ...prev, labId: lab.id, labName: lab.name }));
+      this.activeAddLabDropdown.set(false);
+    }
+  }
+
+  selectStatus(status: string): void {
+    const current = this.selectedAnalysis();
+    if (current) this.selectedAnalysis.set({ ...current, status: status as any });
+    this.activeEditStatusDropdown.set(false);
+  }
 
   getStatusBadgeClass(status: string): string {
     switch (status) {
@@ -221,6 +356,11 @@ export class ScheduleAnalysisPageComponent implements OnInit {
   closeDropdown(): void {
     this.activeItem = null;
     this.activeFilterMenu.set(false);
+    this.activeAddTypeDropdown.set(false);
+    this.activeAddLabDropdown.set(false);
+    this.activeEditTypeDropdown.set(false);
+    this.activeEditLabDropdown.set(false);
+    this.activeEditStatusDropdown.set(false);
   }
 
   toggleDropdown(item: MedicalAnalysis, event: Event): void {
