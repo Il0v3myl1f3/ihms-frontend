@@ -63,7 +63,7 @@
             Delete Selected ({{selectedCount()}})
           </button>
           }
-          <button (click)="openModal()"
+          <button (click)="openAddModal()"
                   class="bg-[#1F2B6C] hover:bg-[#151D4A] text-white px-5 py-2.5 rounded-lg text-sm font-medium shadow-sm flex items-center gap-2 transition-all active:scale-95">
             <lucide-icon [img]="Plus" class="w-4 h-4"></lucide-icon>
             Schedule New
@@ -170,7 +170,8 @@
                   <lucide-icon [img]="Eye" class="w-4 h-4"></lucide-icon>
                 </button>
               } @else {
-                <button class="p-1.5 hover:text-gray-600 rounded-lg transition-colors cursor-pointer">
+                <button (click)="toggleDropdown(item, $event)"
+                        class="p-1.5 hover:text-gray-600 rounded-lg transition-colors cursor-pointer">
                   <lucide-icon [img]="MoreHorizontal" class="w-4 h-4"></lucide-icon>
                 </button>
               }
@@ -254,3 +255,232 @@
     (closeModal)="onCloseViewModal()">
   </app-analysis-view-modal>
 }
+
+<!-- Actions Dropdown -->
+@if (activeItem) {
+<div class="fixed z-9999 w-44 bg-white rounded-lg shadow-[0_4px_20px_rgba(0,0,0,0.08)] border border-gray-100 py-1"
+     [style.top.px]="dropdownPos.top" [style.right.px]="dropdownPos.right">
+  <button (click)="onView(activeItem!)"
+          class="w-full px-3 py-1.5 text-xs font-normal text-left text-gray-700 hover:bg-gray-50 flex items-center gap-2 transition-colors cursor-pointer">
+    <lucide-icon [img]="Eye" class="w-3.5 h-3.5 text-gray-400"></lucide-icon>
+    View Details
+  </button>
+  <button (click)="openEditModal(activeItem!)"
+          class="w-full px-3 py-1.5 text-xs font-normal text-left text-gray-700 hover:bg-gray-50 flex items-center gap-2 transition-colors cursor-pointer">
+    <lucide-icon [img]="Edit2" class="w-3.5 h-3.5 text-gray-400"></lucide-icon>
+    Edit
+  </button>
+  <button
+          class="w-full px-3 py-1.5 text-xs font-normal text-left text-gray-700 hover:bg-gray-50 flex items-center gap-2 transition-colors cursor-pointer">
+    <lucide-icon [img]="Download" class="w-3.5 h-3.5 text-gray-400"></lucide-icon>
+    Download Results
+  </button>
+  <div class="h-px bg-gray-100 my-1 w-full"></div>
+  <button (click)="closeDropdown()"
+          class="w-full px-3 py-1.5 text-xs font-normal text-left text-red-600 hover:bg-red-50 flex items-center gap-2 transition-colors">
+    <lucide-icon [img]="XCircle" class="w-3.5 h-3.5"></lucide-icon>
+    Cancel Analysis
+  </button>
+</div>
+}
+
+<!-- Add Modal -->
+<app-modal [isOpen]="isAddModalOpen()" title="Schedule New Analysis" (close)="closeAddModal()">
+  <div modal-body>
+    @if (newAnalysis()) {
+      @let data = newAnalysis()!;
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+        <div class="md:col-span-2">
+          <label class="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Patient Name</label>
+          <div class="relative">
+            <span class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+              <lucide-icon [img]="User" class="w-4 h-4 text-gray-400"></lucide-icon>
+            </span>
+            <input type="text" [(ngModel)]="data.patientName" placeholder="Enter patient full name..."
+                   class="w-full pl-10 pr-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:ring-2 focus:ring-[#159EEC]/20 focus:border-[#159EEC] outline-none transition-all">
+          </div>
+        </div>
+
+        <div>
+          <label class="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Analysis Type</label>
+          <div class="relative">
+            <button (click)="toggleModalDropdown('addType', $event)"
+                    class="w-full flex items-center gap-3 px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:ring-2 focus:ring-[#159EEC]/20 focus:border-[#159EEC] outline-none transition-all text-left">
+              <lucide-icon [img]="Microscope" class="w-4 h-4 text-[#1F2B6C]"></lucide-icon>
+              <span class="flex-1 truncate">{{ data.analysisType || 'Select Type' }}</span>
+              <lucide-icon [img]="ChevronDown" class="w-4 h-4 text-gray-400 transition-transform duration-200"
+                          [class.rotate-180]="activeAddTypeDropdown()"></lucide-icon>
+            </button>
+            @if (activeAddTypeDropdown()) {
+              <div class="absolute z-[100] mt-1 w-full bg-white border border-gray-100 rounded-xl shadow-xl py-1 max-h-48 overflow-y-auto">
+                @for (type of analysisTypes; track type) {
+                  <button (click)="selectType(type, false)"
+                          class="w-full text-left px-4 py-2 text-sm hover:bg-gray-50 transition-colors"
+                          [class.bg-blue-50]="data.analysisType === type" [class.text-blue-700]="data.analysisType === type">
+                    {{ type }}
+                  </button>
+                }
+              </div>
+            }
+          </div>
+        </div>
+
+        <div>
+          <label class="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Laboratory</label>
+          <div class="relative">
+            <button (click)="toggleModalDropdown('addLab', $event)"
+                    class="w-full flex items-center gap-3 px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:ring-2 focus:ring-[#159EEC]/20 focus:border-[#159EEC] outline-none transition-all text-left">
+              <lucide-icon [img]="MapPin" class="w-4 h-4 text-[#159EEC]"></lucide-icon>
+              <span class="flex-1 truncate">{{ data.labName || 'Select Lab' }}</span>
+              <lucide-icon [img]="ChevronDown" class="w-4 h-4 text-gray-400 transition-transform duration-200"
+                          [class.rotate-180]="activeAddLabDropdown()"></lucide-icon>
+            </button>
+            @if (activeAddLabDropdown()) {
+              <div class="absolute z-[100] mt-1 w-full bg-white border border-gray-100 rounded-xl shadow-xl py-1 max-h-48 overflow-y-auto">
+                @for (lab of availableLabs(); track lab.id) {
+                  <button (click)="selectLab(lab, false)"
+                          class="w-full text-left px-4 py-2 text-sm hover:bg-gray-50 transition-colors"
+                          [class.bg-blue-50]="data.labId === lab.id" [class.text-blue-700]="data.labId === lab.id">
+                    {{ lab.name }}
+                  </button>
+                }
+              </div>
+            }
+          </div>
+        </div>
+
+        <div>
+          <label class="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Schedule Date & Time</label>
+          <div class="relative">
+            <span class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+              <lucide-icon [img]="Clock" class="w-4 h-4 text-gray-400"></lucide-icon>
+            </span>
+            <input type="text" [(ngModel)]="data.scheduledDate" placeholder="YYYY-MM-DD HH:mm"
+                   class="w-full pl-10 pr-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:ring-2 focus:ring-[#159EEC]/20 focus:border-[#159EEC] outline-none transition-all">
+          </div>
+        </div>
+
+        <div>
+          <label class="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Doctor</label>
+          <input type="text" [(ngModel)]="data.doctorName" placeholder="Dr. Name..."
+                 class="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:ring-2 focus:ring-[#159EEC]/20 focus:border-[#159EEC] outline-none transition-all">
+        </div>
+      </div>
+    }
+  </div>
+  <div modal-footer>
+    <button (click)="closeAddModal()"
+            class="px-6 py-2 rounded-lg text-sm font-medium text-gray-500 hover:bg-gray-100 transition-all">
+      Cancel
+    </button>
+    <button (click)="saveAdd()"
+            [disabled]="!newAnalysis().patientName || !newAnalysis().analysisType"
+            class="bg-[#1F2B6C] hover:bg-[#151D4A] text-white px-8 py-2 rounded-lg text-sm font-bold shadow-lg transition-all active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed">
+      Schedule Analysis
+    </button>
+  </div>
+</app-modal>
+
+<!-- Edit Modal -->
+<app-modal [isOpen]="isEditModalOpen()" title="Edit Analysis" (close)="closeEditModal()">
+  <div modal-body>
+    @if (selectedAnalysis()) {
+      @let editItem = selectedAnalysis()!;
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+        <div class="md:col-span-2">
+          <label class="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Patient Name</label>
+          <input type="text" [(ngModel)]="editItem.patientName"
+                 class="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:ring-2 focus:ring-[#159EEC]/20 focus:border-[#159EEC] outline-none transition-all">
+        </div>
+
+        <div>
+          <label class="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Analysis Type</label>
+          <div class="relative">
+            <button (click)="toggleModalDropdown('editType', $event)"
+                    class="w-full flex items-center gap-3 px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:ring-2 focus:ring-[#159EEC]/20 focus:border-[#159EEC] outline-none transition-all text-left">
+              <lucide-icon [img]="Microscope" class="w-4 h-4 text-[#1F2B6C]"></lucide-icon>
+              <span class="flex-1 truncate">{{ editItem.analysisType }}</span>
+              <lucide-icon [img]="ChevronDown" class="w-4 h-4 text-gray-400 transition-transform duration-200"
+                          [class.rotate-180]="activeEditTypeDropdown()"></lucide-icon>
+            </button>
+            @if (activeEditTypeDropdown()) {
+              <div class="absolute z-[100] mt-1 w-full bg-white border border-gray-100 rounded-xl shadow-xl py-1 max-h-48 overflow-y-auto">
+                @for (type of analysisTypes; track type) {
+                  <button (click)="selectType(type, true)"
+                          class="w-full text-left px-4 py-2 text-sm hover:bg-gray-50 transition-colors"
+                          [class.bg-blue-50]="editItem.analysisType === type" [class.text-blue-700]="editItem.analysisType === type">
+                    {{ type }}
+                  </button>
+                }
+              </div>
+            }
+          </div>
+        </div>
+
+        <div>
+          <label class="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Laboratory</label>
+          <div class="relative">
+            <button (click)="toggleModalDropdown('editLab', $event)"
+                    class="w-full flex items-center gap-3 px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:ring-2 focus:ring-[#159EEC]/20 focus:border-[#159EEC] outline-none transition-all text-left">
+              <lucide-icon [img]="MapPin" class="w-4 h-4 text-[#159EEC]"></lucide-icon>
+              <span class="flex-1 truncate">{{ editItem.labName }}</span>
+              <lucide-icon [img]="ChevronDown" class="w-4 h-4 text-gray-400 transition-transform duration-200"
+                          [class.rotate-180]="activeEditLabDropdown()"></lucide-icon>
+            </button>
+            @if (activeEditLabDropdown()) {
+              <div class="absolute z-[100] mt-1 w-full bg-white border border-gray-100 rounded-xl shadow-xl py-1 max-h-48 overflow-y-auto">
+                @for (lab of availableLabs(); track lab.id) {
+                  <button (click)="selectLab(lab, true)"
+                          class="w-full text-left px-4 py-2 text-sm hover:bg-gray-50 transition-colors"
+                          [class.bg-blue-50]="editItem.labId === lab.id" [class.text-blue-700]="editItem.labId === lab.id">
+                    {{ lab.name }}
+                  </button>
+                }
+              </div>
+            }
+          </div>
+        </div>
+
+        <div>
+          <label class="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Status</label>
+          <div class="relative">
+            <button (click)="toggleModalDropdown('editStatus', $event)"
+                    class="w-full flex items-center gap-3 px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:ring-2 focus:ring-[#159EEC]/20 focus:border-[#159EEC] outline-none transition-all text-left">
+              <lucide-icon [img]="Activity" class="w-4 h-4 text-emerald-500"></lucide-icon>
+              <span class="flex-1">{{ editItem.status }}</span>
+              <lucide-icon [img]="ChevronDown" class="w-4 h-4 text-gray-400 transition-transform duration-200"
+                          [class.rotate-180]="activeEditStatusDropdown()"></lucide-icon>
+            </button>
+            @if (activeEditStatusDropdown()) {
+              <div class="absolute z-[100] mt-1 w-full bg-white border border-gray-100 rounded-xl shadow-xl py-1">
+                @for (st of ['Scheduled', 'InProgress', 'Completed', 'Cancelled']; track st) {
+                  <button (click)="selectStatus(st)"
+                          class="w-full text-left px-4 py-2 text-sm hover:bg-gray-50 transition-colors"
+                          [class.bg-blue-50]="editItem.status === st" [class.text-blue-700]="editItem.status === st">
+                    {{ st }}
+                  </button>
+                }
+              </div>
+            }
+          </div>
+        </div>
+
+        <div>
+          <label class="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Date & Time</label>
+          <input type="text" [(ngModel)]="editItem.scheduledDate"
+                 class="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:ring-2 focus:ring-[#159EEC]/20 focus:border-[#159EEC] outline-none transition-all">
+        </div>
+      </div>
+    }
+  </div>
+  <div modal-footer>
+    <button (click)="closeEditModal()"
+            class="px-6 py-2 rounded-lg text-sm font-medium text-gray-500 hover:bg-gray-100 transition-all">
+      Cancel
+    </button>
+    <button (click)="saveEdit()"
+            class="bg-[#159EEC] hover:bg-[#1282C4] text-white px-8 py-2 rounded-lg text-sm font-bold shadow-lg transition-all active:scale-95">
+      Save Changes
+    </button>
+  </div>
+</app-modal>
