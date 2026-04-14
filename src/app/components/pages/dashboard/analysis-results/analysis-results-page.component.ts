@@ -1,7 +1,7 @@
 import { Component, OnInit, inject, signal, computed, ChangeDetectionStrategy, effect, untracked, HostListener } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { LaboratoryService, AnalysisResult } from '../../../../services/laboratory.service';
-import { LucideAngularModule, Search, ChevronDown, ChevronUp, ClipboardCheck, MoreHorizontal, Download, FileText, User, Stethoscope, Calendar, Activity, FlaskConical, Eye, Pencil, Trash2 } from 'lucide-angular';
+import { LucideAngularModule, Search, ChevronDown, ChevronUp, ClipboardCheck, MoreHorizontal, Download, FileText, User, Stethoscope, Calendar, Activity, FlaskConical, Eye, Pencil, Trash2, ChevronLeft, ChevronRight } from 'lucide-angular';
 import { FormsModule } from '@angular/forms';
 import { ModalComponent } from '../../../shared/modal/modal.component';
 
@@ -12,10 +12,13 @@ import { ModalComponent } from '../../../shared/modal/modal.component';
   styleUrls: ['./analysis-results-page.component.css'],
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: {
-    '(document:click)': 'closeDropdown()'
+    '(document:click)': 'closeDropdown(); closePageSizeMenu()'
   }
 })
 export class AnalysisResultsPageComponent implements OnInit {
+  closePageSizeMenu(): void {
+    this.isPageSizeMenuOpen = false;
+  }
   // Icons
   readonly Search = Search;
   readonly ChevronDown = ChevronDown;
@@ -32,6 +35,8 @@ export class AnalysisResultsPageComponent implements OnInit {
   readonly Eye = Eye;
   readonly Pencil = Pencil;
   readonly Trash2 = Trash2;
+  readonly ChevronLeft = ChevronLeft;
+  readonly ChevronRight = ChevronRight;
 
   // Dropdown state
   activeItem: AnalysisResult | null = null;
@@ -69,6 +74,36 @@ export class AnalysisResultsPageComponent implements OnInit {
   pageSize = signal(7);
   sortColumn = signal<keyof AnalysisResult | null>(null);
   sortDirection = signal<'asc' | 'desc'>('asc');
+  isPageSizeMenuOpen = false;
+
+  togglePageSizeMenu(event: Event): void {
+    event.stopPropagation();
+    this.isPageSizeMenuOpen = !this.isPageSizeMenuOpen;
+  }
+
+  changePageSize(size: number): void {
+    this.pageSize.set(size);
+    this.currentPage.set(1);
+    this.isPageSizeMenuOpen = false;
+  }
+
+  goToPage(page: number | string): void {
+    if (typeof page === 'number') {
+      this.currentPage.set(page);
+    }
+  }
+
+  prevPage(): void {
+    if (this.currentPage() > 1) {
+      this.currentPage.update(p => p - 1);
+    }
+  }
+
+  nextPage(): void {
+    if (this.currentPage() < this.totalPages()) {
+      this.currentPage.update(p => p + 1);
+    }
+  }
   
   // Computed Table Data
   filteredItems = computed(() => {
