@@ -5,10 +5,12 @@ import { LucideAngularModule, Search, ChevronDown, ChevronUp, Clock, User, Micro
 import { FormsModule } from '@angular/forms';
 import { AnalysisViewModalComponent } from './analysis-view-modal/analysis-view-modal.component';
 import { ModalComponent } from '../../../shared/modal/modal.component';
+import { CustomDatepickerComponent } from '../../../shared/custom-datepicker/custom-datepicker.component';
+import { CustomTimepickerComponent } from '../../../shared/custom-timepicker/custom-timepicker.component';
 
 @Component({
   selector: 'app-schedule-analysis-page',
-  imports: [CommonModule, LucideAngularModule, FormsModule, AnalysisViewModalComponent, ModalComponent],
+  imports: [CommonModule, LucideAngularModule, FormsModule, AnalysisViewModalComponent, ModalComponent, CustomDatepickerComponent, CustomTimepickerComponent],
   templateUrl: './schedule-analysis-page.component.html',
   styleUrls: ['./schedule-analysis-page.component.css'],
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -75,6 +77,27 @@ export class ScheduleAnalysisPageComponent implements OnInit {
   activeEditTypeDropdown = signal(false);
   activeEditLabDropdown = signal(false);
   activeEditStatusDropdown = signal(false);
+
+  // Date/Time Split State
+  tempDate = signal<string>('');
+  tempTime = signal<string>('');
+
+  private updateTempFromDateTime(dateTimeStr: string): void {
+    if (!dateTimeStr) {
+      this.tempDate.set('');
+      this.tempTime.set('09:00');
+      return;
+    }
+    const parts = dateTimeStr.split(' ');
+    this.tempDate.set(parts[0] || '');
+    this.tempTime.set(parts[1] || '09:00');
+  }
+
+  private getCombinedDateTime(): string {
+    const d = this.tempDate() || new Date().toISOString().split('T')[0];
+    const t = this.tempTime() || '09:00';
+    return `${d} ${t}`;
+  }
 
   // Table State
   searchQuery = signal('');
@@ -247,6 +270,7 @@ export class ScheduleAnalysisPageComponent implements OnInit {
       status: 'Scheduled',
       doctorName: ''
     });
+    this.updateTempFromDateTime(scheduledDate);
     this.isAddModalOpen.set(true);
   }
 
@@ -268,7 +292,7 @@ export class ScheduleAnalysisPageComponent implements OnInit {
         analysisType: data.analysisType,
         labId: Number(data.labId),
         labName: data.labName || 'Unknown Lab',
-        scheduledDate: data.scheduledDate || '',
+        scheduledDate: this.getCombinedDateTime(),
         status: 'Scheduled',
         doctorName: data.doctorName || '',
         selected: false
@@ -281,6 +305,7 @@ export class ScheduleAnalysisPageComponent implements OnInit {
 
   openEditModal(item: MedicalAnalysis): void {
     this.selectedAnalysis.set({ ...item });
+    this.updateTempFromDateTime(item.scheduledDate);
     this.isEditModalOpen.set(true);
     this.activeItem = null;
   }
@@ -293,6 +318,7 @@ export class ScheduleAnalysisPageComponent implements OnInit {
   saveEdit(): void {
     const updated = this.selectedAnalysis();
     if (updated) {
+      updated.scheduledDate = this.getCombinedDateTime();
       this.items.update(items => items.map(item =>
         item.id === updated.id ? { ...updated } : item
       ));
