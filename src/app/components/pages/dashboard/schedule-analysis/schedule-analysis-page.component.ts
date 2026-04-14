@@ -1,9 +1,9 @@
-import { Component, OnInit, inject, signal, computed, ChangeDetectionStrategy, effect, untracked } from '@angular/core';
+import { Component, OnInit, inject, signal, computed, ChangeDetectionStrategy, effect, untracked, HostListener } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { LaboratoryService, MedicalAnalysis } from '../../../../services/laboratory.service';
-import { LucideAngularModule, Search, ChevronDown, ChevronUp, CalendarPlus, Clock, User, Microscope, Eye, Plus, Trash2, MoreHorizontal, ChevronLeft, ChevronRight } from 'lucide-angular';
-import { AnalysisViewModalComponent } from './analysis-view-modal/analysis-view-modal.component';
+import { LucideAngularModule, Search, ChevronDown, ChevronUp, Clock, User, Microscope, MoreHorizontal, Plus, Trash2, Filter, ChevronLeft, ChevronRight, Eye, Edit2, Download, CheckCircle2, XCircle, CalendarPlus } from 'lucide-angular';
 import { FormsModule } from '@angular/forms';
+import { AnalysisViewModalComponent } from './analysis-view-modal/analysis-view-modal.component';
 
 @Component({
   selector: 'app-schedule-analysis-page',
@@ -12,7 +12,7 @@ import { FormsModule } from '@angular/forms';
   styleUrls: ['./schedule-analysis-page.component.css'],
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: {
-    '(document:click)': 'closePageSizeMenu()'
+    '(document:click)': 'closeDropdown(); closePageSizeMenu()'
   }
 })
 export class ScheduleAnalysisPageComponent implements OnInit {
@@ -23,21 +23,30 @@ export class ScheduleAnalysisPageComponent implements OnInit {
   readonly Search = Search;
   readonly ChevronDown = ChevronDown;
   readonly ChevronUp = ChevronUp;
-  readonly CalendarPlus = CalendarPlus;
-  readonly Eye = Eye;
+  readonly Clock = Clock;
+  readonly User = User;
+  readonly Microscope = Microscope;
+  readonly MoreHorizontal = MoreHorizontal;
   readonly Plus = Plus;
   readonly Trash2 = Trash2;
-  readonly MoreHorizontal = MoreHorizontal;
+  readonly Filter = Filter;
   readonly ChevronLeft = ChevronLeft;
   readonly ChevronRight = ChevronRight;
-
-  readonly readOnly = signal(true);
+  readonly Eye = Eye;
+  readonly Edit2 = Edit2;
+  readonly Download = Download;
+  readonly CheckCircle2 = CheckCircle2;
+  readonly XCircle = XCircle;
+  readonly CalendarPlus = CalendarPlus;
 
   private labService = inject(LaboratoryService);
-  
+
   // Data State
   items = signal<MedicalAnalysis[]>([]);
-  
+  readOnly = signal<boolean>(false);
+  activeItem: MedicalAnalysis | null = null;
+  dropdownPos = { top: 0, right: 0 };
+
   // Table State
   searchQuery = signal('');
   statusFilter = signal<string>('All');
@@ -46,6 +55,20 @@ export class ScheduleAnalysisPageComponent implements OnInit {
   sortColumn = signal<keyof MedicalAnalysis | null>(null);
   sortDirection = signal<'asc' | 'desc'>('asc');
   isPageSizeMenuOpen = false;
+
+  // Dropdown state
+  activeFilterMenu = signal<boolean>(false);
+
+  toggleFilterMenu(event: Event): void {
+    event.stopPropagation();
+    this.activeFilterMenu.set(!this.activeFilterMenu());
+  }
+
+  setFilter(value: string): void {
+    this.statusFilter.set(value);
+    this.activeFilterMenu.set(false);
+    this.currentPage.set(1);
+  }
 
   togglePageSizeMenu(event: Event): void {
     event.stopPropagation();
@@ -75,10 +98,10 @@ export class ScheduleAnalysisPageComponent implements OnInit {
       this.currentPage.update(p => p + 1);
     }
   }
-  
+
   isViewModalOpen = signal(false);
   selectedAnalysis = signal<MedicalAnalysis | null>(null);
-  
+
   // Selection
   selectedCount = computed(() => this.items().filter(i => i.selected).length);
   allSelected = computed(() => this.paginatedItems().length > 0 && this.paginatedItems().every(i => i.selected));
@@ -90,8 +113,8 @@ export class ScheduleAnalysisPageComponent implements OnInit {
     let result = this.items();
 
     if (query) {
-      result = result.filter(item => 
-        item.patientName.toLowerCase().includes(query) || 
+      result = result.filter(item =>
+        item.patientName.toLowerCase().includes(query) ||
         item.analysisType.toLowerCase().includes(query) ||
         item.labName.toLowerCase().includes(query) ||
         item.doctorName.toLowerCase().includes(query)
@@ -126,7 +149,7 @@ export class ScheduleAnalysisPageComponent implements OnInit {
     const total = this.totalPages();
     const current = this.currentPage();
     if (total <= 5) return Array.from({ length: total }, (_, i) => i + 1);
-    
+
     if (current <= 3) return [1, 2, 3, 4, '...', total];
     if (current >= total - 2) return [1, '...', total - 3, total - 2, total - 1, total];
     return [1, '...', current - 1, current, current + 1, '...', total];
@@ -159,13 +182,13 @@ export class ScheduleAnalysisPageComponent implements OnInit {
   toggleSelectAll() {
     const newVal = !this.allSelected();
     const paginatedIds = new Set(this.paginatedItems().map(i => i.id));
-    this.items.update(items => items.map(item => 
+    this.items.update(items => items.map(item =>
       paginatedIds.has(item.id) ? { ...item, selected: newVal } : item
     ));
   }
 
   toggleSelectItem(id: number) {
-    this.items.update(items => items.map(item => 
+    this.items.update(items => items.map(item =>
       item.id === id ? { ...item, selected: !item.selected } : item
     ));
   }
@@ -193,5 +216,26 @@ export class ScheduleAnalysisPageComponent implements OnInit {
       case 'Cancelled': return 'bg-gray-50 text-gray-500 border-gray-200';
       default: return 'bg-gray-50 text-gray-700 border-gray-100';
     }
+  }
+
+  closeDropdown(): void {
+    this.activeItem = null;
+    this.activeFilterMenu.set(false);
+  }
+
+  toggleDropdown(item: MedicalAnalysis, event: Event): void {
+    event.stopPropagation();
+    if (this.activeItem?.id === item.id) {
+      this.activeItem = null;
+      return;
+    }
+    const btn = (event.currentTarget as HTMLElement).getBoundingClientRect();
+    this.dropdownPos = { top: btn.bottom + 4, right: window.innerWidth - btn.right };
+    this.activeItem = item;
+  }
+
+  @HostListener('window:scroll')
+  onWindowScroll() {
+    this.closeDropdown();
   }
 }
