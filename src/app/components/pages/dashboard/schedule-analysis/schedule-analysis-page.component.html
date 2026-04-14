@@ -349,14 +349,14 @@
           </div>
         </div>
 
-        <div>
-          <label class="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Schedule Date & Time</label>
-          <div class="relative">
-            <span class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-              <lucide-icon [img]="Clock" class="w-4 h-4 text-gray-400"></lucide-icon>
-            </span>
-            <input type="text" [(ngModel)]="data.scheduledDate" placeholder="YYYY-MM-DD HH:mm"
-                   class="w-full pl-10 pr-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:ring-2 focus:ring-[#159EEC]/20 focus:border-[#159EEC] outline-none transition-all">
+        <div class="md:col-span-2 grid grid-cols-1 md:grid-cols-2 gap-5">
+          <div>
+            <label class="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Schedule Date</label>
+            <app-custom-datepicker [ngModel]="tempDate()" (ngModelChange)="tempDate.set($event)"></app-custom-datepicker>
+          </div>
+          <div>
+            <label class="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Schedule Time</label>
+            <app-custom-timepicker [ngModel]="tempTime()" (ngModelChange)="tempTime.set($event)"></app-custom-timepicker>
           </div>
         </div>
 
@@ -465,10 +465,15 @@
           </div>
         </div>
 
-        <div>
-          <label class="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Date & Time</label>
-          <input type="text" [(ngModel)]="editItem.scheduledDate"
-                 class="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:ring-2 focus:ring-[#159EEC]/20 focus:border-[#159EEC] outline-none transition-all">
+        <div class="md:col-span-2 grid grid-cols-1 md:grid-cols-2 gap-5">
+          <div>
+            <label class="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Date</label>
+            <app-custom-datepicker [ngModel]="tempDate()" (ngModelChange)="tempDate.set($event)"></app-custom-datepicker>
+          </div>
+          <div>
+            <label class="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Time</label>
+            <app-custom-timepicker [ngModel]="tempTime()" (ngModelChange)="tempTime.set($event)"></app-custom-timepicker>
+          </div>
         </div>
       </div>
     }

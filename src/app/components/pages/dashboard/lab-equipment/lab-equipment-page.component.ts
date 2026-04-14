@@ -4,10 +4,11 @@ import { LaboratoryService, LabEquipment } from '../../../../services/laboratory
 import { LucideAngularModule, Search, ChevronDown, ChevronUp, Microscope, MoreHorizontal, Plus, Trash2, Edit2, Settings, Eye, ChevronLeft, ChevronRight, Calendar, MapPin, Tag, Activity, Filter } from 'lucide-angular';
 import { FormsModule } from '@angular/forms';
 import { ModalComponent } from '../../../shared/modal/modal.component';
+import { CustomDatepickerComponent } from '../../../shared/custom-datepicker/custom-datepicker.component';
 
 @Component({
   selector: 'app-lab-equipment-page',
-  imports: [CommonModule, LucideAngularModule, FormsModule, ModalComponent],
+  imports: [CommonModule, LucideAngularModule, FormsModule, ModalComponent, CustomDatepickerComponent],
   templateUrl: './lab-equipment-page.component.html',
   styleUrls: ['./lab-equipment-page.component.css'],
   changeDetection: ChangeDetectionStrategy.OnPush,
