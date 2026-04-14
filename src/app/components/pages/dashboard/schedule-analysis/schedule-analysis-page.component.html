@@ -53,9 +53,9 @@
     <!-- Table -->
     <div class="flex-1 overflow-x-auto">
       <table class="w-full border-collapse">
-        <thead class="bg-gray-50/50 border-b border-gray-200">
+        <thead class="bg-gray-50/50 border-b border-gray-200 border-r border-b border-gray-200 max-lg:px-2 max-lg:text-[13px] max-lg:overflow-visible">
           <tr>
-            <th class="px-4 py-4 text-left w-[60px]">
+            <th class="px-4 py-4 text-sm font-normal text-gray-600 whitespace-nowrap overflow-hidden w-[6%] border-r border-b border-gray-200 max-lg:px-2 max-lg:text-[13px] max-lg:overflow-visible">
               <div class="flex items-center gap-3">
                 @if (!readOnly()) {
                   <input type="checkbox" 
@@ -63,10 +63,10 @@
                          (change)="toggleSelectAll()"
                          class="w-3.5 h-3.5 rounded border-gray-100 text-[#159EEC] focus:ring-0 cursor-pointer">
                 }
-                <span class="text-xs font-semibold text-gray-400 uppercase tracking-wider">No</span>
+                <span class="pl-1">No</span>
               </div>
             </th>
-            <th (click)="toggleSort('patientName')" class="px-4 py-4 text-sm font-normal text-gray-600 whitespace-nowrap cursor-pointer hover:text-[#1F2B6C] group">
+            <th (click)="toggleSort('patientName')" class="px-4 py-4 text-sm font-normal text-gray-600 whitespace-nowrap overflow-hidden w-[20%] border-r border-b border-gray-200 max-lg:px-2 max-lg:text-[13px] max-lg:overflow-visible cursor-pointer hover:text-[#1F2B6C] group">
               <div class="flex items-center gap-1">
                 Patient
                 <lucide-icon [img]="sortColumn() === 'patientName' ? (sortDirection() === 'asc' ? ChevronUp : ChevronDown) : ChevronDown" 
@@ -74,7 +74,7 @@
                             class="w-3 h-3"></lucide-icon>
               </div>
             </th>
-            <th (click)="toggleSort('analysisType')" class="px-4 py-4 text-sm font-normal text-gray-600 whitespace-nowrap cursor-pointer hover:text-[#1F2B6C] group">
+            <th (click)="toggleSort('analysisType')" class="px-4 py-4 text-sm font-normal text-gray-600 whitespace-nowrap overflow-hidden w-[18%] border-r border-b border-gray-200 max-lg:px-2 max-lg:text-[13px] max-lg:overflow-visible cursor-pointer hover:text-[#1F2B6C] group">
               <div class="flex items-center gap-1">
                 Analysis Type
                 <lucide-icon [img]="sortColumn() === 'analysisType' ? (sortDirection() === 'asc' ? ChevronUp : ChevronDown) : ChevronDown" 
@@ -82,7 +82,7 @@
                             class="w-3 h-3"></lucide-icon>
               </div>
             </th>
-            <th (click)="toggleSort('labName')" class="px-4 py-4 text-sm font-normal text-gray-600 whitespace-nowrap cursor-pointer hover:text-[#1F2B6C] group">
+            <th (click)="toggleSort('labName')" class="px-4 py-4 text-sm font-normal text-gray-600 whitespace-nowrap overflow-hidden w-[16%] border-r border-b border-gray-200 max-lg:px-2 max-lg:text-[13px] max-lg:overflow-visible cursor-pointer hover:text-[#1F2B6C] group">
               <div class="flex items-center gap-1">
                 Laboratory
                 <lucide-icon [img]="sortColumn() === 'labName' ? (sortDirection() === 'asc' ? ChevronUp : ChevronDown) : ChevronDown" 
@@ -90,7 +90,7 @@
                             class="w-3 h-3"></lucide-icon>
               </div>
             </th>
-            <th (click)="toggleSort('scheduledDate')" class="px-4 py-4 text-sm font-normal text-gray-600 whitespace-nowrap cursor-pointer hover:text-[#1F2B6C] group">
+            <th (click)="toggleSort('scheduledDate')" class="px-4 py-4 text-sm font-normal text-gray-600 whitespace-nowrap overflow-hidden w-[18%] border-r border-b border-gray-200 max-lg:px-2 max-lg:text-[13px] max-lg:overflow-visible cursor-pointer hover:text-[#1F2B6C] group">
               <div class="flex items-center gap-1">
                 Date & Time
                 <lucide-icon [img]="sortColumn() === 'scheduledDate' ? (sortDirection() === 'asc' ? ChevronUp : ChevronDown) : ChevronDown" 
@@ -98,7 +98,7 @@
                             class="w-3 h-3"></lucide-icon>
               </div>
             </th>
-            <th (click)="toggleSort('status')" class="px-4 py-4 text-sm font-normal text-gray-600 whitespace-nowrap cursor-pointer hover:text-[#1F2B6C] group">
+            <th (click)="toggleSort('status')" class="px-4 py-4 text-sm font-normal text-gray-600 whitespace-nowrap overflow-hidden w-[12%] border-r border-b border-gray-200 max-lg:px-2 max-lg:text-[13px] max-lg:overflow-visible cursor-pointer hover:text-[#1F2B6C] group">
               <div class="flex items-center gap-1">
                 Status
                 <lucide-icon [img]="sortColumn() === 'status' ? (sortDirection() === 'asc' ? ChevronUp : ChevronDown) : ChevronDown" 
@@ -106,13 +106,13 @@
                             class="w-3 h-3"></lucide-icon>
               </div>
             </th>
-            <th class="px-4 py-4 text-center w-[80px] sticky right-0 bg-gray-50/50">Actions</th>
+            <th class="px-4 py-4 text-sm font-normal text-gray-600 text-center w-[6%] border-r border-b border-gray-200 max-lg:px-2 max-lg:text-[13px] max-lg:overflow-visible">Actions</th>
           </tr>
         </thead>
         <tbody class="text-sm text-gray-900 font-normal bg-white">
           @for (item of paginatedItems(); track item.id) {
-          <tr class="hover:bg-gray-50/30 group transition-colors border-b border-gray-200 last:border-0 hover:z-1">
-            <td class="px-4 py-4 border-r border-gray-200">
+          <tr class="hover:bg-gray-50/30 group whitespace-nowrap transition-colors border-b border-gray-200 last:border-0 text-sm">
+            <td class="px-4 py-4 border-r border-b border-gray-200 text-gray-900 font-normal max-lg:px-2 max-lg:text-[13px]">
               <div class="flex items-center gap-3">
                 @if (!readOnly()) {
                   <input type="checkbox" 
@@ -120,27 +120,35 @@
                          (change)="toggleSelectItem(item.id)"
                          class="w-3.5 h-3.5 rounded border-gray-100 text-[#159EEC] focus:ring-0 cursor-pointer">
                 }
-                <span class="text-sm text-gray-600">{{ item.no }}</span>
+                <span class="font-normal text-gray-900 tracking-tight pl-1">{{ item.no }}</span>
               </div>
             </td>
-            <td class="px-4 py-4 border-r border-gray-200 font-medium">{{ item.patientName }}</td>
-            <td class="px-4 py-4 border-r border-gray-200">{{ item.analysisType }}</td>
-            <td class="px-4 py-4 border-r border-gray-200 text-gray-600">{{ item.labName }}</td>
-            <td class="px-4 py-4 border-r border-gray-200 text-gray-600">{{ item.scheduledDate }}</td>
-            <td class="px-4 py-4 border-r border-gray-200">
-              <span [class]="'px-3 py-1 rounded-full text-[11px] font-bold border ' + getStatusBadgeClass(item.status)">
+            <td class="px-4 py-4 pl-5 border-r border-b border-gray-200 text-gray-900 font-medium tracking-tight max-lg:px-2 max-lg:text-[13px]">{{ item.patientName }}</td>
+            <td class="px-4 py-4 border-r border-b border-gray-200 text-gray-900 font-normal max-lg:px-2 max-lg:text-[13px]">{{ item.analysisType }}</td>
+            <td class="px-4 py-4 border-r border-b border-gray-200 text-gray-900 font-normal max-lg:px-2 max-lg:text-[13px] text-gray-600">{{ item.labName }}</td>
+            <td class="px-4 py-4 border-r border-b border-gray-200 text-gray-900 font-normal max-lg:px-2 max-lg:text-[13px] text-gray-600">{{ item.scheduledDate }}</td>
+            <td class="px-4 py-4 border-r border-b border-gray-200 text-gray-900 font-normal max-lg:px-2 max-lg:text-[13px]">
+              <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium"
+                    [class.bg-blue-50]="item.status === 'Scheduled'"
+                    [class.text-blue-700]="item.status === 'Scheduled'"
+                    [class.bg-amber-50]="item.status === 'InProgress'"
+                    [class.text-amber-700]="item.status === 'InProgress'"
+                    [class.bg-emerald-50]="item.status === 'Completed'"
+                    [class.text-emerald-700]="item.status === 'Completed'"
+                    [class.bg-gray-50]="item.status === 'Cancelled'"
+                    [class.text-gray-500]="item.status === 'Cancelled'">
                 {{ item.status }}
               </span>
             </td>
-            <td class="px-4 py-4 text-center sticky right-0 bg-white group-hover:bg-[#f9fafb] shadow-[-4px_0_8px_-4px_rgba(0,0,0,0.06)]">
+            <td class="px-4 py-4 text-center border-r border-b border-gray-200 text-gray-400 max-lg:px-2 max-lg:text-[13px]">
               @if (readOnly()) {
                 <button (click)="onView(item)" 
                         title="View Details"
-                        class="p-1.5 text-[#159EEC] hover:text-[#1F2B6C] hover:bg-blue-50/50 rounded-lg transition-all active:scale-95 border border-transparent hover:border-blue-100">
+                        class="p-1.5 hover:text-gray-600 rounded-lg transition-colors cursor-pointer">
                   <lucide-icon [img]="Eye" class="w-4 h-4"></lucide-icon>
                 </button>
               } @else {
-                <button class="p-1.5 text-gray-400 hover:text-[#1F2B6C] hover:bg-white rounded-lg transition-all active:scale-95 border border-transparent hover:border-gray-100">
+                <button class="p-1.5 hover:text-gray-600 rounded-lg transition-colors cursor-pointer">
                   <lucide-icon [img]="MoreHorizontal" class="w-4 h-4"></lucide-icon>
                 </button>
               }
@@ -158,44 +166,61 @@
       </table>
     </div>
 
-    <!-- Pagination -->
-    <div class="px-4 lg:px-5 py-4 border-t border-gray-100 flex flex-col sm:flex-row items-center justify-between gap-4">
-      <div class="flex items-center gap-3">
-        <select (change)="pageSize.set($any($event.target).value)" 
-                class="px-3 py-1.5 border border-gray-200 rounded-lg bg-white text-gray-700 text-[13px] focus:ring-1 focus:ring-[#159EEC] cursor-pointer">
-          <option [value]="5">5</option>
-          <option [value]="7" selected>7</option>
-          <option [value]="10">10</option>
-          <option [value]="20">20</option>
-        </select>
-        <span class="text-[13px] text-gray-500">Items per page</span>
-      </div>
-
-      <div class="flex items-center gap-1.5">
-        <button (click)="currentPage.set(currentPage() - 1)" 
-                [disabled]="currentPage() === 1"
-                class="w-8 h-8 rounded-lg border border-gray-200 flex items-center justify-center transition-all bg-white hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed">
-          <lucide-icon [img]="ChevronDown" class="w-4 h-4 rotate-90"></lucide-icon>
-        </button>
-
-        @for (page of visiblePages(); track $index) {
-          @if (page === '...') {
-            <span class="text-gray-400 text-[13px] px-2">...</span>
-          } @else {
-            <button (click)="currentPage.set($any(page))"
-                   [class]="page === currentPage() ? 'bg-[#1F2B6C] text-white border-[#1F2B6C]' : 'bg-white text-gray-600 border-gray-200 hover:bg-gray-50'"
-                   class="w-8 h-8 rounded-lg border text-[13px] font-medium transition-all">
-              {{ page }}
+    <!-- Pagination Footer -->
+    <div class="mt-auto px-4 lg:px-5 py-4 border-t border-gray-100 flex flex-col sm:flex-row items-center justify-center lg:justify-between text-gray-500">
+        <div class="pagination-info text-[13px] font-normal flex items-center gap-2 mb-4 sm:mb-0 max-lg:hidden">
+            <span>Showing</span>
+            <div class="relative">
+                <button (click)="togglePageSizeMenu($event)"
+                    class="appearance-none px-3 py-1.5 pr-8 border border-gray-200 rounded-lg bg-white text-gray-700 text-[13px] font-normal focus:outline-none focus:ring-1 focus:ring-[#159EEC] focus:border-[#159EEC] cursor-pointer hover:bg-gray-50 transition-colors shadow-[0_1px_2px_rgba(0,0,0,0.02)] min-w-16 text-left flex items-center">
+                    {{ pageSize() }}
+                    <lucide-icon [img]="ChevronDown" class="w-3.5 h-3.5 text-gray-400 absolute right-2.5 top-1/2 -translate-y-1/2 pointer-events-none"></lucide-icon>
+                </button>
+                @if (isPageSizeMenuOpen) {
+                <div class="absolute bottom-full mb-1 left-0 w-full min-w-16 bg-white border border-gray-200 rounded-lg shadow-lg overflow-hidden z-50 py-1">
+                    @for (size of [5, 7, 10, 20]; track size) {
+                    <button (click)="changePageSize(size)"
+                        class="w-full text-left px-3 py-1.5 text-[13px] font-normal transition-colors"
+                        [class.bg-[#159EEC]]="size === pageSize()" [class.text-white]="size === pageSize()"
+                        [class.text-gray-700]="size !== pageSize()" [class.hover:bg-gray-50]="size !== pageSize()">
+                        {{ size }}
+                    </button>
+                    }
+                </div>
+                }
+            </div>
+            <span>out of {{ filteredItems().length }}</span>
+        </div>
+        <div class="flex items-center gap-1.5">
+            <button (click)="prevPage()" [disabled]="currentPage() === 1"
+                class="w-8 h-8 flex items-center justify-center rounded-lg border border-gray-200 transition-colors bg-white shadow-[0_1px_2px_rgba(0,0,0,0.02)]"
+                [class.text-gray-300]="currentPage() === 1" [class.cursor-not-allowed]="currentPage() === 1"
+                [class.text-gray-500]="currentPage() !== 1" [class.hover:bg-gray-50]="currentPage() !== 1"
+                [class.cursor-pointer]="currentPage() !== 1">
+                <lucide-icon [img]="ChevronLeft" class="w-4 h-4"></lucide-icon>
             </button>
-          }
-        }
-
-        <button (click)="currentPage.set(currentPage() + 1)" 
-                [disabled]="currentPage() === totalPages()"
-                class="w-8 h-8 rounded-lg border border-gray-200 flex items-center justify-center transition-all bg-white hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed">
-          <lucide-icon [img]="ChevronDown" class="w-4 h-4 -rotate-90"></lucide-icon>
-        </button>
-      </div>
+            @for (page of visiblePages(); track $index) {
+            @if (page !== '...') {
+            <button (click)="goToPage(page)"
+                class="w-8 h-8 flex items-center justify-center rounded-lg text-[13px] font-normal transition-all cursor-pointer shadow-[0_1px_2px_rgba(0,0,0,0.02)]"
+                [class.bg-[#1F2B6C]]="page === currentPage()" [class.text-white]="page === currentPage()"
+                [class.border-transparent]="page === currentPage()" [class.bg-white]="page !== currentPage()"
+                [class.border]="page !== currentPage()" [class.border-gray-200]="page !== currentPage()"
+                [class.text-gray-600]="page !== currentPage()" [class.hover:bg-gray-50]="page !== currentPage()">
+                {{ page }}
+            </button>
+            } @else {
+            <div class="w-8 h-8 flex items-center justify-center text-gray-400 text-[13px]">...</div>
+            }
+            }
+            <button (click)="nextPage()" [disabled]="currentPage() === totalPages()"
+                class="w-8 h-8 flex items-center justify-center rounded-lg border border-gray-200 transition-colors bg-white shadow-[0_1px_2px_rgba(0,0,0,0.02)]"
+                [class.text-gray-300]="currentPage() === totalPages()" [class.cursor-not-allowed]="currentPage() === totalPages()"
+                [class.text-gray-500]="currentPage() !== totalPages()" [class.hover:bg-gray-50]="currentPage() !== totalPages()"
+                [class.cursor-pointer]="currentPage() !== totalPages()">
+                <lucide-icon [img]="ChevronRight" class="w-4 h-4"></lucide-icon>
+            </button>
+        </div>
     </div>
   </div>
 </div>

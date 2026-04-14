@@ -1,7 +1,7 @@
 import { Component, OnInit, inject, signal, computed, ChangeDetectionStrategy, effect, untracked, HostListener } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { LaboratoryService, LabEquipment } from '../../../../services/laboratory.service';
-import { LucideAngularModule, Search, ChevronDown, ChevronUp, Microscope, MoreHorizontal, Plus, Trash2, Edit2, Settings, Eye } from 'lucide-angular';
+import { LucideAngularModule, Search, ChevronDown, ChevronUp, Microscope, MoreHorizontal, Plus, Trash2, Edit2, Settings, Eye, ChevronLeft, ChevronRight } from 'lucide-angular';
 import { FormsModule } from '@angular/forms';
 
 @Component({
@@ -11,10 +11,13 @@ import { FormsModule } from '@angular/forms';
   styleUrls: ['./lab-equipment-page.component.css'],
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: {
-    '(document:click)': 'closeDropdown()'
+    '(document:click)': 'closeDropdown(); closePageSizeMenu()'
   }
 })
 export class LabEquipmentPageComponent implements OnInit {
+  closePageSizeMenu(): void {
+    this.isPageSizeMenuOpen = false;
+  }
   // Icons
   readonly Search = Search;
   readonly ChevronDown = ChevronDown;
@@ -26,6 +29,8 @@ export class LabEquipmentPageComponent implements OnInit {
   readonly Edit2 = Edit2;
   readonly Settings = Settings;
   readonly Eye = Eye;
+  readonly ChevronLeft = ChevronLeft;
+  readonly ChevronRight = ChevronRight;
 
   // Dropdown state
   activeItem: LabEquipment | null = null;
@@ -63,6 +68,36 @@ export class LabEquipmentPageComponent implements OnInit {
   pageSize = signal(7);
   sortColumn = signal<keyof LabEquipment | null>(null);
   sortDirection = signal<'asc' | 'desc'>('asc');
+  isPageSizeMenuOpen = false;
+
+  togglePageSizeMenu(event: Event): void {
+    event.stopPropagation();
+    this.isPageSizeMenuOpen = !this.isPageSizeMenuOpen;
+  }
+
+  changePageSize(size: number): void {
+    this.pageSize.set(size);
+    this.currentPage.set(1);
+    this.isPageSizeMenuOpen = false;
+  }
+
+  goToPage(page: number | string): void {
+    if (typeof page === 'number') {
+      this.currentPage.set(page);
+    }
+  }
+
+  prevPage(): void {
+    if (this.currentPage() > 1) {
+      this.currentPage.update(p => p - 1);
+    }
+  }
+
+  nextPage(): void {
+    if (this.currentPage() < this.totalPages()) {
+      this.currentPage.update(p => p + 1);
+    }
+  }
   
   // Selection
   selectedCount = computed(() => this.items().filter(i => i.selected).length);

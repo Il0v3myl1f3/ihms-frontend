@@ -58,12 +58,24 @@ This document outlines the standard patterns for creating and styling dashboard 
 
 ### 4.1 Borders
 
-```css
-table { border-collapse: collapse; }
+table { 
+    border-collapse: collapse; 
+    width: 100%;
+}
 
+/* Gold Standard Borders */
 table th, table td {
     border-right: 1px solid #e5e7eb;  /* gray-200 vertical dividers */
     border-bottom: 1px solid #e5e7eb; /* gray-200 row dividers */
+}
+
+/* Ensure even the first/last cells have borders where appropriate */
+table thead {
+    border-top: 1px solid #e5e7eb;
+}
+
+table tr td:first-child, table tr th:first-child {
+    border-left: 1px solid #e5e7eb;
 }
 
 table th:last-child, table td:last-child {
@@ -73,13 +85,13 @@ table th:last-child, table td:last-child {
 
 ### 4.2 Header Row
 
-- `<thead class="bg-gray-50/50 border-b border-gray-200">`
-- Each `<th>`: `px-4 py-4 text-sm font-normal text-gray-600 whitespace-nowrap overflow-hidden`.
+- `<thead class="bg-gray-50/50 border-b border-gray-200 border-r border-b border-gray-200 max-lg:px-2 max-lg:text-[13px] max-lg:overflow-visible">`
+- Each `<th>`: `px-4 py-4 text-sm font-normal text-gray-600 whitespace-nowrap overflow-hidden border-r border-b border-gray-200 max-lg:px-2 max-lg:text-[13px] max-lg:overflow-visible`.
 ### 4.3 Column Composition
 
-- **Index Column (Checkbox + No)**: Combined into one cell (`flex items-center gap-3`). Checkbox 3.5×3.5 + "No" label with sort icon.
-- **Data Columns**: `px-4 py-4 text-gray-900`.
-- **Action Column**: `w-[6%] text-center`, uses `MoreHorizontal` Lucide icon in a `p-1.5` button.
+- **Index Column (Checkbox + No)**: Combined into one cell (`flex items-center gap-3`). Checkbox 3.5×3.5 + "No" label with sort icon. Padding: `px-4 py-4`.
+- **Data Columns**: `px-4 py-4 text-gray-900 font-normal`. First data column (usually Name) often uses `font-medium tracking-tight`.
+- **Action Column**: `w-[6%] text-center border-r border-b border-gray-200`, uses `MoreHorizontal` Lucide icon in a `p-1.5` button.
 
 ### 4.4 Sortable Headers
 
@@ -91,7 +103,8 @@ Clickable sort headers use this pattern:
 
 ### 4.5 Sticky Action Column
 
-The last column (Action) is sticky when the table scrolls horizontally:
+The last column (Action) should usually NOT be sticky if borders are used throughout, as it breaks the grid aesthetic. Use standard `relative` positioning unless horizontal scrolling is excessive.
+If sticky is used:
 ```css
 table th:last-child, table td:last-child {
     position: sticky;
