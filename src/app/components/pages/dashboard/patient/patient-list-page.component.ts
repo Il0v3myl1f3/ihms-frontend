@@ -2,6 +2,7 @@ import { Component, ViewChild, ChangeDetectionStrategy, inject } from '@angular/
 import { Router } from '@angular/router';
 import { PatientTableComponent, Patient } from './patient-table/patient-table.component';
 import { PatientCreateModalComponent } from './patient-create-modal/patient-create-modal.component';
+import { PatientService } from '../../../../services/patient.service';
 import { Appointment } from '../appointments/appointment-table/appointment-table.component';
 import { Payment } from '../payments/payment-table/payment-table.component';
 
@@ -56,9 +57,19 @@ export const MOCK_PATIENTS: Patient[] = [
 })
 export class PatientListPageComponent {
     private router = inject(Router);
+    private patientService = inject(PatientService);
+
     @ViewChild(PatientTableComponent) patientTable!: PatientTableComponent;
 
-    patients: Patient[] = [...MOCK_PATIENTS];
+    patients: Patient[] = [];
+
+    constructor() {
+        this.loadPatients();
+    }
+
+    private loadPatients() {
+        this.patientService.getPatients().subscribe((p: Patient[]) => this.patients = p);
+    }
 
     selectedPatientForEdit: Patient | null = null;
     isAddPatientModalOpen = false;
@@ -108,12 +119,8 @@ export class PatientListPageComponent {
     }
 
     onDeletePatient(patient: Patient) {
-        this.patients = this.patients.filter(p => p.id !== patient.id);
-
-        this.patients = this.patients.map((p, index) => ({
-            ...p,
-            no: index + 1
-        }));
+        this.patientService.deletePatient(patient.id);
+        this.loadPatients();
 
         if (this.patientTable) {
             const totalPages = this.patientTable.totalPages();
@@ -126,13 +133,8 @@ export class PatientListPageComponent {
     }
 
     onDeleteSelectedPatients(selectedPatients: Patient[]) {
-        const selectedIds = new Set(selectedPatients.map(p => p.id));
-        this.patients = this.patients.filter(p => !selectedIds.has(p.id));
-
-        this.patients = this.patients.map((p, index) => ({
-            ...p,
-            no: index + 1
-        }));
+        this.patientService.deleteSelectedPatients(selectedPatients.map(p => p.id));
+        this.loadPatients();
 
         if (this.patientTable) {
             const totalPages = this.patientTable.totalPages();
@@ -145,29 +147,11 @@ export class PatientListPageComponent {
     }
 
     onPatientSaved(patientData: Record<string, string>) {
-        if (this.selectedPatientForEdit) {
-            const index = this.patients.findIndex(p => p.id === this.selectedPatientForEdit!.id);
-            if (index !== -1) {
-                const updatedPatients = [...this.patients];
-                updatedPatients[index] = { ...updatedPatients[index], ...patientData };
-                this.patients = updatedPatients;
-            }
-        } else {
-            const newId = this.patients.length > 0 ? Math.max(...this.patients.map(p => p.id)) + 1 : 1;
-            const newNo = this.patients.length > 0 ? Math.max(...this.patients.map(p => p.no)) + 1 : 1;
-            const newPatient: Patient = {
-                id: newId,
-                no: newNo,
-                name: patientData['name'],
-                gender: patientData['gender'] as 'Male' | 'Female',
-                dob: patientData['dob'],
-                address: patientData['address'],
-                phone: patientData['phone'],
-                bloodType: patientData['bloodType'],
-                selected: false
-            };
-            this.patients = [...this.patients, newPatient];
-        }
+        this.patientService.savePatient({
+            ...patientData,
+            id: this.selectedPatientForEdit?.id
+        });
+        this.loadPatients();
 
         this.isAddPatientModalOpen = false;
 
