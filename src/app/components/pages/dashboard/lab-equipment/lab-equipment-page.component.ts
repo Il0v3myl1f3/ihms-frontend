@@ -45,6 +45,11 @@ export class LabEquipmentPageComponent implements OnInit {
   isDetailsModalOpen = signal(false);
   selectedItemForDetails = signal<LabEquipment | null>(null);
 
+  // Edit Modal state
+  isEditModalOpen = signal(false);
+  selectedItemForEdit = signal<LabEquipment | null>(null);
+  availableLabs = signal<any[]>([]);
+
   viewDetails(item: LabEquipment): void {
     this.selectedItemForDetails.set(item);
     this.isDetailsModalOpen.set(true);
@@ -55,6 +60,34 @@ export class LabEquipmentPageComponent implements OnInit {
     this.isDetailsModalOpen.set(false);
     // Optional: clear item after transition
     setTimeout(() => this.selectedItemForDetails.set(null), 300);
+  }
+
+  openEditModal(item: LabEquipment): void {
+    this.selectedItemForEdit.set({ ...item });
+    this.isEditModalOpen.set(true);
+    this.activeItem = null;
+  }
+
+  closeEditModal(): void {
+    this.isEditModalOpen.set(false);
+    setTimeout(() => this.selectedItemForEdit.set(null), 300);
+  }
+
+  saveEdit(): void {
+    const updatedItem = this.selectedItemForEdit();
+    if (updatedItem) {
+      // Find the lab name from availableLabs if it was changed
+      const selectedLab = this.availableLabs().find(l => l.id === Number(updatedItem.labId));
+      if (selectedLab) {
+        updatedItem.labName = selectedLab.name;
+        updatedItem.labId = selectedLab.id;
+      }
+
+      this.items.update(items => items.map(item =>
+        item.id === updatedItem.id ? { ...updatedItem } : item
+      ));
+      this.closeEditModal();
+    }
   }
 
   toggleDropdown(item: LabEquipment, event: Event): void {
@@ -183,6 +216,10 @@ export class LabEquipmentPageComponent implements OnInit {
   ngOnInit(): void {
     this.labService.getEquipment().subscribe(data => {
       this.items.set(data.map(item => ({ ...item, selected: false })));
+    });
+
+    this.labService.getLabs().subscribe(labs => {
+      this.availableLabs.set(labs);
     });
   }
 
