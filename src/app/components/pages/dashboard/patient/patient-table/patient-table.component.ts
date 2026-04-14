@@ -4,10 +4,13 @@ import { CommonModule } from '@angular/common';
 import { LucideAngularModule, Pencil, Trash2, MoreHorizontal, Search, Filter, ChevronLeft, ChevronRight, Plus, ChevronDown, ChevronUp, Eye } from 'lucide-angular';
 
 export interface Patient {
-    id: number;
+    id: string;
     no: number;
     name: string;
-    gender: 'Male' | 'Female';
+    firstName: string;
+    lastName: string;
+    email: string;
+    gender: 'Male' | 'Female' | 'Other';
     dob: string;
     address: string;
     phone: string;

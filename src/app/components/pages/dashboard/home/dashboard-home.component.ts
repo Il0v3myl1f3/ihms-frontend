@@ -88,7 +88,9 @@ export class DashboardHomeComponent implements OnInit {
         });
 
         // Load real-time stats
-        this.stats.totalPatients = this.patientService.getPatientCount();
+        this.patientService.getPatients().subscribe(patients => {
+            this.stats.totalPatients = patients.length;
+        });
         this.stats.scheduledAppointments = this.appointmentService.getTodayAppointmentCount();
         
         const roomStats = this.roomService.getRoomStats();

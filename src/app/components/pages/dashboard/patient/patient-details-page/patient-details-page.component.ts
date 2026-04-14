@@ -8,8 +8,8 @@ import { AppointmentCreateModalComponent } from '../../appointments/appointment-
 import { MOCK_APPOINTMENTS } from '../../appointments/appointments-page.component';
 import { PaymentTableComponent, Payment } from '../../payments/payment-table/payment-table.component';
 import { PaymentCreateModalComponent } from '../../payments/payment-create-modal/payment-create-modal.component';
+import { PatientService } from '../../../../../services/patient.service';
 import { Patient } from '../patient-table/patient-table.component';
-import { MOCK_PATIENTS } from '../patient-list-page.component';
 
 export interface PatientPrescription {
     id: number;
@@ -34,6 +34,7 @@ export class PatientDetailsPageComponent implements OnInit {
     route = inject(ActivatedRoute);
     router = inject(Router);
     medicalService = inject(MedicalService);
+    patientService = inject(PatientService);
 
     // Icons
     User = User;
@@ -83,8 +84,7 @@ export class PatientDetailsPageComponent implements OnInit {
         this.route.paramMap.subscribe(params => {
             const idParam = params.get('id');
             if (idParam) {
-                const id = parseInt(idParam, 10);
-                this.loadPatientData(id);
+                this.loadPatientData(idParam);
             }
         });
 
@@ -93,35 +93,22 @@ export class PatientDetailsPageComponent implements OnInit {
         });
     }
 
-    loadPatientData(id: number) {
-        // Mock fetch based on ID - normally this would call a PatientService
-        // For this UI demo, we'll just populate some static/semi-dynamic data based on the ID.
-        const foundPatient = MOCK_PATIENTS.find(p => p.id === id);
-        
-        const mockPatient: Patient = foundPatient ? { ...foundPatient } : {
-            id: id,
-            no: id,
-            name: 'Unknown Patient',
-            gender: 'Female',
-            dob: 'N/A',
-            address: 'N/A',
-            phone: 'N/A',
-            bloodType: 'N/A',
-            selected: false
-        };
-        this.patient.set(mockPatient);
+    loadPatientData(id: string) {
+        this.patientService.getPatientById(id).subscribe(p => {
+            this.patient.set(p);
 
-        this.patientAppointments.set(
-            MOCK_APPOINTMENTS.filter(a => a.patientName === mockPatient.name)
-        );
+            this.patientAppointments.set(
+                MOCK_APPOINTMENTS.filter(a => a.patientName === p.name)
+            );
 
-        // Mock payments
-        this.patientPayments.set([
-            { id: 1, no: 1, invoiceNumber: 'INV-2024-001', patientName: mockPatient.name, amount: 350.00, date: '15/01/2024', method: 'Credit Card', status: 'Paid', selected: false },
-            { id: 2, no: 2, invoiceNumber: 'INV-2024-005', patientName: mockPatient.name, amount: 120.00, date: '18/02/2024', method: 'Insurance', status: 'Pending', selected: false }
-        ]);
+            // Mock payments (still mock for now as requested, but linked to patient name)
+            this.patientPayments.set([
+                { id: 1, no: 1, invoiceNumber: 'INV-2024-001', patientName: p.name, amount: 350.00, date: '15/01/2024', method: 'Credit Card', status: 'Paid', selected: false },
+                { id: 2, no: 2, invoiceNumber: 'INV-2024-005', patientName: p.name, amount: 120.00, date: '18/02/2024', method: 'Insurance', status: 'Pending', selected: false }
+            ]);
+        });
 
-        // Mock prescriptions
+        // Mock prescriptions (keeping these as mock static data for now as they aren't in backend yet)
         this.patientPrescriptions.set([
             { id: 1, medication: 'Metformin', dosage: '500mg', frequency: 'Once daily', status: 'Active', refills: 3, instructions: 'Take after meals', startDate: 'January 10, 2026', endDate: 'February 10, 2026' },
             { id: 2, medication: 'Lisinopril', dosage: '10mg', frequency: 'Once daily', status: 'Active', refills: 5, instructions: 'Take in the morning', startDate: 'January 15, 2026', endDate: 'March 15, 2026' },

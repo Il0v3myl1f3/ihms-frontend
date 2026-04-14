@@ -7,7 +7,7 @@ import { AppointmentTableComponent, Appointment } from '../../appointments/appoi
 import { AppointmentCreateModalComponent } from '../../appointments/appointment-create-modal/appointment-create-modal.component';
 import { MOCK_APPOINTMENTS } from '../../appointments/appointments-page.component';
 import { PatientTableComponent, Patient } from '../../patient/patient-table/patient-table.component';
-import { MOCK_PATIENTS } from '../../patient/patient-list-page.component';
+import { PatientService } from '../../../../../services/patient.service';
 
 @Component({
     selector: 'app-doctor-details-page',
@@ -20,6 +20,7 @@ export class DoctorDetailsPageComponent implements OnInit {
     private route = inject(ActivatedRoute);
     private router = inject(Router);
     private medicalService = inject(MedicalService);
+    private patientService = inject(PatientService);
 
     // Icons
     User = User;
@@ -70,7 +71,9 @@ export class DoctorDetailsPageComponent implements OnInit {
             this.allDoctors.set(docs);
         });
 
-        this.patientNames.set(MOCK_PATIENTS.map(p => p.name));
+        this.patientService.getPatients().subscribe(patients => {
+            this.patientNames.set(patients.map(p => p.name));
+        });
     }
 
     loadDoctorData(id: number) {
@@ -84,11 +87,13 @@ export class DoctorDetailsPageComponent implements OnInit {
 
                 // Derive patients from these appointments
                 const patientNames = Array.from(new Set(filteredApps.map(a => a.patientName)));
-                const associatedPatients = MOCK_PATIENTS.filter(p => patientNames.includes(p.name));
-                this.doctorPatients.set(associatedPatients.map((p, index) => ({
-                    ...p,
-                    no: index + 1
-                })));
+                this.patientService.getPatients().subscribe(patients => {
+                    const associatedPatients = patients.filter(p => patientNames.includes(p.name));
+                    this.doctorPatients.set(associatedPatients.map((p, index) => ({
+                        ...p,
+                        no: index + 1
+                    })));
+                });
             }
         });
     }
