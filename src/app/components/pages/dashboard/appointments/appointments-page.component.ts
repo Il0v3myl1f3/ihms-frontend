@@ -2,6 +2,7 @@ import { Component, ViewChild, ChangeDetectionStrategy, inject, signal } from '@
 import { MedicalService, Doctor } from '../../../../services/medical.service';
 import { AppointmentTableComponent, Appointment } from './appointment-table/appointment-table.component';
 import { AppointmentCreateModalComponent } from './appointment-create-modal/appointment-create-modal.component';
+import { AppointmentService } from '../../../../services/appointment.service';
 
 
 export const MOCK_APPOINTMENTS: Appointment[] = [
@@ -38,6 +39,7 @@ export class AppointmentsPageComponent {
     @ViewChild(AppointmentTableComponent) appointmentTable!: AppointmentTableComponent;
 
     private medicalService = inject(MedicalService);
+    private appointmentService = inject(AppointmentService);
 
     doctors: Doctor[] = [];
 
@@ -50,7 +52,7 @@ export class AppointmentsPageComponent {
         'Lucas Lee'
     ];
 
-    appointments: Appointment[] = [...MOCK_APPOINTMENTS];
+    appointments: Appointment[] = [];
 
     selectedAppointmentForEdit: Appointment | null = null;
     isModalOpen = false;
@@ -60,6 +62,11 @@ export class AppointmentsPageComponent {
         this.medicalService.getDoctors().subscribe(docs => {
             this.doctors = docs;
         });
+        this.loadAppointments();
+    }
+
+    private loadAppointments() {
+        this.appointmentService.getAppointments().subscribe((a: Appointment[]) => this.appointments = a);
     }
 
     openCreateModal(): void {
@@ -85,9 +92,8 @@ export class AppointmentsPageComponent {
     }
 
     onDeleteAppointment(appointment: Appointment): void {
-        this.appointments = this.appointments
-            .filter(a => a.id !== appointment.id)
-            .map((a, i) => ({ ...a, no: i + 1 }));
+        this.appointmentService.deleteAppointment(appointment.id);
+        this.loadAppointments();
 
         if (this.appointmentTable) {
             const totalPages = this.appointmentTable.totalPages();
@@ -100,10 +106,8 @@ export class AppointmentsPageComponent {
     }
 
     onDeleteSelectedAppointments(selectedAppointments: Appointment[]): void {
-        const selectedIds = new Set(selectedAppointments.map(a => a.id));
-        this.appointments = this.appointments
-            .filter(a => !selectedIds.has(a.id))
-            .map((a, i) => ({ ...a, no: i + 1 }));
+        this.appointmentService.deleteSelectedAppointments(selectedAppointments.map(a => a.id));
+        this.loadAppointments();
 
         if (this.appointmentTable) {
             const totalPages = this.appointmentTable.totalPages();
@@ -116,44 +120,16 @@ export class AppointmentsPageComponent {
     }
 
     onAppointmentSaved(data: Record<string, string>): void {
-        if (this.selectedAppointmentForEdit) {
-            const dateStr = data['date']
-                ? new Date(data['date']).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })
-                : this.selectedAppointmentForEdit.appointmentDate;
+        const dateStr = data['date'] && !data['date'].includes(',')
+            ? new Date(data['date']).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })
+            : (data['date'] || this.selectedAppointmentForEdit?.appointmentDate || '');
 
-            this.appointments = this.appointments.map(a =>
-                a.id === this.selectedAppointmentForEdit!.id
-                    ? {
-                        ...a,
-                        patientName: data['patientName'],
-                        doctorName: data['doctorName'],
-                        appointmentDate: dateStr,
-                        status: data['status'] as Appointment['status'],
-                        notes: data['notes'] || a.notes
-                    }
-                    : a
-            );
-        } else {
-            const newId = this.appointments.length > 0 ? Math.max(...this.appointments.map(a => a.id)) + 1 : 1;
-            const newNo = this.appointments.length > 0 ? Math.max(...this.appointments.map(a => a.no)) + 1 : 1;
-
-            const dateObj = new Date(data['date']);
-            const formattedDate = dateObj.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
-
-            const newAppointment: Appointment = {
-                id: newId,
-                no: newNo,
-                patientName: data['patientName'],
-                notes: data['notes'] || 'No notes provided',
-                doctorName: data['doctorName'],
-                doctorImage: '',
-                appointmentDate: formattedDate,
-                status: data['status'] as Appointment['status'],
-                selected: false
-            };
-
-            this.appointments = [...this.appointments, newAppointment];
-        }
+        this.appointmentService.saveAppointment({
+            ...data,
+            id: this.selectedAppointmentForEdit?.id,
+            appointmentDate: dateStr
+        });
+        this.loadAppointments();
 
         this.isModalOpen = false;
 
