@@ -9,6 +9,7 @@ import { RoomService } from '../../../../services/room.service';
 import { LaboratoryService } from '../../../../services/laboratory.service';
 import { MedicalService } from '../../../../services/medical.service';
 import { CommonModule } from '@angular/common';
+import { PrescriptionService } from '../../../../services/prescription.service';
 
 @Component({
     selector: 'app-dashboard-home',
@@ -23,6 +24,7 @@ export class DashboardHomeComponent implements OnInit {
     private roomService = inject(RoomService);
     private laboratoryService = inject(LaboratoryService);
     private medicalService = inject(MedicalService);
+    private prescriptionService = inject(PrescriptionService);
 
     currentUser$!: Observable<User | null>;
     currentUser: User | null = null;
@@ -140,11 +142,13 @@ export class DashboardHomeComponent implements OnInit {
                     };
                 }
                 
-                // Active Prescriptions (Still mock until service exists, but linked to patient context)
-                this.activePrescriptions = [
-                    { name: 'Lisinopril', dosage: '10mg · Once daily', doctor: 'Dr. Benjamin Carter' },
-                    { name: 'Metformin', dosage: '850mg · 2x/day', doctor: 'Dr. Elijah Stone' },
-                ];
+                this.prescriptionService.getPrescriptions().subscribe(items => {
+                    this.activePrescriptions = items.slice(0, 3).map(item => ({
+                        name: item.medication,
+                        dosage: `${item.dosage} · ${item.frequency}`,
+                        doctor: item.doctorName
+                    }));
+                });
             }
         });
     }

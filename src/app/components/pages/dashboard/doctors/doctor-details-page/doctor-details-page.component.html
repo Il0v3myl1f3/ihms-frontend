@@ -324,7 +324,7 @@
         [appointmentToEdit]="selectedAppointmentForEdit()"
         [readOnly]="isAppointmentReadOnly()"
         [doctors]="allDoctors()"
-        [patientNames]="patientNames()"
+        [patients]="allPatients()"
         (closeModal)="isAppointmentModalOpen.set(false)"
         (saveAppointment)="onAppointmentSaved($event)">
     </app-appointment-create-modal>

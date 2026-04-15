@@ -54,7 +54,7 @@ export class DoctorDetailsPageComponent implements OnInit {
 
     // Dropdown data for modal
     allDoctors = signal<Doctor[]>([]);
-    patientNames = signal<string[]>([]);
+    allPatients = signal<Patient[]>([]);
 
     totalAppointments = computed(() => this.doctorAppointments().length);
     uniquePatientsCount = computed(() => this.doctorPatients().length);
@@ -72,7 +72,7 @@ export class DoctorDetailsPageComponent implements OnInit {
         });
 
         this.patientService.getPatients().subscribe(patients => {
-            this.patientNames.set(patients.map(p => p.name));
+            this.allPatients.set(patients);
         });
     }
 

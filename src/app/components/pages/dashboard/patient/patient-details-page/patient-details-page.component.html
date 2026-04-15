@@ -272,7 +272,7 @@
         [appointmentToEdit]="selectedAppointmentForEdit()"
         [readOnly]="isAppointmentReadOnly()"
         [doctors]="doctors"
-        [patientNames]="[patient()?.name || '']"
+        [patients]="patient() ? [patient()!] : []"
         (closeModal)="isAppointmentModalOpen.set(false)"
         (saveAppointment)="onAppointmentSaved($event)">
     </app-appointment-create-modal>

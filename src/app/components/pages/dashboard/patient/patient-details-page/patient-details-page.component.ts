@@ -5,11 +5,12 @@ import { LucideAngularModule, User, Calendar, Droplet, Phone, MapPin, ArrowLeft,
 import { MedicalService, Doctor } from '../../../../../services/medical.service';
 import { AppointmentTableComponent, Appointment } from '../../appointments/appointment-table/appointment-table.component';
 import { AppointmentCreateModalComponent } from '../../appointments/appointment-create-modal/appointment-create-modal.component';
-import { MOCK_APPOINTMENTS } from '../../appointments/appointments-page.component';
 import { PaymentTableComponent, Payment } from '../../payments/payment-table/payment-table.component';
 import { PaymentCreateModalComponent } from '../../payments/payment-create-modal/payment-create-modal.component';
 import { PatientService } from '../../../../../services/patient.service';
 import { Patient } from '../patient-table/patient-table.component';
+import { AppointmentService } from '../../../../../services/appointment.service';
+import { PrescriptionService } from '../../../../../services/prescription.service';
 
 export interface PatientPrescription {
     id: number;
@@ -35,6 +36,8 @@ export class PatientDetailsPageComponent implements OnInit {
     router = inject(Router);
     medicalService = inject(MedicalService);
     patientService = inject(PatientService);
+    appointmentService = inject(AppointmentService);
+    prescriptionService = inject(PrescriptionService);
 
     // Icons
     User = User;
@@ -96,10 +99,9 @@ export class PatientDetailsPageComponent implements OnInit {
     loadPatientData(id: string) {
         this.patientService.getPatientById(id).subscribe(p => {
             this.patient.set(p);
-
-            this.patientAppointments.set(
-                MOCK_APPOINTMENTS.filter(a => a.patientName === p.name)
-            );
+            this.appointmentService.getAppointmentsByPatientName(p.name).subscribe(items => {
+                this.patientAppointments.set(items);
+            });
 
             // Mock payments (still mock for now as requested, but linked to patient name)
             this.patientPayments.set([
@@ -108,13 +110,20 @@ export class PatientDetailsPageComponent implements OnInit {
             ]);
         });
 
-        // Mock prescriptions (keeping these as mock static data for now as they aren't in backend yet)
-        this.patientPrescriptions.set([
-            { id: 1, medication: 'Metformin', dosage: '500mg', frequency: 'Once daily', status: 'Active', refills: 3, instructions: 'Take after meals', startDate: 'January 10, 2026', endDate: 'February 10, 2026' },
-            { id: 2, medication: 'Lisinopril', dosage: '10mg', frequency: 'Once daily', status: 'Active', refills: 5, instructions: 'Take in the morning', startDate: 'January 15, 2026', endDate: 'March 15, 2026' },
-            { id: 3, medication: 'Omeprazole', dosage: '20mg', frequency: 'Once daily', status: 'Active', refills: 2, instructions: 'Take before breakfast', startDate: 'February 1, 2026', endDate: 'February 28, 2026' },
-            { id: 4, medication: 'Amoxicillin', dosage: '500mg', frequency: '3 times/day', status: 'Completed', refills: 0, instructions: 'Take with food', startDate: 'January 5, 2026', endDate: 'January 15, 2026' },
-        ]);
+        this.prescriptionService.getPrescriptions().subscribe(items => {
+            const mapped: PatientPrescription[] = items.map(item => ({
+                id: item.id,
+                medication: item.medication,
+                dosage: item.dosage,
+                frequency: item.frequency,
+                status: item.status,
+                refills: 0,
+                instructions: 'Follow doctor recommendation',
+                startDate: item.startDate,
+                endDate: item.endDate
+            }));
+            this.patientPrescriptions.set(mapped);
+        });
     }
 
     setTab(tab: string) {
@@ -140,7 +149,9 @@ export class PatientDetailsPageComponent implements OnInit {
 
     onDeleteAppointment(appointment: Appointment) {
         if (confirm(`Are you sure you want to delete appointment #${appointment.no}?`)) {
-            this.patientAppointments.update(list => list.filter(a => a.id !== appointment.id));
+            this.appointmentService.deleteAppointment(appointment.id).subscribe(() => {
+                this.patientAppointments.update(list => list.filter(a => a.id !== appointment.id));
+            });
         }
     }
 
@@ -151,17 +162,15 @@ export class PatientDetailsPageComponent implements OnInit {
                 ? new Date(data['date']).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })
                 : this.selectedAppointmentForEdit()!.appointmentDate;
 
-            this.patientAppointments.update(list => list.map(a =>
-                a.id === this.selectedAppointmentForEdit()!.id
-                    ? {
-                        ...a,
-                        doctorName: data['doctorName'],
-                        appointmentDate: dateStr,
-                        status: data['status'] as Appointment['status'],
-                        notes: data['notes'] || a.notes
-                    }
-                    : a
-            ));
+            this.appointmentService.saveAppointment({
+                ...data,
+                id: this.selectedAppointmentForEdit()!.id,
+                appointmentDate: dateStr
+            }).subscribe(updated => {
+                this.patientAppointments.update(list => list.map(a =>
+                    a.id === updated.id ? { ...updated, no: a.no } : a
+                ));
+            });
         }
         this.isAppointmentModalOpen.set(false);
     }

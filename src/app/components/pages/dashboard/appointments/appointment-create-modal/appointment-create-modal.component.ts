@@ -5,6 +5,7 @@ import { ModalComponent } from '../../../../shared/modal/modal.component';
 import { CustomSelectComponent } from '../../../../shared/custom-select/custom-select.component';
 import { Appointment } from '../appointment-table/appointment-table.component';
 import { Doctor } from '../../../../../services/medical.service';
+import { Patient } from '../../patient/patient-table/patient-table.component';
 
 @Component({
     selector: 'app-appointment-create-modal',
@@ -17,7 +18,7 @@ export class AppointmentCreateModalComponent implements OnInit, OnChanges {
     appointmentToEdit = input<Appointment | null>(null);
     readOnly = input(false);
     doctors = input<Doctor[]>([]);
-    patientNames = input<string[]>([]);
+    patients = input<Patient[]>([]);
     closeModal = output<void>();
     saveAppointment = output<Record<string, string>>();
 
@@ -35,7 +36,7 @@ export class AppointmentCreateModalComponent implements OnInit, OnChanges {
         const opts: {value: string, label: string, disabled?: boolean}[] = [
             { value: '', label: 'Select Patient', disabled: true }
         ];
-        this.patientNames().forEach(n => opts.push({ value: n, label: n }));
+        this.patients().forEach(p => opts.push({ value: p.id, label: p.name }));
         return opts;
     });
 
@@ -43,17 +44,18 @@ export class AppointmentCreateModalComponent implements OnInit, OnChanges {
         const opts: {value: string, label: string, disabled?: boolean}[] = [
             { value: '', label: 'Select Doctor', disabled: true }
         ];
-        this.doctors().forEach(d => opts.push({ value: d.name, label: d.name }));
+        this.doctors().forEach(d => opts.push({ value: d.id, label: d.name }));
         return opts;
     });
 
     ngOnInit(): void {
         this.appointmentForm = this.fb.group({
-            patientName: ['', Validators.required],
-            doctorName: ['', Validators.required],
+            patientId: ['', Validators.required],
+            doctorId: ['', Validators.required],
             date: ['', Validators.required],
             status: ['Scheduled', Validators.required],
-            notes: ['']
+            notes: [''],
+            reason: ['']
         });
 
         if (this.isOpen()) {
@@ -73,15 +75,29 @@ export class AppointmentCreateModalComponent implements OnInit, OnChanges {
         if (!this.appointmentForm) return;
 
         if (this.appointmentToEdit()) {
+            const appt = this.appointmentToEdit()!;
+            // Convert display date back to ISO for the datepicker input using local time
+            let isoDate = '';
+            if (appt.appointmentDate) {
+                const dateObj = new Date(appt.appointmentDate);
+                if (!isNaN(dateObj.getTime())) {
+                    const y = dateObj.getFullYear();
+                    const m = String(dateObj.getMonth() + 1).padStart(2, '0');
+                    const d = String(dateObj.getDate()).padStart(2, '0');
+                    isoDate = `${y}-${m}-${d}`;
+                }
+            }
+
             this.appointmentForm.patchValue({
-                patientName: this.appointmentToEdit()!.patientName,
-                doctorName: this.appointmentToEdit()!.doctorName,
-                date: '', // Date is usually not in the table, would need it from some source
-                status: this.appointmentToEdit()!.status,
-                notes: this.appointmentToEdit()!.notes
+                patientId: appt.patientId,
+                doctorId: appt.doctorId,
+                date: isoDate,
+                status: appt.status,
+                reason: appt.reason || '',
+                notes: appt.notes || ''
             });
         } else {
-            this.appointmentForm.reset({ patientName: '', doctorName: '', date: '', status: 'Scheduled', notes: '' });
+            this.appointmentForm.reset({ patientId: '', doctorId: '', date: '', status: 'Scheduled', notes: '', reason: '' });
         }
 
         if (this.readOnly()) {
@@ -93,7 +109,7 @@ export class AppointmentCreateModalComponent implements OnInit, OnChanges {
 
     onCancel(): void {
         this.closeModal.emit();
-        this.appointmentForm.reset({ patientName: '', doctorName: '', date: '', status: 'Scheduled', notes: '' });
+        this.appointmentForm.reset({ patientId: '', doctorId: '', date: '', status: 'Scheduled', notes: '', reason: '' });
     }
 
     onSubmit(): void {
