@@ -6,6 +6,7 @@ import { CustomSelectComponent } from '../../../../shared/custom-select/custom-s
 import { Appointment } from '../appointment-table/appointment-table.component';
 import { Doctor } from '../../../../../services/medical.service';
 import { Patient } from '../../patient/patient-table/patient-table.component';
+import { AuthService } from '../../../../../services/auth.service';
 
 @Component({
     selector: 'app-appointment-create-modal',
@@ -25,6 +26,10 @@ export class AppointmentCreateModalComponent implements OnInit, OnChanges {
     appointmentForm!: FormGroup;
 
     private fb = inject(FormBuilder);
+    private authService = inject(AuthService);
+
+    currentUser() { return this.authService.getCurrentUser(); }
+    isPatient() { return this.currentUser()?.role === 'user'; } // In this frontend 'user' = PATIENT
 
     statusOptions = [
         { value: 'Scheduled', label: 'Scheduled' },
@@ -48,15 +53,20 @@ export class AppointmentCreateModalComponent implements OnInit, OnChanges {
         return opts;
     });
 
-    ngOnInit(): void {
+     ngOnInit(): void {
         this.appointmentForm = this.fb.group({
-            patientId: ['', Validators.required],
+            patientId: [''], // Will be validated conditionally or used as dummy for patients
             doctorId: ['', Validators.required],
             date: ['', Validators.required],
             status: ['Scheduled', Validators.required],
             notes: [''],
-            reason: ['']
+            reason: ['', Validators.required]
         });
+
+        // Add dynamic validator for patientId if not a patient
+        if (!this.isPatient()) {
+            this.appointmentForm.get('patientId')?.setValidators(Validators.required);
+        }
 
         if (this.isOpen()) {
             this.syncFormWithInputs();
@@ -114,7 +124,16 @@ export class AppointmentCreateModalComponent implements OnInit, OnChanges {
 
     onSubmit(): void {
         if (this.appointmentForm.valid) {
-            this.saveAppointment.emit(this.appointmentForm.value);
+            const formData = { ...this.appointmentForm.value };
+            
+            // If the user is a patient, the UI hides the patientId field, meaning it's empty.
+            // .NET's model binder crashes (400 Bad Request) if a Guid field receives an empty string.
+            // We pass a dummy Guid here to satisfy JSON validation; the backend will securely overwrite it.
+            if (this.isPatient() && !formData.patientId) {
+                formData.patientId = '00000000-0000-0000-0000-000000000000';
+            }
+
+            this.saveAppointment.emit(formData);
             this.appointmentForm.reset();
         } else {
             this.appointmentForm.markAllAsTouched();
