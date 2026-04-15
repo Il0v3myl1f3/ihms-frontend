@@ -1,7 +1,7 @@
 import { Component, OnInit, inject, signal, computed, ChangeDetectionStrategy, effect, untracked, HostListener } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { LaboratoryService, AnalysisResult } from '../../../../services/laboratory.service';
-import { LucideAngularModule, Search, ChevronDown, ChevronUp, Clock, User, Microscope, MoreHorizontal, Download, Filter, ChevronLeft, ChevronRight, Eye, FileText, CheckCircle2, AlertCircle, AlertTriangle, Activity, Stethoscope, Calendar, ClipboardCheck, FlaskConical } from 'lucide-angular';
+import { LucideAngularModule, Search, ChevronDown, ChevronUp, Clock, User, Microscope, MoreHorizontal, Download, Filter, ChevronLeft, ChevronRight, Eye, FileText, CheckCircle2, AlertCircle, AlertTriangle, Activity, Stethoscope, Calendar, ClipboardCheck, FlaskConical, Pencil, Trash2 } from 'lucide-angular';
 import { FormsModule } from '@angular/forms';
 import { ModalComponent } from '../../../shared/modal/modal.component';
 
@@ -41,13 +41,19 @@ export class AnalysisResultsPageComponent implements OnInit {
   readonly Calendar = Calendar;
   readonly ClipboardCheck = ClipboardCheck;
   readonly FlaskConical = FlaskConical;
+  readonly Pencil = Pencil;
+  readonly Trash2 = Trash2;
+
+  // Dropdown state
+  activeItem: AnalysisResult | null = null;
+  dropdownPos = { top: 0, right: 0 };
+  isPageSizeMenuOpen = false;
+  activeFilterMenu = signal<boolean>(false);
 
   private labService = inject(LaboratoryService);
 
   // Data State
   items = signal<AnalysisResult[]>([]);
-  activeItem: AnalysisResult | null = null;
-  dropdownPos = { top: 0, right: 0 };
 
   // Table State
   searchQuery = signal('');
@@ -56,50 +62,6 @@ export class AnalysisResultsPageComponent implements OnInit {
   pageSize = signal(7);
   sortColumn = signal<keyof AnalysisResult | null>(null);
   sortDirection = signal<'asc' | 'desc'>('asc');
-  isPageSizeMenuOpen = false;
-
-  // Dropdown state
-  activeFilterMenu = signal<boolean>(false);
-
-  toggleFilterMenu(event: Event): void {
-    event.stopPropagation();
-    this.activeFilterMenu.set(!this.activeFilterMenu());
-  }
-
-  setFilter(value: string): void {
-    this.statusFilter.set(value);
-    this.activeFilterMenu.set(false);
-    this.currentPage.set(1);
-  }
-
-  togglePageSizeMenu(event: Event): void {
-    event.stopPropagation();
-    this.isPageSizeMenuOpen = !this.isPageSizeMenuOpen;
-  }
-
-  changePageSize(size: number): void {
-    this.pageSize.set(size);
-    this.currentPage.set(1);
-    this.isPageSizeMenuOpen = false;
-  }
-
-  goToPage(page: number | string): void {
-    if (typeof page === 'number') {
-      this.currentPage.set(page);
-    }
-  }
-
-  prevPage(): void {
-    if (this.currentPage() > 1) {
-      this.currentPage.update(p => p - 1);
-    }
-  }
-
-  nextPage(): void {
-    if (this.currentPage() < this.totalPages()) {
-      this.currentPage.update(p => p + 1);
-    }
-  }
 
   // Computed Table Data
   filteredItems = computed(() => {
@@ -183,6 +145,56 @@ export class AnalysisResultsPageComponent implements OnInit {
     this.activeItem = item;
   }
 
+  closeDropdown(): void {
+    this.activeItem = null;
+    this.activeFilterMenu.set(false);
+  }
+
+  @HostListener('window:scroll')
+  onWindowScroll(): void {
+    this.activeItem = null;
+  }
+
+  toggleFilterMenu(event: Event): void {
+    event.stopPropagation();
+    this.activeFilterMenu.set(!this.activeFilterMenu());
+  }
+
+  setFilter(value: string): void {
+    this.statusFilter.set(value);
+    this.activeFilterMenu.set(false);
+    this.currentPage.set(1);
+  }
+
+  togglePageSizeMenu(event: Event): void {
+    event.stopPropagation();
+    this.isPageSizeMenuOpen = !this.isPageSizeMenuOpen;
+  }
+
+  changePageSize(size: number): void {
+    this.pageSize.set(size);
+    this.currentPage.set(1);
+    this.isPageSizeMenuOpen = false;
+  }
+
+  goToPage(page: number | string): void {
+    if (typeof page === 'number') {
+      this.currentPage.set(page);
+    }
+  }
+
+  prevPage(): void {
+    if (this.currentPage() > 1) {
+      this.currentPage.update(p => p - 1);
+    }
+  }
+
+  nextPage(): void {
+    if (this.currentPage() < this.totalPages()) {
+      this.currentPage.update(p => p + 1);
+    }
+  }
+
   // Report Modal
   isReportModalOpen = signal(false);
   selectedResult = signal<AnalysisResult | null>(null);
@@ -195,16 +207,6 @@ export class AnalysisResultsPageComponent implements OnInit {
   closeReport(): void {
     this.isReportModalOpen.set(false);
     this.selectedResult.set(null);
-  }
-
-  closeDropdown(): void {
-    this.activeItem = null;
-    this.activeFilterMenu.set(false);
-  }
-
-  @HostListener('window:scroll')
-  onWindowScroll(): void {
-    this.activeItem = null;
   }
 
   getStatusBadgeClass(status: string): string {
