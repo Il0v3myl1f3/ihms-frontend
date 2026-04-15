@@ -20,13 +20,37 @@
         </div>
 
         <div class="flex items-center gap-3">
-            <select (change)="statusFilter.set($any($event.target).value)"
-                    class="px-4 py-2.5 bg-white border border-gray-200 rounded-xl text-sm text-gray-600 focus:outline-hidden focus:ring-2 focus:ring-[#159EEC]/20 focus:border-[#159EEC] transition-all cursor-pointer">
-                <option value="All">All Statuses</option>
-                <option value="Available">Available</option>
-                <option value="Occupied">Occupied</option>
-                <option value="Maintenance">Maintenance</option>
-            </select>
+            <div class="relative">
+                <button (click)="toggleFilterMenu($event)"
+                        class="flex items-center gap-2 px-4 py-2.5 border border-gray-200 rounded-xl text-sm text-gray-500 hover:bg-gray-50 transition-colors bg-white shadow-[0_1px_2px_rgba(0,0,0,0.02)] min-w-[140px]"
+                        [class.ring-2]="activeFilterMenu()"
+                        [class.ring-[#159EEC]/20]="activeFilterMenu()"
+                        [class.border-[#159EEC]]="activeFilterMenu()">
+                    <lucide-icon [img]="Filter" class="w-3.5 h-3.5 text-gray-400"></lucide-icon>
+                    <span class="flex-1 text-left">
+                        {{ statusFilter() === 'All' ? 'All Statuses' : statusFilter() }}
+                    </span>
+                    <lucide-icon [img]="ChevronDown" class="w-3.5 h-3.5 text-gray-400 ml-1 transition-transform duration-200"
+                                [class.rotate-180]="activeFilterMenu()"></lucide-icon>
+                </button>
+
+                @if (activeFilterMenu()) {
+                <div class="absolute top-full mt-2 left-0 z-50 w-44 bg-white border border-gray-100 rounded-xl shadow-lg py-1 overflow-hidden animate-in fade-in slide-in-from-top-1 duration-200">
+                    <button (click)="setFilter('All')"
+                            class="w-full text-left px-4 py-2.5 text-sm transition-colors hover:bg-gray-50 flex items-center justify-between"
+                            [class.bg-blue-50]="statusFilter() === 'All'" [class.text-blue-700]="statusFilter() === 'All'">
+                        All Statuses
+                    </button>
+                    @for (status of ['Available', 'Occupied', 'Maintenance']; track status) {
+                    <button (click)="setFilter(status)"
+                            class="w-full text-left px-4 py-2.5 text-sm transition-colors hover:bg-gray-50 flex items-center justify-between"
+                            [class.bg-blue-50]="statusFilter() === status" [class.text-blue-700]="statusFilter() === status">
+                        {{ status }}
+                    </button>
+                    }
+                </div>
+                }
+            </div>
         </div>
     </div>
 

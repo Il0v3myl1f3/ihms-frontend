@@ -39,7 +39,10 @@ export class PatientCreateModalComponent implements OnInit {
     ];
 
     patientForm: FormGroup = this.fb.group({
-        name: ['', Validators.required],
+        firstName: ['', Validators.required],
+        lastName: ['', Validators.required],
+        email: ['', [Validators.required, Validators.email]],
+        password: [''], // Will be validated dynamically
         gender: ['', Validators.required],
         dob: ['', Validators.required],
         bloodType: ['', Validators.required],
@@ -52,9 +55,18 @@ export class PatientCreateModalComponent implements OnInit {
         if (patient) {
             this.patientForm.patchValue({
                 ...patient,
+                firstName: patient.firstName,
+                lastName: patient.lastName,
+                email: patient.email,
                 dob: this.toInputDate(patient.dob)
             });
+            // Password is optional during edit
+            this.patientForm.get('password')?.setValidators([]);
+        } else {
+            // Password is required for new patients
+            this.patientForm.get('password')?.setValidators([Validators.required, Validators.minLength(6)]);
         }
+        this.patientForm.get('password')?.updateValueAndValidity();
     }
 
     onCancel(): void {
