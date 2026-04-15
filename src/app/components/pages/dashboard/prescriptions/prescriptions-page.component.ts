@@ -1,7 +1,8 @@
-import { Component, ChangeDetectionStrategy, signal, computed, effect, untracked, HostListener } from '@angular/core';
+import { Component, ChangeDetectionStrategy, signal, computed, effect, untracked, HostListener, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { LucideAngularModule, Search, Filter, ChevronLeft, ChevronRight, ChevronDown, ChevronUp, MoreHorizontal, Eye, Pencil, Trash2 } from 'lucide-angular';
+import { PrescriptionService } from '../../../../services/prescription.service';
 
 export interface Prescription {
     id: number;
@@ -36,20 +37,8 @@ export class PrescriptionsPageComponent {
     readonly Pencil = Pencil;
     readonly Trash2 = Trash2;
 
-    prescriptions: Prescription[] = [
-        { id: 1, no: 1, medication: 'Amoxicillin', dosage: '500mg', frequency: '3 times/day', doctorName: 'Dr. Mia Kensington', startDate: 'January 5, 2026', endDate: 'January 15, 2026', status: 'Completed' },
-        { id: 2, no: 2, medication: 'Lisinopril', dosage: '10mg', frequency: 'Once daily', doctorName: 'Dr. Benjamin Carter', startDate: 'February 1, 2026', endDate: 'August 1, 2026', status: 'Active' },
-        { id: 3, no: 3, medication: 'Metformin', dosage: '850mg', frequency: '2 times/day', doctorName: 'Dr. Elijah Stone', startDate: 'January 20, 2026', endDate: 'July 20, 2026', status: 'Active' },
-        { id: 4, no: 4, medication: 'Ibuprofen', dosage: '400mg', frequency: 'As needed', doctorName: 'Dr. Amelia Hawthorne', startDate: 'March 1, 2026', endDate: 'March 14, 2026', status: 'Completed' },
-        { id: 5, no: 5, medication: 'Omeprazole', dosage: '20mg', frequency: 'Once daily', doctorName: 'Dr. Clara Whitmore', startDate: 'February 15, 2026', endDate: 'May 15, 2026', status: 'Active' },
-        { id: 6, no: 6, medication: 'Atorvastatin', dosage: '40mg', frequency: 'Once daily', doctorName: 'Dr. Benjamin Carter', startDate: 'January 10, 2026', endDate: 'January 10, 2027', status: 'Active' },
-        { id: 7, no: 7, medication: 'Ciprofloxacin', dosage: '250mg', frequency: '2 times/day', doctorName: 'Dr. Oliver Westwood', startDate: 'November 10, 2025', endDate: 'November 20, 2025', status: 'Expired' },
-        { id: 8, no: 8, medication: 'Amlodipine', dosage: '5mg', frequency: 'Once daily', doctorName: 'Dr. Sophia Langley', startDate: 'December 1, 2025', endDate: 'June 1, 2026', status: 'Active' },
-        { id: 9, no: 9, medication: 'Prednisone', dosage: '10mg', frequency: 'Once daily', doctorName: 'Dr. Nathaniel Rivers', startDate: 'October 5, 2025', endDate: 'October 15, 2025', status: 'Expired' },
-        { id: 10, no: 10, medication: 'Cetirizine', dosage: '10mg', frequency: 'Once daily', doctorName: 'Dr. Lily Fairchild', startDate: 'March 1, 2026', endDate: 'September 1, 2026', status: 'Active' },
-        { id: 11, no: 11, medication: 'Sertraline', dosage: '50mg', frequency: 'Once daily', doctorName: 'Dr. Victoria Ashford', startDate: 'January 15, 2026', endDate: 'July 15, 2026', status: 'Active' },
-        { id: 12, no: 12, medication: 'Azithromycin', dosage: '250mg', frequency: 'Once daily', doctorName: 'Dr. Mia Kensington', startDate: 'September 1, 2025', endDate: 'September 5, 2025', status: 'Expired' },
-    ];
+    private prescriptionService = inject(PrescriptionService);
+    prescriptions: Prescription[] = [];
 
     searchQuery = signal('');
     currentPage = signal(1);
@@ -68,6 +57,9 @@ export class PrescriptionsPageComponent {
         effect(() => {
             this.searchQuery();
             untracked(() => this.currentPage.set(1));
+        });
+        this.prescriptionService.getPrescriptions().subscribe(items => {
+            this.prescriptions = items;
         });
     }
 
