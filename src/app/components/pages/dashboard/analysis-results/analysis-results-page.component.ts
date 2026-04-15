@@ -1,7 +1,7 @@
 import { Component, OnInit, inject, signal, computed, ChangeDetectionStrategy, effect, untracked, HostListener } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { LaboratoryService, AnalysisResult } from '../../../../services/laboratory.service';
-import { LucideAngularModule, Search, ChevronDown, ChevronUp, ClipboardCheck, MoreHorizontal, Download, FileText, User, Stethoscope, Calendar, Activity, FlaskConical, Eye, Pencil, Trash2, ChevronLeft, ChevronRight } from 'lucide-angular';
+import { LucideAngularModule, Search, ChevronDown, ChevronUp, Clock, User, Microscope, MoreHorizontal, Download, Filter, ChevronLeft, ChevronRight, Eye, FileText, CheckCircle2, AlertCircle, AlertTriangle, Activity, Stethoscope, Calendar, ClipboardCheck, FlaskConical, Pencil, Trash2 } from 'lucide-angular';
 import { FormsModule } from '@angular/forms';
 import { ModalComponent } from '../../../shared/modal/modal.component';
 
@@ -23,50 +23,38 @@ export class AnalysisResultsPageComponent implements OnInit {
   readonly Search = Search;
   readonly ChevronDown = ChevronDown;
   readonly ChevronUp = ChevronUp;
-  readonly ClipboardCheck = ClipboardCheck;
+  readonly Clock = Clock;
+  readonly User = User;
+  readonly Microscope = Microscope;
   readonly MoreHorizontal = MoreHorizontal;
   readonly Download = Download;
-  readonly FileText = FileText;
-  readonly User = User;
-  readonly Stethoscope = Stethoscope;
-  readonly Calendar = Calendar;
-  readonly Activity = Activity;
-  readonly FlaskConical = FlaskConical;
-  readonly Eye = Eye;
-  readonly Pencil = Pencil;
-  readonly Trash2 = Trash2;
+  readonly Filter = Filter;
   readonly ChevronLeft = ChevronLeft;
   readonly ChevronRight = ChevronRight;
+  readonly Eye = Eye;
+  readonly FileText = FileText;
+  readonly CheckCircle2 = CheckCircle2;
+  readonly AlertCircle = AlertCircle;
+  readonly AlertTriangle = AlertTriangle;
+  readonly Activity = Activity;
+  readonly Stethoscope = Stethoscope;
+  readonly Calendar = Calendar;
+  readonly ClipboardCheck = ClipboardCheck;
+  readonly FlaskConical = FlaskConical;
+  readonly Pencil = Pencil;
+  readonly Trash2 = Trash2;
 
   // Dropdown state
   activeItem: AnalysisResult | null = null;
   dropdownPos = { top: 0, right: 0 };
-
-  toggleDropdown(item: AnalysisResult, event: Event): void {
-    event.stopPropagation();
-    if (this.activeItem?.id === item.id) {
-      this.activeItem = null;
-      return;
-    }
-    const btn = (event.currentTarget as HTMLElement).getBoundingClientRect();
-    this.dropdownPos = { top: btn.bottom + 4, right: window.innerWidth - btn.right };
-    this.activeItem = item;
-  }
-
-  closeDropdown(): void {
-    this.activeItem = null;
-  }
-
-  @HostListener('window:scroll')
-  onWindowScroll(): void {
-    this.activeItem = null;
-  }
+  isPageSizeMenuOpen = false;
+  activeFilterMenu = signal<boolean>(false);
 
   private labService = inject(LaboratoryService);
-  
+
   // Data State
   items = signal<AnalysisResult[]>([]);
-  
+
   // Table State
   searchQuery = signal('');
   statusFilter = signal<string>('All');
@@ -74,37 +62,7 @@ export class AnalysisResultsPageComponent implements OnInit {
   pageSize = signal(7);
   sortColumn = signal<keyof AnalysisResult | null>(null);
   sortDirection = signal<'asc' | 'desc'>('asc');
-  isPageSizeMenuOpen = false;
 
-  togglePageSizeMenu(event: Event): void {
-    event.stopPropagation();
-    this.isPageSizeMenuOpen = !this.isPageSizeMenuOpen;
-  }
-
-  changePageSize(size: number): void {
-    this.pageSize.set(size);
-    this.currentPage.set(1);
-    this.isPageSizeMenuOpen = false;
-  }
-
-  goToPage(page: number | string): void {
-    if (typeof page === 'number') {
-      this.currentPage.set(page);
-    }
-  }
-
-  prevPage(): void {
-    if (this.currentPage() > 1) {
-      this.currentPage.update(p => p - 1);
-    }
-  }
-
-  nextPage(): void {
-    if (this.currentPage() < this.totalPages()) {
-      this.currentPage.update(p => p + 1);
-    }
-  }
-  
   // Computed Table Data
   filteredItems = computed(() => {
     const query = this.searchQuery().toLowerCase().trim();
@@ -112,8 +70,8 @@ export class AnalysisResultsPageComponent implements OnInit {
     let result = this.items();
 
     if (query) {
-      result = result.filter(item => 
-        item.patientName.toLowerCase().includes(query) || 
+      result = result.filter(item =>
+        item.patientName.toLowerCase().includes(query) ||
         item.analysisType.toLowerCase().includes(query) ||
         item.doctorName.toLowerCase().includes(query)
       );
@@ -147,7 +105,7 @@ export class AnalysisResultsPageComponent implements OnInit {
     const total = this.totalPages();
     const current = this.currentPage();
     if (total <= 5) return Array.from({ length: total }, (_, i) => i + 1);
-    
+
     if (current <= 3) return [1, 2, 3, 4, '...', total];
     if (current >= total - 2) return [1, '...', total - 3, total - 2, total - 1, total];
     return [1, '...', current - 1, current, current + 1, '...', total];
@@ -173,6 +131,67 @@ export class AnalysisResultsPageComponent implements OnInit {
     } else {
       this.sortColumn.set(column);
       this.sortDirection.set('asc');
+    }
+  }
+
+  toggleDropdown(item: AnalysisResult, event: Event): void {
+    event.stopPropagation();
+    if (this.activeItem?.id === item.id) {
+      this.activeItem = null;
+      return;
+    }
+    const btn = (event.currentTarget as HTMLElement).getBoundingClientRect();
+    this.dropdownPos = { top: btn.bottom + 4, right: window.innerWidth - btn.right };
+    this.activeItem = item;
+  }
+
+  closeDropdown(): void {
+    this.activeItem = null;
+    this.activeFilterMenu.set(false);
+  }
+
+  @HostListener('window:scroll')
+  onWindowScroll(): void {
+    this.activeItem = null;
+  }
+
+  toggleFilterMenu(event: Event): void {
+    event.stopPropagation();
+    this.activeFilterMenu.set(!this.activeFilterMenu());
+  }
+
+  setFilter(value: string): void {
+    this.statusFilter.set(value);
+    this.activeFilterMenu.set(false);
+    this.currentPage.set(1);
+  }
+
+  togglePageSizeMenu(event: Event): void {
+    event.stopPropagation();
+    this.isPageSizeMenuOpen = !this.isPageSizeMenuOpen;
+  }
+
+  changePageSize(size: number): void {
+    this.pageSize.set(size);
+    this.currentPage.set(1);
+    this.isPageSizeMenuOpen = false;
+  }
+
+  goToPage(page: number | string): void {
+    if (typeof page === 'number') {
+      this.currentPage.set(page);
+    }
+  }
+
+  prevPage(): void {
+    if (this.currentPage() > 1) {
+      this.currentPage.update(p => p - 1);
+    }
+  }
+
+  nextPage(): void {
+    if (this.currentPage() < this.totalPages()) {
+      this.currentPage.update(p => p + 1);
     }
   }
 

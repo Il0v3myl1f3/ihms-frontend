@@ -62,7 +62,7 @@ export class DashboardHomeComponent implements OnInit {
         { name: 'Patient Intake', link: '/dashboard/patient', icon: Users, status: 'Active', color: 'blue' },
         { name: 'Appointments', link: '/dashboard/appointments', icon: CalendarDays, status: 'Processing', color: 'amber' },
         { name: 'Lab Operations', link: '/dashboard/laboratory', icon: Activity, status: 'Operational', color: 'emerald' },
-        { name: 'Bed Management', link: '/dashboard/rooms', icon: DoorOpen, status: 'Monitoring', color: 'rose' },
+        { name: 'Bed Management', link: '/dashboard/room', icon: DoorOpen, status: 'Monitoring', color: 'rose' },
         { name: 'Financials', link: '/dashboard/payments', icon: CreditCard, status: 'Stable', color: 'emerald' },
     ];
 
@@ -94,7 +94,7 @@ export class DashboardHomeComponent implements OnInit {
             this.stats.totalPatients = patients.length;
         });
         this.stats.scheduledAppointments = this.appointmentService.getTodayAppointmentCount();
-        
+
         const roomStats = this.roomService.getRoomStats();
         this.stats.roomOccupancy = Math.round((roomStats.occupied / roomStats.total) * 100);
 
@@ -141,7 +141,7 @@ export class DashboardHomeComponent implements OnInit {
                         cabinet: 'Cabinet 3, Floor 2'
                     };
                 }
-                
+
                 this.prescriptionService.getPrescriptions().subscribe(items => {
                     this.activePrescriptions = items.slice(0, 3).map(item => ({
                         name: item.medication,
