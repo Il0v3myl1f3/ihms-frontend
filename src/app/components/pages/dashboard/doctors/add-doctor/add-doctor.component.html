@@ -6,10 +6,33 @@
         <!-- ... existing form ... -->
         <div class="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-5">
 
-            <!-- Name -->
+            <!-- First Name -->
             <div>
-                <label class="block text-sm font-medium text-gray-700 mb-1.5">Name *</label>
-                <input type="text" formControlName="name" placeholder="E.g. Dr. John Doe"
+                <label class="block text-sm font-medium text-gray-700 mb-1.5">First Name *</label>
+                <input type="text" formControlName="firstName" placeholder="E.g. John"
+                    class="block w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 transition-colors" />
+            </div>
+
+            <!-- Last Name -->
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1.5">Last Name *</label>
+                <input type="text" formControlName="lastName" placeholder="E.g. Doe"
+                    class="block w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 transition-colors" />
+            </div>
+
+            <!-- Email -->
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1.5">Email Address *</label>
+                <input type="email" formControlName="email" placeholder="doctor@example.com"
+                    class="block w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 transition-colors" />
+            </div>
+
+            <!-- Password -->
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1.5">
+                    Password {{ doctorToEdit() ? '(Optional)' : '*' }}
+                </label>
+                <input type="password" formControlName="password" placeholder="••••••••"
                     class="block w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 transition-colors" />
             </div>
 

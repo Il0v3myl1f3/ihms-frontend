@@ -53,12 +53,12 @@ export class DoctorTableComponent implements OnInit, OnDestroy {
     activeFilterMenu = signal<string | null>(null);
 
     availableSpecialties = computed(() => {
-        const specs = this.doctors().map(d => d.specialty).filter(s => !!s);
+        const specs = this.doctors().map(d => d.specialty).filter((s): s is string => !!s);
         return ['All', ...Array.from(new Set(specs)).sort()];
     });
 
     availableStatuses = computed(() => {
-        const statuses = this.doctors().map(d => d.availability).filter(s => !!s);
+        const statuses = this.doctors().map(d => d.availability).filter((s): s is string => !!s);
         return ['All', ...Array.from(new Set(statuses)).sort()];
     });
 
