@@ -99,49 +99,36 @@ export class PatientTableComponent implements OnInit, OnDestroy {
 
     filteredPatients = computed(() => {
         const query = this.searchQuery().toLowerCase().trim();
-        let result = this.patients();
-
         const genderFilter = this.filterGender();
-        if (genderFilter !== 'All') {
-            result = result.filter(p => p.gender === genderFilter);
-        }
-
         const typeFilter = this.filterBloodType();
-        if (typeFilter !== 'All') {
-            result = result.filter(p => p.bloodType === typeFilter);
-        }
+        const patients = this.patients();
 
-        if (query) {
-            result = result.filter(p =>
+        // Single-pass filtering
+        let result = patients.filter(p => {
+            const matchesGender = genderFilter === 'All' || p.gender === genderFilter;
+            const matchesType = typeFilter === 'All' || p.bloodType === typeFilter;
+            const matchesQuery = !query || 
                 p.name.toLowerCase().includes(query) ||
                 p.gender.toLowerCase().includes(query) ||
                 (p.address?.toLowerCase().includes(query)) ||
                 (p.phone?.toLowerCase().includes(query)) ||
                 (p.bloodType?.toLowerCase().includes(query)) ||
-                p.no.toString().includes(query)
-            );
-        }
+                p.no.toString().includes(query);
+            
+            return matchesGender && matchesType && matchesQuery;
+        });
 
         const col = this.sortColumn();
         const dir = this.sortDirection() === 'asc' ? 1 : -1;
 
         if (col) {
-            result = [...result].sort((a, b) => {
+            result.sort((a, b) => {
                 let aVal: any = a[col as keyof Patient];
                 let bVal: any = b[col as keyof Patient];
 
                 if (col === 'dob') {
-                    // Custom parser for DD/MM/YYYY
-                    const parseDate = (d: string) => {
-                        if (!d) return 0;
-                        const parts = d.split('/');
-                        if (parts.length === 3) {
-                            return new Date(Number(parts[2]), Number(parts[1]) - 1, Number(parts[0])).getTime();
-                        }
-                        return new Date(d).getTime();
-                    };
-                    aVal = parseDate(aVal);
-                    bVal = parseDate(bVal);
+                    aVal = this.parseDate(aVal);
+                    bVal = this.parseDate(bVal);
                 }
 
                 if (aVal < bVal) return -1 * dir;
@@ -152,6 +139,16 @@ export class PatientTableComponent implements OnInit, OnDestroy {
 
         return result;
     });
+
+    private parseDate(d: string): number {
+        if (!d || d === 'N/A') return 0;
+        const parts = d.split('/');
+        if (parts.length === 3) {
+            return new Date(Number(parts[2]), Number(parts[1]) - 1, Number(parts[0])).getTime();
+        }
+        const t = new Date(d).getTime();
+        return isNaN(t) ? 0 : t;
+    }
 
     handleSort(column: string): void {
         if (this.sortColumn() === column) {

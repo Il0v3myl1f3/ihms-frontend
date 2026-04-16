@@ -1,6 +1,6 @@
 import { Injectable, signal, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable, of, tap, map, catchError, throwError } from 'rxjs';
+import { Observable, of, tap, map, catchError, throwError, switchMap } from 'rxjs';
 import { Patient } from '../components/pages/dashboard/patient/patient-table/patient-table.component';
 
 
@@ -12,6 +12,7 @@ export class PatientService {
     private http = inject(HttpClient);
     private apiUrl = 'http://localhost:5275/api/patient';
     private patientsSignal = signal<Patient[]>([]);
+    public patients = this.patientsSignal.asReadonly();
 
     getPatients(): Observable<Patient[]> {
         return this.http.get<any[]>(this.apiUrl).pipe(
@@ -41,24 +42,21 @@ export class PatientService {
     }
 
     private mapToPatient(p: any, no: number): Patient {
-        // Support both camelCase and PascalCase from backend
-        const fName = p.firstName || p.FirstName || '';
-        const lName = p.lastName || p.LastName || '';
-        const email = p.email || p.Email || '';
-        const genderVal = p.gender !== undefined ? p.gender : p.Gender;
-
+        const fName = p.firstName || '';
+        const lName = p.lastName || '';
+        
         return {
-            id: p.id || p.Id,
+            id: p.id,
             no: no,
             name: `${fName} ${lName}`.trim() || 'Unnamed Patient',
             firstName: fName,
             lastName: lName,
-            email: email,
-            gender: this.mapGender(genderVal),
-            dob: 'N/A', // Not in backend DTO yet
-            address: p.address || p.Address || 'N/A',
-            phone: p.phone || p.Phone || 'N/A',
-            bloodType: p.bloodType || p.BloodType || 'N/A',
+            email: p.email || '',
+            gender: this.mapGender(p.gender),
+            dob: 'N/A', // Keeping as requested
+            address: p.address || 'N/A',
+            phone: p.phone || 'N/A',
+            bloodType: p.bloodType || 'N/A',
             selected: false
         };
     }
@@ -98,15 +96,14 @@ export class PatientService {
     }
 
     savePatient(patientData: Record<string, any>): Observable<any> {
-        // Use PascalCase to match the backend DTO properties precisely
         const dto: any = {
-            FirstName: patientData['firstName'],
-            LastName: patientData['lastName'],
-            Email: patientData['email'],
-            Gender: patientData['gender']?.toUpperCase() || 'OTHER',
-            Phone: patientData['phone'],
-            Address: patientData['address'],
-            BloodType: patientData['bloodType']
+            firstName: patientData['firstName'],
+            lastName: patientData['lastName'],
+            email: patientData['email'],
+            gender: patientData['gender']?.toUpperCase() || 'OTHER',
+            phone: patientData['phone'],
+            address: patientData['address'],
+            bloodType: patientData['bloodType']
         };
 
         // On creation, we MUST provide a password
@@ -116,7 +113,7 @@ export class PatientService {
 
         if (patientData['id']) {
             return this.http.put(`${this.apiUrl}/${patientData['id']}`, dto).pipe(
-                tap(() => this.getPatients().subscribe()),
+                switchMap(() => this.getPatients()),
                 catchError(error => {
                     console.error('[PatientService] Error updating patient:', error);
                     return throwError(() => error);
@@ -124,7 +121,7 @@ export class PatientService {
             );
         } else {
             return this.http.post(this.apiUrl, dto).pipe(
-                tap(() => this.getPatients().subscribe()),
+                switchMap(() => this.getPatients()),
                 catchError(error => {
                     console.error('[PatientService] Error creating patient:', error);
                     return throwError(() => error);

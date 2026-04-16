@@ -19,18 +19,13 @@ export class PatientListPageComponent {
 
     @ViewChild(PatientTableComponent) patientTable!: PatientTableComponent;
 
-    patients: Patient[] = [];
+    patients = this.patientService.patients;
 
     constructor() {
-        this.loadPatients();
+        this.patientService.getPatients().pipe(takeUntilDestroyed(this.destroyRef)).subscribe();
     }
 
-    private loadPatients() {
-        this.patientService.getPatients().pipe(takeUntilDestroyed(this.destroyRef)).subscribe((p: Patient[]) => {
-            this.patients = p;
-            this.cdr.markForCheck(); // Trigger UI update
-        });
-    }
+
 
     selectedPatientForEdit: Patient | null = null;
     isAddPatientModalOpen = false;
@@ -55,8 +50,6 @@ export class PatientListPageComponent {
 
     onDeletePatient(patient: Patient) {
         this.patientService.deletePatient(patient.id).pipe(takeUntilDestroyed(this.destroyRef)).subscribe(() => {
-            this.loadPatients();
-
             if (this.patientTable) {
                 const totalPages = this.patientTable.totalPages();
                 if (this.patientTable.currentPage() > totalPages && totalPages > 0) {
@@ -70,8 +63,6 @@ export class PatientListPageComponent {
 
     onDeleteSelectedPatients(selectedPatients: Patient[]) {
         this.patientService.deleteSelectedPatients(selectedPatients.map(p => p.id)).pipe(takeUntilDestroyed(this.destroyRef)).subscribe(() => {
-            this.loadPatients();
-
             if (this.patientTable) {
                 const totalPages = this.patientTable.totalPages();
                 if (this.patientTable.currentPage() > totalPages && totalPages > 0) {
@@ -88,7 +79,6 @@ export class PatientListPageComponent {
             ...patientData,
             id: this.selectedPatientForEdit?.id
         }).pipe(takeUntilDestroyed(this.destroyRef)).subscribe(() => {
-            this.loadPatients();
             this.isAddPatientModalOpen = false;
 
             if (this.patientTable) {
