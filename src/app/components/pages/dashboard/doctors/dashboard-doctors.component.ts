@@ -3,7 +3,8 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { Router } from '@angular/router';
 import { MedicalService } from '../../../../services/medical.service';
 import { AddDoctorComponent } from './add-doctor/add-doctor.component';
-import { DoctorTableComponent, DoctorRow } from './doctor-table/doctor-table.component';
+import { DoctorTableComponent } from './doctor-table/doctor-table.component';
+import { Doctor } from '../../../../services/medical.service';
 
 @Component({
     selector: 'app-dashboard-doctors',
@@ -14,29 +15,18 @@ import { DoctorTableComponent, DoctorRow } from './doctor-table/doctor-table.com
 export class DashboardDoctorsComponent implements OnInit {
     @ViewChild(DoctorTableComponent) doctorTable!: DoctorTableComponent;
 
-    doctors = signal<DoctorRow[]>([]);
     isAddDoctorModalOpen = false;
-    selectedDoctorForEdit: DoctorRow | null = null;
+    selectedDoctorForEdit: Doctor | null = null;
     isDoctorReadOnly = signal(false);
 
-    private medicalService = inject(MedicalService);
+    public medicalService = inject(MedicalService);
     private router = inject(Router);
     private destroyRef = inject(DestroyRef);
 
     ngOnInit(): void {
-        this.loadDoctors();
-    }
-
-    private loadDoctors(): void {
-        this.medicalService.getDoctors().pipe(takeUntilDestroyed(this.destroyRef)).subscribe(data => {
-            this.doctors.set(
-                data.map((d, index) => ({
-                    ...d,
-                    no: index + 1,
-                    selected: false
-                }))
-            );
-        });
+        // Re-fetch from backend every time the page is activated
+        // This ensures the signal is always in sync (e.g. after navigation)
+        this.medicalService.getDoctors().pipe(takeUntilDestroyed(this.destroyRef)).subscribe();
     }
 
     openAddDoctorModal(): void {
@@ -49,49 +39,37 @@ export class DashboardDoctorsComponent implements OnInit {
         this.isAddDoctorModalOpen = false;
     }
 
-    onEditDoctor(doctor: DoctorRow): void {
+    onEditDoctor(doctor: Doctor): void {
         this.selectedDoctorForEdit = doctor;
         this.isDoctorReadOnly.set(false);
         this.isAddDoctorModalOpen = true;
     }
 
-    onViewDoctor(doctor: DoctorRow): void {
+    onViewDoctor(doctor: Doctor): void {
         this.router.navigate(['/dashboard/doctors', doctor.id]);
     }
 
-    onDeleteDoctor(doctor: DoctorRow): void {
+    onDeleteDoctor(doctor: Doctor): void {
         this.medicalService.deleteDoctor(doctor.id).pipe(takeUntilDestroyed(this.destroyRef)).subscribe(() => {
-            const current = this.doctors();
-            const filtered = current.filter(d => d.id !== doctor.id);
-            this.doctors.set(filtered.map((d, index) => ({ ...d, no: index + 1 })));
-
-            if (this.doctorTable) {
-                const totalPages = this.doctorTable.totalPages();
-                if (this.doctorTable.currentPage() > totalPages && totalPages > 0) {
-                    this.doctorTable.currentPage.set(totalPages);
-                } else if (totalPages === 0) {
-                    this.doctorTable.currentPage.set(1);
-                }
-            }
+            this.handleNavigationSync();
         });
     }
 
-    onDeleteSelectedDoctors(selectedDoctors: DoctorRow[]): void {
+    onDeleteSelectedDoctors(selectedDoctors: Doctor[]): void {
         this.medicalService.deleteSelectedDoctors(selectedDoctors.map(d => d.id)).pipe(takeUntilDestroyed(this.destroyRef)).subscribe(() => {
-            const selectedIds = new Set(selectedDoctors.map(d => d.id));
-            const current = this.doctors();
-            const filtered = current.filter(d => !selectedIds.has(d.id));
-            this.doctors.set(filtered.map((d, index) => ({ ...d, no: index + 1 })));
-
-            if (this.doctorTable) {
-                const totalPages = this.doctorTable.totalPages();
-                if (this.doctorTable.currentPage() > totalPages && totalPages > 0) {
-                    this.doctorTable.currentPage.set(totalPages);
-                } else if (totalPages === 0) {
-                    this.doctorTable.currentPage.set(1);
-                }
-            }
+            this.handleNavigationSync();
         });
+    }
+
+    private handleNavigationSync(): void {
+        if (this.doctorTable) {
+            const totalPages = this.doctorTable.totalPages();
+            if (this.doctorTable.currentPage() > totalPages && totalPages > 0) {
+                this.doctorTable.currentPage.set(totalPages);
+            } else if (totalPages === 0) {
+                this.doctorTable.currentPage.set(1);
+            }
+        }
     }
 
     onDoctorSaved(doctorData: Record<string, string>): void {
@@ -102,7 +80,6 @@ export class DashboardDoctorsComponent implements OnInit {
 
         this.medicalService.saveDoctor(payload).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
             next: () => {
-                this.loadDoctors();
                 this.isAddDoctorModalOpen = false;
                 if (this.doctorTable && !this.selectedDoctorForEdit) {
                     this.doctorTable.goToPage(this.doctorTable.totalPages());

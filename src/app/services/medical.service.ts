@@ -1,9 +1,10 @@
 import { Injectable, inject, signal } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable, catchError, map, tap, throwError } from 'rxjs';
+import { Observable, catchError, map, tap, throwError, switchMap, of } from 'rxjs';
 
 export interface Doctor {
     id: string;
+    no: number;
     name: string;
     firstName: string;
     lastName: string;
@@ -14,6 +15,7 @@ export interface Doctor {
     phone?: string;
     availability?: 'Available' | 'On Leave' | string;
     cabinet?: string;
+    selected: boolean;
 }
 
 export interface DoctorRequest {
@@ -48,13 +50,13 @@ export class MedicalService {
     private http = inject(HttpClient);
     private apiUrl = 'http://localhost:5275/api/Doctor';
     private doctorsSignal = signal<Doctor[]>([]);
+    public doctors = this.doctorsSignal.asReadonly();
 
     getDoctors(): Observable<Doctor[]> {
         return this.http.get<any>(this.apiUrl).pipe(
             map(data => {
-                // Backend returns PagedResult with Items in PascalCase usually
                 const items = Array.isArray(data) ? data : (data?.items || data?.Items || []);
-                return items.map((d: any) => this.mapDoctor(d));
+                return items.map((d: any, index: number) => this.mapDoctor(d, index + 1));
             }),
             tap(doctors => this.doctorsSignal.set(doctors)),
             catchError(error => this.handleError(error))
@@ -63,7 +65,7 @@ export class MedicalService {
 
     getDoctorById(id: string): Observable<Doctor | undefined> {
         return this.http.get<any>(`${this.apiUrl}/${id}`).pipe(
-            map(data => this.mapDoctor(data)),
+            map(data => this.mapDoctor(data, 0)),
             catchError(error => this.handleError(error))
         );
     }
@@ -83,20 +85,20 @@ export class MedicalService {
 
         if (doctorData['id']) {
             return this.http.put(`${this.apiUrl}/${doctorData['id']}`, dto).pipe(
-                tap(() => this.getDoctors().subscribe()),
+                switchMap(() => this.getDoctors()),
                 catchError(error => this.handleError(error))
             );
         }
 
         return this.http.post(this.apiUrl, dto).pipe(
-            tap(() => this.getDoctors().subscribe()),
+            switchMap(() => this.getDoctors()),
             catchError(error => this.handleError(error))
         );
     }
 
-    deleteDoctor(id: string): Observable<boolean> {
-        return this.http.delete<boolean>(`${this.apiUrl}/${id}`).pipe(
-            tap(() => this.doctorsSignal.update(items => items.filter(item => item.id !== id))),
+    deleteDoctor(id: string): Observable<any> {
+        return this.http.delete(`${this.apiUrl}/${id}`).pipe(
+            switchMap(() => this.getDoctors()),
             catchError(error => this.handleError(error))
         );
     }
@@ -125,25 +127,25 @@ export class MedicalService {
         });
     }
 
-    private mapDoctor(data: any): Doctor {
-        const id = data.id || data.Id;
-        const firstName = data.firstName || data.FirstName || '';
-        const lastName = data.lastName || data.LastName || '';
-        const email = data.email || data.Email || '';
-        const department = data.department || data.Department || 'General';
+    private mapDoctor(data: any, no: number): Doctor {
+        const firstName = data.firstName || '';
+        const lastName = data.lastName || '';
+        const department = data.department || 'General';
 
         return {
-            id,
+            id: data.id,
+            no,
             name: `Dr. ${`${firstName} ${lastName}`.trim()}`.trim(),
             firstName,
             lastName,
-            email,
+            email: data.email || '',
             role: department,
             image: '',
             specialty: department,
-            phone: data.phone || data.Phone || '',
+            phone: data.phone || '',
             availability: 'Available',
-            cabinet: data.cabinet || data.Cabinet || ''
+            cabinet: data.cabinet || '',
+            selected: false
         };
     }
 
