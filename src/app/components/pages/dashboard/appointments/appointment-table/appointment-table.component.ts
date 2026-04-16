@@ -4,11 +4,14 @@ import { CommonModule } from '@angular/common';
 import { LucideAngularModule, Pencil, Trash2, MoreHorizontal, Search, Filter, ChevronLeft, ChevronRight, Plus, ChevronDown, ChevronUp, Eye } from 'lucide-angular';
 
 export interface Appointment {
-    id: number;
+    id: string;
     no: number;
+    patientId: string;
     patientName: string;
-    notes: string;
+    doctorId: string;
     doctorName: string;
+    notes: string;
+    reason: string;
     doctorImage: string;
     appointmentDate: string;
     status: 'Scheduled' | 'Cancelled' | 'Completed';

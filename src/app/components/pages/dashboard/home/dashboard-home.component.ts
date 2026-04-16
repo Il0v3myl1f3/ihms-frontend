@@ -92,7 +92,7 @@ export class DashboardHomeComponent implements OnInit {
             this.stats.totalPatients = patients.length;
         });
         this.stats.scheduledAppointments = this.appointmentService.getTodayAppointmentCount();
-        
+
         const roomStats = this.roomService.getRoomStats();
         this.stats.roomOccupancy = Math.round((roomStats.occupied / roomStats.total) * 100);
 
@@ -139,7 +139,7 @@ export class DashboardHomeComponent implements OnInit {
                         cabinet: 'Cabinet 3, Floor 2'
                     };
                 }
-                
+
                 // Active Prescriptions (Still mock until service exists, but linked to patient context)
                 this.activePrescriptions = [
                     { name: 'Lisinopril', dosage: '10mg · Once daily', doctor: 'Dr. Benjamin Carter' },

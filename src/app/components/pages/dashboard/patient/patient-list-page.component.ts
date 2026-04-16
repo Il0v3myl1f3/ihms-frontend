@@ -1,4 +1,4 @@
-import { Component, ViewChild, ChangeDetectionStrategy, inject } from '@angular/core';
+import { Component, ViewChild, ChangeDetectionStrategy, inject, ChangeDetectorRef } from '@angular/core';
 import { Router } from '@angular/router';
 import { PatientTableComponent, Patient } from './patient-table/patient-table.component';
 import { PatientCreateModalComponent } from './patient-create-modal/patient-create-modal.component';
@@ -13,6 +13,7 @@ import { PatientService } from '../../../../services/patient.service';
 export class PatientListPageComponent {
     private router = inject(Router);
     private patientService = inject(PatientService);
+    private cdr = inject(ChangeDetectorRef);
 
     @ViewChild(PatientTableComponent) patientTable!: PatientTableComponent;
 
@@ -23,7 +24,10 @@ export class PatientListPageComponent {
     }
 
     private loadPatients() {
-        this.patientService.getPatients().subscribe((p: Patient[]) => this.patients = p);
+        this.patientService.getPatients().subscribe((p: Patient[]) => {
+            this.patients = p;
+            this.cdr.markForCheck(); // Trigger UI update
+        });
     }
 
     selectedPatientForEdit: Patient | null = null;

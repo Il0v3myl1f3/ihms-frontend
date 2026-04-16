@@ -1,38 +1,67 @@
 import { Component, OnInit, inject, signal, computed, ChangeDetectionStrategy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { LaboratoryService, Laboratory } from '../../../../services/laboratory.service';
-import { LucideAngularModule, FlaskConical, MapPin, Users, Activity, Search } from 'lucide-angular';
+import { LucideAngularModule, Search, FlaskConical, MapPin, Phone, Clock, Eye, Info, Filter, ChevronDown, Activity, Users } from 'lucide-angular';
+import { FormsModule } from '@angular/forms';
 import { LaboratoryViewModalComponent } from './laboratory-view-modal/laboratory-view-modal.component';
 
 @Component({
   selector: 'app-laboratory-page',
-  imports: [CommonModule, LucideAngularModule, LaboratoryViewModalComponent],
+  imports: [CommonModule, LucideAngularModule, FormsModule, LaboratoryViewModalComponent],
   templateUrl: './laboratory-page.component.html',
   styleUrls: ['./laboratory-page.component.css'],
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  host: {
+    '(document:click)': 'closeDropdown()'
+  }
 })
 export class LaboratoryPageComponent implements OnInit {
+  // Icons
+  readonly Search = Search;
   readonly FlaskConical = FlaskConical;
   readonly MapPin = MapPin;
-  readonly Users = Users;
+  readonly Phone = Phone;
+  readonly Clock = Clock;
+  readonly Eye = Eye;
+  readonly Info = Info;
+  readonly Filter = Filter;
+  readonly ChevronDown = ChevronDown;
   readonly Activity = Activity;
-  readonly Search = Search;
+  readonly Users = Users;
 
   private labService = inject(LaboratoryService);
-  
+
+  // Data
   labs = signal<Laboratory[]>([]);
   searchQuery = signal('');
   statusFilter = signal<string>('All');
-  
+
+  // Dropdown state
+  activeFilterMenu = signal<boolean>(false);
+
+  toggleFilterMenu(event: Event): void {
+    event.stopPropagation();
+    this.activeFilterMenu.set(!this.activeFilterMenu());
+  }
+
+  setFilter(value: string): void {
+    this.statusFilter.set(value);
+    this.activeFilterMenu.set(false);
+  }
+
+  closeDropdown(): void {
+    this.activeFilterMenu.set(false);
+  }
+
   isDetailsModalOpen = signal(false);
   selectedLab = signal<Laboratory | null>(null);
 
   filteredLabs = computed(() => {
     const query = this.searchQuery().toLowerCase().trim();
     const filter = this.statusFilter();
-    
+
     return this.labs().filter(lab => {
-      const matchesSearch = lab.name.toLowerCase().includes(query) || 
+      const matchesSearch = lab.name.toLowerCase().includes(query) ||
                            lab.location.toLowerCase().includes(query);
       const matchesStatus = filter === 'All' || lab.status === filter;
       return matchesSearch && matchesStatus;
