@@ -11,8 +11,14 @@ export class MedicalRecordService {
     private apiUrl = 'http://localhost:5275/api/MedicalRecord';
     private recordsSignal = signal<MedicalRecord[]>([]);
 
-    getMedicalRecords(): Observable<MedicalRecord[]> {
-        return this.http.get<any>(this.apiUrl).pipe(
+    getMedicalRecords(patientId?: string, doctorId?: string): Observable<MedicalRecord[]> {
+        let url = this.apiUrl;
+        const params: string[] = [];
+        if (patientId) params.push(`patientId=${patientId}`);
+        if (doctorId) params.push(`doctorId=${doctorId}`);
+        if (params.length > 0) url += `?${params.join('&')}`;
+
+        return this.http.get<any>(url).pipe(
             map(data => {
                 const items = Array.isArray(data) ? data : data?.items || [];
                 return items.map((item: any, index: number) => this.mapRecord(item, index + 1));

@@ -292,6 +292,7 @@
                     <app-appointment-table
                         [appointments]="doctorAppointments()"
                         [compactMode]="true"
+                        [showReason]="true"
                         (viewAppointment)="onViewAppointment($event)"
                         (editAppointment)="onEditAppointment($event)"
                         (deleteAppointment)="onDeleteAppointment($event)">
@@ -312,6 +313,44 @@
                         [patients]="doctorPatients()"
                         [readOnly]="true">
                     </app-patient-table>
+                </div>
+            </div>
+            }
+
+            <!-- Medical Records Tab -->
+            @if (activeTab() === 'Medical Records') {
+            <div class="h-full flex flex-col">
+                <div class="border-b border-[#DADCE0] pb-4 mb-6">
+                    <h4 class="text-lg font-bold text-[#202124]">Medical Records History</h4>
+                    <p class="text-[13px] text-gray-500 mt-0.5 font-medium">Records created by {{ doctor()?.name }}</p>
+                </div>
+                <div class="bg-white border border-gray-200 rounded-lg overflow-hidden shrink-0">
+                    <table class="w-full text-left border-collapse">
+                        <thead class="bg-gray-50 border-b border-gray-100">
+                            <tr>
+                                <th class="px-4 py-3 text-xs font-bold text-gray-500 uppercase tracking-wider">No</th>
+                                <th class="px-4 py-3 text-xs font-bold text-gray-500 uppercase tracking-wider">Patient</th>
+                                <th class="px-4 py-3 text-xs font-bold text-gray-500 uppercase tracking-wider">Type</th>
+                                <th class="px-4 py-3 text-xs font-bold text-gray-500 uppercase tracking-wider">Date</th>
+                                <th class="px-4 py-3 text-xs font-bold text-gray-500 uppercase tracking-wider">Description</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-gray-100">
+                            @for (mr of doctorMedicalRecords(); track mr.id) {
+                            <tr>
+                                <td class="px-4 py-3 text-sm text-gray-900">{{ mr.no }}</td>
+                                <td class="px-4 py-3 text-sm font-medium text-gray-900">{{ mr.patientName }}</td>
+                                <td class="px-4 py-3 text-sm text-gray-900">{{ mr.recordType }}</td>
+                                <td class="px-4 py-3 text-sm text-gray-500">{{ mr.date }}</td>
+                                <td class="px-4 py-3 text-sm text-gray-500">{{ mr.description }}</td>
+                            </tr>
+                            } @empty {
+                            <tr>
+                                <td colspan="5" class="px-4 py-10 text-center text-gray-400 italic">No medical records created yet.</td>
+                            </tr>
+                            }
+                        </tbody>
+                    </table>
                 </div>
             </div>
             }

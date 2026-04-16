@@ -30,6 +30,7 @@ export interface Appointment {
 export class AppointmentTableComponent implements OnInit, OnDestroy {
     appointments = input<Appointment[]>([]);
     compactMode = input<boolean>(false);
+    showReason = input<boolean>(false);
     readOnly = input<boolean>(false);
     editAppointment = output<Appointment>();
     deleteAppointment = output<Appointment>();
@@ -98,6 +99,7 @@ export class AppointmentTableComponent implements OnInit, OnDestroy {
             result = result.filter(a =>
                 a.patientName.toLowerCase().includes(query) ||
                 a.doctorName.toLowerCase().includes(query) ||
+                a.reason.toLowerCase().includes(query) ||
                 a.notes.toLowerCase().includes(query) ||
                 a.appointmentDate.toLowerCase().includes(query) ||
                 a.status.toLowerCase().includes(query) ||

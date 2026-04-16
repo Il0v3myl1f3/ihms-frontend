@@ -5,12 +5,12 @@ import { LucideAngularModule, User, Calendar, Droplet, Phone, MapPin, ArrowLeft,
 import { MedicalService, Doctor } from '../../../../../services/medical.service';
 import { AppointmentTableComponent, Appointment } from '../../appointments/appointment-table/appointment-table.component';
 import { AppointmentCreateModalComponent } from '../../appointments/appointment-create-modal/appointment-create-modal.component';
-import { PaymentTableComponent, Payment } from '../../payments/payment-table/payment-table.component';
-import { PaymentCreateModalComponent } from '../../payments/payment-create-modal/payment-create-modal.component';
 import { PatientService } from '../../../../../services/patient.service';
 import { Patient } from '../patient-table/patient-table.component';
 import { AppointmentService } from '../../../../../services/appointment.service';
 import { PrescriptionService } from '../../../../../services/prescription.service';
+import { MedicalRecordService } from '../../../../../services/medical-record.service';
+import { MedicalRecord } from '../../medical-records/medical-records-page.component';
 
 export interface PatientPrescription {
     id: number;
@@ -27,7 +27,7 @@ export interface PatientPrescription {
 @Component({
     selector: 'app-patient-details-page',
     standalone: true,
-    imports: [CommonModule, LucideAngularModule, AppointmentTableComponent, PaymentTableComponent, AppointmentCreateModalComponent, PaymentCreateModalComponent],
+    imports: [CommonModule, LucideAngularModule, AppointmentTableComponent, AppointmentCreateModalComponent],
     templateUrl: './patient-details-page.component.html',
     changeDetection: ChangeDetectionStrategy.OnPush
 })
@@ -38,6 +38,7 @@ export class PatientDetailsPageComponent implements OnInit {
     patientService = inject(PatientService);
     appointmentService = inject(AppointmentService);
     prescriptionService = inject(PrescriptionService);
+    medicalRecordService = inject(MedicalRecordService);
 
     // Icons
     User = User;
@@ -52,23 +53,20 @@ export class PatientDetailsPageComponent implements OnInit {
     Paperclip = Paperclip;
 
     activeTab = signal('General Info');
-    tabs = ['General Info', 'Appointments', 'Payments', 'Medical Records', 'Prescriptions'];
+    tabs = ['General Info', 'Appointments', 'Medical Records', 'Prescriptions'];
 
     patient = signal<Patient | null>(null);
 
     // Mock data (we will pull based on route id, ideally from a service)
     patientAppointments = signal<Appointment[]>([]);
-    patientPayments = signal<Payment[]>([]);
     patientPrescriptions = signal<PatientPrescription[]>([]);
+    patientMedicalRecords = signal<MedicalRecord[]>([]);;
     doctors: Doctor[] = [];
 
     // Modal state
     isAppointmentModalOpen = signal(false);
     selectedAppointmentForEdit = signal<Appointment | null>(null);
     isAppointmentReadOnly = signal(false);
-    isPaymentModalOpen = signal(false);
-    selectedPaymentForEdit = signal<Payment | null>(null);
-    isPaymentReadOnly = signal(false);
 
     totalBookings = computed(() => this.patientAppointments().length);
 
@@ -103,11 +101,9 @@ export class PatientDetailsPageComponent implements OnInit {
                 this.patientAppointments.set(items);
             });
 
-            // Mock payments (still mock for now as requested, but linked to patient name)
-            this.patientPayments.set([
-                { id: 1, no: 1, invoiceNumber: 'INV-2024-001', patientName: p.name, amount: 350.00, date: '15/01/2024', method: 'Credit Card', status: 'Paid', selected: false },
-                { id: 2, no: 2, invoiceNumber: 'INV-2024-005', patientName: p.name, amount: 120.00, date: '18/02/2024', method: 'Insurance', status: 'Pending', selected: false }
-            ]);
+            this.medicalRecordService.getMedicalRecords(p.id).subscribe(records => {
+                this.patientMedicalRecords.set(records);
+            });
         });
 
         this.prescriptionService.getPrescriptions().subscribe(items => {
@@ -175,39 +171,5 @@ export class PatientDetailsPageComponent implements OnInit {
         this.isAppointmentModalOpen.set(false);
     }
 
-    // Payment Handlers
-    onViewPayment(payment: Payment) {
-        this.selectedPaymentForEdit.set(payment);
-        this.isPaymentReadOnly.set(true);
-        this.isPaymentModalOpen.set(true);
-    }
-
-    onEditPayment(payment: Payment) {
-        this.selectedPaymentForEdit.set(payment);
-        this.isPaymentReadOnly.set(false);
-        this.isPaymentModalOpen.set(true);
-    }
-
-    onDeletePayment(payment: Payment) {
-        if (confirm(`Are you sure you want to delete payment ${payment.invoiceNumber}?`)) {
-            this.patientPayments.update(list => list.filter(p => p.id !== payment.id));
-        }
-    }
-
-    onPaymentSaved(data: Record<string, any>) {
-        if (this.selectedPaymentForEdit()) {
-            this.patientPayments.update(list => list.map(p =>
-                p.id === this.selectedPaymentForEdit()!.id
-                    ? {
-                        ...p,
-                        amount: parseFloat(data['amount']),
-                        date: data['date'] ? new Date(data['date']).toLocaleDateString('en-GB') : p.date,
-                        method: data['method'],
-                        status: data['status'] as Payment['status']
-                    }
-                    : p
-            ));
-        }
-        this.isPaymentModalOpen.set(false);
     }
 }

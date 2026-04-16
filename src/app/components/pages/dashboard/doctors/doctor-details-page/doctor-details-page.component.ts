@@ -8,6 +8,8 @@ import { AppointmentCreateModalComponent } from '../../appointments/appointment-
 import { PatientTableComponent, Patient } from '../../patient/patient-table/patient-table.component';
 import { PatientService } from '../../../../../services/patient.service';
 import { AppointmentService } from '../../../../../services/appointment.service';
+import { MedicalRecordService } from '../../../../../services/medical-record.service';
+import { MedicalRecord } from '../../medical-records/medical-records-page.component';
 
 @Component({
     selector: 'app-doctor-details-page',
@@ -22,6 +24,7 @@ export class DoctorDetailsPageComponent implements OnInit {
     private medicalService = inject(MedicalService);
     private patientService = inject(PatientService);
     private appointmentService = inject(AppointmentService);
+    private medicalRecordService = inject(MedicalRecordService);
 
     // Icons
     User = User;
@@ -42,7 +45,8 @@ export class DoctorDetailsPageComponent implements OnInit {
 
     doctor = signal<Doctor | null>(null);
     activeTab = signal('General Info');
-    tabs = ['General Info', 'Schedule', 'Appointments', 'Patients'];
+    tabs = ['General Info', 'Schedule', 'Appointments', 'Patients', 'Medical Records'];
+    doctorMedicalRecords = signal<MedicalRecord[]>([]);
 
     doctorAppointments = signal<Appointment[]>([]);
     doctorPatients = signal<Patient[]>([]);
@@ -92,6 +96,10 @@ export class DoctorDetailsPageComponent implements OnInit {
                             no: index + 1
                         })));
                     });
+                });
+
+                this.medicalRecordService.getMedicalRecords(undefined, doc.id).subscribe(records => {
+                    this.doctorMedicalRecords.set(records);
                 });
             }
         });

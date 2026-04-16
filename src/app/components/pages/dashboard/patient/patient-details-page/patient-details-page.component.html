@@ -220,6 +220,7 @@
                     <app-appointment-table 
                         [appointments]="patientAppointments()" 
                         [compactMode]="true"
+                        [showReason]="true"
                         [readOnly]="true"
                         (viewAppointment)="onViewAppointment($event)"
                         (editAppointment)="onEditAppointment($event)"
@@ -229,38 +230,87 @@
             </div>
             }
 
-            <!-- Payments Tab -->
-            @if (activeTab() === 'Payments') {
-            <div class="h-full flex flex-col">
-                <div class="border-b border-[#DADCE0] pb-4 mb-6 flex justify-between items-center shrink-0">
-                    <div>
-                        <h4 class="text-lg font-bold text-[#202124]">Payments</h4>
-                        <p class="text-[13px] text-gray-500 mt-0.5 font-medium">Billing history and payment status</p>
-                    </div>
-                </div>
+            }
 
-                <div class="rounded-lg border border-gray-200 overflow-hidden bg-white flex-1">
-                    <app-payment-table 
-                        [payments]="patientPayments()" 
-                        [compactMode]="true"
-                        [readOnly]="true"
-                        (viewPayment)="onViewPayment($event)"
-                        (editPayment)="onEditPayment($event)"
-                        (deletePayment)="onDeletePayment($event)">
-                    </app-payment-table>
+
+            <!-- Medical Records Tab -->
+            @if (activeTab() === 'Medical Records') {
+            <div class="h-full flex flex-col">
+                <div class="border-b border-[#DADCE0] pb-4 mb-6">
+                    <h4 class="text-lg font-bold text-[#202124]">Medical Records</h4>
+                    <p class="text-[13px] text-gray-500 mt-0.5 font-medium">Historical medical data for {{ patient()?.name }}</p>
+                </div>
+                <div class="bg-white border border-gray-200 rounded-lg overflow-hidden shrink-0">
+                    <table class="w-full text-left border-collapse">
+                        <thead class="bg-gray-50 border-b border-gray-100">
+                            <tr>
+                                <th class="px-4 py-3 text-xs font-bold text-gray-500 uppercase tracking-wider">No</th>
+                                <th class="px-4 py-3 text-xs font-bold text-gray-500 uppercase tracking-wider">Type</th>
+                                <th class="px-4 py-3 text-xs font-bold text-gray-500 uppercase tracking-wider">Date</th>
+                                <th class="px-4 py-3 text-xs font-bold text-gray-500 uppercase tracking-wider">Doctor</th>
+                                <th class="px-4 py-3 text-xs font-bold text-gray-500 uppercase tracking-wider">Description</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-gray-100">
+                            @for (mr of patientMedicalRecords(); track mr.id) {
+                            <tr>
+                                <td class="px-4 py-3 text-sm text-gray-900">{{ mr.no }}</td>
+                                <td class="px-4 py-3 text-sm font-medium text-gray-900">{{ mr.recordType }}</td>
+                                <td class="px-4 py-3 text-sm text-gray-500">{{ mr.date }}</td>
+                                <td class="px-4 py-3 text-sm text-gray-500">{{ mr.doctorName }}</td>
+                                <td class="px-4 py-3 text-sm text-gray-500">{{ mr.description }}</td>
+                            </tr>
+                            } @empty {
+                            <tr>
+                                <td colspan="5" class="px-4 py-10 text-center text-gray-400 italic">No medical records found.</td>
+                            </tr>
+                            }
+                        </tbody>
+                    </table>
                 </div>
             </div>
             }
 
-            @if (activeTab() === 'Medical Records' || activeTab() === 'Prescriptions') {
-            <div class="h-full flex flex-col items-center justify-center text-center">
-                <div
-                    class="w-16 h-16 bg-gray-50 border border-[#DADCE0] rounded-full flex items-center justify-center mb-4">
-                    <lucide-icon [img]="Calendar" class="w-7 h-7 text-gray-300"></lucide-icon>
+            <!-- Prescriptions Tab -->
+            @if (activeTab() === 'Prescriptions') {
+            <div class="h-full flex flex-col">
+                <div class="border-b border-[#DADCE0] pb-4 mb-6">
+                    <h4 class="text-lg font-bold text-[#202124]">Prescriptions</h4>
+                    <p class="text-[13px] text-gray-500 mt-0.5 font-medium">Medication history for {{ patient()?.name }}</p>
                 </div>
-                <h4 class="text-lg font-bold text-[#202124] mb-1">No Data Available</h4>
-                <p class="text-sm text-gray-500 max-w-sm">This section is currently empty. You can add new records or
-                    documents anytime.</p>
+                <div class="bg-white border border-gray-200 rounded-lg overflow-hidden shrink-0">
+                    <table class="w-full text-left border-collapse">
+                        <thead class="bg-gray-50 border-b border-gray-100">
+                            <tr>
+                                <th class="px-4 py-3 text-xs font-bold text-gray-500 uppercase tracking-wider">Medication</th>
+                                <th class="px-4 py-3 text-xs font-bold text-gray-500 uppercase tracking-wider">Dosage</th>
+                                <th class="px-4 py-3 text-xs font-bold text-gray-500 uppercase tracking-wider">Frequency</th>
+                                <th class="px-4 py-3 text-xs font-bold text-gray-500 uppercase tracking-wider">Status</th>
+                                <th class="px-4 py-3 text-xs font-bold text-gray-500 uppercase tracking-wider">Duration</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-gray-100">
+                            @for (pr of patientPrescriptions(); track pr.id) {
+                            <tr>
+                                <td class="px-4 py-3 text-sm font-medium text-gray-900">{{ pr.medication }}</td>
+                                <td class="px-4 py-3 text-sm text-gray-500">{{ pr.dosage }}</td>
+                                <td class="px-4 py-3 text-sm text-gray-500">{{ pr.frequency }}</td>
+                                <td class="px-4 py-3 text-sm">
+                                    <span class="px-2 py-0.5 rounded text-[11px] font-bold"
+                                        [ngClass]="pr.status === 'Active' ? 'bg-emerald-50 text-emerald-700' : 'bg-gray-100 text-gray-500'">
+                                        {{ pr.status }}
+                                    </span>
+                                </td>
+                                <td class="px-4 py-3 text-sm text-gray-500">{{ pr.startDate }} - {{ pr.endDate }}</td>
+                            </tr>
+                            } @empty {
+                            <tr>
+                                <td colspan="5" class="px-4 py-10 text-center text-gray-400 italic">No prescriptions found.</td>
+                            </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
             </div>
             }
         </div>
@@ -276,12 +326,4 @@
         (closeModal)="isAppointmentModalOpen.set(false)"
         (saveAppointment)="onAppointmentSaved($event)">
     </app-appointment-create-modal>
-
-    <app-payment-create-modal
-        [isOpen]="isPaymentModalOpen()"
-        [paymentToEdit]="selectedPaymentForEdit()"
-        [readOnly]="isPaymentReadOnly()"
-        (closeModal)="isPaymentModalOpen.set(false)"
-        (savePayment)="onPaymentSaved($event)">
-    </app-payment-create-modal>
 </div>

@@ -72,8 +72,6 @@ export class SidebarComponent implements OnInit, OnDestroy {
             items: [
                 { label: 'Dashboard', icon: LayoutDashboard, route: '/dashboard' },
                 { label: 'Appointments', icon: CalendarDays, route: '/dashboard/appointments' },
-                { label: 'Room', icon: DoorOpen, route: '/dashboard/room', roles: ['admin'] },
-                { label: 'Payment', icon: CreditCard, route: '/dashboard/payment', roles: ['admin', 'user'] },
             ],
         },
         {
@@ -81,7 +79,6 @@ export class SidebarComponent implements OnInit, OnDestroy {
             items: [
                 { label: 'Doctor', icon: Stethoscope, route: '/dashboard/doctors', roles: ['admin'] },
                 { label: 'Patient', icon: Users, route: '/dashboard/patient', roles: ['admin', 'doctor'] },
-                { label: 'Inpatient', icon: BedDouble, route: '/dashboard/inpatient', roles: ['admin', 'doctor'] },
             ],
         },
         {

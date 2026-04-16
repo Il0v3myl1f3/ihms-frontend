@@ -68,18 +68,6 @@ export const routes: Routes = [
         data: { allowedRoles: ['user'] }
       },
       {
-        path: 'room',
-        loadComponent: () => import('./components/pages/dashboard/rooms/room-list-page.component').then(m => m.RoomListPageComponent),
-        canActivate: [roleGuard],
-        data: { allowedRoles: ['admin'] }
-      },
-      {
-        path: 'payment',
-        loadComponent: () => import('./components/pages/dashboard/payments/payment-list-page.component').then(m => m.PaymentListPageComponent),
-        canActivate: [roleGuard],
-        data: { allowedRoles: ['admin', 'user'] }
-      },
-      {
         path: 'doctors',
         loadComponent: () => import('./components/pages/dashboard/doctors/dashboard-doctors.component').then(m => m.DashboardDoctorsComponent),
         canActivate: [roleGuard],
@@ -100,12 +88,6 @@ export const routes: Routes = [
       {
         path: 'patient/:id',
         loadComponent: () => import('./components/pages/dashboard/patient/patient-details-page/patient-details-page.component').then(m => m.PatientDetailsPageComponent),
-        canActivate: [roleGuard],
-        data: { allowedRoles: ['admin', 'doctor'] }
-      },
-      {
-        path: 'inpatient',
-        loadComponent: () => import('./components/pages/dashboard/inpatient/inpatient-list-page.component').then(m => m.InpatientListPageComponent),
         canActivate: [roleGuard],
         data: { allowedRoles: ['admin', 'doctor'] }
       },
