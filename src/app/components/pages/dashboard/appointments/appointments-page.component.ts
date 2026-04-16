@@ -1,4 +1,5 @@
-import { Component, ViewChild, ChangeDetectionStrategy, ChangeDetectorRef, inject, signal } from '@angular/core';
+import { Component, ViewChild, ChangeDetectionStrategy, ChangeDetectorRef, inject, signal, DestroyRef } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { MedicalService, Doctor } from '../../../../services/medical.service';
 import { AppointmentTableComponent, Appointment } from './appointment-table/appointment-table.component';
 import { AppointmentCreateModalComponent } from './appointment-create-modal/appointment-create-modal.component';
@@ -22,6 +23,7 @@ export class AppointmentsPageComponent {
     private patientService = inject(PatientService);
     private medicalRecordService = inject(MedicalRecordService);
     private cdr = inject(ChangeDetectorRef);
+    private destroyRef = inject(DestroyRef);
 
     doctors = signal<Doctor[]>([]);
     patients = signal<Patient[]>([]);
@@ -34,17 +36,17 @@ export class AppointmentsPageComponent {
     isAppointmentReadOnly = signal(false);
 
     constructor() {
-        this.medicalService.getDoctors().subscribe((docs: Doctor[]) => {
+        this.medicalService.getDoctors().pipe(takeUntilDestroyed(this.destroyRef)).subscribe((docs: Doctor[]) => {
             this.doctors.set(docs);
         });
-        this.patientService.getPatients().subscribe((pats: Patient[]) => {
+        this.patientService.getPatients().pipe(takeUntilDestroyed(this.destroyRef)).subscribe((pats: Patient[]) => {
             this.patients.set(pats);
         });
         this.loadAppointments();
     }
 
     private loadAppointments() {
-        this.appointmentService.getAppointments().subscribe((a: Appointment[]) => {
+        this.appointmentService.getAppointments().pipe(takeUntilDestroyed(this.destroyRef)).subscribe((a: Appointment[]) => {
             this.appointments.set(a);
             this.cdr.markForCheck();
         });
@@ -83,7 +85,7 @@ export class AppointmentsPageComponent {
     }
 
     onDeleteAppointment(appointment: Appointment): void {
-        this.appointmentService.deleteAppointment(appointment.id).subscribe(() => {
+        this.appointmentService.deleteAppointment(appointment.id).pipe(takeUntilDestroyed(this.destroyRef)).subscribe(() => {
             this.loadAppointments();
             if (this.appointmentTable) {
                 const totalPages = this.appointmentTable.totalPages();
@@ -97,7 +99,7 @@ export class AppointmentsPageComponent {
     }
 
     onDeleteSelectedAppointments(selectedAppointments: Appointment[]): void {
-        this.appointmentService.deleteSelectedAppointments(selectedAppointments.map(a => a.id)).subscribe(() => {
+        this.appointmentService.deleteSelectedAppointments(selectedAppointments.map(a => a.id)).pipe(takeUntilDestroyed(this.destroyRef)).subscribe(() => {
             this.loadAppointments();
             if (this.appointmentTable) {
                 const totalPages = this.appointmentTable.totalPages();
@@ -115,7 +117,7 @@ export class AppointmentsPageComponent {
         this.appointmentService.saveAppointment({
             ...data,
             id: this.selectedAppointmentForEdit()?.id
-        }).subscribe({
+        }).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
             next: () => {
                 this.isModalOpen.set(false);
                 this.selectedAppointmentForEdit.set(null);
@@ -128,7 +130,7 @@ export class AppointmentsPageComponent {
     }
 
     onMedicalRecordSaved(data: any): void {
-        this.medicalRecordService.createMedicalRecord(data).subscribe({
+        this.medicalRecordService.createMedicalRecord(data).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
             next: () => {
                 this.closeRecordModal();
                 // Optionally show a success toast here

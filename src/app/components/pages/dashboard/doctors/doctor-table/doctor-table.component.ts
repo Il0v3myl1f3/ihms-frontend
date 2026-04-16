@@ -1,4 +1,6 @@
-import { Component, OnInit, OnDestroy, input, output, ChangeDetectionStrategy, signal, computed, HostListener, effect, untracked } from '@angular/core';
+import { Component, OnInit, OnDestroy, input, output, ChangeDetectionStrategy, signal, computed, effect, untracked, NgZone, inject, DestroyRef } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { fromEvent } from 'rxjs';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { LucideAngularModule, Search, Filter, MoreHorizontal, ChevronLeft, ChevronRight, Pencil, Trash2, Plus, ChevronDown, ChevronUp, Eye } from 'lucide-angular';
@@ -41,6 +43,9 @@ export class DoctorTableComponent implements OnInit, OnDestroy {
     activeItem: DoctorRow | null = null;
     dropdownPos = { top: 0, right: 0 };
     isPageSizeMenuOpen = false;
+
+    private ngZone = inject(NgZone);
+    private destroyRef = inject(DestroyRef);
 
     selectAll = false;
     currentPage = signal(1);
@@ -123,6 +128,24 @@ export class DoctorTableComponent implements OnInit, OnDestroy {
 
     ngOnInit(): void {
         this.checkResponsiveSettings();
+
+        this.ngZone.runOutsideAngular(() => {
+            fromEvent(window, 'scroll', { passive: true })
+                .pipe(takeUntilDestroyed(this.destroyRef))
+                .subscribe(() => {
+                    if (this.activeItem) {
+                        this.ngZone.run(() => {
+                            this.activeItem = null;
+                        });
+                    }
+                });
+
+            fromEvent(window, 'resize', { passive: true })
+                .pipe(takeUntilDestroyed(this.destroyRef))
+                .subscribe(() => {
+                    this.checkResponsiveSettings();
+                });
+        });
     }
 
     changePageSize(size: number | string): void {
@@ -170,20 +193,12 @@ export class DoctorTableComponent implements OnInit, OnDestroy {
 
     ngOnDestroy(): void { }
 
-    @HostListener('window:scroll')
-    onWindowScroll(): void {
-        this.activeItem = null;
-    }
 
-    @HostListener('window:resize')
-    onResize(): void {
-        this.checkResponsiveSettings();
-    }
 
     private checkResponsiveSettings(): void {
         if (window.innerWidth < 1024) {
             if (this.pageSize() !== 7) {
-                this.pageSize.set(7);
+                this.ngZone.run(() => this.pageSize.set(7));
             }
         }
     }

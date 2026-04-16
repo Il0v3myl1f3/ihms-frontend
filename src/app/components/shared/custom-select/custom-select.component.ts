@@ -1,4 +1,6 @@
-import { Component, input, output, signal, computed, HostListener, ChangeDetectionStrategy, forwardRef, ElementRef, inject, OnDestroy } from '@angular/core';
+import { Component, input, output, signal, computed, HostListener, ChangeDetectionStrategy, forwardRef, ElementRef, inject, OnDestroy, OnInit, NgZone, DestroyRef } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { fromEvent } from 'rxjs';
 import { NG_VALUE_ACCESSOR, ControlValueAccessor } from '@angular/forms';
 import { LucideAngularModule, ChevronDown } from 'lucide-angular';
 
@@ -21,7 +23,7 @@ export interface SelectOption {
         }
     ]
 })
-export class CustomSelectComponent implements ControlValueAccessor, OnDestroy {
+export class CustomSelectComponent implements ControlValueAccessor, OnInit, OnDestroy {
     readonly ChevronDown = ChevronDown;
 
     options = input<SelectOption[]>([]);
@@ -32,6 +34,8 @@ export class CustomSelectComponent implements ControlValueAccessor, OnDestroy {
     isDisabled = signal(false);
 
     private el = inject(ElementRef);
+    private ngZone = inject(NgZone);
+    private destroyRef = inject(DestroyRef);
     private onChange: (value: string) => void = () => {};
     private onTouched: () => void = () => {};
 
@@ -66,40 +70,41 @@ export class CustomSelectComponent implements ControlValueAccessor, OnDestroy {
         this.isOpen.set(false);
     }
 
-    @HostListener('document:click', ['$event'])
-    onClickOutside(event: Event): void {
-        if (!this.el.nativeElement.contains(event.target)) {
-            this.isOpen.set(false);
-        }
+    ngOnInit(): void {
+        this.ngZone.runOutsideAngular(() => {
+            // Click outside
+            fromEvent(document, 'click', { passive: true })
+                .pipe(takeUntilDestroyed(this.destroyRef))
+                .subscribe((event) => {
+                    if (this.isOpen() && !this.el.nativeElement.contains(event.target)) {
+                        this.ngZone.run(() => this.isOpen.set(false));
+                    }
+                });
+
+            // Resize
+            fromEvent(window, 'resize', { passive: true })
+                .pipe(takeUntilDestroyed(this.destroyRef))
+                .subscribe(() => {
+                    if (this.isOpen()) {
+                        this.ngZone.run(() => this.isOpen.set(false));
+                    }
+                });
+
+            // Scroll (Capturing phase to catch scroll events on any container)
+            fromEvent(window, 'scroll', { passive: true, capture: true })
+                .pipe(takeUntilDestroyed(this.destroyRef))
+                .subscribe((event) => {
+                    if (this.isOpen()) {
+                        const target = event.target as Node;
+                        if (!this.el.nativeElement.contains(target)) {
+                            this.ngZone.run(() => this.isOpen.set(false));
+                        }
+                    }
+                });
+        });
     }
 
-    @HostListener('window:resize')
-    onResize(): void {
-        this.isOpen.set(false);
-    }
-
-    private scrollListener = (event: Event) => {
-        if (this.isOpen()) {
-            const target = event.target as Node;
-            if (this.el.nativeElement.contains(target)) {
-                return;
-            }
-            this.isOpen.set(false);
-        }
-    };
-
-    constructor() {
-        // Use capturing phase to catch scroll events on any scrollable container (like the modal body)
-        if (typeof window !== 'undefined') {
-            window.addEventListener('scroll', this.scrollListener, true);
-        }
-    }
-
-    ngOnDestroy() {
-        if (typeof window !== 'undefined') {
-            window.removeEventListener('scroll', this.scrollListener, true);
-        }
-    }
+    ngOnDestroy() { }
 
     // ControlValueAccessor implementation
     writeValue(value: string): void {

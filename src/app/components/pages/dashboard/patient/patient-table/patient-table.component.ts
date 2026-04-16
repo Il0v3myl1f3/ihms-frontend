@@ -1,4 +1,6 @@
-import { Component, OnInit, OnDestroy, input, output, ChangeDetectionStrategy, signal, computed, HostListener, effect, untracked } from '@angular/core';
+import { Component, OnInit, OnDestroy, input, output, ChangeDetectionStrategy, signal, computed, HostListener, effect, untracked, NgZone, DestroyRef, inject } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { fromEvent } from 'rxjs';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { LucideAngularModule, Pencil, Trash2, MoreHorizontal, Search, Filter, ChevronLeft, ChevronRight, Plus, ChevronDown, ChevronUp, Eye } from 'lucide-angular';
@@ -52,6 +54,9 @@ export class PatientTableComponent implements OnInit, OnDestroy {
     dropdownPos = { top: 0, right: 0 };
     isPageSizeMenuOpen = false;
 
+    private ngZone = inject(NgZone);
+    private destroyRef = inject(DestroyRef);
+
     selectAll = false;
     currentPage = signal(1);
     pageSize = signal(7);
@@ -77,6 +82,18 @@ export class PatientTableComponent implements OnInit, OnDestroy {
         effect(() => {
             this.searchQuery();
             untracked(() => this.currentPage.set(1));
+        });
+
+        this.ngZone.runOutsideAngular(() => {
+            fromEvent(window, 'scroll', { passive: true })
+                .pipe(takeUntilDestroyed(this.destroyRef))
+                .subscribe(() => {
+                    if (this.activeItem) {
+                        this.ngZone.run(() => {
+                            this.activeItem = null;
+                        });
+                    }
+                });
         });
     }
 
@@ -194,11 +211,6 @@ export class PatientTableComponent implements OnInit, OnDestroy {
     }
 
     ngOnDestroy(): void { }
-
-    @HostListener('window:scroll')
-    onWindowScroll(): void {
-        this.activeItem = null;
-    }
 
     @HostListener('window:resize')
     onResize(): void {

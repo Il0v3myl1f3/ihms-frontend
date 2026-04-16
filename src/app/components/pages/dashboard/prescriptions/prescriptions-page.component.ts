@@ -1,8 +1,11 @@
-import { Component, ChangeDetectionStrategy, signal, computed, effect, untracked, HostListener, inject } from '@angular/core';
+import { Component, ChangeDetectionStrategy, signal, computed, effect, untracked, HostListener, inject, DestroyRef, NgZone, OnInit } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { fromEvent } from 'rxjs';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { LucideAngularModule, Search, Filter, ChevronLeft, ChevronRight, ChevronDown, ChevronUp, MoreHorizontal, Eye, Pencil, Trash2 } from 'lucide-angular';
 import { PrescriptionService } from '../../../../services/prescription.service';
+import { AvatarInitialsPipe } from '../../../../core/pipes/avatar-initials.pipe';
 
 export interface Prescription {
     id: number;
@@ -18,14 +21,14 @@ export interface Prescription {
 
 @Component({
     selector: 'app-prescriptions-page',
-    imports: [CommonModule, FormsModule, LucideAngularModule],
+    imports: [CommonModule, FormsModule, LucideAngularModule, AvatarInitialsPipe],
     templateUrl: './prescriptions-page.component.html',
     changeDetection: ChangeDetectionStrategy.OnPush,
     host: {
         '(document:click)': 'closeAllDropdowns()'
     }
 })
-export class PrescriptionsPageComponent {
+export class PrescriptionsPageComponent implements OnInit {
     readonly Search = Search;
     readonly Filter = Filter;
     readonly ChevronLeft = ChevronLeft;
@@ -38,6 +41,8 @@ export class PrescriptionsPageComponent {
     readonly Trash2 = Trash2;
 
     private prescriptionService = inject(PrescriptionService);
+    private destroyRef = inject(DestroyRef);
+    private ngZone = inject(NgZone);
     prescriptions: Prescription[] = [];
 
     searchQuery = signal('');
@@ -53,13 +58,28 @@ export class PrescriptionsPageComponent {
     activeItem: Prescription | null = null;
     dropdownPos = { top: 0, right: 0 };
 
+    ngOnInit(): void {
+        this.prescriptionService.getPrescriptions().pipe(takeUntilDestroyed(this.destroyRef)).subscribe(items => {
+            this.prescriptions = items;
+        });
+
+        this.ngZone.runOutsideAngular(() => {
+            fromEvent(window, 'scroll', { passive: true })
+                .pipe(takeUntilDestroyed(this.destroyRef))
+                .subscribe(() => {
+                    if (this.activeItem) {
+                        this.ngZone.run(() => {
+                            this.activeItem = null;
+                        });
+                    }
+                });
+        });
+    }
+
     constructor() {
         effect(() => {
             this.searchQuery();
             untracked(() => this.currentPage.set(1));
-        });
-        this.prescriptionService.getPrescriptions().subscribe(items => {
-            this.prescriptions = items;
         });
     }
 
@@ -173,10 +193,5 @@ export class PrescriptionsPageComponent {
         this.activeFilterMenu.set(null);
     }
 
-    @HostListener('window:scroll')
-    onWindowScroll(): void { this.activeItem = null; }
 
-    getAvatarInitialsName(name: string): string {
-        return name.replace('Dr. ', '').replace(' ', '+');
-    }
 }

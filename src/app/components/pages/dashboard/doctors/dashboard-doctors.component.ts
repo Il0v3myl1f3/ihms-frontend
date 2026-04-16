@@ -1,4 +1,5 @@
-import { Component, OnInit, inject, ViewChild, ChangeDetectionStrategy, signal } from '@angular/core';
+import { Component, OnInit, inject, ViewChild, ChangeDetectionStrategy, signal, DestroyRef } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { Router } from '@angular/router';
 import { MedicalService } from '../../../../services/medical.service';
 import { AddDoctorComponent } from './add-doctor/add-doctor.component';
@@ -20,13 +21,14 @@ export class DashboardDoctorsComponent implements OnInit {
 
     private medicalService = inject(MedicalService);
     private router = inject(Router);
+    private destroyRef = inject(DestroyRef);
 
     ngOnInit(): void {
         this.loadDoctors();
     }
 
     private loadDoctors(): void {
-        this.medicalService.getDoctors().subscribe(data => {
+        this.medicalService.getDoctors().pipe(takeUntilDestroyed(this.destroyRef)).subscribe(data => {
             this.doctors.set(
                 data.map((d, index) => ({
                     ...d,
@@ -58,7 +60,7 @@ export class DashboardDoctorsComponent implements OnInit {
     }
 
     onDeleteDoctor(doctor: DoctorRow): void {
-        this.medicalService.deleteDoctor(doctor.id).subscribe(() => {
+        this.medicalService.deleteDoctor(doctor.id).pipe(takeUntilDestroyed(this.destroyRef)).subscribe(() => {
             const current = this.doctors();
             const filtered = current.filter(d => d.id !== doctor.id);
             this.doctors.set(filtered.map((d, index) => ({ ...d, no: index + 1 })));
@@ -75,7 +77,7 @@ export class DashboardDoctorsComponent implements OnInit {
     }
 
     onDeleteSelectedDoctors(selectedDoctors: DoctorRow[]): void {
-        this.medicalService.deleteSelectedDoctors(selectedDoctors.map(d => d.id)).subscribe(() => {
+        this.medicalService.deleteSelectedDoctors(selectedDoctors.map(d => d.id)).pipe(takeUntilDestroyed(this.destroyRef)).subscribe(() => {
             const selectedIds = new Set(selectedDoctors.map(d => d.id));
             const current = this.doctors();
             const filtered = current.filter(d => !selectedIds.has(d.id));
@@ -98,7 +100,7 @@ export class DashboardDoctorsComponent implements OnInit {
             payload['id'] = this.selectedDoctorForEdit.id;
         }
 
-        this.medicalService.saveDoctor(payload).subscribe({
+        this.medicalService.saveDoctor(payload).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
             next: () => {
                 this.loadDoctors();
                 this.isAddDoctorModalOpen = false;

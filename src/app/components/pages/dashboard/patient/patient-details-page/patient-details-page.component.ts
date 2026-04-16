@@ -1,4 +1,5 @@
-import { Component, OnInit, ChangeDetectionStrategy, inject, signal, computed } from '@angular/core';
+import { Component, OnInit, ChangeDetectionStrategy, inject, signal, computed, DestroyRef, ChangeDetectorRef } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router } from '@angular/router';
 import { LucideAngularModule, User, Calendar, Droplet, Phone, MapPin, ArrowLeft, MoreHorizontal, Pill, FileText, Paperclip, Eye, Edit2 } from 'lucide-angular';
@@ -42,6 +43,8 @@ export class PatientDetailsPageComponent implements OnInit {
     prescriptionService = inject(PrescriptionService);
     medicalRecordService = inject(MedicalRecordService);
     authService = inject(AuthService);
+    destroyRef = inject(DestroyRef);
+    cdr = inject(ChangeDetectorRef);
 
     isDoctor = computed(() => this.authService.getCurrentUser()?.role === 'doctor');
 
@@ -95,31 +98,32 @@ export class PatientDetailsPageComponent implements OnInit {
     );
 
     ngOnInit() {
-        this.route.paramMap.subscribe(params => {
+        this.route.paramMap.pipe(takeUntilDestroyed(this.destroyRef)).subscribe(params => {
             const idParam = params.get('id');
             if (idParam) {
                 this.loadPatientData(idParam);
             }
         });
 
-        this.medicalService.getDoctors().subscribe(docs => {
+        this.medicalService.getDoctors().pipe(takeUntilDestroyed(this.destroyRef)).subscribe(docs => {
             this.doctors = docs;
+            this.cdr.markForCheck();
         });
     }
 
     loadPatientData(id: string) {
-        this.patientService.getPatientById(id).subscribe(p => {
+        this.patientService.getPatientById(id).pipe(takeUntilDestroyed(this.destroyRef)).subscribe(p => {
             this.patient.set(p);
-            this.appointmentService.getAppointmentsByPatientName(p.name).subscribe(items => {
+            this.appointmentService.getAppointmentsByPatientName(p.name).pipe(takeUntilDestroyed(this.destroyRef)).subscribe(items => {
                 this.patientAppointments.set(items);
             });
 
-            this.medicalRecordService.getMedicalRecords(p.id).subscribe(records => {
+            this.medicalRecordService.getMedicalRecords(p.id).pipe(takeUntilDestroyed(this.destroyRef)).subscribe(records => {
                 this.patientMedicalRecords.set(records);
             });
         });
 
-        this.prescriptionService.getPrescriptions().subscribe(items => {
+        this.prescriptionService.getPrescriptions().pipe(takeUntilDestroyed(this.destroyRef)).subscribe(items => {
             const mapped: PatientPrescription[] = items.map(item => ({
                 id: item.id,
                 medication: item.medication,
@@ -158,7 +162,7 @@ export class PatientDetailsPageComponent implements OnInit {
 
     onDeleteAppointment(appointment: Appointment) {
         if (confirm(`Are you sure you want to delete appointment #${appointment.no}?`)) {
-            this.appointmentService.deleteAppointment(appointment.id).subscribe(() => {
+            this.appointmentService.deleteAppointment(appointment.id).pipe(takeUntilDestroyed(this.destroyRef)).subscribe(() => {
                 this.patientAppointments.update(list => list.filter(a => a.id !== appointment.id));
             });
         }
@@ -185,7 +189,7 @@ export class PatientDetailsPageComponent implements OnInit {
                 ...data,
                 id: this.selectedAppointmentForEdit()!.id,
                 appointmentDate: dateStr
-            }).subscribe(updated => {
+            }).pipe(takeUntilDestroyed(this.destroyRef)).subscribe(updated => {
                 this.patientAppointments.update(list => list.map(a =>
                     a.id === updated.id ? { ...updated, no: a.no } : a
                 ));
@@ -207,7 +211,7 @@ export class PatientDetailsPageComponent implements OnInit {
     }
 
     onSaveMedicalRecord(formData: any) {
-        this.medicalRecordService.createMedicalRecord(formData).subscribe({
+        this.medicalRecordService.createMedicalRecord(formData).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
             next: (newRecord) => {
                 this.patientMedicalRecords.update(list => [...list, newRecord]);
                 this.isMedicalRecordModalOpen.set(false);

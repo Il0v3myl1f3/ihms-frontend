@@ -1,4 +1,4 @@
-import { Component, OnInit, inject, ChangeDetectionStrategy, DestroyRef, ChangeDetectorRef } from '@angular/core';
+import { Component, OnInit, inject, ChangeDetectionStrategy, DestroyRef, signal } from '@angular/core';
 import { Observable } from 'rxjs';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { AuthService, User } from '../../../../services/auth.service';
@@ -23,7 +23,6 @@ export class DashboardHomeComponent implements OnInit {
     private laboratoryService = inject(LaboratoryService);
     private medicalService = inject(MedicalService);
     private destroyRef = inject(DestroyRef);
-    private cdr = inject(ChangeDetectorRef);
 
     currentUser$!: Observable<User | null>;
     currentUser: User | null = null;
@@ -46,15 +45,15 @@ export class DashboardHomeComponent implements OnInit {
     readonly ShieldCheck = ShieldCheck;
     readonly AlertCircle = AlertCircle;
 
-    // Stats
-    stats = {
+    // Stats Signal
+    stats = signal({
         totalPatients: 0,
         totalDoctors: 0,
         scheduledAppointments: 0,
         roomOccupancy: 0,
         pendingTests: 0,
         completedTests: 0
-    };
+    });
 
     systemModules = [
         { name: 'Doctors Registry', link: '/dashboard/doctors', icon: Stethoscope, status: 'Healthy', color: 'indigo' },
@@ -63,18 +62,18 @@ export class DashboardHomeComponent implements OnInit {
         { name: 'Lab Operations', link: '/dashboard/laboratory', icon: Activity, status: 'Operational', color: 'emerald' },
     ];
 
-    // Real-time data for non-admin dashboards
-    doctorData = {
+    // Real-time data signals
+    doctorData = signal({
         myPatients: 0,
         todayAppointments: 0,
         todaySchedule: [] as any[],
         recentPatients: [] as any[]
-    };
+    });
 
-    patientData = {
+    patientData = signal({
         upcoming: null as any,
         prescriptions: [] as any[]
-    };
+    });
 
     // Data for non-admin dashboards (Legacy placeholders, will be shadowed by dynamic data)
     upcomingAppointment: any = null;
@@ -84,45 +83,46 @@ export class DashboardHomeComponent implements OnInit {
         this.currentUser$ = this.authService.currentUser$;
         this.currentUser$.pipe(takeUntilDestroyed(this.destroyRef)).subscribe((user) => {
             this.currentUser = user;
-            this.cdr.markForCheck();
         });
 
         // Load real-time stats
         this.patientService.getPatients().pipe(takeUntilDestroyed(this.destroyRef)).subscribe(patients => {
-            this.stats.totalPatients = patients.length;
-            this.cdr.markForCheck();
+            this.stats.update(s => ({ ...s, totalPatients: patients.length }));
         });
-        this.stats.scheduledAppointments = this.appointmentService.getTodayAppointmentCount();
+        this.stats.update(s => ({ ...s, scheduledAppointments: this.appointmentService.getTodayAppointmentCount() }));
 
         this.medicalService.getDoctors().pipe(takeUntilDestroyed(this.destroyRef)).subscribe(docs => {
-            this.stats.totalDoctors = docs.length;
-            this.cdr.markForCheck();
+            this.stats.update(s => ({ ...s, totalDoctors: docs.length }));
         });
 
         this.laboratoryService.getAnalyses().pipe(takeUntilDestroyed(this.destroyRef)).subscribe(ans => {
-            this.stats.pendingTests = ans.filter(a => a.status === 'Scheduled' || a.status === 'InProgress').length;
-            this.stats.completedTests = ans.filter(a => a.status === 'Completed').length;
-            this.cdr.markForCheck();
+            this.stats.update(s => ({
+                ...s,
+                pendingTests: ans.filter(a => a.status === 'Scheduled' || a.status === 'InProgress').length,
+                completedTests: ans.filter(a => a.status === 'Completed').length
+            }));
         });
 
         // Load Role-Specific Reality
         this.appointmentService.getAppointments().pipe(takeUntilDestroyed(this.destroyRef)).subscribe(apps => {
             if (this.currentUser?.role === 'doctor') {
                 const myApps = apps.filter(a => a.doctorName === this.currentUser?.name);
-                this.doctorData.todayAppointments = myApps.length;
-                this.doctorData.myPatients = new Set(myApps.map(a => a.patientName)).size;
-                this.doctorData.todaySchedule = myApps.slice(0, 3).map(a => ({
-                    time: '09:00', // Mock time
-                    period: 'AM',
-                    title: a.notes.split('.')[0],
-                    patient: a.patientName,
-                    status: a.status
-                }));
-                this.doctorData.recentPatients = [...new Set(myApps.map(a => a.patientName))].slice(0, 3).map(name => ({
-                    name,
-                    specialty: 'General Medicine',
-                    time: 'Today'
-                }));
+                this.doctorData.set({
+                    todayAppointments: myApps.length,
+                    myPatients: new Set(myApps.map(a => a.patientName)).size,
+                    todaySchedule: myApps.slice(0, 3).map(a => ({
+                        time: '09:00', // Mock time
+                        period: 'AM',
+                        title: a.notes.split('.')[0],
+                        patient: a.patientName,
+                        status: a.status
+                    })),
+                    recentPatients: [...new Set(myApps.map(a => a.patientName))].slice(0, 3).map(name => ({
+                        name,
+                        specialty: 'General Medicine',
+                        time: 'Today'
+                    }))
+                });
             }
 
             if (this.currentUser?.role === 'user') {
@@ -146,16 +146,15 @@ export class DashboardHomeComponent implements OnInit {
                     { name: 'Metformin', dosage: '850mg · 2x/day', doctor: 'Dr. Elijah Stone' },
                 ];
             }
-            this.cdr.markForCheck();
         });
     }
 
     getModuleMetric(moduleName: string): string {
         switch (moduleName) {
-            case 'Doctors Registry': return `${this.stats.totalDoctors} Active`;
-            case 'Patient Intake': return `${this.stats.totalPatients} Registered`;
-            case 'Appointments': return `${this.stats.scheduledAppointments} Today`;
-            case 'Lab Operations': return `${this.stats.pendingTests} Pending`;
+            case 'Doctors Registry': return `${this.stats().totalDoctors} Active`;
+            case 'Patient Intake': return `${this.stats().totalPatients} Registered`;
+            case 'Appointments': return `${this.stats().scheduledAppointments} Today`;
+            case 'Lab Operations': return `${this.stats().pendingTests} Pending`;
             default: return 'Active';
         }
     }

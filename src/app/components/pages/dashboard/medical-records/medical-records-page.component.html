@@ -145,7 +145,7 @@
                         <td class="px-4 py-4 text-gray-900 border-r border-b border-gray-200 max-lg:px-2 max-lg:text-[13px]">{{ record.date }}</td>
                         <td class="px-4 py-4 border-r border-b border-gray-200 max-lg:px-2 max-lg:text-[13px]">
                             <div class="flex items-center gap-3">
-                                <img src="https://ui-avatars.com/api/?name={{ getAvatarInitialsName(record.doctorName) }}&background=EAF6FD&color=1F2B6C&rounded=true"
+                                <img src="https://ui-avatars.com/api/?name={{ record.doctorName | avatarInitials }}&background=EAF6FD&color=1F2B6C&rounded=true"
                                     alt="Avatar" class="w-7 h-7 rounded-full border border-gray-100">
                                 <span class="text-gray-900 font-normal tracking-tight">{{ record.doctorName }}</span>
                             </div>

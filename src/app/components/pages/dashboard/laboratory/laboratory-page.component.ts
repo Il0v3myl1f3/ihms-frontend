@@ -1,4 +1,5 @@
-import { Component, OnInit, inject, signal, computed, ChangeDetectionStrategy } from '@angular/core';
+import { Component, OnInit, inject, signal, computed, ChangeDetectionStrategy, DestroyRef } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { CommonModule } from '@angular/common';
 import { LaboratoryService, Laboratory } from '../../../../services/laboratory.service';
 import { LucideAngularModule, Search, FlaskConical, MapPin, Phone, Clock, Eye, Info, Filter, ChevronDown, Activity, Users } from 'lucide-angular';
@@ -30,6 +31,7 @@ export class LaboratoryPageComponent implements OnInit {
   readonly Users = Users;
 
   private labService = inject(LaboratoryService);
+  private destroyRef = inject(DestroyRef);
 
   // Data
   labs = signal<Laboratory[]>([]);
@@ -69,7 +71,7 @@ export class LaboratoryPageComponent implements OnInit {
   });
 
   ngOnInit(): void {
-    this.labService.getLabs().subscribe(data => {
+    this.labService.getLabs().pipe(takeUntilDestroyed(this.destroyRef)).subscribe(data => {
       this.labs.set(data);
     });
   }

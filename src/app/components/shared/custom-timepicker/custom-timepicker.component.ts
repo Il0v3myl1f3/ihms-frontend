@@ -1,4 +1,6 @@
-import { Component, input, signal, computed, HostListener, ChangeDetectionStrategy, forwardRef, ElementRef, inject, OnDestroy } from '@angular/core';
+import { Component, input, signal, computed, HostListener, ChangeDetectionStrategy, forwardRef, ElementRef, inject, OnDestroy, OnInit, NgZone, DestroyRef } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { fromEvent } from 'rxjs';
 import { NG_VALUE_ACCESSOR, ControlValueAccessor } from '@angular/forms';
 import { LucideAngularModule, Clock, ChevronDown } from 'lucide-angular';
 
@@ -15,7 +17,7 @@ import { LucideAngularModule, Clock, ChevronDown } from 'lucide-angular';
         }
     ]
 })
-export class CustomTimepickerComponent implements ControlValueAccessor, OnDestroy {
+export class CustomTimepickerComponent implements ControlValueAccessor, OnInit, OnDestroy {
     readonly Clock = Clock;
     readonly ChevronDown = ChevronDown;
 
@@ -33,30 +35,48 @@ export class CustomTimepickerComponent implements ControlValueAccessor, OnDestro
     selectedMinute = computed(() => this.selectedValue().split(':')[1] || '00');
 
     private el = inject(ElementRef);
+    private ngZone = inject(NgZone);
+    private destroyRef = inject(DestroyRef);
     private onChange: (value: string) => void = () => {};
     private onTouched: () => void = () => {};
 
     dropdownPos = { top: 0, left: 0, width: 0 };
 
-    private scrollListener = (event: Event) => {
-        if (this.isOpen()) {
-            const target = event.target as Node;
-            if (this.el.nativeElement.contains(target)) return;
-            this.isOpen.set(false);
-        }
-    };
+    ngOnInit(): void {
+        this.ngZone.runOutsideAngular(() => {
+            // Click outside
+            fromEvent(document, 'click', { passive: true })
+                .pipe(takeUntilDestroyed(this.destroyRef))
+                .subscribe((event) => {
+                    if (this.isOpen() && !this.el.nativeElement.contains(event.target)) {
+                        this.ngZone.run(() => this.isOpen.set(false));
+                    }
+                });
 
-    constructor() {
-        if (typeof window !== 'undefined') {
-            window.addEventListener('scroll', this.scrollListener, true);
-        }
+            // Resize
+            fromEvent(window, 'resize', { passive: true })
+                .pipe(takeUntilDestroyed(this.destroyRef))
+                .subscribe(() => {
+                    if (this.isOpen()) {
+                        this.ngZone.run(() => this.isOpen.set(false));
+                    }
+                });
+
+            // Scroll (Capturing phase)
+            fromEvent(window, 'scroll', { passive: true, capture: true })
+                .pipe(takeUntilDestroyed(this.destroyRef))
+                .subscribe((event) => {
+                    if (this.isOpen()) {
+                        const target = event.target as Node;
+                        if (!this.el.nativeElement.contains(target)) {
+                            this.ngZone.run(() => this.isOpen.set(false));
+                        }
+                    }
+                });
+        });
     }
 
-    ngOnDestroy() {
-        if (typeof window !== 'undefined') {
-            window.removeEventListener('scroll', this.scrollListener, true);
-        }
-    }
+    ngOnDestroy() { }
 
     toggle(event: Event): void {
         if (this.isDisabled()) return;
@@ -98,17 +118,7 @@ export class CustomTimepickerComponent implements ControlValueAccessor, OnDestro
         this.onTouched();
     }
 
-    @HostListener('document:click', ['$event'])
-    onClickOutside(event: Event): void {
-        if (!this.el.nativeElement.contains(event.target)) {
-            this.isOpen.set(false);
-        }
-    }
 
-    @HostListener('window:resize')
-    onResize(): void {
-        this.isOpen.set(false);
-    }
 
     // ControlValueAccessor implementation
     writeValue(value: string): void {

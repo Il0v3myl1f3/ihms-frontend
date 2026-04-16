@@ -1,5 +1,6 @@
-import { Component, OnInit, inject, ChangeDetectionStrategy, signal, computed, HostListener, DestroyRef, ChangeDetectorRef } from '@angular/core';
+import { Component, OnInit, inject, ChangeDetectionStrategy, signal, computed, HostListener, DestroyRef, ChangeDetectorRef, NgZone } from '@angular/core';
 import { Router } from '@angular/router';
+import { fromEvent } from 'rxjs';
 import { AuthService, User } from '../../../services/auth.service';
 import { SidebarComponent } from '../../shared/sidebar/sidebar.component';
 import { Observable } from 'rxjs';
@@ -40,6 +41,7 @@ export class DashboardComponent implements OnInit {
   private router = inject(Router);
   private destroyRef = inject(DestroyRef);
   private cdr = inject(ChangeDetectorRef);
+  private ngZone = inject(NgZone);
 
   ngOnInit(): void {
     this.currentUser$ = this.authService.currentUser$;
@@ -53,22 +55,31 @@ export class DashboardComponent implements OnInit {
 
     // Check initial sidebar state
     this.checkSidebarState();
-  }
 
-  @HostListener('window:resize')
-  onResize(): void {
-    this.checkSidebarState();
+    this.ngZone.runOutsideAngular(() => {
+      fromEvent(window, 'resize', { passive: true })
+        .pipe(takeUntilDestroyed(this.destroyRef))
+        .subscribe(() => this.checkSidebarState());
+
+      fromEvent(document, 'click', { passive: true })
+        .pipe(takeUntilDestroyed(this.destroyRef))
+        .subscribe(() => {
+          if (this.isNotificationOpen()) {
+            this.ngZone.run(() => this.isNotificationOpen.set(false));
+          }
+        });
+    });
   }
 
   private checkSidebarState(): void {
     const width = window.innerWidth;
     if (width < 1280) {
       if (!this.isSidebarCollapsed()) {
-        this.isSidebarCollapsed.set(true);
+        this.ngZone.run(() => this.isSidebarCollapsed.set(true));
       }
     } else {
       if (this.isSidebarCollapsed()) {
-        this.isSidebarCollapsed.set(false);
+        this.ngZone.run(() => this.isSidebarCollapsed.set(false));
       }
     }
   }
@@ -84,13 +95,6 @@ export class DashboardComponent implements OnInit {
   toggleNotifications(event: Event): void {
     event.stopPropagation();
     this.isNotificationOpen.update(v => !v);
-  }
-
-  @HostListener('document:click')
-  closeNotifications(): void {
-    if (this.isNotificationOpen()) {
-      this.isNotificationOpen.set(false);
-    }
   }
 
   markAsRead(id: number, event: Event): void {
