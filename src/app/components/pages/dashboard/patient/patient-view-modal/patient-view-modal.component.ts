@@ -3,13 +3,12 @@ import { CommonModule } from '@angular/common';
 import { LucideAngularModule, X, User, Calendar, Droplet, Phone, MapPin } from 'lucide-angular';
 import { Patient } from '../patient-table/patient-table.component';
 import { Appointment, AppointmentTableComponent } from '../../appointments/appointment-table/appointment-table.component';
-import { Payment, PaymentTableComponent } from '../../payments/payment-table/payment-table.component';
 
-type ViewTab = 'General Info' | 'Appointments' | 'Payments';
+type ViewTab = 'General Info' | 'Appointments';
 
 @Component({
     selector: 'app-patient-view-modal',
-    imports: [CommonModule, LucideAngularModule, AppointmentTableComponent, PaymentTableComponent],
+    imports: [CommonModule, LucideAngularModule, AppointmentTableComponent],
     templateUrl: './patient-view-modal.component.html',
     changeDetection: ChangeDetectionStrategy.OnPush
 })
@@ -17,7 +16,6 @@ export class PatientViewModalComponent implements OnInit, OnDestroy {
     isOpen = input(false);
     patient = input<Patient | null>(null);
     allAppointments = input<Appointment[]>([]);
-    allPayments = input<Payment[]>([]);
     closeModal = output<void>();
 
     readonly X = X;
@@ -28,18 +26,12 @@ export class PatientViewModalComponent implements OnInit, OnDestroy {
     readonly MapPin = MapPin;
 
     activeTab = signal<ViewTab>('General Info');
-    tabs: ViewTab[] = ['General Info', 'Appointments', 'Payments'];
+    tabs: ViewTab[] = ['General Info', 'Appointments'];
 
     patientAppointments = computed(() => {
         const name = this.patient()?.name;
         if (!name) return [];
         return this.allAppointments().filter(a => a.patientName === name);
-    });
-
-    patientPayments = computed(() => {
-        const name = this.patient()?.name;
-        if (!name) return [];
-        return this.allPayments().filter(p => p.patientName === name);
     });
 
     ngOnInit(): void {

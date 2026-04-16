@@ -5,7 +5,6 @@ import { LucideAngularModule, Users, Stethoscope, CalendarDays, CreditCard, File
 import { RouterModule } from '@angular/router';
 import { PatientService } from '../../../../services/patient.service';
 import { AppointmentService } from '../../../../services/appointment.service';
-import { RoomService } from '../../../../services/room.service';
 import { LaboratoryService } from '../../../../services/laboratory.service';
 import { MedicalService } from '../../../../services/medical.service';
 import { CommonModule } from '@angular/common';
@@ -20,7 +19,6 @@ export class DashboardHomeComponent implements OnInit {
     private authService = inject(AuthService);
     private patientService = inject(PatientService);
     private appointmentService = inject(AppointmentService);
-    private roomService = inject(RoomService);
     private laboratoryService = inject(LaboratoryService);
     private medicalService = inject(MedicalService);
 
@@ -60,8 +58,6 @@ export class DashboardHomeComponent implements OnInit {
         { name: 'Patient Intake', link: '/dashboard/patient', icon: Users, status: 'Active', color: 'blue' },
         { name: 'Appointments', link: '/dashboard/appointments', icon: CalendarDays, status: 'Processing', color: 'amber' },
         { name: 'Lab Operations', link: '/dashboard/laboratory', icon: Activity, status: 'Operational', color: 'emerald' },
-        { name: 'Bed Management', link: '/dashboard/room', icon: DoorOpen, status: 'Monitoring', color: 'rose' },
-        { name: 'Financials', link: '/dashboard/payments', icon: CreditCard, status: 'Stable', color: 'emerald' },
     ];
 
     // Real-time data for non-admin dashboards
@@ -92,9 +88,6 @@ export class DashboardHomeComponent implements OnInit {
             this.stats.totalPatients = patients.length;
         });
         this.stats.scheduledAppointments = this.appointmentService.getTodayAppointmentCount();
-
-        const roomStats = this.roomService.getRoomStats();
-        this.stats.roomOccupancy = Math.round((roomStats.occupied / roomStats.total) * 100);
 
         this.medicalService.getDoctors().subscribe(docs => {
             this.stats.totalDoctors = docs.length;
@@ -155,8 +148,6 @@ export class DashboardHomeComponent implements OnInit {
             case 'Patient Intake': return `${this.stats.totalPatients} Registered`;
             case 'Appointments': return `${this.stats.scheduledAppointments} Today`;
             case 'Lab Operations': return `${this.stats.pendingTests} Pending`;
-            case 'Bed Management': return `${this.stats.roomOccupancy}% Occupied`;
-            case 'Financials': return `$52k Total`;
             default: return 'Active';
         }
     }

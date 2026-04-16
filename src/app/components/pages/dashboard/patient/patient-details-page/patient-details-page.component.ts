@@ -1,15 +1,18 @@
 import { Component, OnInit, ChangeDetectionStrategy, inject, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router } from '@angular/router';
-import { LucideAngularModule, User, Calendar, Droplet, Phone, MapPin, ArrowLeft, MoreHorizontal, Pill, FileText, Paperclip } from 'lucide-angular';
+import { LucideAngularModule, User, Calendar, Droplet, Phone, MapPin, ArrowLeft, MoreHorizontal, Pill, FileText, Paperclip, Eye, Edit2 } from 'lucide-angular';
 import { MedicalService, Doctor } from '../../../../../services/medical.service';
 import { AppointmentTableComponent, Appointment } from '../../appointments/appointment-table/appointment-table.component';
 import { AppointmentCreateModalComponent } from '../../appointments/appointment-create-modal/appointment-create-modal.component';
-import { MOCK_APPOINTMENTS } from '../../appointments/appointments-page.component';
-import { PaymentTableComponent, Payment } from '../../payments/payment-table/payment-table.component';
-import { PaymentCreateModalComponent } from '../../payments/payment-create-modal/payment-create-modal.component';
 import { PatientService } from '../../../../../services/patient.service';
 import { Patient } from '../patient-table/patient-table.component';
+import { AppointmentService } from '../../../../../services/appointment.service';
+import { PrescriptionService } from '../../../../../services/prescription.service';
+import { MedicalRecordService } from '../../../../../services/medical-record.service';
+import { AuthService } from '../../../../../services/auth.service';
+import { MedicalRecord } from '../../medical-records/medical-records-page.component';
+import { MedicalRecordCreateModalComponent } from '../../medical-records/medical-record-create-modal/medical-record-create-modal.component';
 
 export interface PatientPrescription {
     id: number;
@@ -26,7 +29,7 @@ export interface PatientPrescription {
 @Component({
     selector: 'app-patient-details-page',
     standalone: true,
-    imports: [CommonModule, LucideAngularModule, AppointmentTableComponent, PaymentTableComponent, AppointmentCreateModalComponent, PaymentCreateModalComponent],
+    imports: [CommonModule, LucideAngularModule, AppointmentTableComponent, AppointmentCreateModalComponent, MedicalRecordCreateModalComponent],
     templateUrl: './patient-details-page.component.html',
     changeDetection: ChangeDetectionStrategy.OnPush
 })
@@ -35,6 +38,12 @@ export class PatientDetailsPageComponent implements OnInit {
     router = inject(Router);
     medicalService = inject(MedicalService);
     patientService = inject(PatientService);
+    appointmentService = inject(AppointmentService);
+    prescriptionService = inject(PrescriptionService);
+    medicalRecordService = inject(MedicalRecordService);
+    authService = inject(AuthService);
+
+    isDoctor = computed(() => this.authService.getCurrentUser()?.role === 'doctor');
 
     // Icons
     User = User;
@@ -47,25 +56,30 @@ export class PatientDetailsPageComponent implements OnInit {
     Pill = Pill;
     FileText = FileText;
     Paperclip = Paperclip;
+    Eye = Eye;
+    Edit2 = Edit2;
 
     activeTab = signal('General Info');
-    tabs = ['General Info', 'Appointments', 'Payments', 'Medical Records', 'Prescriptions'];
+    tabs = ['General Info', 'Appointments', 'Medical Records', 'Prescriptions'];
 
     patient = signal<Patient | null>(null);
 
     // Mock data (we will pull based on route id, ideally from a service)
     patientAppointments = signal<Appointment[]>([]);
-    patientPayments = signal<Payment[]>([]);
     patientPrescriptions = signal<PatientPrescription[]>([]);
+    patientMedicalRecords = signal<MedicalRecord[]>([]);;
     doctors: Doctor[] = [];
 
     // Modal state
     isAppointmentModalOpen = signal(false);
     selectedAppointmentForEdit = signal<Appointment | null>(null);
+    selectedAppointmentForRecord = signal<Appointment | null>(null);
     isAppointmentReadOnly = signal(false);
-    isPaymentModalOpen = signal(false);
-    selectedPaymentForEdit = signal<Payment | null>(null);
-    isPaymentReadOnly = signal(false);
+
+    // Medical Record Modal
+    isMedicalRecordModalOpen = signal(false);
+    selectedMedicalRecord = signal<MedicalRecord | null>(null);
+    isMedicalRecordReadOnly = signal(false);
 
     totalBookings = computed(() => this.patientAppointments().length);
 
@@ -96,25 +110,29 @@ export class PatientDetailsPageComponent implements OnInit {
     loadPatientData(id: string) {
         this.patientService.getPatientById(id).subscribe(p => {
             this.patient.set(p);
+            this.appointmentService.getAppointmentsByPatientName(p.name).subscribe(items => {
+                this.patientAppointments.set(items);
+            });
 
-            this.patientAppointments.set(
-                MOCK_APPOINTMENTS.filter(a => a.patientName === p.name)
-            );
-
-            // Mock payments (still mock for now as requested, but linked to patient name)
-            this.patientPayments.set([
-                { id: 1, no: 1, invoiceNumber: 'INV-2024-001', patientName: p.name, amount: 350.00, date: '15/01/2024', method: 'Credit Card', status: 'Paid', selected: false },
-                { id: 2, no: 2, invoiceNumber: 'INV-2024-005', patientName: p.name, amount: 120.00, date: '18/02/2024', method: 'Insurance', status: 'Pending', selected: false }
-            ]);
+            this.medicalRecordService.getMedicalRecords(p.id).subscribe(records => {
+                this.patientMedicalRecords.set(records);
+            });
         });
 
-        // Mock prescriptions (keeping these as mock static data for now as they aren't in backend yet)
-        this.patientPrescriptions.set([
-            { id: 1, medication: 'Metformin', dosage: '500mg', frequency: 'Once daily', status: 'Active', refills: 3, instructions: 'Take after meals', startDate: 'January 10, 2026', endDate: 'February 10, 2026' },
-            { id: 2, medication: 'Lisinopril', dosage: '10mg', frequency: 'Once daily', status: 'Active', refills: 5, instructions: 'Take in the morning', startDate: 'January 15, 2026', endDate: 'March 15, 2026' },
-            { id: 3, medication: 'Omeprazole', dosage: '20mg', frequency: 'Once daily', status: 'Active', refills: 2, instructions: 'Take before breakfast', startDate: 'February 1, 2026', endDate: 'February 28, 2026' },
-            { id: 4, medication: 'Amoxicillin', dosage: '500mg', frequency: '3 times/day', status: 'Completed', refills: 0, instructions: 'Take with food', startDate: 'January 5, 2026', endDate: 'January 15, 2026' },
-        ]);
+        this.prescriptionService.getPrescriptions().subscribe(items => {
+            const mapped: PatientPrescription[] = items.map(item => ({
+                id: item.id,
+                medication: item.medication,
+                dosage: item.dosage,
+                frequency: item.frequency,
+                status: item.status,
+                refills: 0,
+                instructions: 'Follow doctor recommendation',
+                startDate: item.startDate,
+                endDate: item.endDate
+            }));
+            this.patientPrescriptions.set(mapped);
+        });
     }
 
     setTab(tab: string) {
@@ -140,8 +158,20 @@ export class PatientDetailsPageComponent implements OnInit {
 
     onDeleteAppointment(appointment: Appointment) {
         if (confirm(`Are you sure you want to delete appointment #${appointment.no}?`)) {
-            this.patientAppointments.update(list => list.filter(a => a.id !== appointment.id));
+            this.appointmentService.deleteAppointment(appointment.id).subscribe(() => {
+                this.patientAppointments.update(list => list.filter(a => a.id !== appointment.id));
+            });
         }
+    }
+
+    onCreateMedicalRecord(appointment: Appointment) {
+        this.selectedAppointmentForRecord.set(appointment);
+        this.isMedicalRecordModalOpen.set(true);
+    }
+
+    closeRecordModal() {
+        this.isMedicalRecordModalOpen.set(false);
+        this.selectedAppointmentForRecord.set(null);
     }
 
     onAppointmentSaved(data: Record<string, any>) {
@@ -151,54 +181,38 @@ export class PatientDetailsPageComponent implements OnInit {
                 ? new Date(data['date']).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })
                 : this.selectedAppointmentForEdit()!.appointmentDate;
 
-            this.patientAppointments.update(list => list.map(a =>
-                a.id === this.selectedAppointmentForEdit()!.id
-                    ? {
-                        ...a,
-                        doctorName: data['doctorName'],
-                        appointmentDate: dateStr,
-                        status: data['status'] as Appointment['status'],
-                        notes: data['notes'] || a.notes
-                    }
-                    : a
-            ));
+            this.appointmentService.saveAppointment({
+                ...data,
+                id: this.selectedAppointmentForEdit()!.id,
+                appointmentDate: dateStr
+            }).subscribe(updated => {
+                this.patientAppointments.update(list => list.map(a =>
+                    a.id === updated.id ? { ...updated, no: a.no } : a
+                ));
+            });
         }
         this.isAppointmentModalOpen.set(false);
     }
 
-    // Payment Handlers
-    onViewPayment(payment: Payment) {
-        this.selectedPaymentForEdit.set(payment);
-        this.isPaymentReadOnly.set(true);
-        this.isPaymentModalOpen.set(true);
+    onViewMedicalRecord(record: MedicalRecord) {
+        this.selectedMedicalRecord.set(record);
+        this.isMedicalRecordReadOnly.set(true);
+        this.isMedicalRecordModalOpen.set(true);
     }
 
-    onEditPayment(payment: Payment) {
-        this.selectedPaymentForEdit.set(payment);
-        this.isPaymentReadOnly.set(false);
-        this.isPaymentModalOpen.set(true);
+    onEditMedicalRecord(record: MedicalRecord) {
+        this.selectedMedicalRecord.set(record);
+        this.isMedicalRecordReadOnly.set(false);
+        this.isMedicalRecordModalOpen.set(true);
     }
 
-    onDeletePayment(payment: Payment) {
-        if (confirm(`Are you sure you want to delete payment ${payment.invoiceNumber}?`)) {
-            this.patientPayments.update(list => list.filter(p => p.id !== payment.id));
-        }
-    }
-
-    onPaymentSaved(data: Record<string, any>) {
-        if (this.selectedPaymentForEdit()) {
-            this.patientPayments.update(list => list.map(p =>
-                p.id === this.selectedPaymentForEdit()!.id
-                    ? {
-                        ...p,
-                        amount: parseFloat(data['amount']),
-                        date: data['date'] ? new Date(data['date']).toLocaleDateString('en-GB') : p.date,
-                        method: data['method'],
-                        status: data['status'] as Payment['status']
-                    }
-                    : p
-            ));
-        }
-        this.isPaymentModalOpen.set(false);
+    onSaveMedicalRecord(formData: any) {
+        this.medicalRecordService.createMedicalRecord(formData).subscribe({
+            next: (newRecord) => {
+                this.patientMedicalRecords.update(list => [...list, newRecord]);
+                this.isMedicalRecordModalOpen.set(false);
+            },
+            error: err => alert(err)
+        });
     }
 }

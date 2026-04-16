@@ -1,28 +1,37 @@
-import { Injectable, signal } from '@angular/core';
-import { Observable, of } from 'rxjs';
+import { Injectable, inject, signal } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
+import { Observable, catchError, map, tap, throwError } from 'rxjs';
 import { Appointment } from '../components/pages/dashboard/appointments/appointment-table/appointment-table.component';
-
-export const MOCK_APPOINTMENTS: Appointment[] = [
-    { id: 1, no: 1, patientName: 'Jane Robertson', notes: "I've been feeling unwell for a few days. The symptoms include persistent headaches, fatigue, and a mild fever that comes and goes entirely unpredictably.", doctorName: 'Dr. Mia Kensington', doctorImage: '', appointmentDate: 'January 10, 2026', status: 'Scheduled', selected: false },
-    { id: 2, no: 2, patientName: 'Jane Robertson', notes: "Recurring headaches and dizziness mostly in the mornings. Patient also reports occasional blurry vision and sensitivity to bright lights over the past two weeks.", doctorName: 'Dr. Oliver Westwood', doctorImage: '', appointmentDate: 'January 25, 2026', status: 'Scheduled', selected: false },
-    { id: 3, no: 3, patientName: 'Eleanor Pena', notes: "I've noticed some unusual bruising on my arms and legs even without major trauma. Also feeling quite physically exhausted after doing basic daily activities.", doctorName: 'Dr. Sophia Langley', doctorImage: '', appointmentDate: 'February 8, 2026', status: 'Scheduled', selected: false },
-    { id: 4, no: 4, patientName: 'Leslie Alexander', notes: "I feel short of breath even when doing light physical work. There is a slight chest tightness during the night which makes it very hard to get a good sleep.", doctorName: 'Dr. Amelia Hawthorne', doctorImage: '', appointmentDate: 'February 20, 2026', status: 'Scheduled', selected: false },
-    { id: 5, no: 5, patientName: 'Dianne Russell', notes: "I've been having stomach pains after every single meal for the past month. The pain is sharp and usually localized to the lower right abdomen, lasting hours.", doctorName: 'Dr. Clara Whitmore', doctorImage: '', appointmentDate: 'March 5, 2026', status: 'Scheduled', selected: false },
-    { id: 6, no: 6, patientName: 'Devon Lane', notes: 'I keep experiencing sharp chest pains.', doctorName: 'Dr. Elijah Stone', doctorImage: '', appointmentDate: 'March 15, 2026', status: 'Scheduled', selected: false },
-    { id: 7, no: 7, patientName: 'Kristin Watson', notes: "I've had a cough that lingers.", doctorName: 'Dr. Nathaniel Rivers', doctorImage: '', appointmentDate: 'March 22, 2026', status: 'Scheduled', selected: false },
-    { id: 8, no: 8, patientName: 'Floyd Miles', notes: "I'm feeling unusually anxious.", doctorName: 'Dr. Victoria Ashford', doctorImage: '', appointmentDate: 'April 1, 2026', status: 'Cancelled', selected: false },
-    { id: 9, no: 9, patientName: 'Courtney Henry', notes: "I've been getting night sweats.", doctorName: 'Dr. Lily Fairchild', doctorImage: '', appointmentDate: 'April 12, 2026', status: 'Scheduled', selected: false },
-    { id: 10, no: 10, patientName: 'Albert Flores', notes: 'I feel like my heart is racing.', doctorName: 'Dr. Samuel Brightman', doctorImage: '', appointmentDate: 'April 23, 2026', status: 'Scheduled', selected: false }
-];
 
 @Injectable({
     providedIn: 'root'
 })
 export class AppointmentService {
-    private appointmentsSignal = signal<Appointment[]>([...MOCK_APPOINTMENTS]);
+    private http = inject(HttpClient);
+    private apiUrl = 'http://localhost:5275/api/Appointment';
+    private appointmentsSignal = signal<Appointment[]>([]);
 
     getAppointments(): Observable<Appointment[]> {
-        return of(this.appointmentsSignal());
+        return this.http.get<any>(this.apiUrl).pipe(
+            map(data => {
+                const items = Array.isArray(data) ? data : data?.items || data?.Items || [];
+                return items.map((item: any, index: number) => this.mapAppointment(item, index + 1));
+            }),
+            tap(items => this.appointmentsSignal.set(items)),
+            catchError(error => this.handleError(error))
+        );
+    }
+
+    getAppointmentsByDoctorName(doctorName: string): Observable<Appointment[]> {
+        return this.getAppointments().pipe(
+            map(items => items.filter(item => item.doctorName === doctorName))
+        );
+    }
+
+    getAppointmentsByPatientName(patientName: string): Observable<Appointment[]> {
+        return this.getAppointments().pipe(
+            map(items => items.filter(item => item.patientName === patientName))
+        );
     }
 
     getAppointmentCount(): number {
@@ -30,45 +39,121 @@ export class AppointmentService {
     }
 
     getTodayAppointmentCount(): number {
-        // Mocking "today" matching some records or just returning a subset
         return this.appointmentsSignal().filter(a => a.status === 'Scheduled').length;
     }
 
-    deleteAppointment(id: number): void {
-        this.appointmentsSignal.update(apps => apps.filter(a => a.id !== id));
+    deleteAppointment(id: string): Observable<boolean> {
+        return this.http.delete<boolean>(`${this.apiUrl}/${id}`).pipe(
+            tap(() => {
+                this.appointmentsSignal.update(apps => apps.filter(a => a.id !== id));
+            }),
+            catchError(error => this.handleError(error))
+        );
     }
 
-    deleteSelectedAppointments(ids: number[]): void {
-        const idSet = new Set(ids);
-        this.appointmentsSignal.update(apps => apps.filter(a => !idSet.has(a.id)));
-    }
-
-    saveAppointment(data: Record<string, any>): void {
-        this.appointmentsSignal.update(apps => {
-            if (data['id']) {
-                const index = apps.findIndex(a => a.id === data['id']);
-                if (index !== -1) {
-                    const updated = [...apps];
-                    updated[index] = { ...updated[index], ...data };
-                    return updated;
-                }
-            } else {
-                const newId = apps.length > 0 ? Math.max(...apps.map(a => a.id)) + 1 : 1;
-                const newNo = apps.length > 0 ? Math.max(...apps.map(a => a.no)) + 1 : 1;
-                const newApp: Appointment = {
-                    id: newId,
-                    no: newNo,
-                    patientName: data['patientName'],
-                    notes: data['notes'] || 'No notes',
-                    doctorName: data['doctorName'],
-                    doctorImage: '',
-                    appointmentDate: data['appointmentDate'],
-                    status: data['status'],
-                    selected: false
-                };
-                return [...apps, newApp];
+    deleteSelectedAppointments(ids: string[]): Observable<void> {
+        return new Observable<void>(observer => {
+            if (ids.length === 0) {
+                observer.next();
+                observer.complete();
+                return;
             }
-            return apps;
+
+            let completed = 0;
+            ids.forEach(id => {
+                this.deleteAppointment(id).subscribe({
+                    next: () => {
+                        completed += 1;
+                        if (completed === ids.length) {
+                            observer.next();
+                            observer.complete();
+                        }
+                    },
+                    error: err => observer.error(err)
+                });
+            });
         });
+    }
+
+    saveAppointment(data: Record<string, any>): Observable<Appointment> {
+        const payload = this.toAppointmentRequest(data);
+        if (data['id']) {
+            return this.http.put<any>(`${this.apiUrl}/${data['id']}`, payload).pipe(
+                map(item => this.mapAppointment(item, data['no'] || 1)),
+                tap(updated => {
+                    this.appointmentsSignal.update(apps =>
+                        apps.map(app => app.id === updated.id ? { ...updated, no: app.no } : app)
+                    );
+                }),
+                catchError(error => this.handleError(error))
+            );
+        }
+
+        return this.http.post<any>(this.apiUrl, payload).pipe(
+            map(item => this.mapAppointment(item, this.appointmentsSignal().length + 1)),
+            tap(created => this.appointmentsSignal.update(apps => [...apps, created])),
+            catchError(error => this.handleError(error))
+        );
+    }
+
+    private mapAppointment(data: any, no: number): Appointment {
+        let rawStatus = data.status || data.Status || 'Scheduled';
+        // Normalize status to PascalCase (e.g., 'scheduled' -> 'Scheduled')
+        let normalizedStatus: 'Scheduled' | 'Cancelled' | 'Completed' = 'Scheduled';
+        const s = rawStatus.toLowerCase();
+        if (s === 'cancelled') normalizedStatus = 'Cancelled';
+        else if (s === 'completed') normalizedStatus = 'Completed';
+        else normalizedStatus = 'Scheduled';
+
+        return {
+            id: data.id || data.Id,
+            no,
+            patientId: data.patientId || data.PatientId || '',
+            patientName: data.patientName || data.PatientName || '',
+            doctorId: data.doctorId || data.DoctorId || '',
+            doctorName: data.doctorName || data.DoctorName || '',
+            reason: data.reason || data.Reason || '',
+            notes: data.notes || data.Notes || '',
+            doctorImage: '',
+            appointmentDate: this.formatDate(data.appointmentDate || data.AppointmentDate),
+            status: normalizedStatus,
+            selected: false
+        };
+    }
+
+    private toAppointmentRequest(data: Record<string, any>): Record<string, any> {
+        const rawStatus = data['status'] || 'Scheduled';
+        // Backend expects PascalCase enum name (JsonStringEnumConverter default)
+        const status = rawStatus.charAt(0).toUpperCase() + rawStatus.slice(1).toLowerCase();
+        return {
+            PatientId: data['patientId'],
+            DoctorId: data['doctorId'],
+            AppointmentDate: this.toIsoDate(data['appointmentDate'] || data['date']),
+            Status: status,
+            Reason: data['reason'] || data['notes'] || 'Consultation',
+            RoomNumber: data['roomNumber'] || '',
+            Notes: data['notes'] || ''
+        };
+    }
+
+    private formatDate(value: string | undefined): string {
+        if (!value) return '';
+        const date = new Date(value);
+        if (Number.isNaN(date.getTime())) return value;
+        return date.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
+    }
+
+    private toIsoDate(value: string | undefined): string {
+        if (!value) return new Date().toISOString();
+        const date = new Date(value);
+        if (Number.isNaN(date.getTime())) return new Date().toISOString();
+        return date.toISOString();
+    }
+
+    private handleError(error: any): Observable<never> {
+        let msg = 'Server error';
+        if (error.status === 0) msg = 'Backend unreachable. Ensure it is running on port 5275.';
+        else if (error.error?.message) msg = error.error.message;
+        return throwError(() => msg);
     }
 }

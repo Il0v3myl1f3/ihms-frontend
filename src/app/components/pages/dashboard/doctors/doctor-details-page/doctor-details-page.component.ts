@@ -1,18 +1,22 @@
 import { Component, OnInit, ChangeDetectionStrategy, inject, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router } from '@angular/router';
-import { LucideAngularModule, User, Calendar, Phone, MapPin, ArrowLeft, MoreHorizontal, GraduationCap, Award, Building2, Clock, Coffee, DoorOpen, Info, ShieldCheck, Printer } from 'lucide-angular';
+import { LucideAngularModule, User, Calendar, Droplet, Phone, MapPin, ArrowLeft, MoreHorizontal, Mail, Eye, Edit2, GraduationCap, Award, Building2, Clock, Coffee, DoorOpen, Info, ShieldCheck, Printer } from 'lucide-angular';
 import { MedicalService, Doctor } from '../../../../../services/medical.service';
 import { AppointmentTableComponent, Appointment } from '../../appointments/appointment-table/appointment-table.component';
 import { AppointmentCreateModalComponent } from '../../appointments/appointment-create-modal/appointment-create-modal.component';
-import { MOCK_APPOINTMENTS } from '../../appointments/appointments-page.component';
 import { PatientTableComponent, Patient } from '../../patient/patient-table/patient-table.component';
 import { PatientService } from '../../../../../services/patient.service';
+import { AppointmentService } from '../../../../../services/appointment.service';
+import { MedicalRecordService } from '../../../../../services/medical-record.service';
+import { AuthService } from '../../../../../services/auth.service';
+import { MedicalRecord } from '../../medical-records/medical-records-page.component';
+import { MedicalRecordCreateModalComponent } from '../../medical-records/medical-record-create-modal/medical-record-create-modal.component';
 
 @Component({
     selector: 'app-doctor-details-page',
     standalone: true,
-    imports: [CommonModule, LucideAngularModule, AppointmentTableComponent, PatientTableComponent, AppointmentCreateModalComponent],
+    imports: [CommonModule, LucideAngularModule, AppointmentTableComponent, PatientTableComponent, AppointmentCreateModalComponent, MedicalRecordCreateModalComponent],
     templateUrl: './doctor-details-page.component.html',
     changeDetection: ChangeDetectionStrategy.OnPush
 })
@@ -21,10 +25,16 @@ export class DoctorDetailsPageComponent implements OnInit {
     private router = inject(Router);
     private medicalService = inject(MedicalService);
     private patientService = inject(PatientService);
+    private appointmentService = inject(AppointmentService);
+    private medicalRecordService = inject(MedicalRecordService);
+    private authService = inject(AuthService);
+
+    isDoctor = computed(() => this.authService.getCurrentUser()?.role === 'doctor');
 
     // Icons
     User = User;
     Calendar = Calendar;
+    Droplet = Droplet;
     Phone = Phone;
     MapPin = MapPin;
     ArrowLeft = ArrowLeft;
@@ -38,10 +48,14 @@ export class DoctorDetailsPageComponent implements OnInit {
     Info = Info;
     ShieldCheck = ShieldCheck;
     Printer = Printer;
+    Mail = Mail;
+    Eye = Eye;
+    Edit2 = Edit2;
 
     doctor = signal<Doctor | null>(null);
     activeTab = signal('General Info');
-    tabs = ['General Info', 'Schedule', 'Appointments', 'Patients'];
+    tabs = ['General Info', 'Schedule', 'Appointments', 'Patients', 'Medical Records'];
+    doctorMedicalRecords = signal<MedicalRecord[]>([]);
 
     doctorAppointments = signal<Appointment[]>([]);
     doctorPatients = signal<Patient[]>([]);
@@ -51,9 +65,14 @@ export class DoctorDetailsPageComponent implements OnInit {
     selectedAppointmentForEdit = signal<Appointment | null>(null);
     isAppointmentReadOnly = signal(false);
 
+    // Medical Record Modal
+    isMedicalRecordModalOpen = signal(false);
+    selectedMedicalRecord = signal<MedicalRecord | null>(null);
+    isMedicalRecordReadOnly = signal(false);
+
     // Dropdown data for modal
     allDoctors = signal<Doctor[]>([]);
-    patientNames = signal<string[]>([]);
+    allPatients = signal<Patient[]>([]);
 
     totalAppointments = computed(() => this.doctorAppointments().length);
     uniquePatientsCount = computed(() => this.doctorPatients().length);
@@ -62,8 +81,7 @@ export class DoctorDetailsPageComponent implements OnInit {
         this.route.paramMap.subscribe(params => {
             const idParam = params.get('id');
             if (idParam) {
-                const id = parseInt(idParam, 10);
-                this.loadDoctorData(id);
+                this.loadDoctorData(idParam);
             }
         });
 
@@ -72,27 +90,30 @@ export class DoctorDetailsPageComponent implements OnInit {
         });
 
         this.patientService.getPatients().subscribe(patients => {
-            this.patientNames.set(patients.map(p => p.name));
+            this.allPatients.set(patients);
         });
     }
 
-    loadDoctorData(id: number) {
+    loadDoctorData(id: string) {
         this.medicalService.getDoctorById(id).subscribe(doc => {
             if (doc) {
                 this.doctor.set(doc);
 
-                // Filter appointments for this doctor
-                const filteredApps = MOCK_APPOINTMENTS.filter(a => a.doctorName === doc.name);
-                this.doctorAppointments.set(filteredApps);
+                this.appointmentService.getAppointmentsByDoctorName(doc.name).subscribe(filteredApps => {
+                    this.doctorAppointments.set(filteredApps);
 
-                // Derive patients from these appointments
-                const patientNames = Array.from(new Set(filteredApps.map(a => a.patientName)));
-                this.patientService.getPatients().subscribe(patients => {
-                    const associatedPatients = patients.filter(p => patientNames.includes(p.name));
-                    this.doctorPatients.set(associatedPatients.map((p, index) => ({
-                        ...p,
-                        no: index + 1
-                    })));
+                    const patientNames = Array.from(new Set(filteredApps.map(a => a.patientName)));
+                    this.patientService.getPatients().subscribe(patients => {
+                        const associatedPatients = patients.filter(p => patientNames.includes(p.name));
+                        this.doctorPatients.set(associatedPatients.map((p, index) => ({
+                            ...p,
+                            no: index + 1
+                        })));
+                    });
+                });
+
+                this.medicalRecordService.getMedicalRecords(undefined, doc.id).subscribe((records: MedicalRecord[]) => {
+                    this.doctorMedicalRecords.set(records);
                 });
             }
         });
@@ -129,7 +150,9 @@ export class DoctorDetailsPageComponent implements OnInit {
 
     onDeleteAppointment(appointment: Appointment) {
         if (confirm(`Are you sure you want to delete appointment #${appointment.no}?`)) {
-            this.doctorAppointments.update(list => list.filter(a => a.id !== appointment.id));
+            this.appointmentService.deleteAppointment(appointment.id).subscribe(() => {
+                this.doctorAppointments.update(list => list.filter(a => a.id !== appointment.id));
+            });
         }
     }
 
@@ -139,19 +162,41 @@ export class DoctorDetailsPageComponent implements OnInit {
                 ? new Date(data['date']).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })
                 : this.selectedAppointmentForEdit()!.appointmentDate;
 
-            this.doctorAppointments.update(list => list.map(a =>
-                a.id === this.selectedAppointmentForEdit()!.id
-                    ? {
-                        ...a,
-                        patientName: data['patientName'] || a.patientName,
-                        doctorName: data['doctorName'],
-                        appointmentDate: dateStr,
-                        status: data['status'] as Appointment['status'],
-                        notes: data['notes'] || a.notes
-                    }
-                    : a
-            ));
+            this.appointmentService.saveAppointment({
+                ...data,
+                id: this.selectedAppointmentForEdit()!.id,
+                appointmentDate: dateStr
+            }).subscribe(updated => {
+                this.doctorAppointments.update(list => list.map(a =>
+                    a.id === updated.id ? { ...updated, no: a.no } : a
+                ));
+            });
         }
         this.isAppointmentModalOpen.set(false);
+    }
+
+    onAddMedicalRecord() {
+        this.selectedMedicalRecord.set(null);
+        this.isMedicalRecordReadOnly.set(false);
+        this.isMedicalRecordModalOpen.set(true);
+    }
+
+    onViewMedicalRecord(record: MedicalRecord) {
+        this.selectedMedicalRecord.set(record);
+        this.isMedicalRecordReadOnly.set(true);
+        this.isMedicalRecordModalOpen.set(true);
+    }
+
+    onEditMedicalRecord(record: MedicalRecord) {
+        this.selectedMedicalRecord.set(record);
+        this.isMedicalRecordReadOnly.set(false);
+        this.isMedicalRecordModalOpen.set(true);
+    }
+
+    onSaveMedicalRecord(formData: any) {
+        this.medicalRecordService.createMedicalRecord(formData).subscribe((newRecord: MedicalRecord) => {
+            this.doctorMedicalRecords.update(list => [...list, newRecord]);
+            this.isMedicalRecordModalOpen.set(false);
+        });
     }
 }

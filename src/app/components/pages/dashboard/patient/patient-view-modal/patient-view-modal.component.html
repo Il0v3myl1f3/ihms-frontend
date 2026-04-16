@@ -146,20 +146,6 @@
                 </div>
                 }
 
-                <!-- Payments Tab -->
-                @if (activeTab() === 'Payments') {
-                <div>
-                    <div class="border-b border-gray-200 pb-4 mb-6">
-                        <h4 class="text-base font-bold text-gray-900">Payments</h4>
-                        <p class="text-xs text-gray-400 mt-0.5">Billing history and payment status</p>
-                    </div>
-
-                    <div class="rounded-lg border border-gray-200 overflow-hidden bg-white">
-                        <app-payment-table [payments]="patientPayments()" [compactMode]="true" [readOnly]="true"></app-payment-table>
-                    </div>
-                </div>
-                }
-
             </div>
         </div>
 

@@ -8,21 +8,34 @@
 
     <!-- Table Container -->
     <div class="bg-white rounded-[20px] border border-gray-100 flex-1 flex flex-col relative">
-        <app-appointment-table class="flex-1 flex flex-col h-full" [appointments]="appointments"
+        <app-appointment-table 
+            class="flex-1 flex flex-col h-full" 
+            [appointments]="appointments()"
             (editAppointment)="onEditAppointment($event)" 
             (viewAppointment)="onViewAppointment($event)"
             (deleteAppointment)="onDeleteAppointment($event)"
             (deleteSelected)="onDeleteSelectedAppointments($event)"
-            (addAppointment)="openCreateModal()"></app-appointment-table>
+            (createMedicalRecord)="onCreateMedicalRecord($event)"
+            (addAppointment)="openCreateModal()">
+        </app-appointment-table>
     </div>
 </div>
 
 <!-- Modal Overlay -->
-@if (isModalOpen) {
-<app-appointment-create-modal [isOpen]="isModalOpen" 
-    [appointmentToEdit]="selectedAppointmentForEdit"
+@if (isModalOpen()) {
+<app-appointment-create-modal [isOpen]="isModalOpen()" 
+    [appointmentToEdit]="selectedAppointmentForEdit()"
     [readOnly]="isAppointmentReadOnly()"
-    [doctors]="doctors" [patientNames]="patientNames" (closeModal)="closeModal()"
+    [doctors]="doctors()" [patients]="patients()" (closeModal)="closeModal()"
     (saveAppointment)="onAppointmentSaved($event)">
 </app-appointment-create-modal>
+}
+
+@if (isRecordModalOpen()) {
+<app-medical-record-create-modal
+    [isOpen]="isRecordModalOpen()"
+    [appointment]="selectedAppointmentForRecord()"
+    (closeModal)="closeRecordModal()"
+    (saveRecord)="onMedicalRecordSaved($event)">
+</app-medical-record-create-modal>
 }

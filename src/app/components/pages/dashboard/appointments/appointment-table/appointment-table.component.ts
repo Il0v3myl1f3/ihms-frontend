@@ -1,14 +1,17 @@
 import { Component, OnInit, OnDestroy, input, output, ChangeDetectionStrategy, signal, computed, HostListener, effect, untracked } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
-import { LucideAngularModule, Pencil, Trash2, MoreHorizontal, Search, Filter, ChevronLeft, ChevronRight, Plus, ChevronDown, ChevronUp, Eye } from 'lucide-angular';
+import { LucideAngularModule, Pencil, Trash2, MoreHorizontal, Search, Filter, ChevronLeft, ChevronRight, Plus, ChevronDown, ChevronUp, Eye, FilePlus } from 'lucide-angular';
 
 export interface Appointment {
-    id: number;
+    id: string;
     no: number;
+    patientId: string;
     patientName: string;
-    notes: string;
+    doctorId: string;
     doctorName: string;
+    notes: string;
+    reason: string;
     doctorImage: string;
     appointmentDate: string;
     status: 'Scheduled' | 'Cancelled' | 'Completed';
@@ -27,12 +30,14 @@ export interface Appointment {
 export class AppointmentTableComponent implements OnInit, OnDestroy {
     appointments = input<Appointment[]>([]);
     compactMode = input<boolean>(false);
+    showReason = input<boolean>(false);
     readOnly = input<boolean>(false);
     editAppointment = output<Appointment>();
     deleteAppointment = output<Appointment>();
     deleteSelected = output<Appointment[]>();
     addAppointment = output<void>();
     viewAppointment = output<Appointment>();
+    createMedicalRecord = output<Appointment>();
 
     readonly Pencil = Pencil;
     readonly Trash2 = Trash2;
@@ -45,6 +50,7 @@ export class AppointmentTableComponent implements OnInit, OnDestroy {
     readonly ChevronDown = ChevronDown;
     readonly ChevronUp = ChevronUp;
     readonly Eye = Eye;
+    readonly FilePlus = FilePlus;
 
     activeItem: Appointment | null = null;
     dropdownPos = { top: 0, right: 0 };
@@ -95,6 +101,7 @@ export class AppointmentTableComponent implements OnInit, OnDestroy {
             result = result.filter(a =>
                 a.patientName.toLowerCase().includes(query) ||
                 a.doctorName.toLowerCase().includes(query) ||
+                a.reason.toLowerCase().includes(query) ||
                 a.notes.toLowerCase().includes(query) ||
                 a.appointmentDate.toLowerCase().includes(query) ||
                 a.status.toLowerCase().includes(query) ||
@@ -257,6 +264,10 @@ export class AppointmentTableComponent implements OnInit, OnDestroy {
 
     onView(appointment: Appointment): void {
         this.viewAppointment.emit(appointment);
+    }
+
+    onCreateMedicalRecord(appointment: Appointment): void {
+        this.createMedicalRecord.emit(appointment);
     }
 
     onDelete(appointment: Appointment): void {
