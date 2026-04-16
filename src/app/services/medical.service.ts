@@ -1,37 +1,15 @@
-import { Injectable, inject, signal } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
-import { Observable, catchError, map, tap, throwError } from 'rxjs';
+import { Injectable } from '@angular/core';
+import { Observable, of } from 'rxjs';
 
 export interface Doctor {
-    id: string;
+    id: number;
     name: string;
-    firstName: string;
-    lastName: string;
-    email: string;
     role: string;
     image: string;
     specialty: string;
     phone?: string;
-    availability?: 'Available' | 'On Leave' | string;
+    availability?: 'Available' | 'On Leave';
     cabinet?: string;
-}
-
-export interface DoctorRequest {
-    firstName: string;
-    lastName: string;
-    email: string;
-    phone?: string;
-    department?: string;
-    password?: string;
-}
-
-export interface ResponseDoctorDto {
-    id: string;
-    firstName: string;
-    lastName: string;
-    phone?: string;
-    email: string;
-    department?: string;
 }
 
 export interface Service {
@@ -41,116 +19,46 @@ export interface Service {
     description: string;
 }
 
+export const DOCTORS: Doctor[] = [
+    { id: 1, name: "Dr. Mia Kensington", role: "Pediatrics", specialty: "Pediatrics", image: "assets/images/doctor-1.jpg", phone: "021 1234 5678", availability: "Available", cabinet: "A1" },
+    { id: 2, name: "Dr. Oliver Westwood", role: "Dermatology", specialty: "Dermatology", image: "assets/images/doctor-2.jpg", phone: "021 2345 6789", availability: "Available", cabinet: "A2" },
+    { id: 3, name: "Dr. Sophia Langley", role: "Neurology", specialty: "Neurology", image: "assets/images/doctor-3.jpg", phone: "021 3456 7890", availability: "On Leave", cabinet: "A3" },
+    { id: 4, name: "Dr. Amelia Hawthorne", role: "Orthopedics", specialty: "Orthopedics", image: "assets/images/doctor-1.jpg", phone: "021 4567 8901", availability: "Available", cabinet: "B1" },
+    { id: 5, name: "Dr. Clara Whitmore", role: "Gastroenterology", specialty: "Gastroenterology", image: "assets/images/doctor-2.jpg", phone: "021 5678 9012", availability: "On Leave", cabinet: "B2" },
+    { id: 6, name: "Dr. Elijah Stone", role: "Endocrinology", specialty: "Endocrinology", image: "assets/images/doctor-3.jpg", phone: "021 6789 0123", availability: "Available", cabinet: "B3" },
+    { id: 7, name: "Dr. Nathaniel Rivers", role: "Oncology", specialty: "Oncology", image: "assets/images/doctor-1.jpg", phone: "021 7890 1234", availability: "Available", cabinet: "C1" },
+    { id: 8, name: "Dr. Victoria Ashford", role: "Psychiatry", specialty: "Psychiatry", image: "assets/images/doctor-2.jpg", phone: "021 8901 2345", availability: "On Leave", cabinet: "C2" },
+    { id: 9, name: "Dr. Lily Fairchild", role: "Ophthalmology", specialty: "Ophthalmology", image: "assets/images/doctor-3.jpg", phone: "021 9012 3456", availability: "On Leave", cabinet: "C3" },
+    { id: 10, name: "Dr. Samuel Brightman", role: "Urology", specialty: "Urology", image: "assets/images/doctor-1.jpg", phone: "021 0123 4567", availability: "On Leave", cabinet: "D1" }
+];
+
 @Injectable({
     providedIn: 'root'
 })
 export class MedicalService {
-    private http = inject(HttpClient);
-    private apiUrl = 'http://localhost:5275/api/Doctor';
-    private doctorsSignal = signal<Doctor[]>([]);
 
     getDoctors(): Observable<Doctor[]> {
-        return this.http.get<any>(this.apiUrl).pipe(
-            map(data => {
-                // Backend returns PagedResult with Items in PascalCase usually
-                const items = Array.isArray(data) ? data : (data?.items || data?.Items || []);
-                return items.map((d: any) => this.mapDoctor(d));
-            }),
-            tap(doctors => this.doctorsSignal.set(doctors)),
-            catchError(error => this.handleError(error))
-        );
+        return of(DOCTORS);
     }
 
-    getDoctorById(id: string): Observable<Doctor | undefined> {
-        return this.http.get<any>(`${this.apiUrl}/${id}`).pipe(
-            map(data => this.mapDoctor(data)),
-            catchError(error => this.handleError(error))
-        );
+    getDoctorById(id: number): Observable<Doctor | undefined> {
+        return of(DOCTORS.find(d => d.id === id));
     }
 
-    saveDoctor(doctorData: Record<string, any>): Observable<any> {
-        const dto: DoctorRequest = {
-            firstName: doctorData['firstName'],
-            lastName: doctorData['lastName'],
-            email: doctorData['email'],
-            phone: doctorData['phone'],
-            department: doctorData['specialty'] || doctorData['department']
+    addDoctor(doc: Omit<Doctor, 'id' | 'image' | 'role'>): Observable<Doctor> {
+        const newId = DOCTORS.length > 0 ? Math.max(...DOCTORS.map(d => d.id)) + 1 : 1;
+        const newDoctor: Doctor = {
+            id: newId,
+            name: doc.name,
+            role: doc.specialty, // Map specialty to role for now
+            specialty: doc.specialty,
+            image: '', // Avatar handled by UI generator
+            phone: doc.phone,
+            availability: doc.availability as Doctor['availability'],
+            cabinet: doc.cabinet
         };
-
-        if (!doctorData['id'] || doctorData['password']) {
-            dto.password = doctorData['password'] || 'Password123!';
-        }
-
-        if (doctorData['id']) {
-            return this.http.put(`${this.apiUrl}/${doctorData['id']}`, dto).pipe(
-                tap(() => this.getDoctors().subscribe()),
-                catchError(error => this.handleError(error))
-            );
-        }
-
-        return this.http.post(this.apiUrl, dto).pipe(
-            tap(() => this.getDoctors().subscribe()),
-            catchError(error => this.handleError(error))
-        );
+        DOCTORS.push(newDoctor);
+        return of(newDoctor);
     }
 
-    deleteDoctor(id: string): Observable<boolean> {
-        return this.http.delete<boolean>(`${this.apiUrl}/${id}`).pipe(
-            tap(() => this.doctorsSignal.update(items => items.filter(item => item.id !== id))),
-            catchError(error => this.handleError(error))
-        );
-    }
-
-    deleteSelectedDoctors(ids: string[]): Observable<void> {
-        return new Observable<void>(observer => {
-            if (ids.length === 0) {
-                observer.next();
-                observer.complete();
-                return;
-            }
-
-            let completed = 0;
-            ids.forEach(id => {
-                this.deleteDoctor(id).subscribe({
-                    next: () => {
-                        completed += 1;
-                        if (completed === ids.length) {
-                            observer.next();
-                            observer.complete();
-                        }
-                    },
-                    error: err => observer.error(err)
-                });
-            });
-        });
-    }
-
-    private mapDoctor(data: any): Doctor {
-        const id = data.id || data.Id;
-        const firstName = data.firstName || data.FirstName || '';
-        const lastName = data.lastName || data.LastName || '';
-        const email = data.email || data.Email || '';
-        const department = data.department || data.Department || 'General';
-
-        return {
-            id,
-            name: `Dr. ${`${firstName} ${lastName}`.trim()}`.trim(),
-            firstName,
-            lastName,
-            email,
-            role: department,
-            image: '',
-            specialty: department,
-            phone: data.phone || data.Phone || '',
-            availability: 'Available',
-            cabinet: data.cabinet || data.Cabinet || ''
-        };
-    }
-
-    private handleError(error: any): Observable<never> {
-        let msg = 'Server error';
-        if (error.status === 0) msg = 'Backend unreachable. Ensure it is running on port 5275.';
-        else if (error.error?.message) msg = error.error.message;
-        return throwError(() => msg);
-    }
 }

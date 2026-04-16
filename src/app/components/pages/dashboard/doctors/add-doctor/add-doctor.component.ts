@@ -45,10 +45,7 @@ export class AddDoctorComponent implements OnInit, OnChanges {
 
     ngOnInit(): void {
         this.doctorForm = this.fb.group({
-            firstName: ['', Validators.required],
-            lastName: ['', Validators.required],
-            email: ['', [Validators.required, Validators.email]],
-            password: [''],
+            name: ['', Validators.required],
             specialty: ['', Validators.required],
             phone: ['', [Validators.required, Validators.pattern(/^[0-9+\s-]+$/)]],
             availability: ['', Validators.required]
@@ -58,20 +55,10 @@ export class AddDoctorComponent implements OnInit, OnChanges {
     ngOnChanges(changes: SimpleChanges): void {
         if (changes['isOpen'] && this.isOpen()) {
             if (this.doctorToEdit()) {
-                const doctor = this.doctorToEdit()!;
-                this.doctorForm?.patchValue({
-                    ...doctor,
-                    firstName: doctor.firstName,
-                    lastName: doctor.lastName,
-                    email: doctor.email,
-                    password: ''
-                });
-                this.doctorForm.get('password')?.setValidators([]);
+                this.doctorForm?.patchValue(this.doctorToEdit()!);
             } else {
-                this.doctorForm?.reset({ specialty: '', availability: '', email: '', password: '' });
-                this.doctorForm.get('password')?.setValidators([Validators.required, Validators.minLength(6)]);
+                this.doctorForm?.reset({ specialty: '', availability: '' });
             }
-            this.doctorForm.get('password')?.updateValueAndValidity();
 
             if (this.readOnly()) {
                 this.doctorForm?.disable();

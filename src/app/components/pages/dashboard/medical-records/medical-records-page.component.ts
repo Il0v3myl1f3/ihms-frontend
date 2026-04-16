@@ -1,8 +1,7 @@
-import { Component, ChangeDetectionStrategy, signal, computed, effect, untracked, HostListener, inject } from '@angular/core';
+import { Component, ChangeDetectionStrategy, signal, computed, effect, untracked, HostListener } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { LucideAngularModule, Search, Filter, ChevronLeft, ChevronRight, ChevronDown, ChevronUp, MoreHorizontal, Eye } from 'lucide-angular';
-import { MedicalRecordService } from '../../../../services/medical-record.service';
 
 export interface MedicalRecord {
     id: number;
@@ -33,8 +32,22 @@ export class MedicalRecordsPageComponent {
     readonly MoreHorizontal = MoreHorizontal;
     readonly Eye = Eye;
 
-    private medicalRecordService = inject(MedicalRecordService);
-    records: MedicalRecord[] = [];
+    records: MedicalRecord[] = [
+        { id: 1, no: 1, recordType: 'Blood Test', date: 'January 8, 2026', doctorName: 'Dr. Mia Kensington', description: 'Complete blood count — all values within normal range', status: 'Reviewed' },
+        { id: 2, no: 2, recordType: 'X-Ray', date: 'January 15, 2026', doctorName: 'Dr. Amelia Hawthorne', description: 'Chest X-ray — no abnormalities detected', status: 'Reviewed' },
+        { id: 3, no: 3, recordType: 'MRI Scan', date: 'February 3, 2026', doctorName: 'Dr. Sophia Langley', description: 'Brain MRI — follow-up scan for headache diagnosis', status: 'Reviewed' },
+        { id: 4, no: 4, recordType: 'Lab Results', date: 'February 18, 2026', doctorName: 'Dr. Elijah Stone', description: 'Thyroid panel — TSH levels slightly elevated', status: 'Reviewed' },
+        { id: 5, no: 5, recordType: 'General Checkup', date: 'March 1, 2026', doctorName: 'Dr. Oliver Westwood', description: 'Annual physical examination — overall good health', status: 'Reviewed' },
+        { id: 6, no: 6, recordType: 'ECG', date: 'March 10, 2026', doctorName: 'Dr. Benjamin Carter', description: 'Electrocardiogram — normal sinus rhythm', status: 'Reviewed' },
+        { id: 7, no: 7, recordType: 'Blood Test', date: 'March 15, 2026', doctorName: 'Dr. Mia Kensington', description: 'Lipid panel — cholesterol slightly above normal', status: 'Pending' },
+        { id: 8, no: 8, recordType: 'Vaccination', date: 'March 17, 2026', doctorName: 'Dr. Eleanor Hayes', description: 'Seasonal flu vaccination administered', status: 'Reviewed' },
+        { id: 9, no: 9, recordType: 'Ultrasound', date: 'April 2, 2026', doctorName: 'Dr. Clara Whitmore', description: 'Abdominal ultrasound — scheduled follow-up', status: 'Pending' },
+        { id: 10, no: 10, recordType: 'Allergy Test', date: 'April 15, 2026', doctorName: 'Dr. Lily Fairchild', description: 'Skin prick test — mild dust mite reaction', status: 'Pending' },
+        { id: 11, no: 11, recordType: 'CT Scan', date: 'September 20, 2025', doctorName: 'Dr. Nathaniel Rivers', description: 'Chest CT — cancer screening, all clear', status: 'Archived' },
+        { id: 12, no: 12, recordType: 'Blood Test', date: 'August 5, 2025', doctorName: 'Dr. Samuel Brightman', description: 'Metabolic panel — kidney function normal', status: 'Archived' },
+        { id: 13, no: 13, recordType: 'Eye Exam', date: 'July 12, 2025', doctorName: 'Dr. Isabella Moore', description: 'Comprehensive eye exam — prescription updated', status: 'Archived' },
+        { id: 14, no: 14, recordType: 'Dental Checkup', date: 'June 1, 2025', doctorName: 'Dr. Felix Jenkins', description: 'Routine dental cleaning and exam — no issues', status: 'Archived' },
+    ];
 
     searchQuery = signal('');
     currentPage = signal(1);
@@ -54,9 +67,6 @@ export class MedicalRecordsPageComponent {
         effect(() => {
             this.searchQuery();
             untracked(() => this.currentPage.set(1));
-        });
-        this.medicalRecordService.getMedicalRecords().subscribe(items => {
-            this.records = items;
         });
     }
 
