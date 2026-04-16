@@ -1,5 +1,6 @@
-import { Component, OnInit, inject, ChangeDetectionStrategy } from '@angular/core';
+import { Component, OnInit, inject, ChangeDetectionStrategy, DestroyRef, ChangeDetectorRef } from '@angular/core';
 import { Observable } from 'rxjs';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { AuthService, User } from '../../../../services/auth.service';
 import { LucideAngularModule, Users, Stethoscope, CalendarDays, CreditCard, FileText, Activity, ClipboardList, Heart, DoorOpen, BedDouble, Clock, MapPin, Pill, LayoutDashboard, ShieldCheck, AlertCircle } from 'lucide-angular';
 import { RouterModule } from '@angular/router';
@@ -21,6 +22,8 @@ export class DashboardHomeComponent implements OnInit {
     private appointmentService = inject(AppointmentService);
     private laboratoryService = inject(LaboratoryService);
     private medicalService = inject(MedicalService);
+    private destroyRef = inject(DestroyRef);
+    private cdr = inject(ChangeDetectorRef);
 
     currentUser$!: Observable<User | null>;
     currentUser: User | null = null;
@@ -79,27 +82,31 @@ export class DashboardHomeComponent implements OnInit {
 
     ngOnInit(): void {
         this.currentUser$ = this.authService.currentUser$;
-        this.currentUser$.subscribe((user) => {
+        this.currentUser$.pipe(takeUntilDestroyed(this.destroyRef)).subscribe((user) => {
             this.currentUser = user;
+            this.cdr.markForCheck();
         });
 
         // Load real-time stats
-        this.patientService.getPatients().subscribe(patients => {
+        this.patientService.getPatients().pipe(takeUntilDestroyed(this.destroyRef)).subscribe(patients => {
             this.stats.totalPatients = patients.length;
+            this.cdr.markForCheck();
         });
         this.stats.scheduledAppointments = this.appointmentService.getTodayAppointmentCount();
 
-        this.medicalService.getDoctors().subscribe(docs => {
+        this.medicalService.getDoctors().pipe(takeUntilDestroyed(this.destroyRef)).subscribe(docs => {
             this.stats.totalDoctors = docs.length;
+            this.cdr.markForCheck();
         });
 
-        this.laboratoryService.getAnalyses().subscribe(ans => {
+        this.laboratoryService.getAnalyses().pipe(takeUntilDestroyed(this.destroyRef)).subscribe(ans => {
             this.stats.pendingTests = ans.filter(a => a.status === 'Scheduled' || a.status === 'InProgress').length;
             this.stats.completedTests = ans.filter(a => a.status === 'Completed').length;
+            this.cdr.markForCheck();
         });
 
         // Load Role-Specific Reality
-        this.appointmentService.getAppointments().subscribe(apps => {
+        this.appointmentService.getAppointments().pipe(takeUntilDestroyed(this.destroyRef)).subscribe(apps => {
             if (this.currentUser?.role === 'doctor') {
                 const myApps = apps.filter(a => a.doctorName === this.currentUser?.name);
                 this.doctorData.todayAppointments = myApps.length;
@@ -139,6 +146,7 @@ export class DashboardHomeComponent implements OnInit {
                     { name: 'Metformin', dosage: '850mg · 2x/day', doctor: 'Dr. Elijah Stone' },
                 ];
             }
+            this.cdr.markForCheck();
         });
     }
 
