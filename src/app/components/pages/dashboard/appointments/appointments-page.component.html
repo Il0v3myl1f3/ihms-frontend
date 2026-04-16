@@ -15,6 +15,7 @@
             (viewAppointment)="onViewAppointment($event)"
             (deleteAppointment)="onDeleteAppointment($event)"
             (deleteSelected)="onDeleteSelectedAppointments($event)"
+            (createMedicalRecord)="onCreateMedicalRecord($event)"
             (addAppointment)="openCreateModal()">
         </app-appointment-table>
     </div>
@@ -28,4 +29,13 @@
     [doctors]="doctors()" [patients]="patients()" (closeModal)="closeModal()"
     (saveAppointment)="onAppointmentSaved($event)">
 </app-appointment-create-modal>
+}
+
+@if (isRecordModalOpen()) {
+<app-medical-record-create-modal
+    [isOpen]="isRecordModalOpen()"
+    [appointment]="selectedAppointmentForRecord()"
+    (closeModal)="closeRecordModal()"
+    (saveRecord)="onMedicalRecordSaved($event)">
+</app-medical-record-create-modal>
 }

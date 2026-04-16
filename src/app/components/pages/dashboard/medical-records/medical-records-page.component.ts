@@ -1,11 +1,22 @@
-import { Component, ChangeDetectionStrategy, signal, computed, effect, untracked, HostListener, inject } from '@angular/core';
+import { Component, ChangeDetectionStrategy, signal, computed, effect, untracked, HostListener, inject, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { LucideAngularModule, Search, Filter, ChevronLeft, ChevronRight, ChevronDown, ChevronUp, MoreHorizontal, Eye } from 'lucide-angular';
+import { LucideAngularModule, Search, Filter, ChevronLeft, ChevronRight, ChevronDown, ChevronUp, MoreHorizontal, Eye, Plus, Edit2, Trash2 } from 'lucide-angular';
 import { MedicalRecordService } from '../../../../services/medical-record.service';
+import { AuthService } from '../../../../services/auth.service';
+import { PatientService } from '../../../../services/patient.service';
+import { MedicalRecordCreateModalComponent } from './medical-record-create-modal/medical-record-create-modal.component';
+import { Subject, takeUntil } from 'rxjs';
+
+export interface Prescription {
+    id: string;
+    medication: string;
+    startDate: string;
+    endDate?: string;
+}
 
 export interface MedicalRecord {
-    id: number;
+    id: string;
     no: number;
     recordType: string;
     date: string;
@@ -13,18 +24,20 @@ export interface MedicalRecord {
     patientName: string;
     description: string;
     status: 'Reviewed' | 'Pending' | 'Archived';
+    appointmentId?: string;
+    prescriptions?: Prescription[];
 }
 
 @Component({
     selector: 'app-medical-records-page',
-    imports: [CommonModule, FormsModule, LucideAngularModule],
+    imports: [CommonModule, FormsModule, LucideAngularModule, MedicalRecordCreateModalComponent],
     templateUrl: './medical-records-page.component.html',
     changeDetection: ChangeDetectionStrategy.OnPush,
     host: {
         '(document:click)': 'closeAllDropdowns()'
     }
 })
-export class MedicalRecordsPageComponent {
+export class MedicalRecordsPageComponent implements OnInit, OnDestroy {
     readonly Search = Search;
     readonly Filter = Filter;
     readonly ChevronLeft = ChevronLeft;
@@ -33,9 +46,17 @@ export class MedicalRecordsPageComponent {
     readonly ChevronUp = ChevronUp;
     readonly MoreHorizontal = MoreHorizontal;
     readonly Eye = Eye;
+    readonly Plus = Plus;
+    readonly Edit2 = Edit2;
+    readonly Trash2 = Trash2;
 
     private medicalRecordService = inject(MedicalRecordService);
-    records: MedicalRecord[] = [];
+    private authService = inject(AuthService);
+    private patientService = inject(PatientService);
+    private destroy$ = new Subject<void>();
+    records = signal<MedicalRecord[]>([]);
+
+    isDoctor = computed(() => this.authService.getCurrentUser()?.role === 'doctor');
 
     searchQuery = signal('');
     currentPage = signal(1);
@@ -51,28 +72,70 @@ export class MedicalRecordsPageComponent {
     activeItem: MedicalRecord | null = null;
     dropdownPos = { top: 0, right: 0 };
 
+    // Modal state
+    isModalOpen = signal(false);
+    selectedRecord = signal<MedicalRecord | null>(null);
+    isReadOnly = signal(false);
+
     constructor() {
         effect(() => {
             this.searchQuery();
             untracked(() => this.currentPage.set(1));
         });
-        this.medicalRecordService.getMedicalRecords().subscribe(items => {
-            this.records = items;
-        });
+    }
+
+    ngOnInit(): void {
+        this.authService.currentUser$
+            .pipe(takeUntil(this.destroy$))
+            .subscribe(user => {
+                if (user) {
+                    this.loadRecords(user);
+                }
+            });
+    }
+
+    ngOnDestroy(): void {
+        this.destroy$.next();
+        this.destroy$.complete();
+    }
+
+    private loadRecords(user: any): void {
+        console.log('[MedicalRecordsPage] Loading records for user:', user.email, 'Role:', user.role);
+        
+        if (user.role === 'user') {
+            // Patient user: resolve their clinical PatientId first
+            this.patientService.getMyPatientId().subscribe({
+                next: (patientId) => {
+                    console.log('[MedicalRecordsPage] Resolved PatientId:', patientId);
+                    this.medicalRecordService.getMedicalRecords(patientId).subscribe(items => {
+                        this.records.set(items);
+                    });
+                },
+                error: (err) => {
+                    console.error('[MedicalRecordsPage] Failed to resolve PatientId:', err);
+                    this.records.set([]);
+                }
+            });
+        } else {
+            // Admin or Doctor: show all records for now
+            this.medicalRecordService.getMedicalRecords().subscribe(items => {
+                this.records.set(items);
+            });
+        }
     }
 
     availableStatuses = computed(() => {
-        const statuses = this.records.map(r => r.status).filter(s => !!s);
+        const statuses = this.records().map(r => r.status).filter(s => !!s);
         return ['All', ...Array.from(new Set(statuses)).sort()];
     });
 
     availableTypes = computed(() => {
-        const types = this.records.map(r => r.recordType).filter(s => !!s);
+        const types = this.records().map(r => r.recordType).filter(s => !!s);
         return ['All', ...Array.from(new Set(types)).sort()];
     });
 
     filteredRecords = computed(() => {
-        let result = [...this.records];
+        let result = [...this.records()];
         const query = this.searchQuery().toLowerCase().trim();
 
         if (query) {
@@ -181,6 +244,47 @@ export class MedicalRecordsPageComponent {
         this.activeItem = null;
         this.isPageSizeMenuOpen = false;
         this.activeFilterMenu.set(null);
+    }
+
+    onAddRecord(): void {
+        this.selectedRecord.set(null);
+        this.isReadOnly.set(false);
+        this.isModalOpen.set(true);
+    }
+
+    onViewRecord(record: MedicalRecord): void {
+        this.selectedRecord.set(record);
+        this.isReadOnly.set(true);
+        this.isModalOpen.set(true);
+        this.activeItem = null;
+    }
+
+    onEditRecord(record: MedicalRecord): void {
+        this.selectedRecord.set(record);
+        this.isReadOnly.set(false);
+        this.isModalOpen.set(true);
+        this.activeItem = null;
+    }
+
+    onDeleteRecord(record: MedicalRecord): void {
+        if (confirm(`Are you sure you want to delete this medical record?`)) {
+            this.medicalRecordService.deleteMedicalRecord(record.id).subscribe();
+            this.activeItem = null;
+        }
+    }
+
+    onSaveRecord(formData: any): void {
+        if (this.selectedRecord()) {
+            this.medicalRecordService.updateMedicalRecord(this.selectedRecord()!.id, formData).subscribe({
+                next: () => this.isModalOpen.set(false),
+                error: err => alert(err)
+            });
+        } else {
+            this.medicalRecordService.createMedicalRecord(formData).subscribe({
+                next: () => this.isModalOpen.set(false),
+                error: err => alert(err)
+            });
+        }
     }
 
     @HostListener('window:scroll')

@@ -4,11 +4,13 @@ import { AppointmentTableComponent, Appointment } from './appointment-table/appo
 import { AppointmentCreateModalComponent } from './appointment-create-modal/appointment-create-modal.component';
 import { AppointmentService } from '../../../../services/appointment.service';
 import { PatientService } from '../../../../services/patient.service';
+import { MedicalRecordCreateModalComponent } from '../medical-records/medical-record-create-modal/medical-record-create-modal.component';
+import { MedicalRecordService } from '../../../../services/medical-record.service';
 import { Patient } from '../patient/patient-table/patient-table.component';
 
 @Component({
     selector: 'app-appointments-page',
-    imports: [AppointmentTableComponent, AppointmentCreateModalComponent],
+    imports: [AppointmentTableComponent, AppointmentCreateModalComponent, MedicalRecordCreateModalComponent],
     templateUrl: './appointments-page.component.html',
     changeDetection: ChangeDetectionStrategy.OnPush
 })
@@ -18,6 +20,7 @@ export class AppointmentsPageComponent {
     private medicalService = inject(MedicalService);
     private appointmentService = inject(AppointmentService);
     private patientService = inject(PatientService);
+    private medicalRecordService = inject(MedicalRecordService);
     private cdr = inject(ChangeDetectorRef);
 
     doctors = signal<Doctor[]>([]);
@@ -25,7 +28,9 @@ export class AppointmentsPageComponent {
     appointments = signal<Appointment[]>([]);
 
     selectedAppointmentForEdit = signal<Appointment | null>(null);
+    selectedAppointmentForRecord = signal<Appointment | null>(null);
     isModalOpen = signal(false);
+    isRecordModalOpen = signal(false);
     isAppointmentReadOnly = signal(false);
 
     constructor() {
@@ -65,6 +70,16 @@ export class AppointmentsPageComponent {
         this.selectedAppointmentForEdit.set(appointment);
         this.isAppointmentReadOnly.set(true);
         this.isModalOpen.set(true);
+    }
+
+    onCreateMedicalRecord(appointment: Appointment): void {
+        this.selectedAppointmentForRecord.set(appointment);
+        this.isRecordModalOpen.set(true);
+    }
+
+    closeRecordModal(): void {
+        this.isRecordModalOpen.set(false);
+        this.selectedAppointmentForRecord.set(null);
     }
 
     onDeleteAppointment(appointment: Appointment): void {
@@ -108,6 +123,18 @@ export class AppointmentsPageComponent {
             },
             error: (err) => {
                 console.error('Failed to save appointment:', err);
+            }
+        });
+    }
+
+    onMedicalRecordSaved(data: any): void {
+        this.medicalRecordService.createMedicalRecord(data).subscribe({
+            next: () => {
+                this.closeRecordModal();
+                // Optionally show a success toast here
+            },
+            error: (err) => {
+                console.error('Failed to create medical record:', err);
             }
         });
     }

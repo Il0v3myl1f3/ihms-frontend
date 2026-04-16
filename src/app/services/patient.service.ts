@@ -29,6 +29,17 @@ export class PatientService {
         );
     }
 
+    getMyPatientId(): Observable<string> {
+        return this.http.get<any>(`${this.apiUrl}/my-id`).pipe(
+            map(res => res.patientId || res.PatientId),
+            tap(id => console.log('[PatientService] Resolved my clinical ID:', id)),
+            catchError(err => {
+                console.error('[PatientService] Error getting my PatientId:', err);
+                return throwError(() => err);
+            })
+        );
+    }
+
     private mapToPatient(p: any, no: number): Patient {
         // Support both camelCase and PascalCase from backend
         const fName = p.firstName || p.FirstName || '';

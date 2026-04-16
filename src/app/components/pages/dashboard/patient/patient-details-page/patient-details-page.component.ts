@@ -1,7 +1,7 @@
 import { Component, OnInit, ChangeDetectionStrategy, inject, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router } from '@angular/router';
-import { LucideAngularModule, User, Calendar, Droplet, Phone, MapPin, ArrowLeft, MoreHorizontal, Pill, FileText, Paperclip } from 'lucide-angular';
+import { LucideAngularModule, User, Calendar, Droplet, Phone, MapPin, ArrowLeft, MoreHorizontal, Pill, FileText, Paperclip, Eye, Edit2 } from 'lucide-angular';
 import { MedicalService, Doctor } from '../../../../../services/medical.service';
 import { AppointmentTableComponent, Appointment } from '../../appointments/appointment-table/appointment-table.component';
 import { AppointmentCreateModalComponent } from '../../appointments/appointment-create-modal/appointment-create-modal.component';
@@ -10,7 +10,9 @@ import { Patient } from '../patient-table/patient-table.component';
 import { AppointmentService } from '../../../../../services/appointment.service';
 import { PrescriptionService } from '../../../../../services/prescription.service';
 import { MedicalRecordService } from '../../../../../services/medical-record.service';
+import { AuthService } from '../../../../../services/auth.service';
 import { MedicalRecord } from '../../medical-records/medical-records-page.component';
+import { MedicalRecordCreateModalComponent } from '../../medical-records/medical-record-create-modal/medical-record-create-modal.component';
 
 export interface PatientPrescription {
     id: number;
@@ -27,7 +29,7 @@ export interface PatientPrescription {
 @Component({
     selector: 'app-patient-details-page',
     standalone: true,
-    imports: [CommonModule, LucideAngularModule, AppointmentTableComponent, AppointmentCreateModalComponent],
+    imports: [CommonModule, LucideAngularModule, AppointmentTableComponent, AppointmentCreateModalComponent, MedicalRecordCreateModalComponent],
     templateUrl: './patient-details-page.component.html',
     changeDetection: ChangeDetectionStrategy.OnPush
 })
@@ -39,6 +41,9 @@ export class PatientDetailsPageComponent implements OnInit {
     appointmentService = inject(AppointmentService);
     prescriptionService = inject(PrescriptionService);
     medicalRecordService = inject(MedicalRecordService);
+    authService = inject(AuthService);
+
+    isDoctor = computed(() => this.authService.getCurrentUser()?.role === 'doctor');
 
     // Icons
     User = User;
@@ -51,6 +56,8 @@ export class PatientDetailsPageComponent implements OnInit {
     Pill = Pill;
     FileText = FileText;
     Paperclip = Paperclip;
+    Eye = Eye;
+    Edit2 = Edit2;
 
     activeTab = signal('General Info');
     tabs = ['General Info', 'Appointments', 'Medical Records', 'Prescriptions'];
@@ -66,7 +73,13 @@ export class PatientDetailsPageComponent implements OnInit {
     // Modal state
     isAppointmentModalOpen = signal(false);
     selectedAppointmentForEdit = signal<Appointment | null>(null);
+    selectedAppointmentForRecord = signal<Appointment | null>(null);
     isAppointmentReadOnly = signal(false);
+
+    // Medical Record Modal
+    isMedicalRecordModalOpen = signal(false);
+    selectedMedicalRecord = signal<MedicalRecord | null>(null);
+    isMedicalRecordReadOnly = signal(false);
 
     totalBookings = computed(() => this.patientAppointments().length);
 
@@ -151,6 +164,16 @@ export class PatientDetailsPageComponent implements OnInit {
         }
     }
 
+    onCreateMedicalRecord(appointment: Appointment) {
+        this.selectedAppointmentForRecord.set(appointment);
+        this.isMedicalRecordModalOpen.set(true);
+    }
+
+    closeRecordModal() {
+        this.isMedicalRecordModalOpen.set(false);
+        this.selectedAppointmentForRecord.set(null);
+    }
+
     onAppointmentSaved(data: Record<string, any>) {
         if (this.selectedAppointmentForEdit()) {
             // Update existing
@@ -169,5 +192,27 @@ export class PatientDetailsPageComponent implements OnInit {
             });
         }
         this.isAppointmentModalOpen.set(false);
+    }
+
+    onViewMedicalRecord(record: MedicalRecord) {
+        this.selectedMedicalRecord.set(record);
+        this.isMedicalRecordReadOnly.set(true);
+        this.isMedicalRecordModalOpen.set(true);
+    }
+
+    onEditMedicalRecord(record: MedicalRecord) {
+        this.selectedMedicalRecord.set(record);
+        this.isMedicalRecordReadOnly.set(false);
+        this.isMedicalRecordModalOpen.set(true);
+    }
+
+    onSaveMedicalRecord(formData: any) {
+        this.medicalRecordService.createMedicalRecord(formData).subscribe({
+            next: (newRecord) => {
+                this.patientMedicalRecords.update(list => [...list, newRecord]);
+                this.isMedicalRecordModalOpen.set(false);
+            },
+            error: err => alert(err)
+        });
     }
 }

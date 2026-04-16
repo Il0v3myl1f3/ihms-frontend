@@ -1,7 +1,7 @@
 import { Component, OnInit, ChangeDetectionStrategy, inject, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router } from '@angular/router';
-import { LucideAngularModule, User, Calendar, Phone, MapPin, ArrowLeft, MoreHorizontal, GraduationCap, Award, Building2, Clock, Coffee, DoorOpen, Info, ShieldCheck, Printer } from 'lucide-angular';
+import { LucideAngularModule, User, Calendar, Droplet, Phone, MapPin, ArrowLeft, MoreHorizontal, Mail, Eye, Edit2, GraduationCap, Award, Building2, Clock, Coffee, DoorOpen, Info, ShieldCheck, Printer } from 'lucide-angular';
 import { MedicalService, Doctor } from '../../../../../services/medical.service';
 import { AppointmentTableComponent, Appointment } from '../../appointments/appointment-table/appointment-table.component';
 import { AppointmentCreateModalComponent } from '../../appointments/appointment-create-modal/appointment-create-modal.component';
@@ -9,12 +9,14 @@ import { PatientTableComponent, Patient } from '../../patient/patient-table/pati
 import { PatientService } from '../../../../../services/patient.service';
 import { AppointmentService } from '../../../../../services/appointment.service';
 import { MedicalRecordService } from '../../../../../services/medical-record.service';
+import { AuthService } from '../../../../../services/auth.service';
 import { MedicalRecord } from '../../medical-records/medical-records-page.component';
+import { MedicalRecordCreateModalComponent } from '../../medical-records/medical-record-create-modal/medical-record-create-modal.component';
 
 @Component({
     selector: 'app-doctor-details-page',
     standalone: true,
-    imports: [CommonModule, LucideAngularModule, AppointmentTableComponent, PatientTableComponent, AppointmentCreateModalComponent],
+    imports: [CommonModule, LucideAngularModule, AppointmentTableComponent, PatientTableComponent, AppointmentCreateModalComponent, MedicalRecordCreateModalComponent],
     templateUrl: './doctor-details-page.component.html',
     changeDetection: ChangeDetectionStrategy.OnPush
 })
@@ -25,10 +27,14 @@ export class DoctorDetailsPageComponent implements OnInit {
     private patientService = inject(PatientService);
     private appointmentService = inject(AppointmentService);
     private medicalRecordService = inject(MedicalRecordService);
+    private authService = inject(AuthService);
+
+    isDoctor = computed(() => this.authService.getCurrentUser()?.role === 'doctor');
 
     // Icons
     User = User;
     Calendar = Calendar;
+    Droplet = Droplet;
     Phone = Phone;
     MapPin = MapPin;
     ArrowLeft = ArrowLeft;
@@ -42,6 +48,9 @@ export class DoctorDetailsPageComponent implements OnInit {
     Info = Info;
     ShieldCheck = ShieldCheck;
     Printer = Printer;
+    Mail = Mail;
+    Eye = Eye;
+    Edit2 = Edit2;
 
     doctor = signal<Doctor | null>(null);
     activeTab = signal('General Info');
@@ -55,6 +64,11 @@ export class DoctorDetailsPageComponent implements OnInit {
     isAppointmentModalOpen = signal(false);
     selectedAppointmentForEdit = signal<Appointment | null>(null);
     isAppointmentReadOnly = signal(false);
+
+    // Medical Record Modal
+    isMedicalRecordModalOpen = signal(false);
+    selectedMedicalRecord = signal<MedicalRecord | null>(null);
+    isMedicalRecordReadOnly = signal(false);
 
     // Dropdown data for modal
     allDoctors = signal<Doctor[]>([]);
@@ -98,7 +112,7 @@ export class DoctorDetailsPageComponent implements OnInit {
                     });
                 });
 
-                this.medicalRecordService.getMedicalRecords(undefined, doc.id).subscribe(records => {
+                this.medicalRecordService.getMedicalRecords(undefined, doc.id).subscribe((records: MedicalRecord[]) => {
                     this.doctorMedicalRecords.set(records);
                 });
             }
@@ -159,5 +173,30 @@ export class DoctorDetailsPageComponent implements OnInit {
             });
         }
         this.isAppointmentModalOpen.set(false);
+    }
+
+    onAddMedicalRecord() {
+        this.selectedMedicalRecord.set(null);
+        this.isMedicalRecordReadOnly.set(false);
+        this.isMedicalRecordModalOpen.set(true);
+    }
+
+    onViewMedicalRecord(record: MedicalRecord) {
+        this.selectedMedicalRecord.set(record);
+        this.isMedicalRecordReadOnly.set(true);
+        this.isMedicalRecordModalOpen.set(true);
+    }
+
+    onEditMedicalRecord(record: MedicalRecord) {
+        this.selectedMedicalRecord.set(record);
+        this.isMedicalRecordReadOnly.set(false);
+        this.isMedicalRecordModalOpen.set(true);
+    }
+
+    onSaveMedicalRecord(formData: any) {
+        this.medicalRecordService.createMedicalRecord(formData).subscribe((newRecord: MedicalRecord) => {
+            this.doctorMedicalRecords.update(list => [...list, newRecord]);
+            this.isMedicalRecordModalOpen.set(false);
+        });
     }
 }

@@ -1,7 +1,7 @@
 import { Component, OnInit, OnDestroy, input, output, ChangeDetectionStrategy, signal, computed, HostListener, effect, untracked } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
-import { LucideAngularModule, Pencil, Trash2, MoreHorizontal, Search, Filter, ChevronLeft, ChevronRight, Plus, ChevronDown, ChevronUp, Eye } from 'lucide-angular';
+import { LucideAngularModule, Pencil, Trash2, MoreHorizontal, Search, Filter, ChevronLeft, ChevronRight, Plus, ChevronDown, ChevronUp, Eye, FilePlus } from 'lucide-angular';
 
 export interface Appointment {
     id: string;
@@ -37,6 +37,7 @@ export class AppointmentTableComponent implements OnInit, OnDestroy {
     deleteSelected = output<Appointment[]>();
     addAppointment = output<void>();
     viewAppointment = output<Appointment>();
+    createMedicalRecord = output<Appointment>();
 
     readonly Pencil = Pencil;
     readonly Trash2 = Trash2;
@@ -49,6 +50,7 @@ export class AppointmentTableComponent implements OnInit, OnDestroy {
     readonly ChevronDown = ChevronDown;
     readonly ChevronUp = ChevronUp;
     readonly Eye = Eye;
+    readonly FilePlus = FilePlus;
 
     activeItem: Appointment | null = null;
     dropdownPos = { top: 0, right: 0 };
@@ -262,6 +264,10 @@ export class AppointmentTableComponent implements OnInit, OnDestroy {
 
     onView(appointment: Appointment): void {
         this.viewAppointment.emit(appointment);
+    }
+
+    onCreateMedicalRecord(appointment: Appointment): void {
+        this.createMedicalRecord.emit(appointment);
     }
 
     onDelete(appointment: Appointment): void {
