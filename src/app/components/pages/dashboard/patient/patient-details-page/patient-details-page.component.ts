@@ -170,6 +170,4 @@ export class PatientDetailsPageComponent implements OnInit {
         }
         this.isAppointmentModalOpen.set(false);
     }
-
-    }
 }

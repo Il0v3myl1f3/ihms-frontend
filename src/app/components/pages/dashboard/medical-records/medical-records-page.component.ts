@@ -10,6 +10,7 @@ export interface MedicalRecord {
     recordType: string;
     date: string;
     doctorName: string;
+    patientName: string;
     description: string;
     status: 'Reviewed' | 'Pending' | 'Archived';
 }
@@ -78,6 +79,7 @@ export class MedicalRecordsPageComponent {
             result = result.filter(r =>
                 r.recordType.toLowerCase().includes(query) ||
                 r.doctorName.toLowerCase().includes(query) ||
+                r.patientName.toLowerCase().includes(query) ||
                 r.description.toLowerCase().includes(query) ||
                 r.date.toLowerCase().includes(query) ||
                 r.status.toLowerCase().includes(query)

@@ -40,6 +40,7 @@ export class MedicalRecordService {
             recordType: diagnosis,
             date: this.formatDate(data.createdAt || data.CreatedAt),
             doctorName: data.doctorName || data.DoctorName || 'Unknown Doctor',
+            patientName: data.patientName || data.PatientName || 'Unknown Patient',
             description: combined,
             status: 'Reviewed'
         };
