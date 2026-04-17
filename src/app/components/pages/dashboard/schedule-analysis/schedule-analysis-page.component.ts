@@ -25,8 +25,6 @@ import { CustomTimepickerComponent } from '../../../shared/custom-timepicker/cus
   }
 })
 export class ScheduleAnalysisPageComponent implements OnInit {
-  private ____ngZone = inject(NgZone);
-  
   closePageSizeMenu(): void {
     this.isPageSizeMenuOpen = false;
   }

@@ -143,7 +143,10 @@ export class PatientDetailsPageComponent implements OnInit {
                 }));
                 this.patientPrescriptions.set(mapped);
             });
+<<<<<<< HEAD
+=======
         });
+>>>>>>> d98832e5ef4b54ca35d15e8603073715adbeefab
         });
     }
 
