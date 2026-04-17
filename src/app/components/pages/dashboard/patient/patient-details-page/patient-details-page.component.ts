@@ -1,5 +1,6 @@
 import { Component, OnInit, ChangeDetectionStrategy, inject, signal, computed, DestroyRef, ChangeDetectorRef } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { timer } from 'rxjs';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router } from '@angular/router';
 import { LucideAngularModule, User, Calendar, Droplet, Phone, MapPin, ArrowLeft, MoreHorizontal, Pill, FileText, Paperclip, Eye, Edit2 } from 'lucide-angular';
@@ -67,7 +68,7 @@ export class PatientDetailsPageComponent implements OnInit {
 
     patient = signal<Patient | null>(null);
 
-    // Mock data (we will pull based on route id, ideally from a service)
+    // Patient data loaded from services
     patientAppointments = signal<Appointment[]>([]);
     patientPrescriptions = signal<PatientPrescription[]>([]);
     patientMedicalRecords = signal<MedicalRecord[]>([]);;
@@ -101,7 +102,10 @@ export class PatientDetailsPageComponent implements OnInit {
         this.route.paramMap.pipe(takeUntilDestroyed(this.destroyRef)).subscribe(params => {
             const idParam = params.get('id');
             if (idParam) {
-                this.loadPatientData(idParam);
+                // Polling: Refresh this specific patient's data every 30 seconds
+                timer(0, 10000).pipe(takeUntilDestroyed(this.destroyRef)).subscribe(() => {
+                    this.loadPatientData(idParam);
+                });
             }
         });
 
@@ -123,19 +127,22 @@ export class PatientDetailsPageComponent implements OnInit {
             });
         });
 
-        this.prescriptionService.getPrescriptions().pipe(takeUntilDestroyed(this.destroyRef)).subscribe(items => {
-            const mapped: PatientPrescription[] = items.map(item => ({
-                id: item.id,
-                medication: item.medication,
-                dosage: item.dosage,
-                frequency: item.frequency,
-                status: item.status,
-                refills: 0,
-                instructions: 'Follow doctor recommendation',
-                startDate: item.startDate,
-                endDate: item.endDate
-            }));
-            this.patientPrescriptions.set(mapped);
+        this.patientService.getMyPatientId().pipe(takeUntilDestroyed(this.destroyRef)).subscribe(myId => {
+            const fetchId = id || myId;
+            this.prescriptionService.getPrescriptions(fetchId).pipe(takeUntilDestroyed(this.destroyRef)).subscribe(items => {
+                const mapped: PatientPrescription[] = items.map(item => ({
+                    id: item.id,
+                    medication: item.medication,
+                    dosage: item.dosage,
+                    frequency: item.frequency,
+                    status: item.status,
+                    refills: 0, // Not currently in backend
+                    instructions: 'Follow prescription plan',
+                    startDate: item.startDate,
+                    endDate: item.endDate
+                }));
+                this.patientPrescriptions.set(mapped);
+            });
         });
     }
 

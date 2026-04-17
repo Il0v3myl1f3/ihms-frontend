@@ -1,5 +1,6 @@
 import { Component, OnInit, inject, ViewChild, ChangeDetectionStrategy, signal, DestroyRef } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { timer } from 'rxjs';
 import { Router } from '@angular/router';
 import { MedicalService } from '../../../../services/medical.service';
 import { AddDoctorComponent } from './add-doctor/add-doctor.component';
@@ -24,9 +25,10 @@ export class DashboardDoctorsComponent implements OnInit {
     private destroyRef = inject(DestroyRef);
 
     ngOnInit(): void {
-        // Re-fetch from backend every time the page is activated
-        // This ensures the signal is always in sync (e.g. after navigation)
-        this.medicalService.getDoctors().pipe(takeUntilDestroyed(this.destroyRef)).subscribe();
+        // Polling: Refresh from backend every 30 seconds while the page is active
+        timer(0, 10000).pipe(takeUntilDestroyed(this.destroyRef)).subscribe(() => {
+            this.medicalService.getDoctors().pipe(takeUntilDestroyed(this.destroyRef)).subscribe();
+        });
     }
 
     openAddDoctorModal(): void {

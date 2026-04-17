@@ -1,6 +1,6 @@
 import { Component, input, output, inject, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { LucideAngularModule, X, FlaskConical, MapPin, User, Phone, Clock, Activity, Users, ClipboardList, Info } from 'lucide-angular';
+import { LucideAngularModule, X, FlaskConical, MapPin, User, Phone, Clock, Activity, Users, ClipboardList, Info, Tag } from 'lucide-angular';
 import { Laboratory, LaboratoryService, LabEquipment, MedicalAnalysis } from '../../../../../services/laboratory.service';
 import { toSignal } from '@angular/core/rxjs-interop';
 
@@ -27,20 +27,14 @@ export class LaboratoryViewModalComponent {
   readonly Users = Users;
   readonly ClipboardList = ClipboardList;
   readonly Info = Info;
+  readonly Tag = Tag;
 
-  allEquipment = toSignal(this.labService.getEquipment(), { initialValue: [] as LabEquipment[] });
   allAnalyses = toSignal(this.labService.getAnalyses(), { initialValue: [] as MedicalAnalysis[] });
-
-  equipment = computed(() => {
-    const currentLab = this.lab();
-    if (!currentLab) return [] as LabEquipment[];
-    return this.allEquipment().filter(e => e.labId === currentLab.id);
-  });
 
   analyses = computed(() => {
     const currentLab = this.lab();
     if (!currentLab) return [] as MedicalAnalysis[];
-    return this.allAnalyses().filter(a => a.labId === currentLab.id);
+    return this.allAnalyses().filter(a => a.labName === currentLab.name);
   });
 
   onClose() {

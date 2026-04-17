@@ -2,7 +2,7 @@ import { Component, OnInit, inject, signal, computed, ChangeDetectionStrategy, e
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { fromEvent } from 'rxjs';
 import { CommonModule } from '@angular/common';
-import { LaboratoryService, LabEquipment } from '../../../../services/laboratory.service';
+import { LaboratoryService, LabEquipment, Laboratory } from '../../../../services/laboratory.service';
 import { LucideAngularModule, Search, ChevronDown, ChevronUp, Microscope, MoreHorizontal, Plus, Trash2, Edit2, Settings, Eye, ChevronLeft, ChevronRight, Calendar, MapPin, Tag, Activity, Filter } from 'lucide-angular';
 import { FormsModule } from '@angular/forms';
 import { ModalComponent } from '../../../shared/modal/modal.component';
@@ -52,7 +52,7 @@ export class LabEquipmentPageComponent implements OnInit {
   // Edit Modal state
   isEditModalOpen = signal(false);
   selectedItemForEdit = signal<LabEquipment | null>(null);
-  availableLabs = signal<any[]>([]);
+  availableLabs = signal<Laboratory[]>([]);
 
   // Add Asset state
   isAddModalOpen = signal(false);
@@ -111,16 +111,16 @@ export class LabEquipmentPageComponent implements OnInit {
   saveAdd(): void {
     const data = this.newItem();
     if (data.name && data.labId && data.type) {
-      const selectedLab = this.availableLabs().find(l => l.id === Number(data.labId));
+      const selectedLab = this.availableLabs().find(l => String(l.id) === String(data.labId));
       const currentItems = this.items();
-      const maxId = currentItems.length > 0 ? Math.max(...currentItems.map(i => i.id)) : 0;
-      const maxNo = currentItems.length > 0 ? Math.max(...currentItems.map(i => i.no)) : 0;
+      const maxId = currentItems.length > 0 ? Math.max(...currentItems.map(i => Number(i.id) || 0)) : 0;
+      const maxNo = currentItems.length > 0 ? Math.max(...currentItems.map(i => i.no || 0)) : 0;
 
       const fullNewItem: LabEquipment = {
-        id: maxId + 1,
+        id: (maxId + 1).toString(),
         no: maxNo + 1,
         name: data.name,
-        labId: Number(data.labId),
+        labId: data.labId || '',
         labName: selectedLab?.name || 'Unknown Lab',
         type: data.type,
         status: (data.status as any) || 'Operational',
@@ -138,7 +138,7 @@ export class LabEquipmentPageComponent implements OnInit {
     const updatedItem = this.selectedItemForEdit();
     if (updatedItem) {
       // Find the lab name from availableLabs if it was changed
-      const selectedLab = this.availableLabs().find(l => l.id === Number(updatedItem.labId));
+      const selectedLab = this.availableLabs().find(l => String(l.id) === String(updatedItem.labId));
       if (selectedLab) {
         updatedItem.labName = selectedLab.name;
         updatedItem.labId = selectedLab.id;
@@ -332,11 +332,11 @@ export class LabEquipmentPageComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.labService.getEquipment().pipe(takeUntilDestroyed(this.destroyRef)).subscribe(data => {
-      this.items.set(data.map(item => ({ ...item, selected: false })));
+    this.labService.getEquipment().pipe(takeUntilDestroyed(this.destroyRef)).subscribe((data: LabEquipment[]) => {
+      this.items.set(data.map((item: LabEquipment) => ({ ...item, selected: false })));
     });
 
-    this.labService.getLabs().pipe(takeUntilDestroyed(this.destroyRef)).subscribe(labs => {
+    this.labService.getLabs().pipe(takeUntilDestroyed(this.destroyRef)).subscribe((labs: Laboratory[]) => {
       this.availableLabs.set(labs);
     });
 
@@ -370,7 +370,7 @@ export class LabEquipmentPageComponent implements OnInit {
     ));
   }
 
-  toggleSelectItem(id: number) {
+  toggleSelectItem(id: string | number) {
     this.items.update(items => items.map(item =>
       item.id === id ? { ...item, selected: !item.selected } : item
     ));

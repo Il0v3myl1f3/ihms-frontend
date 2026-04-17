@@ -2,8 +2,12 @@ import { Component, OnInit, inject, signal, computed, ChangeDetectionStrategy, e
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { fromEvent } from 'rxjs';
 import { CommonModule } from '@angular/common';
-import { LaboratoryService, MedicalAnalysis } from '../../../../services/laboratory.service';
-import { LucideAngularModule, Search, ChevronDown, ChevronUp, Clock, User, Microscope, MoreHorizontal, Plus, Trash2, Filter, ChevronLeft, ChevronRight, Eye, Edit2, Download, CheckCircle2, XCircle, CalendarPlus, MapPin, Activity } from 'lucide-angular';
+import { LaboratoryService, MedicalAnalysis, Laboratory } from '../../../../services/laboratory.service';
+import { MedicalService, Doctor } from '../../../../services/medical.service';
+import { AuthService } from '../../../../services/auth.service';
+import { PatientService } from '../../../../services/patient.service';
+import { Patient } from '../patient/patient-table/patient-table.component';
+import { LucideAngularModule, Search, ChevronDown, ChevronUp, Clock, User, Microscope, MoreHorizontal, Plus, Trash2, Filter, ChevronLeft, ChevronRight, Eye, Edit2, Download, CheckCircle2, XCircle, CalendarPlus, MapPin, Activity, UserPlus } from 'lucide-angular';
 import { FormsModule } from '@angular/forms';
 import { AnalysisViewModalComponent } from './analysis-view-modal/analysis-view-modal.component';
 import { ModalComponent } from '../../../shared/modal/modal.component';
@@ -49,12 +53,17 @@ export class ScheduleAnalysisPageComponent implements OnInit {
   readonly CalendarPlus = CalendarPlus;
 
   private labService = inject(LaboratoryService);
+  private medicalService = inject(MedicalService);
+  public authService = inject(AuthService);
+  private patientService = inject(PatientService);
   private destroyRef = inject(DestroyRef);
   private ngZone = inject(NgZone);
 
   // Data State
   items = signal<MedicalAnalysis[]>([]);
-  availableLabs = signal<any[]>([]);
+  availableLabs = signal<Laboratory[]>([]);
+  availableDoctors = signal<Doctor[]>([]);
+  availablePatients = signal<Patient[]>([]);
   analysisTypes = [
     'Complete Blood Count (CBC)',
     'Lipid Profile',
@@ -65,7 +74,8 @@ export class ScheduleAnalysisPageComponent implements OnInit {
     'Thyroid Profile'
   ];
   
-  readOnly = signal<boolean>(false);
+  isDoctor = computed(() => this.authService.getCurrentUser()?.role === 'doctor');
+  readOnly = computed(() => !this.isDoctor());
   activeItem: MedicalAnalysis | null = null;
   dropdownPos = { top: 0, right: 0 };
 
@@ -80,8 +90,12 @@ export class ScheduleAnalysisPageComponent implements OnInit {
   // Modal Dropdown signals
   activeAddTypeDropdown = signal(false);
   activeAddLabDropdown = signal(false);
+  activeAddDoctorDropdown = signal(false);
+  activeAddPatientDropdown = signal(false);
   activeEditTypeDropdown = signal(false);
   activeEditLabDropdown = signal(false);
+  activeEditDoctorDropdown = signal(false);
+  activeEditPatientDropdown = signal(false);
   activeEditStatusDropdown = signal(false);
 
   // Date/Time Split State
@@ -102,7 +116,8 @@ export class ScheduleAnalysisPageComponent implements OnInit {
   private getCombinedDateTime(): string {
     const d = this.tempDate() || new Date().toISOString().split('T')[0];
     const t = this.tempTime() || '09:00';
-    return `${d} ${t}`;
+    // Using ISO format with 'T' for backend compatibility
+    return `${d}T${t}:00`;
   }
 
   // Table State
@@ -219,13 +234,24 @@ export class ScheduleAnalysisPageComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.labService.getAnalyses().pipe(takeUntilDestroyed(this.destroyRef)).subscribe(data => {
-      this.items.set(data.map(item => ({ ...item, selected: false })));
+    this.labService.getAnalyses().pipe(takeUntilDestroyed(this.destroyRef)).subscribe((data: MedicalAnalysis[]) => {
+      this.items.set(data.map((item: MedicalAnalysis) => ({ ...item, selected: false })));
     });
 
-    this.labService.getLabs().pipe(takeUntilDestroyed(this.destroyRef)).subscribe(labs => {
+    this.labService.getLabs().pipe(takeUntilDestroyed(this.destroyRef)).subscribe((labs: Laboratory[]) => {
       this.availableLabs.set(labs);
     });
+
+    this.medicalService.getDoctors().pipe(takeUntilDestroyed(this.destroyRef)).subscribe((doctors: Doctor[]) => {
+      this.availableDoctors.set(doctors);
+    });
+
+    const user = this.authService.getCurrentUser();
+    if (user?.role === 'admin' || user?.role === 'doctor') {
+      this.patientService.getPatients().pipe(takeUntilDestroyed(this.destroyRef)).subscribe(pts => {
+        this.availablePatients.set(pts);
+      });
+    }
 
     this.ngZone.runOutsideAngular(() => {
       fromEvent(window, 'scroll', { passive: true })
@@ -258,7 +284,7 @@ export class ScheduleAnalysisPageComponent implements OnInit {
     ));
   }
 
-  toggleSelectItem(id: number) {
+  toggleSelectItem(id: string | number) {
     this.items.update(items => items.map(item =>
       item.id === id ? { ...item, selected: !item.selected } : item
     ));
@@ -298,27 +324,42 @@ export class ScheduleAnalysisPageComponent implements OnInit {
 
   saveAdd(): void {
     const data = this.newAnalysis();
-    if (data.patientName && data.analysisType && data.labId) {
-      const currentItems = this.items();
-      const maxId = currentItems.length > 0 ? Math.max(...currentItems.map(i => i.id)) : 0;
-      const maxNo = currentItems.length > 0 ? Math.max(...currentItems.map(i => i.no)) : 0;
-
-      const fullItem: MedicalAnalysis = {
-        id: maxId + 1,
-        no: maxNo + 1,
-        patientName: data.patientName,
-        analysisType: data.analysisType,
-        labId: Number(data.labId),
-        labName: data.labName || 'Unknown Lab',
-        scheduledDate: this.getCombinedDateTime(),
-        status: 'Scheduled',
-        doctorName: data.doctorName || '',
-        selected: false
-      };
-
-      this.items.update(prev => [fullItem, ...prev]);
-      this.closeAddModal();
+    const currentUser = this.authService.getCurrentUser();
+    
+    // Validation: Analysis, Lab, Doctor are always required. Patient is required if admin/doctor.
+    if (data.analysisType && data.labId && data.doctorId) {
+      if (currentUser?.role === 'user') {
+        // Resolve clinical Patient ID before sending
+        this.patientService.getMyPatientId().subscribe({
+          next: (clinicalId) => this.submitAnalysis(clinicalId, data),
+          error: () => alert('Could not resolve your clinical patient record. Please contact the administrator.')
+        });
+      } else if (data.patientId) {
+        // Admin/Doctor selected a patient
+        this.submitAnalysis(data.patientId, data);
+      } else {
+        alert('Please select a patient.');
+      }
     }
+  }
+
+  private submitAnalysis(patientId: string, data: Partial<MedicalAnalysis>): void {
+    const requestPayload = {
+      patientId: patientId,
+      doctorId: data.doctorId,
+      labId: data.labId,
+      analysisType: data.analysisType,
+      scheduledDate: this.getCombinedDateTime(),
+      status: 'Scheduled'
+    };
+
+    this.labService.scheduleAnalysis(requestPayload).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
+      next: () => {
+        this.labService.getAnalyses().subscribe(items => this.items.set(items));
+        this.closeAddModal();
+      },
+      error: (err) => alert('Failed to schedule analysis: ' + err)
+    });
   }
 
   openEditModal(item: MedicalAnalysis): void {
@@ -336,16 +377,55 @@ export class ScheduleAnalysisPageComponent implements OnInit {
   saveEdit(): void {
     const updated = this.selectedAnalysis();
     if (updated) {
-      updated.scheduledDate = this.getCombinedDateTime();
-      this.items.update(items => items.map(item =>
-        item.id === updated.id ? { ...updated } : item
-      ));
-      this.closeEditModal();
+      const requestPayload = {
+        patientId: updated.patientId,
+        doctorId: updated.doctorId,
+        labId: updated.labId,
+        analysisType: updated.analysisType,
+        scheduledDate: this.getCombinedDateTime(),
+        status: updated.status
+      };
+
+      this.labService.updateAnalysis(updated.id, requestPayload).pipe(takeUntilDestroyed(this.destroyRef)).subscribe(() => {
+        this.labService.getAnalyses().subscribe(items => this.items.set(items));
+        this.closeEditModal();
+      });
     }
   }
 
   deleteSelected(): void {
-    this.items.update(items => items.filter(i => !i.selected));
+    const selectedIds = this.items().filter(i => i.selected).map(i => i.id);
+    if (selectedIds.length === 0) return;
+
+    if (confirm(`Are you sure you want to delete ${selectedIds.length} analyses?`)) {
+      let completed = 0;
+      selectedIds.forEach(id => {
+        this.labService.deleteAnalysis(id).subscribe(() => {
+          completed++;
+          if (completed === selectedIds.length) {
+            this.labService.getAnalyses().subscribe(items => this.items.set(items));
+          }
+        });
+      });
+    }
+  }
+
+  onCancelAnalysis(item: MedicalAnalysis): void {
+    if (confirm(`Are you sure you want to cancel the analysis for ${item.patientName}?`)) {
+      const requestPayload = {
+        patientId: item.patientId,
+        doctorId: item.doctorId,
+        labId: item.labId,
+        analysisType: item.analysisType,
+        scheduledDate: item.scheduledDate,
+        status: 'Cancelled'
+      };
+
+      this.labService.updateAnalysis(item.id, requestPayload).pipe(takeUntilDestroyed(this.destroyRef)).subscribe(() => {
+        this.labService.getAnalyses().subscribe(items => this.items.set(items));
+        this.closeDropdown();
+      });
+    }
   }
 
   toggleModalDropdown(type: string, event: Event): void {
@@ -353,8 +433,12 @@ export class ScheduleAnalysisPageComponent implements OnInit {
     switch (type) {
       case 'addType': this.activeAddTypeDropdown.set(!this.activeAddTypeDropdown()); break;
       case 'addLab': this.activeAddLabDropdown.set(!this.activeAddLabDropdown()); break;
+      case 'addDoctor': this.activeAddDoctorDropdown.set(!this.activeAddDoctorDropdown()); break;
+      case 'addPatient': this.activeAddPatientDropdown.set(!this.activeAddPatientDropdown()); break;
       case 'editType': this.activeEditTypeDropdown.set(!this.activeEditTypeDropdown()); break;
       case 'editLab': this.activeEditLabDropdown.set(!this.activeEditLabDropdown()); break;
+      case 'editDoctor': this.activeEditDoctorDropdown.set(!this.activeEditDoctorDropdown()); break;
+      case 'editPatient': this.activeEditPatientDropdown.set(!this.activeEditPatientDropdown()); break;
       case 'editStatus': this.activeEditStatusDropdown.set(!this.activeEditStatusDropdown()); break;
     }
   }
@@ -381,6 +465,28 @@ export class ScheduleAnalysisPageComponent implements OnInit {
     }
   }
 
+  selectDoctor(doctor: any, isEdit: boolean): void {
+    if (isEdit) {
+      const current = this.selectedAnalysis();
+      if (current) this.selectedAnalysis.set({ ...current, doctorId: doctor.id, doctorName: doctor.name });
+      this.activeEditDoctorDropdown.set(false);
+    } else {
+      this.newAnalysis.update(prev => ({ ...prev, doctorId: doctor.id, doctorName: doctor.name }));
+      this.activeAddDoctorDropdown.set(false);
+    }
+  }
+
+  selectPatient(patient: Patient, isEdit: boolean): void {
+    if (isEdit) {
+      const current = this.selectedAnalysis();
+      if (current) this.selectedAnalysis.set({ ...current, patientId: patient.id, patientName: patient.name });
+      this.activeEditPatientDropdown.set(false);
+    } else {
+      this.newAnalysis.update(prev => ({ ...prev, patientId: patient.id, patientName: patient.name }));
+      this.activeAddPatientDropdown.set(false);
+    }
+  }
+
   selectStatus(status: string): void {
     const current = this.selectedAnalysis();
     if (current) this.selectedAnalysis.set({ ...current, status: status as any });
@@ -402,8 +508,10 @@ export class ScheduleAnalysisPageComponent implements OnInit {
     this.activeFilterMenu.set(false);
     this.activeAddTypeDropdown.set(false);
     this.activeAddLabDropdown.set(false);
+    this.activeAddDoctorDropdown.set(false);
     this.activeEditTypeDropdown.set(false);
     this.activeEditLabDropdown.set(false);
+    this.activeEditDoctorDropdown.set(false);
     this.activeEditStatusDropdown.set(false);
   }
 

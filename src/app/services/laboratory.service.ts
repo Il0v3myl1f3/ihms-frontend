@@ -1,52 +1,55 @@
-import { Injectable } from '@angular/core';
-import { Observable, of } from 'rxjs';
+import { Injectable, inject } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
+import { Observable, map, catchError, throwError } from 'rxjs';
 
 export interface Laboratory {
-    id: number;
-    no: number;
+    id: string;
+    no?: number;
     name: string;
     location: string;
     status: 'Available' | 'Occupied' | 'Maintenance';
-    equipmentCount: number;
-    capacity: number;
-    head: string;
+    headOfLab: string;
     phone: string;
     operatingHours: string;
-    description: string;
+    type: string;
+    selected?: boolean;
 }
 
 export interface MedicalAnalysis {
-    id: number;
-    no: number;
+    id: string;
+    no?: number;
     patientName: string;
+    patientId: string;
     analysisType: string;
-    labId: number;
     labName: string;
+    labId: string | number;
     scheduledDate: string;
     status: 'Scheduled' | 'InProgress' | 'Completed' | 'Cancelled';
     doctorName: string;
+    doctorId: string;
     selected?: boolean;
 }
 
 export interface AnalysisResult {
-    id: number;
-    no: number;
-    analysisId: number;
+    id: string;
+    no?: number;
     patientName: string;
     analysisType: string;
+    doctorName: string;
     resultDate: string;
+    status: 'Normal' | 'Abnormal' | 'Critical';
     values: string;
     normalRange: string;
-    status: 'Normal' | 'Abnormal' | 'Critical';
-    doctorName: string;
+    results: { parameter: string, value: string, unit: string, range: string }[];
+    comments: string;
     selected?: boolean;
 }
 
 export interface LabEquipment {
-    id: number;
-    no: number;
+    id: string;
+    no?: number;
     name: string;
-    labId: number;
+    labId: string | number;
     labName: string;
     type: string;
     status: 'Operational' | 'Under Maintenance' | 'Out of Service';
@@ -59,91 +62,104 @@ export interface LabEquipment {
     providedIn: 'root'
 })
 export class LaboratoryService {
-    private labs: Laboratory[] = [
-        { 
-            id: 1, no: 1, name: 'Hematology Lab', location: 'Floor 1, Wing A', status: 'Available', 
-            equipmentCount: 12, capacity: 5, head: 'Dr. Sarah Peterson', phone: '+1 (555) 101-2030', 
-            operatingHours: '08:00 AM - 06:00 PM', description: 'Specialized in blood-related disorders, CBC, and bone marrow analysis.' 
-        },
-        { 
-            id: 2, no: 2, name: 'Biochemistry Lab', location: 'Floor 1, Wing B', status: 'Occupied', 
-            equipmentCount: 15, capacity: 8, head: 'Dr. Julian Ross', phone: '+1 (555) 101-2045', 
-            operatingHours: '24/7', description: 'Chemical process analysis in biological systems, including liver and kidney function tests.' 
-        },
-        { 
-            id: 3, no: 3, name: 'Microbiology Lab', location: 'Floor 2, Wing A', status: 'Available', 
-            equipmentCount: 10, capacity: 4, head: 'Dr. Elena Vance', phone: '+1 (555) 101-2051', 
-            operatingHours: '09:00 AM - 05:00 PM', description: 'Study of pathogenic microorganisms including bacteria, viruses, and fungi.' 
-        },
-        { 
-            id: 4, no: 4, name: 'Genetics Lab', location: 'Floor 2, Wing C', status: 'Maintenance', 
-            equipmentCount: 8, capacity: 3, head: 'Dr. Isaac Kleiner', phone: '+1 (555) 101-2062', 
-            operatingHours: '08:00 AM - 04:00 PM', description: 'Molecular testing, DNA sequencing, and profiling for hereditary conditions.' 
-        },
-        { 
-            id: 5, no: 5, name: 'Pathology Lab', location: 'Floor 3, Wing B', status: 'Available', 
-            equipmentCount: 20, capacity: 10, head: 'Dr. Judith Mossman', phone: '+1 (555) 101-2070', 
-            operatingHours: '08:00 AM - 08:00 PM', description: 'Examination of organs, tissues, and bodily fluids for disease diagnosis.' 
-        }
-    ];
-
-    private analyses: MedicalAnalysis[] = [
-        { id: 1, no: 1, patientName: 'John Doe', analysisType: 'Complete Blood Count', labId: 1, labName: 'Hematology Lab', scheduledDate: '2026-04-10 09:00', status: 'Scheduled', doctorName: 'Dr. Mia Kensington' },
-        { id: 2, no: 2, patientName: 'Alice Smith', analysisType: 'Lipid Profile', labId: 2, labName: 'Biochemistry Lab', scheduledDate: '2026-04-10 10:30', status: 'InProgress', doctorName: 'Dr. Oliver Westwood' },
-        { id: 3, no: 3, patientName: 'Robert Brown', analysisType: 'Urine Culture', labId: 3, labName: 'Microbiology Lab', scheduledDate: '2026-04-11 08:00', status: 'Scheduled', doctorName: 'Dr. Sophia Langley' },
-        { id: 4, no: 4, patientName: 'Emily Davis', analysisType: 'Liver Function Test', labId: 2, labName: 'Biochemistry Lab', scheduledDate: '2026-04-08 14:00', status: 'Completed', doctorName: 'Dr. Amelia Hawthorne' },
-        { id: 5, no: 5, patientName: 'Michael Wilson', analysisType: 'Blood Glucose', labId: 2, labName: 'Biochemistry Lab', scheduledDate: '2026-04-12 09:15', status: 'Scheduled', doctorName: 'Dr. Clara Whitmore' }
-    ];
-
-    private results: AnalysisResult[] = [
-        { id: 1, no: 1, analysisId: 4, patientName: 'Emily Davis', analysisType: 'Liver Function Test', resultDate: '2026-04-08 16:30', values: 'ALT: 35, AST: 30', normalRange: 'ALT: <40, AST: <40', status: 'Normal', doctorName: 'Dr. Amelia Hawthorne' },
-        { id: 2, no: 2, analysisId: 10, patientName: 'Jane Smith', analysisType: 'Hemoglobin', resultDate: '2026-04-07 10:00', values: 'Hb: 9.5 g/dL', normalRange: '12-16 g/dL', status: 'Abnormal', doctorName: 'Dr. Mia Kensington' },
-        { id: 3, no: 3, analysisId: 15, patientName: 'Tom White', analysisType: 'Potassium', resultDate: '2026-04-07 11:45', values: 'K+: 6.8 mmol/L', normalRange: '3.5-5.1 mmol/L', status: 'Critical', doctorName: 'Dr. Nathaniel Rivers' }
-    ];
-
-    private equipment: LabEquipment[] = [
-        { id: 1, no: 1, name: 'Centrifuge X1', labId: 1, labName: 'Hematology Lab', type: 'Centrifuge', status: 'Operational', lastMaintenanceDate: '2026-01-15', nextMaintenanceDate: '2026-07-15' },
-        { id: 2, no: 2, name: 'Microscope Z200', labId: 1, labName: 'Hematology Lab', type: 'Microscope', status: 'Operational', lastMaintenanceDate: '2026-02-10', nextMaintenanceDate: '2026-08-10' },
-        { id: 3, no: 3, name: 'Chemistry Analyzer 5000', labId: 2, labName: 'Biochemistry Lab', type: 'Analyzer', status: 'Operational', lastMaintenanceDate: '2025-12-05', nextMaintenanceDate: '2026-06-05' },
-        { id: 4, no: 4, name: 'Incubator I-10', labId: 3, labName: 'Microbiology Lab', type: 'Incubator', status: 'Under Maintenance', lastMaintenanceDate: '2026-04-05', nextMaintenanceDate: '2026-10-05' },
-        { id: 5, no: 5, name: 'PCR Machine P-2', labId: 4, labName: 'Genetics Lab', type: 'PCR', status: 'Out of Service', lastMaintenanceDate: '2025-11-20', nextMaintenanceDate: '2026-05-20' }
-    ];
+    private http = inject(HttpClient);
+    private apiUrl = 'http://localhost:5275/api/Laboratory';
 
     getLabs(): Observable<Laboratory[]> {
-        return of(this.labs);
+        return this.http.get<any>(this.apiUrl).pipe(
+            map(data => {
+                const items = Array.isArray(data) ? data : (data?.items || data?.Items || []);
+                return items.map((l: any, index: number) => this.mapLaboratory(l, index + 1));
+            }),
+            catchError((error: any) => this.handleError(error))
+        );
+    }
+
+    private mapLaboratory(data: any, no: number): Laboratory {
+        return {
+            id: data.id || data.Id,
+            no,
+            name: data.name || data.Name || '',
+            location: data.location || data.Location || '',
+            status: data.status || data.Status || 'Available',
+            type: data.type || data.Type || 'Other',
+            headOfLab: data.headOfLab || data.HeadOfLab || '',
+            phone: data.phone || data.Phone || '',
+            operatingHours: data.operatingHours || data.OperatingHours || '',
+            selected: false
+        };
+    }
+
+    private handleError(error: any): Observable<never> {
+        let msg = 'Server error';
+        if (error.status === 0) {
+            msg = 'Backend unreachable. Ensure it is running on port 5275.';
+        } else if (error.error?.message) {
+            msg = error.error.message;
+        } else if (typeof error.error === 'string') {
+            msg = error.error;
+        } else if (error.message) {
+            msg = error.message;
+        }
+        return throwError(() => msg);
+    }
+
+    createLaboratory(lab: Omit<Laboratory, 'id' | 'no'>): Observable<Laboratory> {
+        return this.http.post<Laboratory>(this.apiUrl, lab).pipe(catchError((error: any) => this.handleError(error)));
+    }
+
+    updateLaboratory(id: string, lab: Omit<Laboratory, 'id' | 'no'>): Observable<Laboratory> {
+        return this.http.put<Laboratory>(`${this.apiUrl}/${id}`, lab).pipe(catchError((error: any) => this.handleError(error)));
+    }
+
+    deleteLaboratory(id: string): Observable<boolean> {
+        return this.http.delete<boolean>(`${this.apiUrl}/${id}`).pipe(catchError((error: any) => this.handleError(error)));
     }
 
     getAnalyses(): Observable<MedicalAnalysis[]> {
-        return of(this.analyses);
+        return this.http.get<MedicalAnalysis[]>(`${this.apiUrl}/analyses`).pipe(
+            map(items => items.map((item: any, index: number) => ({
+                ...item,
+                no: index + 1,
+                labId: item.labId || item.LabId,
+                doctorId: item.doctorId || item.DoctorId,
+                patientId: item.patientId || item.PatientId
+            }))),
+            catchError((error: any) => this.handleError(error))
+        );
+    }
+
+    scheduleAnalysis(analysis: any): Observable<MedicalAnalysis> {
+        return this.http.post<MedicalAnalysis>(`${this.apiUrl}/analyses`, analysis).pipe(
+            catchError((error: any) => this.handleError(error))
+        );
+    }
+
+    updateAnalysis(id: string | number, analysis: any): Observable<MedicalAnalysis> {
+        return this.http.put<MedicalAnalysis>(`${this.apiUrl}/analyses/${id}`, analysis).pipe(
+            catchError((error: any) => this.handleError(error))
+        );
+    }
+
+    deleteAnalysis(id: string | number): Observable<boolean> {
+        return this.http.delete<boolean>(`${this.apiUrl}/analyses/${id}`).pipe(
+            catchError((error: any) => this.handleError(error))
+        );
     }
 
     getResults(): Observable<AnalysisResult[]> {
-        return of(this.results);
+        // Placeholder until backend implements it
+        return new Observable<AnalysisResult[]>(subscriber => {
+            subscriber.next([]);
+            subscriber.complete();
+        });
     }
 
     getEquipment(): Observable<LabEquipment[]> {
-        return of(this.equipment);
-    }
-
-    addAnalysis(analysis: Omit<MedicalAnalysis, 'id' | 'no' | 'status'>): Observable<MedicalAnalysis> {
-        const newId = this.analyses.length > 0 ? Math.max(...this.analyses.map(a => a.id)) + 1 : 1;
-        const newNo = this.analyses.length > 0 ? Math.max(...this.analyses.map(a => a.no)) + 1 : 1;
-        const newAnalysis: MedicalAnalysis = {
-            ...analysis,
-            id: newId,
-            no: newNo,
-            status: 'Scheduled'
-        };
-        this.analyses.push(newAnalysis);
-        return of(newAnalysis);
-    }
-
-    updateEquipmentStatus(id: number, status: LabEquipment['status']): Observable<boolean> {
-        const eq = this.equipment.find(e => e.id === id);
-        if (eq) {
-            eq.status = status;
-            return of(true);
-        }
-        return of(false);
+        // Placeholder until backend implements it
+        return new Observable<LabEquipment[]>(subscriber => {
+            subscriber.next([]);
+            subscriber.complete();
+        });
     }
 }

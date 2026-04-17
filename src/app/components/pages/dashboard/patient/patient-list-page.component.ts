@@ -1,5 +1,6 @@
-import { Component, ViewChild, ChangeDetectionStrategy, inject, ChangeDetectorRef, DestroyRef } from '@angular/core';
+import { Component, ViewChild, ChangeDetectionStrategy, inject, ChangeDetectorRef, DestroyRef, OnInit } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { timer } from 'rxjs';
 import { Router } from '@angular/router';
 import { PatientTableComponent, Patient } from './patient-table/patient-table.component';
 import { PatientCreateModalComponent } from './patient-create-modal/patient-create-modal.component';
@@ -11,7 +12,7 @@ import { PatientService } from '../../../../services/patient.service';
     templateUrl: './patient-list-page.component.html',
     changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class PatientListPageComponent {
+export class PatientListPageComponent implements OnInit {
     private router = inject(Router);
     private patientService = inject(PatientService);
     private cdr = inject(ChangeDetectorRef);
@@ -21,8 +22,11 @@ export class PatientListPageComponent {
 
     patients = this.patientService.patients;
 
-    constructor() {
-        this.patientService.getPatients().pipe(takeUntilDestroyed(this.destroyRef)).subscribe();
+    ngOnInit(): void {
+        // Polling: Refresh from backend every 30 seconds
+        timer(0, 10000).pipe(takeUntilDestroyed(this.destroyRef)).subscribe(() => {
+            this.patientService.getPatients().pipe(takeUntilDestroyed(this.destroyRef)).subscribe();
+        });
     }
 
 

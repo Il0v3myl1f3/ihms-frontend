@@ -1,10 +1,12 @@
 import { Component, ChangeDetectionStrategy, signal, computed, effect, untracked, HostListener, inject, DestroyRef, NgZone, OnInit } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { fromEvent } from 'rxjs';
+import { fromEvent, timer } from 'rxjs';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { LucideAngularModule, Search, Filter, ChevronLeft, ChevronRight, ChevronDown, ChevronUp, MoreHorizontal, Eye, Pencil, Trash2 } from 'lucide-angular';
 import { PrescriptionService } from '../../../../services/prescription.service';
+import { PatientService } from '../../../../services/patient.service';
+import { AuthService } from '../../../../services/auth.service';
 import { AvatarInitialsPipe } from '../../../../core/pipes/avatar-initials.pipe';
 
 export interface Prescription {
@@ -41,9 +43,11 @@ export class PrescriptionsPageComponent implements OnInit {
     readonly Trash2 = Trash2;
 
     private prescriptionService = inject(PrescriptionService);
+    private patientService = inject(PatientService);
+    private authService = inject(AuthService);
     private destroyRef = inject(DestroyRef);
     private ngZone = inject(NgZone);
-    prescriptions: Prescription[] = [];
+    prescriptions = signal<Prescription[]>([]);
 
     searchQuery = signal('');
     currentPage = signal(1);
@@ -59,10 +63,19 @@ export class PrescriptionsPageComponent implements OnInit {
     dropdownPos = { top: 0, right: 0 };
 
     ngOnInit(): void {
-        this.prescriptionService.getPrescriptions().pipe(takeUntilDestroyed(this.destroyRef)).subscribe(items => {
-            this.prescriptions = items;
+        const user = this.authService.getCurrentUser();
+        
+        // Polling: Refresh from backend every 30 seconds
+        timer(0, 10000).pipe(takeUntilDestroyed(this.destroyRef)).subscribe(() => {
+            if (user?.role === 'user') {
+                this.patientService.getMyPatientId().pipe(takeUntilDestroyed(this.destroyRef)).subscribe(id => {
+                    this.loadPrescriptions(id);
+                });
+            } else {
+                this.loadPrescriptions();
+            }
         });
-
+        
         this.ngZone.runOutsideAngular(() => {
             fromEvent(window, 'scroll', { passive: true })
                 .pipe(takeUntilDestroyed(this.destroyRef))
@@ -76,6 +89,12 @@ export class PrescriptionsPageComponent implements OnInit {
         });
     }
 
+    loadPrescriptions(patientId?: string): void {
+        this.prescriptionService.getPrescriptions(patientId).pipe(takeUntilDestroyed(this.destroyRef)).subscribe(items => {
+            this.prescriptions.set(items);
+        });
+    }
+
     constructor() {
         effect(() => {
             this.searchQuery();
@@ -84,12 +103,12 @@ export class PrescriptionsPageComponent implements OnInit {
     }
 
     availableStatuses = computed(() => {
-        const statuses = this.prescriptions.map(p => p.status).filter(s => !!s);
+        const statuses = this.prescriptions().map(p => p.status).filter(s => !!s);
         return ['All', ...Array.from(new Set(statuses)).sort()];
     });
 
     filteredPrescriptions = computed(() => {
-        let result = [...this.prescriptions];
+        let result = [...this.prescriptions()];
         const query = this.searchQuery().toLowerCase().trim();
 
         if (query) {

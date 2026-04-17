@@ -1,6 +1,6 @@
 import { Component, ChangeDetectionStrategy, signal, computed, effect, untracked, HostListener, inject, OnInit, DestroyRef, NgZone } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { fromEvent, Subject } from 'rxjs';
+import { fromEvent, Subject, timer } from 'rxjs';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { LucideAngularModule, Search, Filter, ChevronLeft, ChevronRight, ChevronDown, ChevronUp, MoreHorizontal, Eye, Plus, Edit2, Trash2 } from 'lucide-angular';
@@ -89,13 +89,13 @@ export class MedicalRecordsPageComponent implements OnInit {
     }
 
     ngOnInit(): void {
-        this.authService.currentUser$
-            .pipe(takeUntilDestroyed(this.destroyRef))
-            .subscribe(user => {
-                if (user) {
-                    this.loadRecords(user);
-                }
-            });
+        // Polling: Refresh from backend every 30 seconds
+        timer(0, 10000).pipe(takeUntilDestroyed(this.destroyRef)).subscribe(() => {
+            const user = this.authService.getCurrentUser();
+            if (user) {
+                this.loadRecords(user);
+            }
+        });
 
         this.ngZone.runOutsideAngular(() => {
             fromEvent(window, 'scroll', { passive: true })
