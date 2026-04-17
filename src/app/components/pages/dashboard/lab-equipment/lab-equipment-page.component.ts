@@ -1,4 +1,6 @@
-import { Component, OnInit, inject, signal, computed, ChangeDetectionStrategy, effect, untracked, HostListener } from '@angular/core';
+import { Component, OnInit, inject, signal, computed, ChangeDetectionStrategy, effect, untracked, HostListener, DestroyRef, NgZone } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { fromEvent } from 'rxjs';
 import { CommonModule } from '@angular/common';
 import { LaboratoryService, LabEquipment } from '../../../../services/laboratory.service';
 import { LucideAngularModule, Search, ChevronDown, ChevronUp, Microscope, MoreHorizontal, Plus, Trash2, Edit2, Settings, Eye, ChevronLeft, ChevronRight, Calendar, MapPin, Tag, Activity, Filter } from 'lucide-angular';
@@ -211,6 +213,8 @@ export class LabEquipmentPageComponent implements OnInit {
   }
 
   private labService = inject(LaboratoryService);
+  private destroyRef = inject(DestroyRef);
+  private ngZone = inject(NgZone);
 
   // Data State
   items = signal<LabEquipment[]>([]);
@@ -328,12 +332,24 @@ export class LabEquipmentPageComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.labService.getEquipment().subscribe(data => {
+    this.labService.getEquipment().pipe(takeUntilDestroyed(this.destroyRef)).subscribe(data => {
       this.items.set(data.map(item => ({ ...item, selected: false })));
     });
 
-    this.labService.getLabs().subscribe(labs => {
+    this.labService.getLabs().pipe(takeUntilDestroyed(this.destroyRef)).subscribe(labs => {
       this.availableLabs.set(labs);
+    });
+
+    this.ngZone.runOutsideAngular(() => {
+      fromEvent(window, 'scroll', { passive: true })
+        .pipe(takeUntilDestroyed(this.destroyRef))
+        .subscribe(() => {
+          if (this.activeItem) {
+            this.ngZone.run(() => {
+              this.activeItem = null;
+            });
+          }
+        });
     });
   }
 

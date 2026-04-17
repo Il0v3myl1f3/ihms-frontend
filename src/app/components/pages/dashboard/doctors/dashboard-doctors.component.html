@@ -8,7 +8,7 @@
 
     <!-- Table Container -->
     <div class="bg-white rounded-[20px] border border-gray-100 flex-1 flex flex-col relative">
-        <app-doctor-table class="flex-1 flex flex-col h-full" [doctors]="doctors()" 
+        <app-doctor-table class="flex-1 flex flex-col h-full" [doctors]="medicalService.doctors()" 
             (editDoctor)="onEditDoctor($event)"
             (viewDoctor)="onViewDoctor($event)"
             (deleteDoctor)="onDeleteDoctor($event)" 

@@ -1,4 +1,6 @@
-import { Component, ChangeDetectionStrategy, signal, computed, effect, untracked, HostListener, inject, OnInit, OnDestroy } from '@angular/core';
+import { Component, ChangeDetectionStrategy, signal, computed, effect, untracked, HostListener, inject, OnInit, DestroyRef, NgZone } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { fromEvent, Subject } from 'rxjs';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { LucideAngularModule, Search, Filter, ChevronLeft, ChevronRight, ChevronDown, ChevronUp, MoreHorizontal, Eye, Plus, Edit2, Trash2 } from 'lucide-angular';
@@ -6,7 +8,8 @@ import { MedicalRecordService } from '../../../../services/medical-record.servic
 import { AuthService } from '../../../../services/auth.service';
 import { PatientService } from '../../../../services/patient.service';
 import { MedicalRecordCreateModalComponent } from './medical-record-create-modal/medical-record-create-modal.component';
-import { Subject, takeUntil } from 'rxjs';
+import { AvatarInitialsPipe } from '../../../../core/pipes/avatar-initials.pipe';
+
 
 export interface Prescription {
     id: string;
@@ -30,14 +33,14 @@ export interface MedicalRecord {
 
 @Component({
     selector: 'app-medical-records-page',
-    imports: [CommonModule, FormsModule, LucideAngularModule, MedicalRecordCreateModalComponent],
+    imports: [CommonModule, FormsModule, LucideAngularModule, MedicalRecordCreateModalComponent, AvatarInitialsPipe],
     templateUrl: './medical-records-page.component.html',
     changeDetection: ChangeDetectionStrategy.OnPush,
     host: {
         '(document:click)': 'closeAllDropdowns()'
     }
 })
-export class MedicalRecordsPageComponent implements OnInit, OnDestroy {
+export class MedicalRecordsPageComponent implements OnInit {
     readonly Search = Search;
     readonly Filter = Filter;
     readonly ChevronLeft = ChevronLeft;
@@ -53,7 +56,8 @@ export class MedicalRecordsPageComponent implements OnInit, OnDestroy {
     private medicalRecordService = inject(MedicalRecordService);
     private authService = inject(AuthService);
     private patientService = inject(PatientService);
-    private destroy$ = new Subject<void>();
+    private destroyRef = inject(DestroyRef);
+    private ngZone = inject(NgZone);
     records = signal<MedicalRecord[]>([]);
 
     isDoctor = computed(() => this.authService.getCurrentUser()?.role === 'doctor');
@@ -86,17 +90,24 @@ export class MedicalRecordsPageComponent implements OnInit, OnDestroy {
 
     ngOnInit(): void {
         this.authService.currentUser$
-            .pipe(takeUntil(this.destroy$))
+            .pipe(takeUntilDestroyed(this.destroyRef))
             .subscribe(user => {
                 if (user) {
                     this.loadRecords(user);
                 }
             });
-    }
 
-    ngOnDestroy(): void {
-        this.destroy$.next();
-        this.destroy$.complete();
+        this.ngZone.runOutsideAngular(() => {
+            fromEvent(window, 'scroll', { passive: true })
+                .pipe(takeUntilDestroyed(this.destroyRef))
+                .subscribe(() => {
+                    if (this.activeItem) {
+                        this.ngZone.run(() => {
+                            this.activeItem = null;
+                        });
+                    }
+                });
+        });
     }
 
     private loadRecords(user: any): void {
@@ -104,10 +115,10 @@ export class MedicalRecordsPageComponent implements OnInit, OnDestroy {
         
         if (user.role === 'user') {
             // Patient user: resolve their clinical PatientId first
-            this.patientService.getMyPatientId().subscribe({
+            this.patientService.getMyPatientId().pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
                 next: (patientId) => {
                     console.log('[MedicalRecordsPage] Resolved PatientId:', patientId);
-                    this.medicalRecordService.getMedicalRecords(patientId).subscribe(items => {
+                    this.medicalRecordService.getMedicalRecords(patientId).pipe(takeUntilDestroyed(this.destroyRef)).subscribe(items => {
                         this.records.set(items);
                     });
                 },
@@ -118,7 +129,7 @@ export class MedicalRecordsPageComponent implements OnInit, OnDestroy {
             });
         } else {
             // Admin or Doctor: show all records for now
-            this.medicalRecordService.getMedicalRecords().subscribe(items => {
+            this.medicalRecordService.getMedicalRecords().pipe(takeUntilDestroyed(this.destroyRef)).subscribe(items => {
                 this.records.set(items);
             });
         }
@@ -268,29 +279,24 @@ export class MedicalRecordsPageComponent implements OnInit, OnDestroy {
 
     onDeleteRecord(record: MedicalRecord): void {
         if (confirm(`Are you sure you want to delete this medical record?`)) {
-            this.medicalRecordService.deleteMedicalRecord(record.id).subscribe();
+            this.medicalRecordService.deleteMedicalRecord(record.id).pipe(takeUntilDestroyed(this.destroyRef)).subscribe();
             this.activeItem = null;
         }
     }
 
     onSaveRecord(formData: any): void {
         if (this.selectedRecord()) {
-            this.medicalRecordService.updateMedicalRecord(this.selectedRecord()!.id, formData).subscribe({
+            this.medicalRecordService.updateMedicalRecord(this.selectedRecord()!.id, formData).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
                 next: () => this.isModalOpen.set(false),
                 error: err => alert(err)
             });
         } else {
-            this.medicalRecordService.createMedicalRecord(formData).subscribe({
+            this.medicalRecordService.createMedicalRecord(formData).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
                 next: () => this.isModalOpen.set(false),
                 error: err => alert(err)
             });
         }
     }
 
-    @HostListener('window:scroll')
-    onWindowScroll(): void { this.activeItem = null; }
 
-    getAvatarInitialsName(name: string): string {
-        return name.replace('Dr. ', '').replace(' ', '+');
-    }
 }

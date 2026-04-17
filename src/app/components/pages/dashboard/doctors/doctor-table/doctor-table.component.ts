@@ -1,13 +1,12 @@
-import { Component, OnInit, OnDestroy, input, output, ChangeDetectionStrategy, signal, computed, HostListener, effect, untracked } from '@angular/core';
+import { Component, OnInit, OnDestroy, input, output, ChangeDetectionStrategy, signal, computed, effect, untracked, NgZone, inject, DestroyRef } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { fromEvent } from 'rxjs';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { LucideAngularModule, Search, Filter, MoreHorizontal, ChevronLeft, ChevronRight, Pencil, Trash2, Plus, ChevronDown, ChevronUp, Eye } from 'lucide-angular';
 import { Doctor } from '../../../../../services/medical.service';
 
-export interface DoctorRow extends Doctor {
-    no: number;
-    selected: boolean;
-}
+
 
 @Component({
     selector: 'app-doctor-table',
@@ -19,11 +18,11 @@ export interface DoctorRow extends Doctor {
     }
 })
 export class DoctorTableComponent implements OnInit, OnDestroy {
-    doctors = input<DoctorRow[]>([]);
-    editDoctor = output<DoctorRow>();
-    deleteDoctor = output<DoctorRow>();
-    deleteSelected = output<DoctorRow[]>();
-    viewDoctor = output<DoctorRow>();
+    doctors = input<Doctor[]>([]);
+    editDoctor = output<Doctor>();
+    deleteDoctor = output<Doctor>();
+    deleteSelected = output<Doctor[]>();
+    viewDoctor = output<Doctor>();
     addDoctor = output<void>();
 
     readonly Search = Search;
@@ -38,9 +37,12 @@ export class DoctorTableComponent implements OnInit, OnDestroy {
     readonly ChevronUp = ChevronUp;
     readonly Eye = Eye;
 
-    activeItem: DoctorRow | null = null;
+    activeItem: Doctor | null = null;
     dropdownPos = { top: 0, right: 0 };
     isPageSizeMenuOpen = false;
+
+    private ngZone = inject(NgZone);
+    private destroyRef = inject(DestroyRef);
 
     selectAll = false;
     currentPage = signal(1);
@@ -71,36 +73,32 @@ export class DoctorTableComponent implements OnInit, OnDestroy {
 
     filteredDoctors = computed(() => {
         const query = this.searchQuery().toLowerCase().trim();
-        let result = this.doctors();
-
         const specFilter = this.filterSpecialty();
-        if (specFilter !== 'All') {
-            result = result.filter(d => d.specialty === specFilter);
-        }
-
         const statFilter = this.filterStatus();
-        if (statFilter !== 'All') {
-            result = result.filter(d => d.availability === statFilter);
-        }
+        const doctors = this.doctors();
 
-        if (query) {
-            result = result.filter(doc =>
+        // Single-pass filtering
+        let result = doctors.filter(doc => {
+            const matchesSpec = specFilter === 'All' || doc.specialty === specFilter;
+            const matchesStat = statFilter === 'All' || doc.availability === statFilter;
+            const matchesQuery = !query ||
                 doc.name.toLowerCase().includes(query) ||
                 doc.specialty.toLowerCase().includes(query) ||
                 (doc.phone?.toLowerCase().includes(query)) ||
                 (doc.availability?.toLowerCase().includes(query)) ||
-                doc.no.toString().includes(query) ||
-                doc.id.toString().includes(query)
-            );
-        }
+                (doc.no.toString().includes(query)) ||
+                doc.id.toString().includes(query);
+            
+            return matchesSpec && matchesStat && matchesQuery;
+        });
 
         const col = this.sortColumn();
         const dir = this.sortDirection() === 'asc' ? 1 : -1;
 
         if (col) {
-            result = [...result].sort((a, b) => {
-                let aVal: any = a[col as keyof DoctorRow];
-                let bVal: any = b[col as keyof DoctorRow];
+            result.sort((a, b) => {
+                let aVal: any = a[col as keyof Doctor];
+                let bVal: any = b[col as keyof Doctor];
 
                 if (aVal < bVal) return -1 * dir;
                 if (aVal > bVal) return 1 * dir;
@@ -123,6 +121,24 @@ export class DoctorTableComponent implements OnInit, OnDestroy {
 
     ngOnInit(): void {
         this.checkResponsiveSettings();
+
+        this.ngZone.runOutsideAngular(() => {
+            fromEvent(window, 'scroll', { passive: true })
+                .pipe(takeUntilDestroyed(this.destroyRef))
+                .subscribe(() => {
+                    if (this.activeItem) {
+                        this.ngZone.run(() => {
+                            this.activeItem = null;
+                        });
+                    }
+                });
+
+            fromEvent(window, 'resize', { passive: true })
+                .pipe(takeUntilDestroyed(this.destroyRef))
+                .subscribe(() => {
+                    this.checkResponsiveSettings();
+                });
+        });
     }
 
     changePageSize(size: number | string): void {
@@ -157,7 +173,7 @@ export class DoctorTableComponent implements OnInit, OnDestroy {
         this.activeItem = null;
     }
 
-    toggleDropdown(doc: DoctorRow, event: Event): void {
+    toggleDropdown(doc: Doctor, event: Event): void {
         event.stopPropagation();
         if (this.activeItem?.id === doc.id) {
             this.activeItem = null;
@@ -170,20 +186,12 @@ export class DoctorTableComponent implements OnInit, OnDestroy {
 
     ngOnDestroy(): void { }
 
-    @HostListener('window:scroll')
-    onWindowScroll(): void {
-        this.activeItem = null;
-    }
 
-    @HostListener('window:resize')
-    onResize(): void {
-        this.checkResponsiveSettings();
-    }
 
     private checkResponsiveSettings(): void {
         if (window.innerWidth < 1024) {
             if (this.pageSize() !== 7) {
-                this.pageSize.set(7);
+                this.ngZone.run(() => this.pageSize.set(7));
             }
         }
     }
@@ -244,15 +252,15 @@ export class DoctorTableComponent implements OnInit, OnDestroy {
     }
 
 
-    onEdit(doctor: DoctorRow): void {
+    onEdit(doctor: Doctor): void {
         this.editDoctor.emit(doctor);
     }
 
-    onView(doctor: DoctorRow): void {
+    onView(doctor: Doctor): void {
         this.viewDoctor.emit(doctor);
     }
 
-    onDelete(doctor: DoctorRow): void {
+    onDelete(doctor: Doctor): void {
         if (confirm(`Are you sure you want to delete Dr. "${doctor.name}"?`)) {
             this.deleteDoctor.emit(doctor);
         }

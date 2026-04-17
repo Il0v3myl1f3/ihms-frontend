@@ -1,4 +1,6 @@
-import { Component, input, signal, computed, HostListener, ChangeDetectionStrategy, forwardRef, ElementRef, inject } from '@angular/core';
+import { Component, input, signal, computed, HostListener, ChangeDetectionStrategy, forwardRef, ElementRef, inject, OnInit, NgZone, DestroyRef } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { fromEvent } from 'rxjs';
 import { NG_VALUE_ACCESSOR, ControlValueAccessor } from '@angular/forms';
 import { LucideAngularModule, CalendarDays, ChevronLeft, ChevronRight } from 'lucide-angular';
 
@@ -21,7 +23,7 @@ interface DayItem {
         }
     ]
 })
-export class CustomDatepickerComponent implements ControlValueAccessor {
+export class CustomDatepickerComponent implements ControlValueAccessor, OnInit {
     readonly CalendarDays = CalendarDays;
     readonly ChevronLeft = ChevronLeft;
     readonly ChevronRight = ChevronRight;
@@ -35,6 +37,8 @@ export class CustomDatepickerComponent implements ControlValueAccessor {
     displayDate = signal<Date>(new Date());
 
     private el = inject(ElementRef);
+    private ngZone = inject(NgZone);
+    private destroyRef = inject(DestroyRef);
     private onChange: (value: string) => void = () => {};
     private onTouched: () => void = () => {};
 
@@ -117,6 +121,28 @@ export class CustomDatepickerComponent implements ControlValueAccessor {
         this.isOpen.set(false);
     }
 
+    ngOnInit(): void {
+        this.ngZone.runOutsideAngular(() => {
+            // Click outside
+            fromEvent(document, 'click', { passive: true })
+                .pipe(takeUntilDestroyed(this.destroyRef))
+                .subscribe((event) => {
+                    if (this.isOpen() && !this.el.nativeElement.contains(event.target)) {
+                        this.ngZone.run(() => this.isOpen.set(false));
+                    }
+                });
+
+            // Resize
+            fromEvent(window, 'resize', { passive: true })
+                .pipe(takeUntilDestroyed(this.destroyRef))
+                .subscribe(() => {
+                    if (this.isOpen()) {
+                        this.ngZone.run(() => this.isOpen.set(false));
+                    }
+                });
+        });
+    }
+
     dropdownPos = { top: 0, left: 0, width: 0 };
 
     toggle(event: Event): void {
@@ -142,17 +168,7 @@ export class CustomDatepickerComponent implements ControlValueAccessor {
         this.isOpen.update(v => !v);
     }
 
-    @HostListener('document:click', ['$event'])
-    onClickOutside(event: Event): void {
-        if (!this.el.nativeElement.contains(event.target)) {
-            this.isOpen.set(false);
-        }
-    }
 
-    @HostListener('window:resize')
-    onResize(): void {
-        this.isOpen.set(false);
-    }
 
     // ControlValueAccessor implementation
     writeValue(value: string): void {

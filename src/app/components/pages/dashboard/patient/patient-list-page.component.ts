@@ -1,4 +1,5 @@
-import { Component, ViewChild, ChangeDetectionStrategy, inject, ChangeDetectorRef } from '@angular/core';
+import { Component, ViewChild, ChangeDetectionStrategy, inject, ChangeDetectorRef, DestroyRef } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { Router } from '@angular/router';
 import { PatientTableComponent, Patient } from './patient-table/patient-table.component';
 import { PatientCreateModalComponent } from './patient-create-modal/patient-create-modal.component';
@@ -14,21 +15,17 @@ export class PatientListPageComponent {
     private router = inject(Router);
     private patientService = inject(PatientService);
     private cdr = inject(ChangeDetectorRef);
+    private destroyRef = inject(DestroyRef);
 
     @ViewChild(PatientTableComponent) patientTable!: PatientTableComponent;
 
-    patients: Patient[] = [];
+    patients = this.patientService.patients;
 
     constructor() {
-        this.loadPatients();
+        this.patientService.getPatients().pipe(takeUntilDestroyed(this.destroyRef)).subscribe();
     }
 
-    private loadPatients() {
-        this.patientService.getPatients().subscribe((p: Patient[]) => {
-            this.patients = p;
-            this.cdr.markForCheck(); // Trigger UI update
-        });
-    }
+
 
     selectedPatientForEdit: Patient | null = null;
     isAddPatientModalOpen = false;
@@ -52,9 +49,7 @@ export class PatientListPageComponent {
     }
 
     onDeletePatient(patient: Patient) {
-        this.patientService.deletePatient(patient.id).subscribe(() => {
-            this.loadPatients();
-
+        this.patientService.deletePatient(patient.id).pipe(takeUntilDestroyed(this.destroyRef)).subscribe(() => {
             if (this.patientTable) {
                 const totalPages = this.patientTable.totalPages();
                 if (this.patientTable.currentPage() > totalPages && totalPages > 0) {
@@ -67,9 +62,7 @@ export class PatientListPageComponent {
     }
 
     onDeleteSelectedPatients(selectedPatients: Patient[]) {
-        this.patientService.deleteSelectedPatients(selectedPatients.map(p => p.id)).subscribe(() => {
-            this.loadPatients();
-
+        this.patientService.deleteSelectedPatients(selectedPatients.map(p => p.id)).pipe(takeUntilDestroyed(this.destroyRef)).subscribe(() => {
             if (this.patientTable) {
                 const totalPages = this.patientTable.totalPages();
                 if (this.patientTable.currentPage() > totalPages && totalPages > 0) {
@@ -85,8 +78,7 @@ export class PatientListPageComponent {
         this.patientService.savePatient({
             ...patientData,
             id: this.selectedPatientForEdit?.id
-        }).subscribe(() => {
-            this.loadPatients();
+        }).pipe(takeUntilDestroyed(this.destroyRef)).subscribe(() => {
             this.isAddPatientModalOpen = false;
 
             if (this.patientTable) {

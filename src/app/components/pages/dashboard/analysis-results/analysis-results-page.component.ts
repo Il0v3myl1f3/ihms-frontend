@@ -1,4 +1,6 @@
-import { Component, OnInit, inject, signal, computed, ChangeDetectionStrategy, effect, untracked, HostListener } from '@angular/core';
+import { Component, OnInit, inject, signal, computed, ChangeDetectionStrategy, effect, untracked, DestroyRef, NgZone } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { fromEvent } from 'rxjs';
 import { CommonModule } from '@angular/common';
 import { LaboratoryService, AnalysisResult } from '../../../../services/laboratory.service';
 import { LucideAngularModule, Search, ChevronDown, ChevronUp, Clock, User, Microscope, MoreHorizontal, Download, Filter, ChevronLeft, ChevronRight, Eye, FileText, CheckCircle2, AlertCircle, AlertTriangle, Activity, Stethoscope, Calendar, ClipboardCheck, FlaskConical } from 'lucide-angular';
@@ -43,6 +45,8 @@ export class AnalysisResultsPageComponent implements OnInit {
   readonly FlaskConical = FlaskConical;
 
   private labService = inject(LaboratoryService);
+  private destroyRef = inject(DestroyRef);
+  private ngZone = inject(NgZone);
 
   // Data State
   items = signal<AnalysisResult[]>([]);
@@ -158,8 +162,20 @@ export class AnalysisResultsPageComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.labService.getResults().subscribe(data => {
+    this.labService.getResults().pipe(takeUntilDestroyed(this.destroyRef)).subscribe(data => {
       this.items.set(data.map(item => ({ ...item, selected: false })));
+    });
+
+    this.ngZone.runOutsideAngular(() => {
+      fromEvent(window, 'scroll', { passive: true })
+        .pipe(takeUntilDestroyed(this.destroyRef))
+        .subscribe(() => {
+          if (this.activeItem) {
+            this.ngZone.run(() => {
+              this.activeItem = null;
+            });
+          }
+        });
     });
   }
 
@@ -202,10 +218,7 @@ export class AnalysisResultsPageComponent implements OnInit {
     this.activeFilterMenu.set(false);
   }
 
-  @HostListener('window:scroll')
-  onWindowScroll(): void {
-    this.activeItem = null;
-  }
+
 
   getStatusBadgeClass(status: string): string {
     switch (status) {

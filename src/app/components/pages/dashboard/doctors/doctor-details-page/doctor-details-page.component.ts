@@ -1,4 +1,5 @@
-import { Component, OnInit, ChangeDetectionStrategy, inject, signal, computed } from '@angular/core';
+import { Component, OnInit, ChangeDetectionStrategy, inject, signal, computed, DestroyRef } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router } from '@angular/router';
 import { LucideAngularModule, User, Calendar, Droplet, Phone, MapPin, ArrowLeft, MoreHorizontal, Mail, Eye, Edit2, GraduationCap, Award, Building2, Clock, Coffee, DoorOpen, Info, ShieldCheck, Printer } from 'lucide-angular';
@@ -28,6 +29,7 @@ export class DoctorDetailsPageComponent implements OnInit {
     private appointmentService = inject(AppointmentService);
     private medicalRecordService = inject(MedicalRecordService);
     private authService = inject(AuthService);
+    private destroyRef = inject(DestroyRef);
 
     isDoctor = computed(() => this.authService.getCurrentUser()?.role === 'doctor');
 
@@ -78,32 +80,32 @@ export class DoctorDetailsPageComponent implements OnInit {
     uniquePatientsCount = computed(() => this.doctorPatients().length);
 
     ngOnInit() {
-        this.route.paramMap.subscribe(params => {
+        this.route.paramMap.pipe(takeUntilDestroyed(this.destroyRef)).subscribe(params => {
             const idParam = params.get('id');
             if (idParam) {
                 this.loadDoctorData(idParam);
             }
         });
 
-        this.medicalService.getDoctors().subscribe(docs => {
+        this.medicalService.getDoctors().pipe(takeUntilDestroyed(this.destroyRef)).subscribe(docs => {
             this.allDoctors.set(docs);
         });
 
-        this.patientService.getPatients().subscribe(patients => {
+        this.patientService.getPatients().pipe(takeUntilDestroyed(this.destroyRef)).subscribe(patients => {
             this.allPatients.set(patients);
         });
     }
 
     loadDoctorData(id: string) {
-        this.medicalService.getDoctorById(id).subscribe(doc => {
+        this.medicalService.getDoctorById(id).pipe(takeUntilDestroyed(this.destroyRef)).subscribe(doc => {
             if (doc) {
                 this.doctor.set(doc);
 
-                this.appointmentService.getAppointmentsByDoctorName(doc.name).subscribe(filteredApps => {
+                this.appointmentService.getAppointmentsByDoctorName(doc.name).pipe(takeUntilDestroyed(this.destroyRef)).subscribe(filteredApps => {
                     this.doctorAppointments.set(filteredApps);
 
                     const patientNames = Array.from(new Set(filteredApps.map(a => a.patientName)));
-                    this.patientService.getPatients().subscribe(patients => {
+                    this.patientService.getPatients().pipe(takeUntilDestroyed(this.destroyRef)).subscribe(patients => {
                         const associatedPatients = patients.filter(p => patientNames.includes(p.name));
                         this.doctorPatients.set(associatedPatients.map((p, index) => ({
                             ...p,
@@ -112,7 +114,7 @@ export class DoctorDetailsPageComponent implements OnInit {
                     });
                 });
 
-                this.medicalRecordService.getMedicalRecords(undefined, doc.id).subscribe((records: MedicalRecord[]) => {
+                this.medicalRecordService.getMedicalRecords(undefined, doc.id).pipe(takeUntilDestroyed(this.destroyRef)).subscribe((records: MedicalRecord[]) => {
                     this.doctorMedicalRecords.set(records);
                 });
             }
@@ -150,7 +152,7 @@ export class DoctorDetailsPageComponent implements OnInit {
 
     onDeleteAppointment(appointment: Appointment) {
         if (confirm(`Are you sure you want to delete appointment #${appointment.no}?`)) {
-            this.appointmentService.deleteAppointment(appointment.id).subscribe(() => {
+            this.appointmentService.deleteAppointment(appointment.id).pipe(takeUntilDestroyed(this.destroyRef)).subscribe(() => {
                 this.doctorAppointments.update(list => list.filter(a => a.id !== appointment.id));
             });
         }
@@ -166,7 +168,7 @@ export class DoctorDetailsPageComponent implements OnInit {
                 ...data,
                 id: this.selectedAppointmentForEdit()!.id,
                 appointmentDate: dateStr
-            }).subscribe(updated => {
+            }).pipe(takeUntilDestroyed(this.destroyRef)).subscribe(updated => {
                 this.doctorAppointments.update(list => list.map(a =>
                     a.id === updated.id ? { ...updated, no: a.no } : a
                 ));
@@ -194,7 +196,7 @@ export class DoctorDetailsPageComponent implements OnInit {
     }
 
     onSaveMedicalRecord(formData: any) {
-        this.medicalRecordService.createMedicalRecord(formData).subscribe((newRecord: MedicalRecord) => {
+        this.medicalRecordService.createMedicalRecord(formData).pipe(takeUntilDestroyed(this.destroyRef)).subscribe((newRecord: MedicalRecord) => {
             this.doctorMedicalRecords.update(list => [...list, newRecord]);
             this.isMedicalRecordModalOpen.set(false);
         });

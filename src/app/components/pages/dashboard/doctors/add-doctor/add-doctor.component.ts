@@ -1,8 +1,8 @@
-import { Component, input, output, inject, OnInit, OnChanges, SimpleChanges, ChangeDetectionStrategy } from '@angular/core';
+import { Component, input, output, inject, OnChanges, SimpleChanges, ChangeDetectionStrategy } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ModalComponent } from '../../../../shared/modal/modal.component';
 import { CustomSelectComponent } from '../../../../shared/custom-select/custom-select.component';
-import { DoctorRow } from '../doctor-table/doctor-table.component';
+import { Doctor } from '../../../../../services/medical.service';
 
 @Component({
     selector: 'app-doctor-create-modal',
@@ -10,9 +10,9 @@ import { DoctorRow } from '../doctor-table/doctor-table.component';
     templateUrl: './add-doctor.component.html',
     changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class AddDoctorComponent implements OnInit, OnChanges {
+export class AddDoctorComponent implements OnChanges {
     isOpen = input(false);
-    doctorToEdit = input<DoctorRow | null>(null);
+    doctorToEdit = input<Doctor | null>(null);
     readOnly = input(false);
     closeModal = output<void>();
     saveDoctor = output<Record<string, string>>();
@@ -43,7 +43,7 @@ export class AddDoctorComponent implements OnInit, OnChanges {
         { value: 'On Leave', label: 'On Leave' }
     ];
 
-    ngOnInit(): void {
+    constructor() {
         this.doctorForm = this.fb.group({
             firstName: ['', Validators.required],
             lastName: ['', Validators.required],
@@ -51,7 +51,7 @@ export class AddDoctorComponent implements OnInit, OnChanges {
             password: [''],
             specialty: ['', Validators.required],
             phone: ['', [Validators.required, Validators.pattern(/^[0-9+\s-]+$/)]],
-            availability: ['', Validators.required]
+            availability: ['']   // Not required — backend doesn't support this field
         });
     }
 
@@ -87,11 +87,15 @@ export class AddDoctorComponent implements OnInit, OnChanges {
     }
 
     onSubmit(): void {
+        console.log('[AddDoctorComponent] Form valid:', this.doctorForm.valid, 'Value:', this.doctorForm.value, 'Errors:', this.doctorForm.errors);
         if (this.doctorForm.valid) {
             this.saveDoctor.emit(this.doctorForm.value);
             this.doctorForm.reset();
         } else {
             this.doctorForm.markAllAsTouched();
+            console.warn('[AddDoctorComponent] Form invalid — controls:', Object.fromEntries(
+                Object.entries(this.doctorForm.controls).map(([k, c]) => [k, c.errors])
+            ));
         }
     }
 }
