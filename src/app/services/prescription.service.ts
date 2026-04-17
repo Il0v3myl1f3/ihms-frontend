@@ -11,8 +11,12 @@ export class PrescriptionService {
     private apiUrl = 'http://localhost:5275/api/Prescription';
     private prescriptionsSignal = signal<Prescription[]>([]);
 
-    getPrescriptions(): Observable<Prescription[]> {
-        return this.http.get<any>(this.apiUrl).pipe(
+    getPrescriptions(patientId?: string): Observable<Prescription[]> {
+        let url = this.apiUrl;
+        if (patientId) {
+            url += `?patientId=${patientId}`;
+        }
+        return this.http.get<any>(url).pipe(
             map(data => {
                 const items = Array.isArray(data) ? data : data?.items || [];
                 return items.map((item: any, index: number) => this.mapPrescription(item, index + 1));
@@ -37,10 +41,18 @@ export class PrescriptionService {
     }
 
     private computeStatus(endDateValue: string | undefined): 'Active' | 'Expired' | 'Completed' {
-        if (!endDateValue) return 'Active';
+        if (!endDateValue || endDateValue === 'N/A') return 'Active';
+        
+        // Normalize date to compare only day/month/year
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+        
         const endDate = new Date(endDateValue);
         if (Number.isNaN(endDate.getTime())) return 'Active';
-        return endDate < new Date() ? 'Expired' : 'Active';
+        endDate.setHours(0, 0, 0, 0);
+
+        // If endDate is today or in the future, it's Active
+        return endDate >= today ? 'Active' : 'Expired';
     }
 
     private formatDate(value: string | undefined): string {

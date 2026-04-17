@@ -1,5 +1,6 @@
-import { Component, ViewChild, ChangeDetectionStrategy, ChangeDetectorRef, inject, signal, DestroyRef } from '@angular/core';
+import { Component, ViewChild, ChangeDetectionStrategy, ChangeDetectorRef, inject, signal, DestroyRef, OnInit } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { timer } from 'rxjs';
 import { MedicalService, Doctor } from '../../../../services/medical.service';
 import { AppointmentTableComponent, Appointment } from './appointment-table/appointment-table.component';
 import { AppointmentCreateModalComponent } from './appointment-create-modal/appointment-create-modal.component';
@@ -15,7 +16,7 @@ import { Patient } from '../patient/patient-table/patient-table.component';
     templateUrl: './appointments-page.component.html',
     changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class AppointmentsPageComponent {
+export class AppointmentsPageComponent implements OnInit {
     @ViewChild(AppointmentTableComponent) appointmentTable!: AppointmentTableComponent;
  
     private medicalService = inject(MedicalService);
@@ -35,14 +36,20 @@ export class AppointmentsPageComponent {
     isRecordModalOpen = signal(false);
     isAppointmentReadOnly = signal(false);
 
-    constructor() {
+    constructor() {}
+
+    ngOnInit(): void {
         this.medicalService.getDoctors().pipe(takeUntilDestroyed(this.destroyRef)).subscribe((docs: Doctor[]) => {
             this.doctors.set(docs);
         });
         this.patientService.getPatients().pipe(takeUntilDestroyed(this.destroyRef)).subscribe((pats: Patient[]) => {
             this.patients.set(pats);
         });
-        this.loadAppointments();
+
+        // Polling: Refresh from backend every 30 seconds
+        timer(0, 10000).pipe(takeUntilDestroyed(this.destroyRef)).subscribe(() => {
+            this.loadAppointments();
+        });
     }
 
     private loadAppointments() {

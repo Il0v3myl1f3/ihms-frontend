@@ -1,5 +1,5 @@
 import { Component, OnInit, inject, ChangeDetectionStrategy, DestroyRef, signal } from '@angular/core';
-import { Observable } from 'rxjs';
+import { Observable, timer } from 'rxjs';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { AuthService, User } from '../../../../services/auth.service';
 import { LucideAngularModule, Users, Stethoscope, CalendarDays, CreditCard, FileText, Activity, ClipboardList, Heart, DoorOpen, BedDouble, Clock, MapPin, Pill, LayoutDashboard, ShieldCheck, AlertCircle } from 'lucide-angular';
@@ -8,6 +8,7 @@ import { PatientService } from '../../../../services/patient.service';
 import { AppointmentService } from '../../../../services/appointment.service';
 import { LaboratoryService } from '../../../../services/laboratory.service';
 import { MedicalService } from '../../../../services/medical.service';
+import { PrescriptionService } from '../../../../services/prescription.service';
 import { CommonModule } from '@angular/common';
 
 @Component({
@@ -22,6 +23,7 @@ export class DashboardHomeComponent implements OnInit {
     private appointmentService = inject(AppointmentService);
     private laboratoryService = inject(LaboratoryService);
     private medicalService = inject(MedicalService);
+    private prescriptionService = inject(PrescriptionService);
     private destroyRef = inject(DestroyRef);
 
     currentUser$!: Observable<User | null>;
@@ -75,9 +77,9 @@ export class DashboardHomeComponent implements OnInit {
         prescriptions: [] as any[]
     });
 
-    // Data for non-admin dashboards (Legacy placeholders, will be shadowed by dynamic data)
+    // Data for non-admin dashboards
     upcomingAppointment: any = null;
-    activePrescriptions: any[] = [];
+    activePrescriptions = signal<any[]>([]);
 
     ngOnInit(): void {
         this.currentUser$ = this.authService.currentUser$;
@@ -85,6 +87,13 @@ export class DashboardHomeComponent implements OnInit {
             this.currentUser = user;
         });
 
+        // Polling: Refresh all dashboard data every 30 seconds
+        timer(0, 10000).pipe(takeUntilDestroyed(this.destroyRef)).subscribe(() => {
+            this.loadDashboardData();
+        });
+    }
+
+    private loadDashboardData(): void {
         // Load real-time stats
         this.patientService.getPatients().pipe(takeUntilDestroyed(this.destroyRef)).subscribe(patients => {
             this.stats.update(s => ({ ...s, totalPatients: patients.length }));
@@ -110,13 +119,19 @@ export class DashboardHomeComponent implements OnInit {
                 this.doctorData.set({
                     todayAppointments: myApps.length,
                     myPatients: new Set(myApps.map(a => a.patientName)).size,
-                    todaySchedule: myApps.slice(0, 3).map(a => ({
-                        time: '09:00', // Mock time
-                        period: 'AM',
-                        title: a.notes.split('.')[0],
-                        patient: a.patientName,
-                        status: a.status
-                    })),
+                    todaySchedule: myApps.slice(0, 3).map(a => {
+                        const date = new Date(a.appointmentDate);
+                        const timeStr = !isNaN(date.getTime()) 
+                            ? date.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' }).split(' ')
+                            : ['09:00', 'AM'];
+                        return {
+                            time: timeStr[0],
+                            period: timeStr[1],
+                            title: a.notes?.split('.')[0] || a.reason || 'Consultation',
+                            patient: a.patientName,
+                            status: a.status
+                        };
+                    }),
                     recentPatients: [...new Set(myApps.map(a => a.patientName))].slice(0, 3).map(name => ({
                         name,
                         specialty: 'General Medicine',
@@ -129,22 +144,41 @@ export class DashboardHomeComponent implements OnInit {
                 const myApps = apps.filter(a => a.patientName === this.currentUser?.name);
                 if (myApps.length > 0) {
                     const next = myApps[0]; // Simplistic "next"
-                    const dateParts = next.appointmentDate.split(' ');
+                    // Extract date and time from the record
+                    const rawDate = next.appointmentDate; // e.g. "April 10, 2026" or ISO
+                    const dateObj = new Date(rawDate);
+                    
+                    const day = !isNaN(dateObj.getDate()) ? dateObj.getDate().toString() : '10';
+                    const month = !isNaN(dateObj.getTime()) ? dateObj.toLocaleString('en-US', { month: 'short' }) : 'Jan';
+                    const timeStr = !isNaN(dateObj.getTime()) 
+                        ? dateObj.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })
+                        : '10:00 AM';
+
                     this.upcomingAppointment = {
-                        day: dateParts[1]?.replace(',', '') || '10',
-                        month: dateParts[0]?.substring(0, 3) || 'Jan',
-                        title: next.notes.split('.')[0] || 'Medical Consultation',
-                        time: '10:00 AM — 10:30 AM',
+                        day,
+                        month,
+                        title: next.notes?.split('.')[0] || next.reason || 'Medical Consultation',
+                        time: timeStr,
                         doctorName: next.doctorName,
-                        cabinet: 'Cabinet 3, Floor 2'
+                        cabinet: 'Cabinet 2, Floor 1'
                     };
                 }
 
-                // Active Prescriptions (Still mock until service exists, but linked to patient context)
-                this.activePrescriptions = [
-                    { name: 'Lisinopril', dosage: '10mg · Once daily', doctor: 'Dr. Benjamin Carter' },
-                    { name: 'Metformin', dosage: '850mg · 2x/day', doctor: 'Dr. Elijah Stone' },
-                ];
+                this.patientService.getMyPatientId().pipe(
+                    takeUntilDestroyed(this.destroyRef)
+                ).subscribe(patientId => {
+                    this.prescriptionService.getPrescriptions(patientId).pipe(
+                        takeUntilDestroyed(this.destroyRef)
+                    ).subscribe(items => {
+                        this.activePrescriptions.set(items
+                            .filter(p => p.status === 'Active')
+                            .map(p => ({
+                                name: p.medication,
+                                dosage: p.dosage,
+                                doctor: p.doctorName
+                            })));
+                    });
+                });
             }
         });
     }

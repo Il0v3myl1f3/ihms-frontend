@@ -400,7 +400,7 @@
                 class="text-xs font-semibold text-[#159EEC] hover:text-[#1282C4] transition-colors">View All →</a>
         </div>
         <div class="space-y-3">
-            @for (rx of activePrescriptions; track rx.name) {
+            @for (rx of activePrescriptions(); track rx.name) {
             <div class="flex items-center gap-4 p-3 rounded-xl hover:bg-gray-50 transition-colors">
                 <div class="w-10 h-10 bg-indigo-50 rounded-xl flex items-center justify-center shrink-0">
                     <lucide-icon [img]="Pill" class="w-5 h-5 text-indigo-500"></lucide-icon>
