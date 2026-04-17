@@ -144,7 +144,6 @@ export class PatientDetailsPageComponent implements OnInit {
                 this.patientPrescriptions.set(mapped);
             });
         });
-        });
     }
 
     setTab(tab: string) {
