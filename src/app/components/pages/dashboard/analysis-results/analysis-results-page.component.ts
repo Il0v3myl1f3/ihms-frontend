@@ -164,6 +164,10 @@ export class AnalysisResultsPageComponent implements OnInit {
   ngOnInit(): void {
     this.labService.getResults().pipe(takeUntilDestroyed(this.destroyRef)).subscribe((data: AnalysisResult[]) => {
       this.items.set(data.map((item: AnalysisResult) => ({ ...item, selected: false })));
+<<<<<<< HEAD
+=======
+    });
+>>>>>>> d98832e5ef4b54ca35d15e8603073715adbeefab
     });
 
     this.ngZone.runOutsideAngular(() => {
