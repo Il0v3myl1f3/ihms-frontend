@@ -252,7 +252,6 @@ export class ScheduleAnalysisPageComponent implements OnInit {
         this.availablePatients.set(pts);
       });
     }
-
     this.ngZone.runOutsideAngular(() => {
       fromEvent(window, 'scroll', { passive: true })
         .pipe(takeUntilDestroyed(this.destroyRef))
