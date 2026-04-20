@@ -1,7 +1,8 @@
 import { Injectable, inject, signal } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable, catchError, map, tap, throwError } from 'rxjs';
 import { Appointment } from '../components/pages/dashboard/appointments/appointment-table/appointment-table.component';
+import { PagedResult, PaginatedQuery } from '../core/models/pagination.models';
 
 @Injectable({
     providedIn: 'root'
@@ -18,6 +19,30 @@ export class AppointmentService {
                 return items.map((item: any, index: number) => this.mapAppointment(item, index + 1));
             }),
             tap(items => this.appointmentsSignal.set(items)),
+            catchError(error => this.handleError(error))
+        );
+    }
+
+    getAppointmentsPaged(query: PaginatedQuery): Observable<PagedResult<Appointment>> {
+        let params = new HttpParams()
+            .set('PageNumber', query.pageNumber.toString())
+            .set('PageSize', query.pageSize.toString());
+
+        if (query.searchTerm) params = params.set('SearchTerm', query.searchTerm);
+        if (query.sortBy) params = params.set('SortBy', query.sortBy);
+        if (query.sortOrder) params = params.set('SortOrder', query.sortOrder);
+        if (query.patientId) params = params.set('PatientId', query.patientId);
+        if (query.doctorId) params = params.set('DoctorId', query.doctorId);
+        if (query.dateFrom) params = params.set('DateFrom', query.dateFrom);
+        if (query.dateTo) params = params.set('DateTo', query.dateTo);
+
+        return this.http.get<PagedResult<any>>(this.apiUrl, { params }).pipe(
+            map((res: PagedResult<any>) => {
+                const mappedItems = res.items.map((item: any, index: number) => 
+                    this.mapAppointment(item, (res.pageNumber - 1) * res.pageSize + index + 1)
+                );
+                return { ...res, items: mappedItems } as PagedResult<Appointment>;
+            }),
             catchError(error => this.handleError(error))
         );
     }

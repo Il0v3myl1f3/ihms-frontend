@@ -177,7 +177,7 @@
             </tr>
         </thead>
         <tbody class="text-sm text-gray-900 font-normal bg-white">
-            @for (appt of paginatedAppointments(); track appt.id; let i = $index) {
+            @for (appt of appointments(); track appt.id; let i = $index) {
             <tr
                 class="hover:bg-gray-50/30 group whitespace-nowrap transition-colors border-b border-gray-200 last:border-0 text-sm">
                 <td class="px-4 py-4 border-r border-b border-gray-200 max-lg:px-2 max-lg:text-[13px]">
@@ -219,7 +219,7 @@
             </tr>
             }
 
-            @if (paginatedAppointments().length === 0) {
+            @if (appointments().length === 0) {
             <tr>
                 <td [attr.colspan]="7 - (readOnly() ? 0 : 0) - (compactMode() ? 2 : 0)" class="py-12 text-center text-gray-400 text-sm border-r border-b border-gray-200 max-lg:px-2 max-lg:text-[13px]">
                     No appointments found matching your criteria.
@@ -285,7 +285,7 @@
             </div>
             }
         </div>
-        <span>out of {{ filteredAppointments().length }}</span>
+        <span>out of {{ totalCount() }}</span>
     </div>
     <div class="flex items-center gap-1.5">
         <button (click)="prevPage()" [disabled]="currentPage() === 1"

@@ -159,7 +159,7 @@
             </tr>
         </thead>
         <tbody class="text-sm text-gray-900 font-normal bg-white">
-            @for (doc of paginatedDoctors(); track doc.id; let i = $index) {
+            @for (doc of doctors(); track doc.id; let i = $index) {
             <tr
                 class="hover:bg-gray-50/30 group whitespace-nowrap transition-colors border-b border-gray-200 last:border-0 text-sm">
                 <td class="px-4 py-4 border-r border-b border-gray-200 max-lg:px-2 max-lg:text-[13px]">
@@ -248,7 +248,7 @@
             </div>
             }
         </div>
-        <span>out of {{ filteredDoctors().length }}</span>
+        <span>out of {{ totalCount() }}</span>
     </div>
     <div class="flex items-center gap-1.5">
         <!-- Previous Button -->

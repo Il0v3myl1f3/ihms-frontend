@@ -4,6 +4,7 @@ import { fromEvent } from 'rxjs';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { LucideAngularModule, Pencil, Trash2, MoreHorizontal, Search, Filter, ChevronLeft, ChevronRight, Plus, ChevronDown, ChevronUp, Eye, FilePlus } from 'lucide-angular';
+import { PaginatedQuery } from '../../../../../core/models/pagination.models';
 
 export interface Appointment {
     id: string;
@@ -18,6 +19,11 @@ export interface Appointment {
     appointmentDate: string;
     status: 'Scheduled' | 'Cancelled' | 'Completed';
     selected: boolean;
+}
+
+export interface AppointmentPaginationQuery extends PaginatedQuery {
+    status?: string;
+    doctorName?: string;
 }
 
 @Component({
@@ -40,6 +46,8 @@ export class AppointmentTableComponent implements OnInit, OnDestroy {
     addAppointment = output<void>();
     viewAppointment = output<Appointment>();
     createMedicalRecord = output<Appointment>();
+    queryChange = output<AppointmentPaginationQuery>();
+    totalCount = input<number>(0);
 
     readonly Pencil = Pencil;
     readonly Trash2 = Trash2;
@@ -83,53 +91,24 @@ export class AppointmentTableComponent implements OnInit, OnDestroy {
 
     constructor() {
         effect(() => {
-            this.searchQuery();
-            untracked(() => this.currentPage.set(1));
+            this.emitQuery();
         });
     }
 
-    filteredAppointments = computed(() => {
-        const query = this.searchQuery().toLowerCase().trim();
-        let result = this.appointments();
-
-        const statFilter = this.filterStatus();
-        if (statFilter !== 'All') {
-            result = result.filter(a => a.status === statFilter);
-        }
-
-        const docFilter = this.filterDoctor();
-        if (docFilter !== 'All') {
-            result = result.filter(a => a.doctorName === docFilter);
-        }
-
-        if (query) {
-            result = result.filter(a =>
-                a.patientName.toLowerCase().includes(query) ||
-                a.doctorName.toLowerCase().includes(query) ||
-                a.reason.toLowerCase().includes(query) ||
-                a.notes.toLowerCase().includes(query) ||
-                a.appointmentDate.toLowerCase().includes(query) ||
-                a.status.toLowerCase().includes(query) ||
-                a.no.toString().includes(query)
-            );
-        }
-
-        const col = this.sortColumn();
-        const dir = this.sortDirection() === 'asc' ? 1 : -1;
-
-        if (col) {
-            result = [...result].sort((a, b) => {
-                let aVal: any = a[col as keyof Appointment];
-                let bVal: any = b[col as keyof Appointment];
-
-                if (aVal < bVal) return -1 * dir;
-                if (aVal > bVal) return 1 * dir;
-                return 0;
-            });
-        }
-
-        return result;
-    });
+    private emitQuery(): void {
+        const query = {
+            pageNumber: this.currentPage(),
+            pageSize: this.pageSize(),
+            searchTerm: this.searchQuery(),
+            sortBy: this.sortColumn(),
+            sortOrder: this.sortDirection(),
+            status: this.filterStatus(),
+            doctorName: this.filterDoctor()
+        };
+        untracked(() => {
+            this.queryChange.emit(query);
+        });
+    }
 
     handleSort(column: string): void {
         if (this.sortColumn() === column) {
@@ -231,12 +210,7 @@ export class AppointmentTableComponent implements OnInit, OnDestroy {
     }
 
     totalPages = computed(() => {
-        return Math.max(1, Math.ceil(this.filteredAppointments().length / this.pageSize()));
-    });
-
-    paginatedAppointments = computed(() => {
-        const startIndex = (this.currentPage() - 1) * this.pageSize();
-        return this.filteredAppointments().slice(startIndex, startIndex + this.pageSize());
+        return Math.max(1, Math.ceil(this.totalCount() / this.pageSize()));
     });
 
     visiblePages = computed(() => {

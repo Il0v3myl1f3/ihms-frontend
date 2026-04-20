@@ -11,6 +11,8 @@
         <app-appointment-table 
             class="flex-1 flex flex-col h-full" 
             [appointments]="appointments()"
+            [totalCount]="totalCount()"
+            (queryChange)="onQueryChange($event)"
             (editAppointment)="onEditAppointment($event)" 
             (viewAppointment)="onViewAppointment($event)"
             (deleteAppointment)="onDeleteAppointment($event)"

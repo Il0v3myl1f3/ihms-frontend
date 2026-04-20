@@ -1,4 +1,4 @@
-import { Component, ViewChild, ChangeDetectionStrategy, inject, ChangeDetectorRef, DestroyRef, OnInit } from '@angular/core';
+import { Component, ViewChild, ChangeDetectionStrategy, inject, ChangeDetectorRef, DestroyRef, OnInit, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { timer } from 'rxjs';
 import { Router } from '@angular/router';
@@ -20,13 +20,30 @@ export class PatientListPageComponent implements OnInit {
 
     @ViewChild(PatientTableComponent) patientTable!: PatientTableComponent;
 
-    patients = this.patientService.patients;
+    patients = signal<Patient[]>([]);
+    totalCount = signal<number>(0);
+    private lastQuery: any = { pageNumber: 1, pageSize: 7, sortBy: 'no', sortOrder: 'asc' };
 
     ngOnInit(): void {
-        // Polling: Refresh from backend every 30 seconds
+        // Polling: Refresh from backend every 10 seconds using last query
         timer(0, 10000).pipe(takeUntilDestroyed(this.destroyRef)).subscribe(() => {
-            this.patientService.getPatients().pipe(takeUntilDestroyed(this.destroyRef)).subscribe();
+            this.refreshData();
         });
+    }
+
+    onQueryChange(query: any): void {
+        this.lastQuery = query;
+        this.refreshData();
+    }
+
+    private refreshData(): void {
+        this.patientService.getPatientsPaged(this.lastQuery)
+            .pipe(takeUntilDestroyed(this.destroyRef))
+            .subscribe(res => {
+                this.patients.set(res.items);
+                this.totalCount.set(res.totalCount);
+                this.cdr.markForCheck();
+            });
     }
 
 
@@ -54,27 +71,13 @@ export class PatientListPageComponent implements OnInit {
 
     onDeletePatient(patient: Patient) {
         this.patientService.deletePatient(patient.id).pipe(takeUntilDestroyed(this.destroyRef)).subscribe(() => {
-            if (this.patientTable) {
-                const totalPages = this.patientTable.totalPages();
-                if (this.patientTable.currentPage() > totalPages && totalPages > 0) {
-                    this.patientTable.currentPage.set(totalPages);
-                } else if (totalPages === 0) {
-                    this.patientTable.currentPage.set(1);
-                }
-            }
+            this.refreshData();
         });
     }
 
     onDeleteSelectedPatients(selectedPatients: Patient[]) {
         this.patientService.deleteSelectedPatients(selectedPatients.map(p => p.id)).pipe(takeUntilDestroyed(this.destroyRef)).subscribe(() => {
-            if (this.patientTable) {
-                const totalPages = this.patientTable.totalPages();
-                if (this.patientTable.currentPage() > totalPages && totalPages > 0) {
-                    this.patientTable.currentPage.set(totalPages);
-                } else if (totalPages === 0) {
-                    this.patientTable.currentPage.set(1);
-                }
-            }
+            this.refreshData();
         });
     }
 
@@ -84,12 +87,7 @@ export class PatientListPageComponent implements OnInit {
             id: this.selectedPatientForEdit?.id
         }).pipe(takeUntilDestroyed(this.destroyRef)).subscribe(() => {
             this.isAddPatientModalOpen = false;
-
-            if (this.patientTable) {
-                if (!this.selectedPatientForEdit) {
-                    this.patientTable.goToPage(this.patientTable.totalPages());
-                }
-            }
+            this.refreshData();
         });
     }
 }

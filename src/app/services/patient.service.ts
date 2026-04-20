@@ -2,6 +2,8 @@ import { Injectable, signal, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, of, tap, map, catchError, throwError, switchMap } from 'rxjs';
 import { Patient } from '../components/pages/dashboard/patient/patient-table/patient-table.component';
+import { PaginatedQuery, PagedResult } from '../core/models/pagination.models';
+import { HttpParams } from '@angular/common/http';
 
 
 
@@ -21,6 +23,26 @@ export class PatientService {
                 return items.map((p: any, index: number) => this.mapToPatient(p, index + 1));
             }),
             tap(patients => this.patientsSignal.set(patients))
+        );
+    }
+
+    getPatientsPaged(query: PaginatedQuery): Observable<PagedResult<Patient>> {
+        let params = new HttpParams()
+            .set('PageNumber', query.pageNumber.toString())
+            .set('PageSize', query.pageSize.toString());
+
+        if (query.searchTerm) params = params.set('SearchTerm', query.searchTerm);
+        if (query.sortBy) params = params.set('SortBy', query.sortBy);
+        if (query.sortOrder) params = params.set('SortOrder', query.sortOrder);
+
+        return this.http.get<PagedResult<any>>(this.apiUrl, { params }).pipe(
+            map(res => {
+                const mappedItems = res.items.map((p: any, index: number) => 
+                    this.mapToPatient(p, (res.pageNumber - 1) * res.pageSize + index + 1)
+                );
+                return { ...res, items: mappedItems } as PagedResult<Patient>;
+            }),
+            catchError(error => this.handleError(error))
         );
     }
 
@@ -128,5 +150,12 @@ export class PatientService {
                 })
             );
         }
+    }
+
+    private handleError(error: any): Observable<never> {
+        let msg = 'Server error';
+        if (error.status === 0) msg = 'Backend unreachable. Ensure it is running on port 5275.';
+        else if (error.error?.message) msg = error.error.message;
+        return throwError(() => msg);
     }
 }

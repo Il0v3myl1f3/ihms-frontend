@@ -4,6 +4,7 @@ import { fromEvent } from 'rxjs';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { LucideAngularModule, Pencil, Trash2, MoreHorizontal, Search, Filter, ChevronLeft, ChevronRight, Plus, ChevronDown, ChevronUp, Eye } from 'lucide-angular';
+import { PaginatedQuery } from '../../../../../core/models/pagination.models';
 
 export interface Patient {
     id: string;
@@ -18,6 +19,11 @@ export interface Patient {
     phone: string;
     bloodType: string;
     selected: boolean;
+}
+
+export interface PatientPaginationQuery extends PaginatedQuery {
+    gender?: string;
+    bloodType?: string;
 }
 
 @Component({
@@ -37,6 +43,8 @@ export class PatientTableComponent implements OnInit, OnDestroy {
     deleteSelected = output<Patient[]>();
     addPatient = output<void>();
     viewPatient = output<Patient>();
+    queryChange = output<PatientPaginationQuery>();
+    totalCount = input<number>(0);
 
     readonly Pencil = Pencil;
     readonly Trash2 = Trash2;
@@ -78,10 +86,9 @@ export class PatientTableComponent implements OnInit, OnDestroy {
     });
 
     constructor() {
-        // Reset to page 1 when search query changes
+        // Emit query change when triggers change
         effect(() => {
-            this.searchQuery();
-            untracked(() => this.currentPage.set(1));
+            this.emitQuery();
         });
 
         this.ngZone.runOutsideAngular(() => {
@@ -97,48 +104,20 @@ export class PatientTableComponent implements OnInit, OnDestroy {
         });
     }
 
-    filteredPatients = computed(() => {
-        const query = this.searchQuery().toLowerCase().trim();
-        const genderFilter = this.filterGender();
-        const typeFilter = this.filterBloodType();
-        const patients = this.patients();
-
-        // Single-pass filtering
-        let result = patients.filter(p => {
-            const matchesGender = genderFilter === 'All' || p.gender === genderFilter;
-            const matchesType = typeFilter === 'All' || p.bloodType === typeFilter;
-            const matchesQuery = !query || 
-                p.name.toLowerCase().includes(query) ||
-                p.gender.toLowerCase().includes(query) ||
-                (p.address?.toLowerCase().includes(query)) ||
-                (p.phone?.toLowerCase().includes(query)) ||
-                (p.bloodType?.toLowerCase().includes(query)) ||
-                p.no.toString().includes(query);
-            
-            return matchesGender && matchesType && matchesQuery;
+    private emitQuery(): void {
+        const query = {
+            pageNumber: this.currentPage(),
+            pageSize: this.pageSize(),
+            searchTerm: this.searchQuery(),
+            sortBy: this.sortColumn(),
+            sortOrder: this.sortDirection(),
+            gender: this.filterGender(),
+            bloodType: this.filterBloodType()
+        };
+        untracked(() => {
+            this.queryChange.emit(query);
         });
-
-        const col = this.sortColumn();
-        const dir = this.sortDirection() === 'asc' ? 1 : -1;
-
-        if (col) {
-            result.sort((a, b) => {
-                let aVal: any = a[col as keyof Patient];
-                let bVal: any = b[col as keyof Patient];
-
-                if (col === 'dob') {
-                    aVal = this.parseDate(aVal);
-                    bVal = this.parseDate(bVal);
-                }
-
-                if (aVal < bVal) return -1 * dir;
-                if (aVal > bVal) return 1 * dir;
-                return 0;
-            });
-        }
-
-        return result;
-    });
+    }
 
     private parseDate(d: string): number {
         if (!d || d === 'N/A') return 0;
@@ -237,12 +216,7 @@ export class PatientTableComponent implements OnInit, OnDestroy {
     }
 
     totalPages = computed(() => {
-        return Math.max(1, Math.ceil(this.filteredPatients().length / this.pageSize()));
-    });
-
-    paginatedPatients = computed(() => {
-        const startIndex = (this.currentPage() - 1) * this.pageSize();
-        return this.filteredPatients().slice(startIndex, startIndex + this.pageSize());
+        return Math.max(1, Math.ceil(this.totalCount() / this.pageSize()));
     });
 
     visiblePages = computed(() => {

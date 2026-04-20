@@ -20,15 +20,33 @@ export class DashboardDoctorsComponent implements OnInit {
     selectedDoctorForEdit: Doctor | null = null;
     isDoctorReadOnly = signal(false);
 
+    public doctors = signal<Doctor[]>([]);
+    public totalCount = signal<number>(0);
+    private lastQuery: any = { pageNumber: 1, pageSize: 7, sortBy: 'no', sortOrder: 'asc' };
+
     public medicalService = inject(MedicalService);
     private router = inject(Router);
     private destroyRef = inject(DestroyRef);
 
     ngOnInit(): void {
-        // Polling: Refresh from backend every 30 seconds while the page is active
+        // Polling: Refresh from backend every 10 seconds
         timer(0, 10000).pipe(takeUntilDestroyed(this.destroyRef)).subscribe(() => {
-            this.medicalService.getDoctors().pipe(takeUntilDestroyed(this.destroyRef)).subscribe();
+            this.refreshData();
         });
+    }
+
+    onQueryChange(query: any): void {
+        this.lastQuery = query;
+        this.refreshData();
+    }
+
+    private refreshData(): void {
+        this.medicalService.getDoctorsPaged(this.lastQuery)
+            .pipe(takeUntilDestroyed(this.destroyRef))
+            .subscribe(res => {
+                this.doctors.set(res.items);
+                this.totalCount.set(res.totalCount);
+            });
     }
 
     openAddDoctorModal(): void {
@@ -53,26 +71,16 @@ export class DashboardDoctorsComponent implements OnInit {
 
     onDeleteDoctor(doctor: Doctor): void {
         this.medicalService.deleteDoctor(doctor.id).pipe(takeUntilDestroyed(this.destroyRef)).subscribe(() => {
-            this.handleNavigationSync();
+            this.refreshData();
         });
     }
 
     onDeleteSelectedDoctors(selectedDoctors: Doctor[]): void {
         this.medicalService.deleteSelectedDoctors(selectedDoctors.map(d => d.id)).pipe(takeUntilDestroyed(this.destroyRef)).subscribe(() => {
-            this.handleNavigationSync();
+            this.refreshData();
         });
     }
 
-    private handleNavigationSync(): void {
-        if (this.doctorTable) {
-            const totalPages = this.doctorTable.totalPages();
-            if (this.doctorTable.currentPage() > totalPages && totalPages > 0) {
-                this.doctorTable.currentPage.set(totalPages);
-            } else if (totalPages === 0) {
-                this.doctorTable.currentPage.set(1);
-            }
-        }
-    }
 
     onDoctorSaved(doctorData: Record<string, string>): void {
         const payload: Record<string, string | number> = { ...doctorData };
@@ -83,9 +91,7 @@ export class DashboardDoctorsComponent implements OnInit {
         this.medicalService.saveDoctor(payload).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
             next: () => {
                 this.isAddDoctorModalOpen = false;
-                if (this.doctorTable && !this.selectedDoctorForEdit) {
-                    this.doctorTable.goToPage(this.doctorTable.totalPages());
-                }
+                this.refreshData();
             },
             error: err => {
                 console.error('[DashboardDoctorsComponent] Failed to save doctor:', err);

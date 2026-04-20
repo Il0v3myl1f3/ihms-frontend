@@ -29,6 +29,8 @@ export class AppointmentsPageComponent implements OnInit {
     doctors = signal<Doctor[]>([]);
     patients = signal<Patient[]>([]);
     appointments = signal<Appointment[]>([]);
+    totalCount = signal<number>(0);
+    private lastQuery: any = { pageNumber: 1, pageSize: 7, sortBy: 'no', sortOrder: 'asc' };
 
     selectedAppointmentForEdit = signal<Appointment | null>(null);
     selectedAppointmentForRecord = signal<Appointment | null>(null);
@@ -46,18 +48,27 @@ export class AppointmentsPageComponent implements OnInit {
             this.patients.set(pats);
         });
 
-        // Polling: Refresh from backend every 30 seconds
+        // Polling: Refresh from backend every 10 seconds
         timer(0, 10000).pipe(takeUntilDestroyed(this.destroyRef)).subscribe(() => {
-            this.loadAppointments();
+            this.refreshData();
         });
     }
 
-    private loadAppointments() {
-        this.appointmentService.getAppointments().pipe(takeUntilDestroyed(this.destroyRef)).subscribe((a: Appointment[]) => {
-            this.appointments.set(a);
-            this.cdr.markForCheck();
-        });
+    onQueryChange(query: any): void {
+        this.lastQuery = query;
+        this.refreshData();
     }
+
+    private refreshData(): void {
+        this.appointmentService.getAppointmentsPaged(this.lastQuery)
+            .pipe(takeUntilDestroyed(this.destroyRef))
+            .subscribe(res => {
+                this.appointments.set(res.items);
+                this.totalCount.set(res.totalCount);
+                this.cdr.markForCheck();
+            });
+    }
+
 
     openCreateModal(): void {
         this.selectedAppointmentForEdit.set(null);
@@ -93,34 +104,17 @@ export class AppointmentsPageComponent implements OnInit {
 
     onDeleteAppointment(appointment: Appointment): void {
         this.appointmentService.deleteAppointment(appointment.id).pipe(takeUntilDestroyed(this.destroyRef)).subscribe(() => {
-            this.loadAppointments();
-            if (this.appointmentTable) {
-                const totalPages = this.appointmentTable.totalPages();
-                if (this.appointmentTable.currentPage() > totalPages && totalPages > 0) {
-                    this.appointmentTable.currentPage.set(totalPages);
-                } else if (totalPages === 0) {
-                    this.appointmentTable.currentPage.set(1);
-                }
-            }
+            this.refreshData();
         });
     }
 
     onDeleteSelectedAppointments(selectedAppointments: Appointment[]): void {
         this.appointmentService.deleteSelectedAppointments(selectedAppointments.map(a => a.id)).pipe(takeUntilDestroyed(this.destroyRef)).subscribe(() => {
-            this.loadAppointments();
-            if (this.appointmentTable) {
-                const totalPages = this.appointmentTable.totalPages();
-                if (this.appointmentTable.currentPage() > totalPages && totalPages > 0) {
-                    this.appointmentTable.currentPage.set(totalPages);
-                } else if (totalPages === 0) {
-                    this.appointmentTable.currentPage.set(1);
-                }
-            }
+            this.refreshData();
         });
     }
 
     onAppointmentSaved(data: Record<string, string>): void {
-        const isNew = !this.selectedAppointmentForEdit();
         this.appointmentService.saveAppointment({
             ...data,
             id: this.selectedAppointmentForEdit()?.id
@@ -128,7 +122,7 @@ export class AppointmentsPageComponent implements OnInit {
             next: () => {
                 this.isModalOpen.set(false);
                 this.selectedAppointmentForEdit.set(null);
-                this.loadAppointments();
+                this.refreshData();
             },
             error: (err) => {
                 console.error('Failed to save appointment:', err);
