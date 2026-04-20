@@ -95,7 +95,10 @@ export class PatientDetailsPageComponent implements OnInit {
     });
 
     upcomingAppointments = computed(() =>
-        this.patientAppointments().filter(a => a.status === 'Scheduled')
+        this.patientAppointments()
+            .filter(a => a.status === 'Scheduled')
+            .sort((a, b) => new Date(a.appointmentDate).getTime() - new Date(b.appointmentDate).getTime())
+            .slice(0, 2)
     );
 
     ngOnInit() {
@@ -118,25 +121,26 @@ export class PatientDetailsPageComponent implements OnInit {
     loadPatientData(id: string) {
         this.patientService.getPatientById(id).pipe(takeUntilDestroyed(this.destroyRef)).subscribe(p => {
             this.patient.set(p);
-            this.appointmentService.getAppointmentsByPatientName(p.name).pipe(takeUntilDestroyed(this.destroyRef)).subscribe(items => {
+            
+            // 1. Load appointments using the patient GUID (id)
+            this.appointmentService.getAppointmentsByPatientId(p.id).pipe(takeUntilDestroyed(this.destroyRef)).subscribe(items => {
                 this.patientAppointments.set(items);
             });
 
+            // 2. Load medical records using the patient GUID (id)
             this.medicalRecordService.getMedicalRecords(p.id).pipe(takeUntilDestroyed(this.destroyRef)).subscribe(records => {
                 this.patientMedicalRecords.set(records);
             });
-        });
 
-        this.patientService.getMyPatientId().pipe(takeUntilDestroyed(this.destroyRef)).subscribe(myId => {
-            const fetchId = id || myId;
-            this.prescriptionService.getPrescriptions(fetchId).pipe(takeUntilDestroyed(this.destroyRef)).subscribe(items => {
+            // 3. Load prescriptions using the patient GUID (id)
+            this.prescriptionService.getPrescriptions(p.id).pipe(takeUntilDestroyed(this.destroyRef)).subscribe(items => {
                 const mapped: PatientPrescription[] = items.map(item => ({
                     id: item.id,
                     medication: item.medication,
                     dosage: item.dosage,
                     frequency: item.frequency,
                     status: item.status,
-                    refills: 0, // Not currently in backend
+                    refills: 0, 
                     instructions: 'Follow prescription plan',
                     startDate: item.startDate,
                     endDate: item.endDate

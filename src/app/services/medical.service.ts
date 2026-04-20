@@ -72,6 +72,7 @@ export class MedicalService {
         if (query.searchTerm) params = params.set('SearchTerm', query.searchTerm);
         if (query.sortBy) params = params.set('SortBy', query.sortBy);
         if (query.sortOrder) params = params.set('SortOrder', query.sortOrder);
+        if (query.filtersJson) params = params.set('FiltersJson', query.filtersJson);
 
         return this.http.get<PagedResult<any>>(this.apiUrl, { params }).pipe(
             map(res => {

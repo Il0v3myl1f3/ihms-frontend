@@ -7,7 +7,7 @@
                 <lucide-icon [img]="Search" class="h-4 w-4 text-gray-400"></lucide-icon>
             </div>
             <input type="text" placeholder="Search name, ID, age, etc"
-                (input)="searchQuery.set($any($event.target).value)"
+                (input)="onSearchChange($any($event.target).value)"
                 class="block w-full pl-9 pr-3 py-2 border border-gray-200 rounded-lg text-sm placeholder-gray-400 focus:outline-none focus:ring-1 focus:ring-[#159EEC] focus:border-[#159EEC] bg-gray-50/20 transition-all">
         </div>
         <!-- Filter Buttons -->
@@ -27,7 +27,7 @@
             @if (activeFilterMenu() === 'gender') {
             <div
                 class="absolute top-full mt-1 left-0 z-50 w-40 bg-white border border-gray-100 rounded-lg shadow-lg py-1 max-h-60 overflow-auto slim-scroll">
-                @for (gender of availableGenders(); track gender) {
+                @for (gender of availableGenders; track gender) {
                 <button (click)="setFilter('gender', gender)"
                     class="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
                     [class.bg-emerald-50]="filterGender() === gender"
@@ -56,7 +56,7 @@
             @if (activeFilterMenu() === 'bloodType') {
             <div
                 class="absolute top-full mt-1 left-0 z-50 w-40 bg-white border border-gray-100 rounded-lg shadow-lg py-1 max-h-60 overflow-auto slim-scroll">
-                @for (bType of availableBloodTypes(); track bType) {
+                @for (bType of availableBloodTypes; track bType) {
                 <button (click)="setFilter('bloodType', bType)"
                     class="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
                     [class.bg-emerald-50]="filterBloodType() === bType"

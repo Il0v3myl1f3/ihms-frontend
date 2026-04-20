@@ -1,10 +1,10 @@
 import { Component, OnInit, OnDestroy, input, output, ChangeDetectionStrategy, signal, computed, HostListener, effect, untracked, NgZone, DestroyRef, inject } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { fromEvent } from 'rxjs';
+import { fromEvent, Subject, debounceTime, distinctUntilChanged } from 'rxjs';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { LucideAngularModule, Pencil, Trash2, MoreHorizontal, Search, Filter, ChevronLeft, ChevronRight, Plus, ChevronDown, ChevronUp, Eye } from 'lucide-angular';
-import { PaginatedQuery } from '../../../../../core/models/pagination.models';
+import { PaginatedQuery, FilterItem } from '../../../../../core/models/pagination.models';
 
 export interface Patient {
     id: string;
@@ -74,21 +74,25 @@ export class PatientTableComponent implements OnInit, OnDestroy {
     filterGender = signal<string>('All');
     filterBloodType = signal<string>('All');
     activeFilterMenu = signal<string | null>(null);
+    private searchSubject = new Subject<string>();
 
-    availableGenders = computed(() => {
-        const genders = this.patients().map(p => p.gender).filter(s => !!s);
-        return ['All', ...Array.from(new Set(genders)).sort()];
-    });
-
-    availableBloodTypes = computed(() => {
-        const types = this.patients().map(p => p.bloodType).filter(s => !!s);
-        return ['All', ...Array.from(new Set(types)).sort()];
-    });
+    availableGenders = ['All', 'MALE', 'FEMALE', 'OTHER'];
+    availableBloodTypes = ['All', 'A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-'];
 
     constructor() {
         // Emit query change when triggers change
         effect(() => {
             this.emitQuery();
+        });
+
+        // Initialize search debounce
+        this.searchSubject.pipe(
+            debounceTime(300),
+            distinctUntilChanged(),
+            takeUntilDestroyed()
+        ).subscribe(value => {
+            this.searchQuery.set(value);
+            this.currentPage.set(1); // Reset to first page on search
         });
 
         this.ngZone.runOutsideAngular(() => {
@@ -105,18 +109,29 @@ export class PatientTableComponent implements OnInit, OnDestroy {
     }
 
     private emitQuery(): void {
-        const query = {
+        const filters: FilterItem[] = [];
+        if (this.filterGender() && this.filterGender() !== 'All') {
+            filters.push({ Field: 'Gender', Value: this.filterGender() });
+        }
+        if (this.filterBloodType() && this.filterBloodType() !== 'All') {
+            filters.push({ Field: 'BloodType', Value: this.filterBloodType() });
+        }
+
+        const query: PaginatedQuery = {
             pageNumber: this.currentPage(),
             pageSize: this.pageSize(),
             searchTerm: this.searchQuery(),
             sortBy: this.sortColumn(),
             sortOrder: this.sortDirection(),
-            gender: this.filterGender(),
-            bloodType: this.filterBloodType()
+            filtersJson: filters.length > 0 ? JSON.stringify(filters) : undefined
         };
         untracked(() => {
             this.queryChange.emit(query);
         });
+    }
+
+    onSearchChange(value: string): void {
+        this.searchSubject.next(value);
     }
 
     private parseDate(d: string): number {

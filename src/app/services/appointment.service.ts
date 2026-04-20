@@ -35,6 +35,7 @@ export class AppointmentService {
         if (query.doctorId) params = params.set('DoctorId', query.doctorId);
         if (query.dateFrom) params = params.set('DateFrom', query.dateFrom);
         if (query.dateTo) params = params.set('DateTo', query.dateTo);
+        if (query.filtersJson) params = params.set('FiltersJson', query.filtersJson);
 
         return this.http.get<PagedResult<any>>(this.apiUrl, { params }).pipe(
             map((res: PagedResult<any>) => {
@@ -56,6 +57,35 @@ export class AppointmentService {
     getAppointmentsByPatientName(patientName: string): Observable<Appointment[]> {
         return this.getAppointments().pipe(
             map(items => items.filter(item => item.patientName === patientName))
+        );
+    }
+
+    getAppointmentsByPatientId(patientId: string): Observable<Appointment[]> {
+        // Use the backend's support for PatientId filter in the root GET endpoint
+        const params = new HttpParams()
+            .set('PageNumber', '1')
+            .set('PageSize', '100') // Fetch a reasonable number of recent appointments
+            .set('PatientId', patientId);
+
+        return this.http.get<PagedResult<any>>(this.apiUrl, { params }).pipe(
+            map(res => {
+                return res.items.map((item: any, index: number) => this.mapAppointment(item, index + 1));
+            }),
+            catchError(error => this.handleError(error))
+        );
+    }
+
+    getAppointmentsByDoctorId(doctorId: string): Observable<Appointment[]> {
+        const params = new HttpParams()
+            .set('PageNumber', '1')
+            .set('PageSize', '100')
+            .set('DoctorId', doctorId);
+
+        return this.http.get<PagedResult<any>>(this.apiUrl, { params }).pipe(
+            map(res => {
+                return res.items.map((item: any, index: number) => this.mapAppointment(item, index + 1));
+            }),
+            catchError(error => this.handleError(error))
         );
     }
 

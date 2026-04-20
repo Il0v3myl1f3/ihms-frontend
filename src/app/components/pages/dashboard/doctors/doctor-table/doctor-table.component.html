@@ -27,7 +27,7 @@
             @if (activeFilterMenu() === 'specialty') {
             <div
                 class="absolute top-full mt-1 left-0 z-50 w-52 bg-white border border-gray-100 rounded-lg shadow-lg py-1 max-h-60 overflow-auto slim-scroll">
-                @for (spec of availableSpecialties(); track spec) {
+                @for (spec of availableSpecialties; track spec) {
                 <button (click)="setFilter('specialty', spec)"
                     class="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
                     [class.bg-emerald-50]="filterSpecialty() === spec"
@@ -56,7 +56,7 @@
             @if (activeFilterMenu() === 'status') {
             <div
                 class="absolute top-full mt-1 left-0 z-50 w-40 bg-white border border-gray-100 rounded-lg shadow-lg py-1 max-h-60 overflow-auto slim-scroll">
-                @for (stat of availableStatuses(); track stat) {
+                @for (stat of availableStatuses; track stat) {
                 <button (click)="setFilter('status', stat)"
                     class="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
                     [class.bg-emerald-50]="filterStatus() === stat"

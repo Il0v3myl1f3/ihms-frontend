@@ -1,9 +1,15 @@
+export interface FilterItem {
+    Field: string;
+    Value: string;
+}
+
 export interface PaginatedQuery {
     pageNumber: number;
     pageSize: number;
     searchTerm?: string;
     sortBy?: string;
     sortOrder?: 'asc' | 'desc';
+    filtersJson?: string;
     dateFrom?: string;
     dateTo?: string;
     patientId?: string;

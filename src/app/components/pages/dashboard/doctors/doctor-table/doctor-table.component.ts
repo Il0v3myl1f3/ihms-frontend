@@ -5,12 +5,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { LucideAngularModule, Search, Filter, MoreHorizontal, ChevronLeft, ChevronRight, Pencil, Trash2, Plus, ChevronDown, ChevronUp, Eye } from 'lucide-angular';
 import { Doctor } from '../../../../../services/medical.service';
-import { PaginatedQuery } from '../../../../../core/models/pagination.models';
-
-export interface DoctorPaginationQuery extends PaginatedQuery {
-    specialty?: string;
-    status?: string;
-}
+import { PaginatedQuery, FilterItem } from '../../../../../core/models/pagination.models';
 
 
 
@@ -30,7 +25,7 @@ export class DoctorTableComponent implements OnInit, OnDestroy {
     deleteSelected = output<Doctor[]>();
     viewDoctor = output<Doctor>();
     addDoctor = output<void>();
-    queryChange = output<DoctorPaginationQuery>();
+    queryChange = output<PaginatedQuery>();
     totalCount = input<number>(0);
 
     readonly Search = Search;
@@ -62,15 +57,13 @@ export class DoctorTableComponent implements OnInit, OnDestroy {
     filterStatus = signal<string>('All');
     activeFilterMenu = signal<string | null>(null);
 
-    availableSpecialties = computed(() => {
-        const specs = this.doctors().map(d => d.specialty).filter((s): s is string => !!s);
-        return ['All', ...Array.from(new Set(specs)).sort()];
-    });
+    availableSpecialties = [
+        'All', 'Cardiology', 'Neurology', 'Pediatrics', 'Orthopedics', 
+        'Dermatology', 'Gastroenterology', 'Ophthalmology', 'Psychiatry', 
+        'Oncology', 'Radiology', 'Urology'
+    ];
 
-    availableStatuses = computed(() => {
-        const statuses = this.doctors().map(d => d.availability).filter((s): s is string => !!s);
-        return ['All', ...Array.from(new Set(statuses)).sort()];
-    });
+    availableStatuses = ['All', 'Available', 'Away', 'Busy', 'On Vacation'];
 
     constructor() {
         effect(() => {
@@ -79,14 +72,21 @@ export class DoctorTableComponent implements OnInit, OnDestroy {
     }
 
     private emitQuery(): void {
-        const query = {
+        const filters: FilterItem[] = [];
+        if (this.filterSpecialty() && this.filterSpecialty() !== 'All') {
+            filters.push({ Field: 'Department', Value: this.filterSpecialty() });
+        }
+        if (this.filterStatus() && this.filterStatus() !== 'All') {
+            filters.push({ Field: 'Availability', Value: this.filterStatus() });
+        }
+
+        const query: PaginatedQuery = {
             pageNumber: this.currentPage(),
             pageSize: this.pageSize(),
             searchTerm: this.searchQuery(),
             sortBy: this.sortColumn(),
             sortOrder: this.sortDirection(),
-            specialty: this.filterSpecialty(),
-            status: this.filterStatus()
+            filtersJson: filters.length > 0 ? JSON.stringify(filters) : undefined
         };
         untracked(() => {
             this.queryChange.emit(query);
