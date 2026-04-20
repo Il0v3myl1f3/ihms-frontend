@@ -71,7 +71,7 @@ export class PatientDetailsPageComponent implements OnInit {
     // Patient data loaded from services
     patientAppointments = signal<Appointment[]>([]);
     patientPrescriptions = signal<PatientPrescription[]>([]);
-    patientMedicalRecords = signal<MedicalRecord[]>([]);;
+    patientMedicalRecords = signal<MedicalRecord[]>([]);
     doctors: Doctor[] = [];
 
     // Modal state
@@ -143,10 +143,6 @@ export class PatientDetailsPageComponent implements OnInit {
                 }));
                 this.patientPrescriptions.set(mapped);
             });
-<<<<<<< HEAD
-=======
-        });
->>>>>>> d98832e5ef4b54ca35d15e8603073715adbeefab
         });
     }
 

@@ -97,10 +97,6 @@ export class LaboratoryPageComponent implements OnInit {
       error: (err) => {
         console.error('[LaboratoryPageComponent] Failed to fetch laboratories:', err);
       }
-<<<<<<< HEAD
-=======
-    });
->>>>>>> d98832e5ef4b54ca35d15e8603073715adbeefab
     });
   }
 
