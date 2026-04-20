@@ -5,6 +5,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { LucideAngularModule, Search, Filter, MoreHorizontal, ChevronLeft, ChevronRight, Pencil, Trash2, Plus, ChevronDown, ChevronUp, Eye } from 'lucide-angular';
 import { Doctor } from '../../../../../services/medical.service';
+import { PaginatedQuery, FilterItem } from '../../../../../core/models/pagination.models';
 
 
 
@@ -24,6 +25,8 @@ export class DoctorTableComponent implements OnInit, OnDestroy {
     deleteSelected = output<Doctor[]>();
     viewDoctor = output<Doctor>();
     addDoctor = output<void>();
+    queryChange = output<PaginatedQuery>();
+    totalCount = input<number>(0);
 
     readonly Search = Search;
     readonly Filter = Filter;
@@ -54,60 +57,41 @@ export class DoctorTableComponent implements OnInit, OnDestroy {
     filterStatus = signal<string>('All');
     activeFilterMenu = signal<string | null>(null);
 
-    availableSpecialties = computed(() => {
-        const specs = this.doctors().map(d => d.specialty).filter((s): s is string => !!s);
-        return ['All', ...Array.from(new Set(specs)).sort()];
-    });
+    availableSpecialties = [
+        'All', 'Cardiology', 'Neurology', 'Pediatrics', 'Orthopedics', 
+        'Dermatology', 'Gastroenterology', 'Ophthalmology', 'Psychiatry', 
+        'Oncology', 'Radiology', 'Urology'
+    ];
 
-    availableStatuses = computed(() => {
-        const statuses = this.doctors().map(d => d.availability).filter((s): s is string => !!s);
-        return ['All', ...Array.from(new Set(statuses)).sort()];
-    });
+    availableStatuses = ['All', 'Available', 'Away', 'Busy', 'On Vacation'];
 
     constructor() {
         effect(() => {
-            this.searchQuery();
-            untracked(() => this.currentPage.set(1));
+            this.emitQuery();
         });
     }
 
-    filteredDoctors = computed(() => {
-        const query = this.searchQuery().toLowerCase().trim();
-        const specFilter = this.filterSpecialty();
-        const statFilter = this.filterStatus();
-        const doctors = this.doctors();
-
-        // Single-pass filtering
-        let result = doctors.filter(doc => {
-            const matchesSpec = specFilter === 'All' || doc.specialty === specFilter;
-            const matchesStat = statFilter === 'All' || doc.availability === statFilter;
-            const matchesQuery = !query ||
-                doc.name.toLowerCase().includes(query) ||
-                doc.specialty.toLowerCase().includes(query) ||
-                (doc.phone?.toLowerCase().includes(query)) ||
-                (doc.availability?.toLowerCase().includes(query)) ||
-                (doc.no.toString().includes(query)) ||
-                doc.id.toString().includes(query);
-            
-            return matchesSpec && matchesStat && matchesQuery;
-        });
-
-        const col = this.sortColumn();
-        const dir = this.sortDirection() === 'asc' ? 1 : -1;
-
-        if (col) {
-            result.sort((a, b) => {
-                let aVal: any = a[col as keyof Doctor];
-                let bVal: any = b[col as keyof Doctor];
-
-                if (aVal < bVal) return -1 * dir;
-                if (aVal > bVal) return 1 * dir;
-                return 0;
-            });
+    private emitQuery(): void {
+        const filters: FilterItem[] = [];
+        if (this.filterSpecialty() && this.filterSpecialty() !== 'All') {
+            filters.push({ Field: 'Department', Value: this.filterSpecialty() });
+        }
+        if (this.filterStatus() && this.filterStatus() !== 'All') {
+            filters.push({ Field: 'Availability', Value: this.filterStatus() });
         }
 
-        return result;
-    });
+        const query: PaginatedQuery = {
+            pageNumber: this.currentPage(),
+            pageSize: this.pageSize(),
+            searchTerm: this.searchQuery(),
+            sortBy: this.sortColumn(),
+            sortOrder: this.sortDirection(),
+            filtersJson: filters.length > 0 ? JSON.stringify(filters) : undefined
+        };
+        untracked(() => {
+            this.queryChange.emit(query);
+        });
+    }
 
     handleSort(column: string): void {
         if (this.sortColumn() === column) {
@@ -209,12 +193,7 @@ export class DoctorTableComponent implements OnInit, OnDestroy {
     }
 
     totalPages = computed(() => {
-        return Math.max(1, Math.ceil(this.filteredDoctors().length / this.pageSize()));
-    });
-
-    paginatedDoctors = computed(() => {
-        const startIndex = (this.currentPage() - 1) * this.pageSize();
-        return this.filteredDoctors().slice(startIndex, startIndex + this.pageSize());
+        return Math.max(1, Math.ceil(this.totalCount() / this.pageSize()));
     });
 
     visiblePages = computed(() => {

@@ -1,9 +1,10 @@
 import { Component, OnInit, OnDestroy, input, output, ChangeDetectionStrategy, signal, computed, HostListener, effect, untracked, NgZone, DestroyRef, inject } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { fromEvent } from 'rxjs';
+import { fromEvent, Subject, debounceTime, distinctUntilChanged } from 'rxjs';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { LucideAngularModule, Pencil, Trash2, MoreHorizontal, Search, Filter, ChevronLeft, ChevronRight, Plus, ChevronDown, ChevronUp, Eye } from 'lucide-angular';
+import { PaginatedQuery, FilterItem } from '../../../../../core/models/pagination.models';
 
 export interface Patient {
     id: string;
@@ -18,6 +19,11 @@ export interface Patient {
     phone: string;
     bloodType: string;
     selected: boolean;
+}
+
+export interface PatientPaginationQuery extends PaginatedQuery {
+    gender?: string;
+    bloodType?: string;
 }
 
 @Component({
@@ -37,6 +43,8 @@ export class PatientTableComponent implements OnInit, OnDestroy {
     deleteSelected = output<Patient[]>();
     addPatient = output<void>();
     viewPatient = output<Patient>();
+    queryChange = output<PatientPaginationQuery>();
+    totalCount = input<number>(0);
 
     readonly Pencil = Pencil;
     readonly Trash2 = Trash2;
@@ -66,22 +74,25 @@ export class PatientTableComponent implements OnInit, OnDestroy {
     filterGender = signal<string>('All');
     filterBloodType = signal<string>('All');
     activeFilterMenu = signal<string | null>(null);
+    private searchSubject = new Subject<string>();
 
-    availableGenders = computed(() => {
-        const genders = this.patients().map(p => p.gender).filter(s => !!s);
-        return ['All', ...Array.from(new Set(genders)).sort()];
-    });
-
-    availableBloodTypes = computed(() => {
-        const types = this.patients().map(p => p.bloodType).filter(s => !!s);
-        return ['All', ...Array.from(new Set(types)).sort()];
-    });
+    availableGenders = ['All', 'MALE', 'FEMALE', 'OTHER'];
+    availableBloodTypes = ['All', 'A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-'];
 
     constructor() {
-        // Reset to page 1 when search query changes
+        // Emit query change when triggers change
         effect(() => {
-            this.searchQuery();
-            untracked(() => this.currentPage.set(1));
+            this.emitQuery();
+        });
+
+        // Initialize search debounce
+        this.searchSubject.pipe(
+            debounceTime(300),
+            distinctUntilChanged(),
+            takeUntilDestroyed()
+        ).subscribe(value => {
+            this.searchQuery.set(value);
+            this.currentPage.set(1); // Reset to first page on search
         });
 
         this.ngZone.runOutsideAngular(() => {
@@ -97,48 +108,31 @@ export class PatientTableComponent implements OnInit, OnDestroy {
         });
     }
 
-    filteredPatients = computed(() => {
-        const query = this.searchQuery().toLowerCase().trim();
-        const genderFilter = this.filterGender();
-        const typeFilter = this.filterBloodType();
-        const patients = this.patients();
-
-        // Single-pass filtering
-        let result = patients.filter(p => {
-            const matchesGender = genderFilter === 'All' || p.gender === genderFilter;
-            const matchesType = typeFilter === 'All' || p.bloodType === typeFilter;
-            const matchesQuery = !query || 
-                p.name.toLowerCase().includes(query) ||
-                p.gender.toLowerCase().includes(query) ||
-                (p.address?.toLowerCase().includes(query)) ||
-                (p.phone?.toLowerCase().includes(query)) ||
-                (p.bloodType?.toLowerCase().includes(query)) ||
-                p.no.toString().includes(query);
-            
-            return matchesGender && matchesType && matchesQuery;
-        });
-
-        const col = this.sortColumn();
-        const dir = this.sortDirection() === 'asc' ? 1 : -1;
-
-        if (col) {
-            result.sort((a, b) => {
-                let aVal: any = a[col as keyof Patient];
-                let bVal: any = b[col as keyof Patient];
-
-                if (col === 'dob') {
-                    aVal = this.parseDate(aVal);
-                    bVal = this.parseDate(bVal);
-                }
-
-                if (aVal < bVal) return -1 * dir;
-                if (aVal > bVal) return 1 * dir;
-                return 0;
-            });
+    private emitQuery(): void {
+        const filters: FilterItem[] = [];
+        if (this.filterGender() && this.filterGender() !== 'All') {
+            filters.push({ Field: 'Gender', Value: this.filterGender() });
+        }
+        if (this.filterBloodType() && this.filterBloodType() !== 'All') {
+            filters.push({ Field: 'BloodType', Value: this.filterBloodType() });
         }
 
-        return result;
-    });
+        const query: PaginatedQuery = {
+            pageNumber: this.currentPage(),
+            pageSize: this.pageSize(),
+            searchTerm: this.searchQuery(),
+            sortBy: this.sortColumn(),
+            sortOrder: this.sortDirection(),
+            filtersJson: filters.length > 0 ? JSON.stringify(filters) : undefined
+        };
+        untracked(() => {
+            this.queryChange.emit(query);
+        });
+    }
+
+    onSearchChange(value: string): void {
+        this.searchSubject.next(value);
+    }
 
     private parseDate(d: string): number {
         if (!d || d === 'N/A') return 0;
@@ -237,12 +231,7 @@ export class PatientTableComponent implements OnInit, OnDestroy {
     }
 
     totalPages = computed(() => {
-        return Math.max(1, Math.ceil(this.filteredPatients().length / this.pageSize()));
-    });
-
-    paginatedPatients = computed(() => {
-        const startIndex = (this.currentPage() - 1) * this.pageSize();
-        return this.filteredPatients().slice(startIndex, startIndex + this.pageSize());
+        return Math.max(1, Math.ceil(this.totalCount() / this.pageSize()));
     });
 
     visiblePages = computed(() => {

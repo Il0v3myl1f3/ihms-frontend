@@ -1,6 +1,7 @@
 import { Injectable, inject, signal } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable, catchError, map, tap, throwError, switchMap, of } from 'rxjs';
+import { PaginatedQuery, PagedResult } from '../core/models/pagination.models';
 
 export interface Doctor {
     id: string;
@@ -59,6 +60,27 @@ export class MedicalService {
                 return items.map((d: any, index: number) => this.mapDoctor(d, index + 1));
             }),
             tap(doctors => this.doctorsSignal.set(doctors)),
+            catchError(error => this.handleError(error))
+        );
+    }
+
+    getDoctorsPaged(query: PaginatedQuery): Observable<PagedResult<Doctor>> {
+        let params = new HttpParams()
+            .set('PageNumber', query.pageNumber.toString())
+            .set('PageSize', query.pageSize.toString());
+
+        if (query.searchTerm) params = params.set('SearchTerm', query.searchTerm);
+        if (query.sortBy) params = params.set('SortBy', query.sortBy);
+        if (query.sortOrder) params = params.set('SortOrder', query.sortOrder);
+        if (query.filtersJson) params = params.set('FiltersJson', query.filtersJson);
+
+        return this.http.get<PagedResult<any>>(this.apiUrl, { params }).pipe(
+            map(res => {
+                const mappedItems = res.items.map((d: any, index: number) => 
+                    this.mapDoctor(d, (res.pageNumber - 1) * res.pageSize + index + 1)
+                );
+                return { ...res, items: mappedItems } as PagedResult<Doctor>;
+            }),
             catchError(error => this.handleError(error))
         );
     }

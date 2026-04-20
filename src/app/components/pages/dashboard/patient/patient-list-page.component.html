@@ -8,8 +8,12 @@
 
     <!-- Table Container -->
     <div class="bg-white rounded-[20px] border border-gray-100 flex-1 flex flex-col relative">
-        <app-patient-table class="flex-1 flex flex-col h-full" [patients]="patients()"
-            (editPatient)="onEditPatient($event)" (deletePatient)="onDeletePatient($event)"
+        <app-patient-table class="flex-1 flex flex-col h-full" 
+            [patients]="patients()"
+            [totalCount]="totalCount()"
+            (queryChange)="onQueryChange($event)"
+            (editPatient)="onEditPatient($event)" 
+            (deletePatient)="onDeletePatient($event)"
             (deleteSelected)="onDeleteSelectedPatients($event)"
             (viewPatient)="onViewPatient($event)"
             (addPatient)="openAddPatientModal()"></app-patient-table>

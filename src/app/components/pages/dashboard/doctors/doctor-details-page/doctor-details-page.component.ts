@@ -101,12 +101,15 @@ export class DoctorDetailsPageComponent implements OnInit {
             if (doc) {
                 this.doctor.set(doc);
 
-                this.appointmentService.getAppointmentsByDoctorName(doc.name).pipe(takeUntilDestroyed(this.destroyRef)).subscribe(filteredApps => {
+                // 1. Fetch appointments using the doctor's unique GUID (id)
+                this.appointmentService.getAppointmentsByDoctorId(doc.id).pipe(takeUntilDestroyed(this.destroyRef)).subscribe(filteredApps => {
                     this.doctorAppointments.set(filteredApps);
 
-                    const patientNames = Array.from(new Set(filteredApps.map(a => a.patientName)));
+                    // 2. Identify unique associated patients using their GUIDs
+                    const patientIds = Array.from(new Set(filteredApps.map(a => a.patientId).filter(id => !!id)));
+                    
                     this.patientService.getPatients().pipe(takeUntilDestroyed(this.destroyRef)).subscribe(patients => {
-                        const associatedPatients = patients.filter(p => patientNames.includes(p.name));
+                        const associatedPatients = patients.filter(p => patientIds.includes(p.id));
                         this.doctorPatients.set(associatedPatients.map((p, index) => ({
                             ...p,
                             no: index + 1
@@ -114,6 +117,7 @@ export class DoctorDetailsPageComponent implements OnInit {
                     });
                 });
 
+                // 3. Medical records already use the GUID as per existing code
                 this.medicalRecordService.getMedicalRecords(undefined, doc.id).pipe(takeUntilDestroyed(this.destroyRef)).subscribe((records: MedicalRecord[]) => {
                     this.doctorMedicalRecords.set(records);
                 });
