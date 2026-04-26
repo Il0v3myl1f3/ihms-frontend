@@ -17,7 +17,9 @@ export class PatientService {
     public patients = this.patientsSignal.asReadonly();
 
     getPatients(): Observable<Patient[]> {
-        return this.http.get<any[]>(this.apiUrl).pipe(
+        return this.http.get<any>(this.apiUrl, {
+            params: new HttpParams().set('PageSize', '999').set('SortOrder', 'desc')
+        }).pipe(
             map(data => {
                 const items = Array.isArray(data) ? data : (data as any).items || [];
                 return items.map((p: any, index: number) => this.mapToPatient(p, index + 1));
@@ -155,8 +157,19 @@ export class PatientService {
 
     private handleError(error: any): Observable<never> {
         let msg = 'Server error';
-        if (error.status === 0) msg = 'Backend unreachable. Ensure it is running on port 5275.';
-        else if (error.error?.message) msg = error.error.message;
+        if (error.status === 0) {
+            msg = 'Backend unreachable. Ensure it is running on port 5275.';
+        } else if (error.status === 400 && error.error?.errors) {
+            // Handle ASP.NET Core Validation Errors
+            const validationErrors = error.error.errors;
+            msg = Object.keys(validationErrors)
+                .map(key => `${key}: ${validationErrors[key].join(', ')}`)
+                .join(' | ');
+        } else if (error.error?.message) {
+            msg = error.error.message;
+        } else if (typeof error.error === 'string') {
+            msg = error.error;
+        }
         return throwError(() => msg);
     }
 }

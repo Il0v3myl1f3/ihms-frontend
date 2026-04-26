@@ -18,7 +18,7 @@
                 [class.border-[#1F2B6C]]="activeFilterMenu() === 'doctor'">
                 <lucide-icon [img]="Filter" class="w-3.5 h-3.5 text-gray-400"></lucide-icon>
                 <span class="truncate max-w-[90px]">
-                    {{ filterDoctor() === 'All' ? 'Doctor' : filterDoctor() }}
+                    {{ getSelectedDoctorName() }}
                 </span>
                 <lucide-icon [img]="ChevronDown" class="w-3.5 h-3.5 text-gray-400 transition-transform duration-200 origin-center"
                     [class.rotate-180]="activeFilterMenu() === 'doctor'"></lucide-icon>
@@ -26,14 +26,14 @@
             @if (activeFilterMenu() === 'doctor') {
             <div
                 class="absolute top-full mt-1 left-0 z-50 w-52 bg-white border border-gray-300 rounded-lg shadow-lg py-1 max-h-60 overflow-auto slim-scroll">
-                @for (doc of availableDoctors; track doc) {
-                <button (click)="setFilter('doctor', doc)"
+                @for (doc of availableDoctors(); track doc.id) {
+                <button (click)="setFilter('doctor', doc.id)"
                     class="w-full text-left px-4 py-2 text-sm transition-colors"
-                    [class.bg-blue-50]="filterDoctor() === doc"
-                    [class.text-[#1F2B6C]]="filterDoctor() === doc"
-                    [class.text-gray-700]="filterDoctor() !== doc"
-                    [class.hover:bg-gray-50]="filterDoctor() !== doc">
-                    {{ doc }}
+                    [class.bg-blue-50]="filterDoctor() === doc.id"
+                    [class.text-[#1F2B6C]]="filterDoctor() === doc.id"
+                    [class.text-gray-700]="filterDoctor() !== doc.id"
+                    [class.hover:bg-gray-50]="filterDoctor() !== doc.id">
+                    {{ doc.name }}
                 </button>
                 }
             </div>

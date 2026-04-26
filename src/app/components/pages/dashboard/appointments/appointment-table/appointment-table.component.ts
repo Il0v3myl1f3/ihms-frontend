@@ -43,6 +43,7 @@ export class AppointmentTableComponent implements OnInit, OnDestroy {
     createMedicalRecord = output<Appointment>();
     queryChange = output<PaginatedQuery>();
     totalCount = input<number>(0);
+    doctors = input<any[]>([]);
 
     readonly Pencil = Pencil;
     readonly Trash2 = Trash2;
@@ -76,10 +77,11 @@ export class AppointmentTableComponent implements OnInit, OnDestroy {
 
     availableStatuses = ['All', 'Scheduled', 'Completed', 'Cancelled', 'NoShow'];
 
-    availableDoctors = [
-        'All', 'Dr. Smith', 'Dr. Johnson', 'Dr. Williams', 
-        'Dr. Brown', 'Dr. Jones', 'Dr. Garcia', 'Dr. Miller'
-    ];
+    availableDoctors = computed(() => {
+        const list = [{ id: 'All', name: 'All' }];
+        this.doctors().forEach(d => list.push({ id: d.id, name: d.name }));
+        return list;
+    });
 
     constructor() {
         effect(() => {
@@ -101,7 +103,8 @@ export class AppointmentTableComponent implements OnInit, OnDestroy {
             searchTerm: this.searchQuery(),
             sortBy: this.sortColumn(),
             sortOrder: this.sortDirection(),
-            filtersJson: filters.length > 0 ? JSON.stringify(filters) : undefined
+            filtersJson: filters.length > 0 ? JSON.stringify(filters) : undefined,
+            doctorId: this.filterDoctor() !== 'All' ? this.filterDoctor() : undefined
         };
         untracked(() => {
             this.queryChange.emit(query);
@@ -279,5 +282,12 @@ export class AppointmentTableComponent implements OnInit, OnDestroy {
             case 'Completed': return 'bg-emerald-50 text-emerald-700';
             default: return 'bg-gray-50 text-gray-700';
         }
+    }
+
+    getSelectedDoctorName(): string {
+        const id = this.filterDoctor();
+        if (id === 'All') return 'Doctor';
+        const doc = this.availableDoctors().find(d => d.id === id);
+        return doc ? doc.name : 'Doctor';
     }
 }
