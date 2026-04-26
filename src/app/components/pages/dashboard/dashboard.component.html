@@ -44,8 +44,8 @@
 
           @if (isNotificationOpen()) {
           <div (click)="$event.stopPropagation()"
-            class="absolute top-full right-0 mt-3 w-80 bg-white border border-gray-100 rounded-xl shadow-[0_10px_40px_-10px_rgba(0,0,0,0.1)] py-2 z-9999 overflow-hidden">
-            <div class="px-5 py-3 border-b border-gray-50 flex items-center justify-between bg-gray-50/30">
+            class="absolute top-full right-0 mt-3 w-80 bg-white border border-gray-300 rounded-xl shadow-[0_10px_40px_-10px_rgba(0,0,0,0.1)] py-2 z-[9999] overflow-hidden">
+            <div class="px-5 py-3 border-b border-gray-300 flex items-center justify-between bg-gray-50/30">
               <h3 class="font-bold text-gray-800 flex items-center gap-2">
                 Notifications
                 @if (unreadCount() > 0) {
@@ -68,10 +68,10 @@
               } @else {
               @for (notif of notifications(); track notif.id) {
               <div (click)="markAsRead(notif.id, $event)"
-                class="px-5 py-3.5 hover:bg-gray-50 transition-colors flex gap-3 border-b border-gray-50 last:border-0 cursor-pointer group relative"
+                class="px-5 py-3.5 hover:bg-gray-50 transition-colors flex gap-3 border-b border-gray-300 last:border-0 cursor-pointer group relative"
                 [class.bg-blue-50/10]="!notif.read">
                 <div class="w-2 h-2 rounded-full mt-1.5 shrink-0" [class.bg-[#159EEC]]="!notif.read"
-                  [class.bg-gray-200]="notif.read"></div>
+                  [class.bg-gray-300]="notif.read"></div>
                 <div class="flex-1">
                   <p class="text-[13px] text-gray-800 font-medium leading-snug group-hover:text-[#1F2B6C] transition-colors"
                     [class.text-gray-600]="notif.read">{{ notif.text }}</p>

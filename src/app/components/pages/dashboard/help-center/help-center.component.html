@@ -1,9 +1,9 @@
-﻿<div class="h-full flex flex-col w-full">
+<div class="h-full flex flex-col w-full">
     <!-- Page Header -->
-    <div class="flex flex-col md:flex-row md:items-center gap-6 mb-8 relative z-30">
+    <div class="flex flex-col md:flex-row md:items-center gap-6 mb-8 relative z-30 -mt-2">
         <div class="shrink-0">
-            <p class="text-sm font-medium text-gray-400 mb-0.5">Resources & Support</p>
-            <h2 class="text-2xl font-bold text-[#202124] tracking-tight">Help Center</h2>
+            <h2 class="text-[36px] font-bold text-[#1F2B6C] tracking-tight mb-1">Help Center</h2>
+            <p class="text-sm font-semibold text-gray-500">Resources & Support</p>
         </div>
 
         <!-- Search Bar repositioned to the middle -->
@@ -14,7 +14,7 @@
                     (input)="onSearch($event)"
                     type="text"
                     placeholder="Search for articles, FAQs..."
-                    class="w-full pl-12 pr-4 py-2.5 bg-white border border-[#DADCE0] rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all shadow-xs"
+                    class="w-full pl-12 pr-4 py-2.5 bg-white border border-gray-300 rounded-xl text-sm placeholder-gray-400 focus:outline-none focus:border-[#1F2B6C] font-semibold text-gray-700 transition-all shadow-xs"
                 >
             </div>
         </div>
@@ -27,9 +27,9 @@
 
     <div class="flex-1 space-y-6 overflow-y-auto no-scrollbar pb-10">
         <!-- Banner -->
-        <div class="bg-linear-to-r from-blue-600 to-indigo-700 rounded-2xl p-8 relative overflow-hidden shadow-lg border border-blue-400/20">
+        <div class="bg-linear-to-r from-[#1F2B6C] to-[#151D4A] rounded-[20px] p-8 relative overflow-hidden shadow-xs border border-[#1F2B6C]/20">
             <div class="relative z-10 max-w-xl">
-                <h3 class="text-2xl font-bold text-white mb-2">How can we help you today?</h3>
+                <h3 class="text-3xl font-bold text-white mb-2">How can we help you today?</h3>
                 <p class="text-blue-100 text-sm leading-relaxed">
                     Find answers to common questions about your appointments, medical records, and more. If you can't find what you're looking for, our support team is just a click away.
                 </p>
@@ -48,17 +48,17 @@
 
                 <div class="space-y-3">
                     @for (faq of filteredFaqs; track $index) {
-                    <div class="bg-white border border-[#DADCE0] rounded-xl overflow-hidden transition-all duration-300"
-                         [ngClass]="faq.isOpen ? 'ring-2 ring-blue-500/10 border-blue-500/30' : ''">
+                    <div class="bg-white border border-gray-300 rounded-[15px] overflow-hidden transition-all duration-300"
+                         [ngClass]="faq.isOpen ? 'ring-2 ring-[#1F2B6C]/5 border-[#1F2B6C]/30 shadow-xs' : ''">
                         <button (click)="toggleFaq($index)"
                                 class="w-full px-5 py-4 text-left flex items-center justify-between hover:bg-gray-50/50 transition-colors cursor-pointer group">
                             <div class="flex items-center gap-3">
-                                <span class="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-gray-100 text-gray-500 group-hover:bg-blue-100 group-hover:text-blue-600 transition-colors">
+                                <span class="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-gray-50 text-gray-500 group-hover:bg-blue-50 group-hover:text-[#1F2B6C] transition-colors border border-gray-300">
                                     {{ faq.category }}
                                 </span>
-                                <span class="font-bold text-[#202124] text-sm">{{ faq.question }}</span>
+                                <span class="font-bold text-[#1F2B6C] text-sm">{{ faq.question }}</span>
                             </div>
-                            <lucide-icon [img]="faq.isOpen ? ChevronUp : ChevronDown" class="w-4 h-4 text-gray-400 group-hover:text-blue-600 transition-colors"></lucide-icon>
+                            <lucide-icon [img]="ChevronDown" class="w-4 h-4 text-gray-400 group-hover:text-[#1F2B6C] transition-transform duration-200 origin-center" [class.rotate-180]="faq.isOpen"></lucide-icon>
                         </button>
                         <div class="transition-all duration-300 overflow-hidden"
                              [style.max-height]="faq.isOpen ? '200px' : '0'">
@@ -78,8 +78,8 @@
 
             <!-- Articles & Guides -->
             <div class="space-y-4">
-                <h3 class="text-lg font-bold text-[#202124] px-2">Knowledge Base</h3>
-                <div class="bg-white border border-[#DADCE0] rounded-xl p-6 space-y-4">
+                <h3 class="text-lg font-bold text-[#1F2B6C] px-2">Knowledge Base</h3>
+                <div class="bg-white border border-gray-300 rounded-[20px] p-6 space-y-4 shadow-xs">
                     <div class="flex items-center gap-3 group cursor-pointer pb-4 border-b border-gray-50 last:border-0 last:pb-0">
                         <div class="w-10 h-10 rounded-lg bg-emerald-50 text-emerald-600 flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
                             <lucide-icon [img]="FileText" class="w-5 h-5"></lucide-icon>

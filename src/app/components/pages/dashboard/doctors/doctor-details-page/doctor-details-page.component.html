@@ -1,28 +1,31 @@
 <div class="h-full flex flex-col w-full">
     <!-- Page Header -->
-    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4">
-        <div class="flex items-center gap-3">
-            <button (click)="goBack()"
-                class="w-9 h-9 flex items-center justify-center rounded-lg border border-[#DADCE0] bg-white text-gray-400 hover:text-gray-600 transition-all active:scale-95 shadow-xs cursor-pointer">
-                <lucide-icon [img]="ArrowLeft" class="w-4 h-4"></lucide-icon>
-            </button>
-            <div>
-                <p class="text-sm font-medium text-gray-400 mb-0.5">Back to Doctor List</p>
-                <h2 class="text-xl font-bold text-[#202124] tracking-tight">Doctor Details</h2>
-            </div>
+    <div class="flex items-start gap-4 mb-6 -mt-2">
+        <button (click)="goBack()"
+            class="w-10 h-10 flex items-center justify-center rounded-xl border border-gray-300 bg-white text-gray-400 hover:text-[#1F2B6C] transition-all active:scale-95 shadow-xs cursor-pointer mt-1">
+            <lucide-icon [img]="ArrowLeft" class="w-5 h-5"></lucide-icon>
+        </button>
+        <div>
+            <p (click)="goBack()"
+                class="text-[13px] font-semibold text-gray-400 mb-0.5 hover:text-[#1F2B6C] cursor-pointer transition-colors">
+                Back to Doctor List</p>
+            <h1 class="text-[24px] font-bold text-[#1F2B6C] tracking-tight leading-tight">Doctor Details</h1>
         </div>
     </div>
 
     <!-- Main Content Area -->
-    <div class="bg-white rounded-xl border border-[#DADCE0] flex-1 flex flex-col overflow-hidden min-h-[500px]">
+    <div class="bg-white rounded-xl border border-gray-300 flex-1 flex flex-col overflow-hidden min-h-[500px] shadow-xs">
 
         <!-- Horizontal Tab Navigation -->
-        <div class="w-full border-b border-[#DADCE0] bg-white sticky top-0 z-10 transition-colors">
+        <div class="w-full border-b border-gray-300 bg-white sticky top-0 z-10 transition-colors">
             <div class="flex items-center gap-2 px-5 py-3 overflow-x-auto no-scrollbar scroll-smooth">
                 @for (tab of tabs; track tab) {
-                <button (click)="setTab(tab)"
-                    [ngClass]="activeTab() === tab ? 'bg-[#E8F0FE] text-[#1A73E8] border-transparent shadow-none' : 'bg-white text-[#3C4043] border-gray-200/80 hover:border-gray-300 hover:bg-gray-50'"
-                    class="px-4 py-1.5 rounded-full text-sm font-medium transition-all cursor-pointer whitespace-nowrap border active:scale-[0.98]">
+                <button (click)="setTab(tab)" [class.bg-blue-50]="activeTab() === tab"
+                    [class.text-[#1F2B6C]]="activeTab() === tab" [class.border-transparent]="activeTab() === tab"
+                    [class.shadow-none]="activeTab() === tab" [class.bg-white]="activeTab() !== tab"
+                    [class.text-[#3C4043]]="activeTab() !== tab" [class.border-gray-300/80]="activeTab() !== tab"
+                    [class.hover:border-gray-300]="activeTab() !== tab" [class.hover:bg-gray-50]="activeTab() !== tab"
+                    class="px-4 py-1.5 rounded-full text-sm font-semibold transition-colors cursor-pointer whitespace-nowrap border">
                     {{ tab }}
                 </button>
                 }
@@ -36,7 +39,7 @@
             @if (activeTab() === 'General Info') {
             <div class="flex flex-col lg:flex-row gap-5 items-start">
                 <!-- Left: Doctor Info Card -->
-                <div class="w-full lg:w-[30%] shrink-0 bg-white border border-[#DADCE0] rounded-xl p-6">
+                <div class="w-full lg:w-[30%] shrink-0 bg-white border border-gray-300 rounded-xl p-6 shadow-xs">
                     <div class="flex flex-col items-center text-center mb-6 pt-2">
                         <div class="w-24 h-24 rounded-full bg-indigo-50 border-2 border-indigo-100 flex items-center justify-center mb-4 overflow-hidden">
                             @if (doctor()?.image) {
@@ -45,7 +48,7 @@
                                 <lucide-icon [img]="User" class="w-10 h-10 text-indigo-400"></lucide-icon>
                             }
                         </div>
-                        <h3 class="text-xl font-bold text-[#202124] mb-1">{{ doctor()?.name }}</h3>
+                        <h3 class="text-xl font-bold text-[#1F2B6C] mb-1">{{ doctor()?.name }}</h3>
                         <span class="px-3 py-1 rounded-full text-xs font-semibold" [ngClass]="getStatusClasses(doctor()?.availability)">
                             {{ doctor()?.availability }}
                         </span>
@@ -53,7 +56,7 @@
 
                     <div class="space-y-4">
                         <div>
-                            <h4 class="text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Professional Info</h4>
+                            <h4 class="text-xs font-bold text-gray-400 uppercase tracking-wider mb-3">Professional Info</h4>
                             <div class="space-y-3">
                                 <div class="flex items-center gap-3">
                                     <div class="w-8 h-8 rounded-lg bg-blue-50 flex items-center justify-center text-blue-600">
@@ -61,7 +64,7 @@
                                     </div>
                                     <div>
                                         <p class="text-xs text-gray-500 font-medium leading-none mb-1">Specialty</p>
-                                        <p class="text-sm font-bold text-[#202124]">{{ doctor()?.specialty }}</p>
+                                        <p class="text-sm font-bold text-[#1F2B6C]">{{ doctor()?.specialty }}</p>
                                     </div>
                                 </div>
                                 <div class="flex items-center gap-3">
@@ -70,7 +73,7 @@
                                     </div>
                                     <div>
                                         <p class="text-xs text-gray-500 font-medium leading-none mb-1">Department</p>
-                                        <p class="text-sm font-bold text-[#202124]">{{ doctor()?.role }}</p>
+                                        <p class="text-sm font-bold text-[#1F2B6C]">{{ doctor()?.role }}</p>
                                     </div>
                                 </div>
                             </div>
@@ -84,7 +87,7 @@
                                 </div>
                                 <div>
                                     <p class="text-xs text-gray-500 font-medium leading-none mb-1">Phone Number</p>
-                                    <p class="text-sm font-bold text-[#202124]">{{ doctor()?.phone }}</p>
+                                    <p class="text-sm font-bold text-[#1F2B6C]">{{ doctor()?.phone }}</p>
                                 </div>
                             </div>
                         </div>
@@ -116,9 +119,9 @@
 
                     <div class="bg-[#F1F3F4] rounded-xl p-6">
                         <div class="flex items-center justify-between mb-5">
-                            <h4 class="text-lg font-bold text-[#202124]">Upcoming Appointments</h4>
+                            <h4 class="text-lg font-bold text-[#1F2B6C]">Upcoming Appointments</h4>
                             <button (click)="setTab('Appointments')"
-                                class="text-[13px] font-bold text-[#1A73E8] hover:text-[#174EA6] transition-all cursor-pointer">
+                                class="text-[13px] font-bold text-[#159EEC] hover:text-[#1F2B6C] transition-all cursor-pointer">
                                 View All
                             </button>
                         </div>
@@ -127,7 +130,7 @@
                             <div (click)="onViewAppointment(a)"
                                 class="bg-white rounded-xl p-4 border border-gray-100 hover:border-[#1A73E8] hover:shadow-sm transition-all cursor-pointer group/card">
                                 <div class="flex justify-between items-start mb-2">
-                                    <h5 class="text-sm font-bold text-[#202124] group-hover/card:text-[#1A73E8] transition-colors">{{ a.patientName }}</h5>
+                                    <h5 class="text-sm font-bold text-[#1F2B6C] group-hover/card:text-[#159EEC] transition-colors">{{ a.patientName }}</h5>
                                     <span class="text-[10px] px-1.5 py-0.5 rounded bg-blue-50 text-blue-600 font-bold uppercase tracking-tighter">Scheduled</span>
                                 </div>
                                 <div class="flex items-center gap-2 text-gray-500">
@@ -148,20 +151,20 @@
             @if (activeTab() === 'Schedule') {
             <div class="h-full flex flex-col space-y-6">
                 <!-- Header -->
-                <div class="border-b border-[#DADCE0] pb-4">
-                    <h4 class="text-lg font-bold text-[#202124]">Doctor's Schedule</h4>
-                    <p class="text-[13px] text-gray-500 mt-0.5 font-medium">Weekly working hours and location for {{ doctor()?.name }}</p>
+                <div class="border-b border-gray-300 pb-4">
+                    <h4 class="text-lg font-bold text-[#1F2B6C]">Doctor's Schedule</h4>
+                    <p class="text-[13px] text-gray-500 mt-0.5 font-semibold">Weekly working hours and location for {{ doctor()?.name }}</p>
                 </div>
 
                 <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
                     <!-- Cabinet Info Card -->
-                    <div class="lg:col-span-1 bg-[#F8F9FA] border border-[#DADCE0] rounded-xl p-6 flex flex-col">
+                    <div class="lg:col-span-1 bg-gray-50/50 border border-gray-300 rounded-xl p-6 flex flex-col shadow-xs">
                         <div class="flex items-center gap-3 mb-6">
                             <div class="w-10 h-10 rounded-full bg-blue-50 flex items-center justify-center text-blue-600">
                                 <lucide-icon [img]="DoorOpen" class="w-5 h-5"></lucide-icon>
                             </div>
                             <div>
-                                <h5 class="text-sm font-bold text-[#202124]">Assigned Cabinet</h5>
+                                <h5 class="text-sm font-bold text-[#1F2B6C]">Assigned Cabinet</h5>
                                 <p class="text-xs text-gray-500">Consultation Room</p>
                             </div>
                         </div>
@@ -223,10 +226,10 @@
                     </div>
 
                     <!-- Weekly Schedule Card -->
-                    <div class="lg:col-span-2 bg-white border border-[#DADCE0] rounded-xl overflow-hidden">
+                    <div class="lg:col-span-2 bg-white border border-gray-300 rounded-xl overflow-hidden shadow-xs">
                         <table class="w-full text-left border-collapse">
                             <thead>
-                                <tr class="bg-gray-50 border-b border-[#DADCE0]">
+                                <tr class="bg-gray-50 border-b border-gray-300">
                                     <th class="px-6 py-3.5 text-xs font-bold text-gray-500 uppercase tracking-wider">Day</th>
                                     <th class="px-6 py-3.5 text-xs font-bold text-gray-500 uppercase tracking-wider">Status</th>
                                     <th class="px-6 py-3.5 text-xs font-bold text-gray-500 uppercase tracking-wider">Working Hours</th>
@@ -237,7 +240,7 @@
                                 @for (day of ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday']; track day) {
                                 <tr class="hover:bg-gray-50/50 transition-colors">
                                     <td class="px-6 py-4">
-                                        <span class="text-sm font-bold text-[#202124]">{{ day }}</span>
+                                        <span class="text-sm font-bold text-[#1F2B6C]">{{ day }}</span>
                                     </td>
                                     <td class="px-6 py-4">
                                         <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-bold bg-emerald-50 text-emerald-700">Available</span>
@@ -284,8 +287,8 @@
             <!-- Appointments Tab -->
             @if (activeTab() === 'Appointments') {
             <div class="h-full flex flex-col">
-                <div class="border-b border-[#DADCE0] pb-4 mb-6">
-                    <h4 class="text-lg font-bold text-[#202124]">Appointments</h4>
+                <div class="border-b border-gray-300 pb-4 mb-6">
+                    <h4 class="text-lg font-bold text-[#1F2B6C]">Appointments</h4>
                     <p class="text-[13px] text-gray-500 mt-0.5 font-medium">Full schedule for {{ doctor()?.name }}</p>
                 </div>
                 <div class="rounded-lg border border-gray-200 overflow-hidden bg-white flex-1 min-h-[400px]">
@@ -304,8 +307,8 @@
             <!-- Patients Tab -->
             @if (activeTab() === 'Patients') {
             <div class="h-full flex flex-col">
-                <div class="border-b border-[#DADCE0] pb-4 mb-6">
-                    <h4 class="text-lg font-bold text-[#202124]">Associated Patients</h4>
+                <div class="border-b border-gray-300 pb-4 mb-6">
+                    <h4 class="text-lg font-bold text-[#1F2B6C]">Associated Patients</h4>
                     <p class="text-[13px] text-gray-500 mt-0.5 font-medium">Patients treated by {{ doctor()?.name }}</p>
                 </div>
                 <div class="rounded-lg border border-gray-200 overflow-hidden bg-white flex-1 min-h-[400px]">
@@ -320,9 +323,9 @@
             <!-- Medical Records Tab -->
             @if (activeTab() === 'Medical Records') {
             <div class="h-full flex flex-col">
-                <div class="border-b border-[#DADCE0] pb-4 mb-6 flex justify-between items-center">
+                <div class="border-b border-gray-300 pb-4 mb-6 flex justify-between items-center">
                     <div>
-                        <h4 class="text-lg font-bold text-[#202124]">Medical Records History</h4>
+                        <h4 class="text-lg font-bold text-[#1F2B6C]">Medical Records History</h4>
                         <p class="text-[13px] text-gray-500 mt-0.5 font-medium">Records created by {{ doctor()?.name }}</p>
                     </div>
                     <button *ngIf="isDoctor()" (click)="onAddMedicalRecord()"
@@ -338,7 +341,7 @@
                                 <th class="px-4 py-3 text-xs font-bold text-gray-500 uppercase tracking-wider">Patient</th>
                                 <th class="px-4 py-3 text-xs font-bold text-gray-500 uppercase tracking-wider">Type</th>
                                 <th class="px-4 py-3 text-xs font-bold text-gray-500 uppercase tracking-wider">Date</th>
-                                <th class="px-4 py-4 text-sm font-normal text-gray-600 center w-[10%]">Actions</th>
+                                <th class="px-4 py-4 text-xs font-bold text-gray-500 uppercase tracking-wider border-r border-gray-300 text-center w-[10%]">Actions</th>
                             </tr>
                         </thead>
                         <tbody class="divide-y divide-gray-100">
