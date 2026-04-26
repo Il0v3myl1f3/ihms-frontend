@@ -10,14 +10,14 @@
     (onToggle)="toggleSidebar()" (onMenuClick)="isMobileSidebarOpen.set(false)"></app-sidebar>
 
   <!-- Main Content Area -->
-  <main class="dashboard-main transition-all duration-300 min-h-screen flex flex-col relative"
-    [class.ml-[250px]]="!isSidebarCollapsed()" [class.ml-[72px]]="isSidebarCollapsed()">
+  <main class="dashboard-main transition-all duration-300 min-h-screen flex flex-col relative ml-0"
+    [class.lg:ml-[250px]]="!isSidebarCollapsed()" [class.lg:ml-[72px]]="isSidebarCollapsed()">
     <!-- Top Header Bar (Absolute to overlay on the content) -->
     <header
-      class="absolute top-0 w-full flex items-start justify-between px-4 sm:px-8 py-8 shrink-0 z-20 pointer-events-none transition-all duration-300">
+      class="absolute top-0 w-full flex items-start justify-between px-4 sm:px-8 py-8 shrink-0 z-40 pointer-events-none transition-all duration-300">
       <!-- Mobile Menu Toggle -->
       <button (click)="toggleMobileSidebar()"
-        class="lg:hidden p-2 text-gray-400 hover:text-[#1F2B6C] bg-white border border-gray-100 rounded-xl transition-all active:scale-95 pointer-events-auto">
+        class="lg:hidden p-2 text-gray-400 hover:text-[#1F2B6C] bg-white border border-gray-100 rounded-xl transition-all active:scale-95 pointer-events-auto shadow-sm">
         <lucide-icon [img]="Menu" class="w-5 h-5"></lucide-icon>
       </button>
 
@@ -27,7 +27,7 @@
       <div class="flex items-center gap-4 pointer-events-auto sm:mt-[-0.25rem]">
         <!-- Settings -->
         <button [routerLink]="['/dashboard/settings']"
-          class="p-2.5 text-gray-500 hover:text-[#1F2B6C] bg-white rounded-full hover:bg-gray-50 transition-colors cursor-pointer border border-gray-200">
+          class="hidden md:block p-2.5 text-gray-500 hover:text-[#1F2B6C] bg-white rounded-full hover:bg-gray-50 transition-colors cursor-pointer border border-gray-200">
           <lucide-icon [img]="Settings" class="w-5 h-5"></lucide-icon>
         </button>
 
@@ -87,7 +87,7 @@
 
         <!-- User Profile -->
         <div
-          class="flex items-center gap-3 cursor-pointer group bg-white px-3 py-1.5 rounded-full border border-gray-200 hover:bg-gray-50 transition-colors">
+          class="hidden sm:flex items-center gap-3 cursor-pointer group bg-white px-3 py-1.5 rounded-full border border-gray-200 hover:bg-gray-50 transition-colors">
           <img
             src="https://ui-avatars.com/api/?name={{ currentUser?.name | avatarInitials }}&background=EAF6FD&color=1F2B6C&rounded=true"
             alt="User avatar" class="w-9 h-9 rounded-full object-cover">
@@ -102,7 +102,7 @@
     </header>
 
     <!-- Rest of the Content (Router Outlet) -->
-    <div class="p-8 lg:p-8 pt-8 lg:pt-8 flex-1 relative bg-[#FDFDFD] min-h-screen">
+    <div class="p-4 sm:p-8 pt-8 flex-1 relative bg-[#FDFDFD] min-h-screen">
       <router-outlet></router-outlet>
     </div>
   </main>
