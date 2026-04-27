@@ -105,9 +105,7 @@ export class SidebarComponent implements OnInit, OnDestroy {
     /** Filtered bottom items visible to the current user */
     filteredBottomItems: MenuItem[] = [];
 
-    bottomItems: MenuItem[] = [
-        { label: 'Help Center', icon: HelpCircle, route: '/dashboard/help-center', roles: ['user'] },
-    ];
+    bottomItems: MenuItem[] = [];
 
     private userSub?: Subscription;
     public router = inject(Router);

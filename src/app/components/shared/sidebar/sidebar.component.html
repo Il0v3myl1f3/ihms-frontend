@@ -69,7 +69,6 @@
 
     <!-- Bottom Section -->
     <div class="px-3 py-4 space-y-1 mb-2">
-        <!-- Help Center & Other Bottom Items -->
         @for (item of filteredBottomItems; track item.label) {
         <button [routerLink]="item.route" routerLinkActive="bg-blue-50 text-blue-600" [routerLinkActiveOptions]="{exact: true}"
             (click)="item.action ? item.action() : null; onMenuClick.emit()"

@@ -119,11 +119,6 @@ export const routes: Routes = [
         path: 'settings',
         loadComponent: () => import('./components/pages/dashboard/settings/dashboard-settings.component').then(m => m.DashboardSettingsComponent)
       },
-      {
-        path: 'help-center',
-        loadComponent: () => import('./components/pages/dashboard/help-center/help-center.component').then(m => m.HelpCenterComponent),
-        canActivate: [roleGuard],
-        data: { allowedRoles: ['user'] }
       }
     ]
   },
