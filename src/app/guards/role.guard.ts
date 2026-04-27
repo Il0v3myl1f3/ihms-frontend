@@ -25,6 +25,9 @@ export const roleGuard: CanActivateFn = (route) => {
     return true;
   }
 
-  // Unauthorized — redirect back to dashboard home
+  // Unauthorized — redirect to login if not authenticated, otherwise dashboard home
+  if (!user) {
+    return router.createUrlTree(['/login']);
+  }
   return router.createUrlTree(['/dashboard']);
 };

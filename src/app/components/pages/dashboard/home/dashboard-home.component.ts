@@ -1,5 +1,5 @@
 import { Component, OnInit, inject, ChangeDetectionStrategy, DestroyRef, signal } from '@angular/core';
-import { Observable, timer, of } from 'rxjs';
+import { Observable, timer, of, switchMap } from 'rxjs';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { catchError } from 'rxjs/operators';
 import { AuthService, User } from '../../../../services/auth.service';
@@ -29,6 +29,7 @@ export class DashboardHomeComponent implements OnInit {
 
     currentUser$!: Observable<User | null>;
     currentUser: User | null = null;
+    displayName = signal<string>('');
 
     // Icons
     readonly Users = Users;
@@ -86,6 +87,10 @@ export class DashboardHomeComponent implements OnInit {
         this.currentUser$ = this.authService.currentUser$;
         this.currentUser$.pipe(takeUntilDestroyed(this.destroyRef)).subscribe((user) => {
             this.currentUser = user;
+            if (user) {
+                this.displayName.set(user.name || user.email);
+                this.loadUserProfile(user);
+            }
         });
 
         // Polling: Refresh all dashboard data every 30 seconds
@@ -209,5 +214,35 @@ export class DashboardHomeComponent implements OnInit {
 
     get userRole(): string {
         return this.currentUser?.role ?? 'user';
+    }
+
+    private loadUserProfile(user: User): void {
+        if (user.role === 'user') {
+            this.patientService.getMyPatientId().pipe(
+                switchMap((id: string) => this.patientService.getPatientById(id)),
+                takeUntilDestroyed(this.destroyRef)
+            ).subscribe({
+                next: (patient: any) => {
+                    if (patient && (patient.firstName || patient.lastName)) {
+                        const fullName = `${patient.firstName} ${patient.lastName}`.trim();
+                        this.displayName.set(fullName);
+                    }
+                }
+            });
+        } else if (user.role === 'doctor') {
+            this.medicalService.getDoctors().pipe(
+                takeUntilDestroyed(this.destroyRef)
+            ).subscribe({
+                next: (doctors) => {
+                    const doctor = doctors.find(d => d.email.toLowerCase() === user.email.toLowerCase());
+                    if (doctor && (doctor.firstName || doctor.lastName)) {
+                        const fullName = `${doctor.firstName} ${doctor.lastName}`.trim();
+                        this.displayName.set(fullName);
+                    }
+                }
+            });
+        } else if (user.role === 'admin') {
+            this.displayName.set('System Administrator');
+        }
     }
 }

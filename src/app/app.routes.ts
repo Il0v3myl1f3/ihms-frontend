@@ -1,6 +1,7 @@
 import { Routes } from '@angular/router';
 import { roleGuard } from './guards/role.guard';
 import { authGuard } from './guards/auth.guard';
+import { guestGuard } from './guards/guest.guard';
 
 export const routes: Routes = [
   {
@@ -26,26 +27,27 @@ export const routes: Routes = [
   {
     path: 'login',
     loadComponent: () => import('./components/pages/login/login-page.component').then(m => m.LoginPageComponent),
-    canActivate: [authGuard]
+    canActivate: [guestGuard]
   },
   {
     path: 'register',
     loadComponent: () => import('./components/pages/register/register-page.component').then(m => m.RegisterPageComponent),
-    canActivate: [authGuard]
+    canActivate: [guestGuard]
   },
   {
     path: 'forgot-password',
     loadComponent: () => import('./components/pages/forgot-password/forgot-password-page.component').then(m => m.ForgotPasswordPageComponent),
-    canActivate: [authGuard]
+    canActivate: [guestGuard]
   },
   {
     path: 'reset-password',
     loadComponent: () => import('./components/pages/reset-password/reset-password-page.component').then(m => m.ResetPasswordPageComponent),
-    canActivate: [authGuard]
+    canActivate: [guestGuard]
   },
   {
     path: 'dashboard',
     loadComponent: () => import('./components/pages/dashboard/dashboard.component').then(m => m.DashboardComponent),
+    canActivate: [authGuard],
     children: [
       {
         path: '',
@@ -118,7 +120,6 @@ export const routes: Routes = [
       {
         path: 'settings',
         loadComponent: () => import('./components/pages/dashboard/settings/dashboard-settings.component').then(m => m.DashboardSettingsComponent)
-      },
       }
     ]
   },

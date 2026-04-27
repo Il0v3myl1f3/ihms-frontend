@@ -108,23 +108,19 @@
                         class="w-5 h-5 cursor-pointer hover:text-[#BFD2F8] transition-colors"></lucide-icon>
                 </button>
 
-                <!-- My Account Button - Show when user is NOT logged in -->
+                <!-- My Account / Dashboard Button -->
                 @if ((currentUser$ | async) === null) {
                     <a routerLink="/login"
                         class="hidden lg:block bg-[#159EEC] text-white px-6 py-2 rounded-full font-bold hover:bg-[#1282C4] transition-all transform hover:scale-105 shadow-md text-sm cursor-pointer">
                         My Account
                     </a>
-                }
-
-                <!-- User Profile - Show when user IS logged in -->
-                @if (currentUser$ | async; as user) {
-                    <a routerLink="/dashboard" class="hidden lg:flex items-center gap-4 cursor-pointer hover:opacity-90 transition-opacity">
-                        <div class="text-right">
-                            <div class="text-sm font-semibold text-white">{{ user.name }}</div>
-                            <div class="text-xs text-[#BFD2F8]">{{ user.role }}</div>
-                        </div>
+                } @else {
+                    <a routerLink="/dashboard"
+                        class="hidden lg:block bg-[#159EEC] text-white px-6 py-2 rounded-full font-bold hover:bg-[#1282C4] transition-all transform hover:scale-105 shadow-md text-sm cursor-pointer">
+                        To My Account
                     </a>
                 }
+
 
                 <!-- Hamburger / Close — mobile only (animated) -->
                 <button (click)="toggleMenu()" [class.is-open]="menuOpen" class="hamburger lg:hidden"
@@ -171,10 +167,17 @@
             }
 
             <li class="mt-2">
-                <a routerLink="/login" (click)="closeMenu()"
-                    class="bg-[#1F2B6C] text-white px-10 py-3.5 rounded-full font-semibold hover:bg-[#152055] transition-all cursor-pointer text-base inline-block">
-                    My Account
-                </a>
+                @if ((currentUser$ | async) === null) {
+                    <a routerLink="/login" (click)="closeMenu()"
+                        class="bg-[#1F2B6C] text-white px-10 py-3.5 rounded-full font-semibold hover:bg-[#152055] transition-all cursor-pointer text-base inline-block">
+                        My Account
+                    </a>
+                } @else {
+                    <a routerLink="/dashboard" (click)="closeMenu()"
+                        class="bg-[#1F2B6C] text-white px-10 py-3.5 rounded-full font-semibold hover:bg-[#152055] transition-all cursor-pointer text-base inline-block">
+                        To My Account
+                    </a>
+                }
             </li>
         </ul>
     </div>

@@ -89,12 +89,15 @@
         <div
           class="hidden sm:flex items-center gap-3 cursor-pointer group bg-white px-3 py-1.5 rounded-full border border-gray-200 hover:bg-gray-50 transition-colors">
           <img
-            src="https://ui-avatars.com/api/?name={{ currentUser?.name | avatarInitials }}&background=EAF6FD&color=1F2B6C&rounded=true"
+            src="https://ui-avatars.com/api/?name={{ displayName() | avatarInitials }}&background=EAF6FD&color=1F2B6C&rounded=true"
             alt="User avatar" class="w-9 h-9 rounded-full object-cover">
-          <div class="hidden md:flex items-center gap-2 pr-1">
+          <div class="hidden md:flex flex-col items-start gap-0.5 pr-1">
             <span
-              class="text-sm font-semibold text-[#1F2B6C] group-hover:text-[#159EEC] transition-colors leading-tight">
-              {{ currentUser?.name || 'Alfredo Westervelt' }}
+              class="text-sm font-bold text-[#1F2B6C] group-hover:text-[#159EEC] transition-colors leading-tight">
+              {{ displayName() }}
+            </span>
+            <span class="text-[10px] text-gray-400 font-medium uppercase tracking-wider">
+              {{ currentUser?.role || 'Guest' }}
             </span>
           </div>
         </div>
