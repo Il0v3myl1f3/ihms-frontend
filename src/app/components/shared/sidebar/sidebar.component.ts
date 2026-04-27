@@ -14,6 +14,7 @@ import {
     HelpCircle,
     LogOut,
     ChevronLeft,
+    ChevronRight,
     LucideIconData,
     Lock,
     Plus,
@@ -53,6 +54,7 @@ export interface MenuSection {
 export class SidebarComponent implements OnInit, OnDestroy {
     // Icons
     readonly ChevronLeft = ChevronLeft;
+    readonly ChevronRight = ChevronRight;
     readonly LogOut = LogOut;
     readonly HelpCircle = HelpCircle;
     readonly Lock = Lock;
