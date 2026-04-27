@@ -11,14 +11,8 @@ export class SettingsSidebarComponent {
   tabChange = output<string>();
 
   tabs = [
-    'General',
-    'Plan & Pricing',
     'Account',
-    'Payment & Billings',
-    'Link Account',
-    'Language',
-    'Preferences',
-    'Push Notifications'
+    'Language'
   ];
 
   setTab(tab: string) {
