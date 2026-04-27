@@ -2,6 +2,7 @@ import { Component, OnInit, OnDestroy, input, output, ChangeDetectionStrategy, s
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { fromEvent } from 'rxjs';
 import { FormsModule } from '@angular/forms';
+import { AuthService } from '../../../../../services/auth.service';
 import { CommonModule } from '@angular/common';
 import { LucideAngularModule, Pencil, Trash2, MoreHorizontal, Search, Filter, ChevronLeft, ChevronRight, Plus, ChevronDown, ChevronUp, Eye, FilePlus } from 'lucide-angular';
 import { PaginatedQuery, FilterItem } from '../../../../../core/models/pagination.models';
@@ -64,6 +65,9 @@ export class AppointmentTableComponent implements OnInit, OnDestroy {
 
     private ngZone = inject(NgZone);
     private destroyRef = inject(DestroyRef);
+    private authService = inject(AuthService);
+
+    canManage = computed(() => this.authService.getCurrentUser()?.role === 'doctor');
 
     selectAll = false;
     currentPage = signal(1);
