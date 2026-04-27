@@ -1,9 +1,9 @@
 <!-- Welcome Section -->
-<div class="mb-8">
-    <h1 class="text-display-1 text-[#1F2B6C] mb-2">
+<div class="mb-8 -mt-2">
+    <h1 class="text-[36px] font-bold text-[#1F2B6C] tracking-tight mb-2">
         Welcome back, {{ getUserFirstName() }}! 👋
     </h1>
-    <p class="text-body text-gray-500">
+    <p class="text-sm font-semibold text-gray-500">
         @switch (userRole) {
         @case ('admin') {
         Here's your hospital overview for today. Manage everything from one place.
@@ -26,52 +26,52 @@
 <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6 mb-8 mt-2">
     <!-- Total Patients -->
     <div routerLink="/dashboard/patient"
-        class="group bg-white rounded-2xl border border-gray-100 shadow-sm p-6 hover:shadow-lg hover:border-blue-200 transition-all duration-300 cursor-pointer">
+        class="group bg-white rounded-[20px] border border-gray-300 shadow-xs p-6 hover:shadow-md hover:border-[#1F2B6C]/30 transition-all duration-300 cursor-pointer">
         <div class="flex items-center justify-between mb-4">
             <div
-                class="w-12 h-12 bg-blue-50 rounded-xl flex items-center justify-center group-hover:bg-blue-100 transition-colors">
+                class="w-12 h-12 bg-blue-50 rounded-xl flex items-center justify-center group-hover:bg-blue-100 transition-colors border border-gray-300/10">
                 <lucide-icon [img]="Users" class="w-6 h-6 text-[#159EEC]"></lucide-icon>
             </div>
             <div class="text-right">
                 <span
-                    class="text-xs font-semibold text-emerald-500 bg-emerald-50 px-2.5 py-1 rounded-full">+12.5%</span>
+                    class="text-xs font-bold text-emerald-600 bg-emerald-50 px-2.5 py-1 rounded-full border border-emerald-200">+12.5%</span>
             </div>
         </div>
         <p class="text-3xl font-bold text-[#1F2B6C] tracking-tight mb-0.5">{{ stats().totalPatients | number }}</p>
-        <p class="text-sm font-medium text-gray-400">Total Patients</p>
+        <p class="text-sm font-semibold text-gray-400 uppercase tracking-wider">Total Patients</p>
     </div>
 
     <!-- Total Doctors -->
     <div routerLink="/dashboard/doctors"
-        class="group bg-white rounded-2xl border border-gray-100 shadow-sm p-6 hover:shadow-lg hover:border-indigo-200 transition-all duration-300 cursor-pointer">
+        class="group bg-white rounded-[20px] border border-gray-300 shadow-xs p-6 hover:shadow-md hover:border-[#1F2B6C]/30 transition-all duration-300 cursor-pointer">
         <div class="flex items-center justify-between mb-4">
             <div
-                class="w-12 h-12 bg-indigo-50 rounded-xl flex items-center justify-center group-hover:bg-indigo-100 transition-colors">
+                class="w-12 h-12 bg-indigo-50 rounded-xl flex items-center justify-center group-hover:bg-indigo-100 transition-colors border border-gray-300/10">
                 <lucide-icon [img]="Stethoscope" class="w-6 h-6 text-indigo-500"></lucide-icon>
             </div>
             <div class="text-right">
-                <span class="text-xs font-semibold text-emerald-500 bg-emerald-50 px-2.5 py-1 rounded-full">Live</span>
+                <span class="text-xs font-bold text-emerald-600 bg-emerald-50 px-2.5 py-1 rounded-full border border-emerald-200">Live</span>
             </div>
         </div>
         <p class="text-3xl font-bold text-[#1F2B6C] tracking-tight mb-0.5">{{ stats().totalDoctors | number }}</p>
-        <p class="text-sm font-medium text-gray-400">Active Doctors</p>
+        <p class="text-sm font-semibold text-gray-400 uppercase tracking-wider">Active Doctors</p>
     </div>
 
     <!-- Lab Results -->
     <div routerLink="/dashboard/laboratory"
-        class="group bg-white rounded-2xl border border-gray-100 shadow-sm p-6 hover:shadow-lg hover:border-emerald-200 transition-all duration-300 cursor-pointer">
+        class="group bg-white rounded-[20px] border border-gray-300 shadow-xs p-6 hover:shadow-md hover:border-[#1F2B6C]/30 transition-all duration-300 cursor-pointer">
         <div class="flex items-center justify-between mb-4">
             <div
-                class="w-12 h-12 bg-emerald-50 rounded-xl flex items-center justify-center group-hover:bg-emerald-100 transition-colors">
+                class="w-12 h-12 bg-emerald-50 rounded-xl flex items-center justify-center group-hover:bg-emerald-100 transition-colors border border-gray-300/10">
                 <lucide-icon [img]="Activity" class="w-6 h-6 text-emerald-500"></lucide-icon>
             </div>
             <div class="text-right">
-                <span class="text-xs font-semibold text-amber-600 bg-amber-50 px-2.5 py-1 rounded-full"
+                <span class="text-xs font-bold text-amber-600 bg-amber-50 px-2.5 py-1 rounded-full border border-amber-200"
                     *ngIf="stats().pendingTests > 0">{{ stats().pendingTests }} Pending</span>
             </div>
         </div>
         <p class="text-3xl font-bold text-[#1F2B6C] tracking-tight mb-0.5">{{ stats().completedTests | number }}</p>
-        <p class="text-sm font-medium text-gray-400">Lab Results Completed</p>
+        <p class="text-sm font-semibold text-gray-400 uppercase tracking-wider">Lab Results Completed</p>
     </div>
 </div>
 
@@ -80,15 +80,15 @@
     <div class="flex items-center justify-between mb-6">
         <div class="flex items-center gap-3">
             <div
-                class="w-10 h-10 bg-[#1F2B6C] rounded-xl flex items-center justify-center text-white shadow-lg shadow-blue-900/10">
+                class="w-10 h-10 bg-[#1F2B6C] rounded-xl flex items-center justify-center text-white shadow-lg shadow-[#1F2B6C]/20 border border-white/10">
                 <lucide-icon [img]="LayoutDashboard" class="w-5 h-5"></lucide-icon>
             </div>
             <div>
                 <h2 class="text-xl font-bold text-[#1F2B6C]">Hospital System Pulse</h2>
-                <p class="text-xs text-gray-400">Real-time operational status across all standard modules</p>
+                <p class="text-xs font-semibold text-gray-400">Real-time operational status across all standard modules</p>
             </div>
         </div>
-        <div class="flex items-center gap-2 px-3 py-1.5 bg-emerald-50 border border-emerald-100 rounded-lg">
+        <div class="flex items-center gap-2 px-3 py-1.5 bg-emerald-50 border border-emerald-200 rounded-lg shadow-[0_1px_2px_rgba(0,0,0,0.02)]">
             <div class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></div>
             <span class="text-[11px] font-bold text-emerald-700 uppercase tracking-wider">System Live</span>
         </div>
@@ -97,10 +97,10 @@
     <div class="grid grid-cols-1 md:grid-cols-3 xl:grid-cols-6 gap-4">
         @for (module of systemModules; track module.name) {
         <a [routerLink]="module.link"
-            class="group/item flex flex-col p-4 bg-white rounded-xl border border-gray-100 shadow-sm hover:shadow-md hover:border-{{module.color}}-200 transition-all duration-200">
+            class="group/item flex flex-col p-4 bg-white rounded-[20px] border border-gray-300 shadow-xs hover:shadow-md hover:border-[#1F2B6C]/30 transition-all duration-200">
             <div class="flex items-center justify-between mb-3">
                 <div
-                    class="w-9 h-9 bg-{{module.color}}-50 rounded-lg flex items-center justify-center group-hover/item:bg-{{module.color}}-100 transition-colors">
+                    class="w-9 h-9 bg-{{module.color}}-50 rounded-lg flex items-center justify-center group-hover/item:bg-{{module.color}}-100 transition-colors border border-gray-300/10">
                     <lucide-icon [img]="module.icon" class="w-4.5 h-4.5 text-{{module.color}}-500"></lucide-icon>
                 </div>
                 <lucide-icon [img]="ShieldCheck"
@@ -108,8 +108,8 @@
             </div>
             <p class="text-xs font-bold text-[#1F2B6C] mb-1 truncate">{{ module.name }}</p>
             <div class="flex items-center justify-between">
-                <span class="text-[13px] font-medium text-gray-900">{{ getModuleMetric(module.name) }}</span>
-                <span class="text-[10px] font-semibold text-gray-400 uppercase tracking-tighter">{{ module.status
+                <span class="text-[13px] font-bold text-gray-900">{{ getModuleMetric(module.name) }}</span>
+                <span class="text-[10px] font-bold text-gray-400 uppercase tracking-tighter">{{ module.status
                     }}</span>
             </div>
         </a>
@@ -118,33 +118,33 @@
 </div>
 
 <!-- Admin Quick-Access Cards -->
-<div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+<div class="grid grid-cols-1 lg:grid-cols-2 gap-6 pb-10">
     <!-- Recent Activity -->
-    <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
-        <div class="flex items-center gap-2 px-3 py-1 bg-[#1F2B6C]/5 rounded-lg border border-[#1F2B6C]/10 mb-4"
+    <div class="bg-white rounded-[20px] border border-gray-300 shadow-xs p-6 overflow-hidden">
+        <div class="flex items-center gap-2 px-3 py-1.5 bg-amber-50 rounded-lg border border-amber-200 mb-4 shadow-[0_1px_2px_rgba(0,0,0,0.02)]"
             *ngIf="stats().pendingTests > 0">
             <lucide-icon [img]="AlertCircle" class="w-3.5 h-3.5 text-amber-600"></lucide-icon>
-            <span class="text-[11px] font-semibold text-amber-700">{{ stats().pendingTests }} Lab results require your
+            <span class="text-[11px] font-bold text-amber-700">{{ stats().pendingTests }} Lab results require your
                 review</span>
         </div>
         <h3 class="text-lg font-bold text-[#1F2B6C] mb-4">Recent Activity</h3>
         <div class="space-y-4">
-            <div class="flex items-center gap-4 p-3 rounded-xl hover:bg-gray-50 transition-colors">
-                <div class="w-10 h-10 bg-blue-50 rounded-full flex items-center justify-center shrink-0">
+            <div class="flex items-center gap-4 p-3 rounded-xl hover:bg-blue-50/50 border border-transparent hover:border-[#1F2B6C]/10 transition-all cursor-pointer">
+                <div class="w-10 h-10 bg-blue-50 rounded-full flex items-center justify-center shrink-0 border border-blue-100">
                     <lucide-icon [img]="Users" class="w-5 h-5 text-[#159EEC]"></lucide-icon>
                 </div>
                 <div class="flex-1 min-w-0">
-                    <p class="text-sm font-medium text-[#1F2B6C] truncate">New patient registered</p>
-                    <p class="text-xs text-gray-400">Maria Johnson — 2 hours ago</p>
+                    <p class="text-sm font-bold text-[#1F2B6C] truncate">New patient registered</p>
+                    <p class="text-xs font-semibold text-gray-400">Maria Johnson — 2 hours ago</p>
                 </div>
             </div>
-            <div class="flex items-center gap-4 p-3 rounded-xl hover:bg-gray-50 transition-colors">
-                <div class="w-10 h-10 bg-indigo-50 rounded-full flex items-center justify-center shrink-0">
+            <div class="flex items-center gap-4 p-3 rounded-xl hover:bg-indigo-50/50 border border-transparent hover:border-[#1F2B6C]/10 transition-all cursor-pointer">
+                <div class="w-10 h-10 bg-indigo-50 rounded-full flex items-center justify-center shrink-0 border border-indigo-100">
                     <lucide-icon [img]="Stethoscope" class="w-5 h-5 text-indigo-500"></lucide-icon>
                 </div>
                 <div class="flex-1 min-w-0">
-                    <p class="text-sm font-medium text-[#1F2B6C] truncate">Dr. Wilson updated schedule</p>
-                    <p class="text-xs text-gray-400">3 hours ago</p>
+                    <p class="text-sm font-bold text-[#1F2B6C] truncate">Dr. Wilson updated schedule</p>
+                    <p class="text-xs font-semibold text-gray-400">3 hours ago</p>
                 </div>
             </div>
 
@@ -152,29 +152,29 @@
     </div>
 
     <!-- Hospital Overview -->
-    <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
+    <div class="bg-white rounded-[20px] border border-gray-300 shadow-xs p-6 overflow-hidden">
         <h3 class="text-lg font-bold text-[#1F2B6C] mb-4">Hospital Overview</h3>
         <div class="space-y-4">
             <div class="flex items-center justify-between">
                 <div class="flex items-center gap-3">
-                    <div class="w-3 h-3 rounded-full bg-indigo-500"></div>
-                    <span class="text-sm text-gray-600">Active Medical Staff</span>
+                    <div class="w-3 h-3 rounded-full bg-indigo-500 shadow-sm shadow-indigo-500/20"></div>
+                    <span class="text-sm font-semibold text-gray-600">Active Medical Staff</span>
                 </div>
                 <span class="text-sm font-bold text-[#1F2B6C]">{{ stats().totalDoctors }}</span>
             </div>
-            <div class="w-full bg-gray-100 rounded-full h-2">
-                <div class="bg-indigo-500 h-2 rounded-full transition-all" style="width: 80%"></div>
+            <div class="w-full bg-gray-100 rounded-full h-2 shadow-inner border border-gray-200/50">
+                <div class="bg-indigo-500 h-full rounded-full transition-all duration-1000 shadow-sm" style="width: 80%"></div>
             </div>
 
             <div class="flex items-center justify-between mt-4">
                 <div class="flex items-center gap-3">
-                    <div class="w-3 h-3 rounded-full bg-emerald-500"></div>
-                    <span class="text-sm text-gray-600">Available Doctors Today</span>
+                    <div class="w-3 h-3 rounded-full bg-emerald-500 shadow-sm shadow-emerald-500/20"></div>
+                    <span class="text-sm font-semibold text-gray-600">Available Doctors Today</span>
                 </div>
                 <span class="text-sm font-bold text-[#1F2B6C]">36 / 48</span>
             </div>
-            <div class="w-full bg-gray-100 rounded-full h-2">
-                <div class="bg-emerald-500 h-2 rounded-full transition-all" style="width: 75%"></div>
+            <div class="w-full bg-gray-100 rounded-full h-2 shadow-inner border border-gray-200/50">
+                <div class="bg-emerald-500 h-full rounded-full transition-all duration-1000 shadow-sm" style="width: 75%"></div>
             </div>
         </div>
     </div>
@@ -190,75 +190,75 @@
 
     <!-- My Patients -->
     <div
-        class="group bg-white rounded-2xl border border-gray-100 shadow-sm p-6 hover:shadow-lg hover:border-indigo-200 transition-all duration-300 cursor-pointer">
+        class="group bg-white rounded-[20px] border border-gray-300 shadow-xs p-6 hover:shadow-md hover:border-[#1F2B6C]/30 transition-all duration-300 cursor-pointer">
         <div class="flex items-center justify-between mb-4">
             <div
-                class="w-12 h-12 bg-indigo-50 rounded-xl flex items-center justify-center group-hover:bg-indigo-100 transition-colors">
+                class="w-12 h-12 bg-indigo-50 rounded-xl flex items-center justify-center group-hover:bg-indigo-100 transition-colors border border-gray-300/10">
                 <lucide-icon [img]="Users" class="w-6 h-6 text-indigo-500"></lucide-icon>
             </div>
-            <span class="text-xs font-semibold text-emerald-500 bg-emerald-50 px-2.5 py-1 rounded-full">+{{
+            <span class="text-xs font-bold text-emerald-600 bg-emerald-50 px-2.5 py-1 rounded-full border border-emerald-200">{{
                 doctorData().myPatients > 0 ? 'Live' : '0' }}</span>
         </div>
-        <p class="text-2xl font-bold text-[#1F2B6C] mb-1">{{ doctorData().myPatients }}</p>
-        <p class="text-sm text-gray-400">My Patients</p>
+        <p class="text-3xl font-bold text-[#1F2B6C] tracking-tight mb-0.5">{{ doctorData().myPatients }}</p>
+        <p class="text-sm font-semibold text-gray-400 uppercase tracking-wider">My Patients</p>
     </div>
 
     <!-- Today's Appointments -->
     <div
-        class="group bg-white rounded-2xl border border-gray-100 shadow-sm p-6 hover:shadow-lg hover:border-[#159EEC]/30 transition-all duration-300 cursor-pointer">
+        class="group bg-white rounded-[20px] border border-gray-300 shadow-xs p-6 hover:shadow-md hover:border-[#1F2B6C]/30 transition-all duration-300 cursor-pointer">
         <div class="flex items-center justify-between mb-4">
             <div
-                class="w-12 h-12 bg-blue-50 rounded-xl flex items-center justify-center group-hover:bg-[#159EEC]/15 transition-colors">
+                class="w-12 h-12 bg-blue-50 rounded-xl flex items-center justify-center group-hover:bg-[#159EEC]/15 transition-colors border border-gray-300/10">
                 <lucide-icon [img]="CalendarDays" class="w-6 h-6 text-[#159EEC]"></lucide-icon>
             </div>
-            <span class="text-xs font-semibold text-amber-600 bg-amber-50 px-2.5 py-1 rounded-full">{{
+            <span class="text-xs font-bold text-amber-600 bg-amber-50 px-2.5 py-1 rounded-full border border-amber-200">{{
                 doctorData().todayAppointments }} Scheduled</span>
         </div>
-        <p class="text-2xl font-bold text-[#1F2B6C] mb-1">{{ doctorData().todayAppointments }}</p>
-        <p class="text-sm text-gray-400">Today's Appointments</p>
+        <p class="text-3xl font-bold text-[#1F2B6C] tracking-tight mb-0.5">{{ doctorData().todayAppointments }}</p>
+        <p class="text-sm font-semibold text-gray-400 uppercase tracking-wider">Today's Appointments</p>
     </div>
 
     <!-- Pending Reports -->
     <div
-        class="group bg-white rounded-2xl border border-gray-100 shadow-sm p-6 hover:shadow-lg hover:border-amber-200 transition-all duration-300 cursor-pointer">
+        class="group bg-white rounded-[20px] border border-gray-300 shadow-xs p-6 hover:shadow-md hover:border-[#1F2B6C]/30 transition-all duration-300 cursor-pointer">
         <div class="flex items-center justify-between mb-4">
             <div
-                class="w-12 h-12 bg-amber-50 rounded-xl flex items-center justify-center group-hover:bg-amber-100 transition-colors">
+                class="w-12 h-12 bg-amber-50 rounded-xl flex items-center justify-center group-hover:bg-amber-100 transition-colors border border-gray-300/10">
                 <lucide-icon [img]="FileText" class="w-6 h-6 text-amber-500"></lucide-icon>
             </div>
-            <span class="text-xs font-semibold text-red-500 bg-red-50 px-2.5 py-1 rounded-full">Urgent</span>
+            <span class="text-xs font-bold text-red-600 bg-red-50 px-2.5 py-1 rounded-full border border-red-200">Urgent</span>
         </div>
-        <p class="text-2xl font-bold text-[#1F2B6C] mb-1">5</p>
-        <p class="text-sm text-gray-400">Pending Reports</p>
+        <p class="text-3xl font-bold text-[#1F2B6C] tracking-tight mb-0.5">5</p>
+        <p class="text-sm font-semibold text-gray-400 uppercase tracking-wider">Pending Reports</p>
     </div>
 
 </div>
 
 <!-- Doctor Quick-Access Cards -->
-<div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+<div class="grid grid-cols-1 lg:grid-cols-2 gap-6 pb-10">
     <!-- Today's Schedule -->
-    <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
+    <div class="bg-white rounded-[20px] border border-gray-300 shadow-xs p-6 overflow-hidden">
         <h3 class="text-lg font-bold text-[#1F2B6C] mb-4">Today's Schedule</h3>
         <div class="space-y-3">
             @for (item of doctorData().todaySchedule; track item.patient) {
-            <div class="flex items-center gap-4 p-3 rounded-xl bg-[#159EEC]/5 border border-[#159EEC]/15">
+            <div class="flex items-center gap-4 p-3 rounded-xl bg-blue-50/50 border border-[#1F2B6C]/10 transition-all hover:border-[#1F2B6C]/30 cursor-pointer">
                 <div class="text-center shrink-0">
-                    <p class="text-xs font-semibold text-[#159EEC]">{{ item.time }}</p>
-                    <p class="text-[10px] text-gray-400">{{ item.period }}</p>
+                    <p class="text-xs font-bold text-[#159EEC]">{{ item.time }}</p>
+                    <p class="text-[10px] font-bold text-gray-400">{{ item.period }}</p>
                 </div>
-                <div class="w-px h-10 bg-[#159EEC]/30"></div>
+                <div class="w-px h-10 bg-gray-300"></div>
                 <div class="flex-1 min-w-0">
-                    <p class="text-sm font-medium text-[#1F2B6C] truncate">{{ item.title }}</p>
-                    <p class="text-xs text-gray-400">Patient: {{ item.patient }}</p>
+                    <p class="text-sm font-bold text-[#1F2B6C] truncate">{{ item.title }}</p>
+                    <p class="text-xs font-semibold text-gray-400">Patient: {{ item.patient }}</p>
                 </div>
-                <span class="text-xs font-semibold px-2 py-0.5 rounded-full"
-                    [ngClass]="item.status === 'Completed' ? 'text-emerald-500 bg-emerald-50' : 'text-amber-600 bg-amber-50'">
+                <span class="text-[11px] font-bold px-2 py-0.5 rounded-full border"
+                    [ngClass]="item.status === 'Completed' ? 'text-emerald-600 bg-emerald-50 border-emerald-200' : 'text-amber-600 bg-amber-50 border-amber-200'">
                     {{ item.status }}
                 </span>
             </div>
             }
             @if (doctorData().todaySchedule.length === 0) {
-            <div class="p-6 text-center text-gray-400 text-sm italic">
+            <div class="p-6 text-center text-gray-400 text-sm font-semibold italic border border-dashed border-gray-200 rounded-xl">
                 No appointments for today.
             </div>
             }
@@ -266,22 +266,22 @@
     </div>
 
     <!-- Recent Patients -->
-    <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
+    <div class="bg-white rounded-[20px] border border-gray-300 shadow-xs p-6 overflow-hidden">
         <h3 class="text-lg font-bold text-[#1F2B6C] mb-4">Recent Patients</h3>
         <div class="space-y-3">
             @for (patient of doctorData().recentPatients; track patient.name) {
-            <div class="flex items-center gap-4 p-3 rounded-xl hover:bg-gray-50 transition-colors">
-                <img [src]="'https://ui-avatars.com/api/?name=' + patient.name + '&background=159EEC&color=fff&rounded=true&size=40'"
-                    alt="Patient" class="w-10 h-10 rounded-full shrink-0">
+            <div class="flex items-center gap-4 p-3 rounded-xl hover:bg-blue-50/50 border border-transparent hover:border-[#1F2B6C]/10 transition-all cursor-pointer">
+                <img [src]="'https://ui-avatars.com/api/?name=' + patient.name + '&background=EAF6FD&color=1F2B6C&rounded=true&size=40'"
+                    alt="Patient" class="w-10 h-10 rounded-full shrink-0 border border-gray-200">
                 <div class="flex-1 min-w-0">
-                    <p class="text-sm font-medium text-[#1F2B6C] truncate">{{ patient.name }}</p>
-                    <p class="text-xs text-gray-400">{{ patient.specialty }}</p>
+                    <p class="text-sm font-bold text-[#1F2B6C] truncate">{{ patient.name }}</p>
+                    <p class="text-xs font-semibold text-gray-400">{{ patient.specialty }}</p>
                 </div>
-                <span class="text-xs text-gray-400">{{ patient.time }}</span>
+                <span class="text-xs font-bold text-gray-400">{{ patient.time }}</span>
             </div>
             }
             @if (doctorData().recentPatients.length === 0) {
-            <div class="p-6 text-center text-gray-400 text-sm italic">
+            <div class="p-6 text-center text-gray-400 text-sm font-semibold italic border border-dashed border-gray-200 rounded-xl">
                 No recent patient records.
             </div>
             }
@@ -298,92 +298,92 @@
 <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
 
     <!-- Upcoming Appointment — featured card -->
-    <div class="lg:col-span-2 bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
+    <div class="lg:col-span-2 bg-white rounded-[20px] border border-gray-300 shadow-xs p-6 overflow-hidden">
         <div class="flex items-center justify-between mb-5">
             <h3 class="text-lg font-bold text-[#1F2B6C]">Upcoming Appointment</h3>
             <a routerLink="/dashboard/appointments"
-                class="text-xs font-semibold text-[#159EEC] hover:text-[#1282C4] transition-colors">View All →</a>
+                class="text-xs font-bold text-[#159EEC] hover:text-[#1F2B6C] transition-colors border-b border-transparent hover:border-[#1F2B6C]">View All →</a>
         </div>
 
         @if (upcomingAppointment) {
-        <div class="flex items-start gap-5 p-4 rounded-xl bg-[#159EEC]/5 border border-[#159EEC]/15">
+        <div class="flex items-start gap-5 p-5 rounded-xl bg-blue-50/50 border border-[#1F2B6C]/10 shadow-[0_1px_2px_rgba(0,0,0,0.02)] transition-all hover:border-[#1F2B6C]/20">
             <!-- Date block -->
             <div
-                class="flex flex-col items-center justify-center min-w-[64px] h-[64px] bg-[#159EEC] rounded-xl text-white shrink-0">
-                <span class="text-xl font-bold leading-none">{{ upcomingAppointment.day }}</span>
-                <span class="text-[10px] font-semibold uppercase tracking-wider mt-0.5">{{ upcomingAppointment.month
+                class="flex flex-col items-center justify-center min-w-[72px] h-[72px] bg-[#1F2B6C] rounded-xl text-white shrink-0 shadow-lg shadow-[#1F2B6C]/20 border border-white/10">
+                <span class="text-2xl font-bold leading-none">{{ upcomingAppointment.day }}</span>
+                <span class="text-[11px] font-bold uppercase tracking-wider mt-0.5 opacity-80">{{ upcomingAppointment.month
                     }}</span>
             </div>
             <!-- Details -->
             <div class="flex-1 min-w-0">
-                <p class="text-base font-semibold text-[#1F2B6C] mb-1">{{ upcomingAppointment.title }}</p>
-                <div class="space-y-1">
-                    <p class="text-sm text-gray-500 flex items-center gap-2">
+                <p class="text-base font-bold text-[#1F2B6C] mb-1 tracking-tight">{{ upcomingAppointment.title }}</p>
+                <div class="space-y-1.5">
+                    <p class="text-sm font-semibold text-gray-500 flex items-center gap-2">
                         <lucide-icon [img]="Clock" class="w-3.5 h-3.5 text-gray-400"></lucide-icon>
                         {{ upcomingAppointment.time }}
                     </p>
-                    <p class="text-sm text-gray-500 flex items-center gap-2">
+                    <p class="text-sm font-semibold text-gray-500 flex items-center gap-2">
                         <lucide-icon [img]="Stethoscope" class="w-3.5 h-3.5 text-gray-400"></lucide-icon>
                         {{ upcomingAppointment.doctorName }}
                     </p>
-                    <p class="text-sm text-gray-500 flex items-center gap-2">
+                    <p class="text-sm font-semibold text-gray-500 flex items-center gap-2">
                         <lucide-icon [img]="MapPin" class="w-3.5 h-3.5 text-gray-400"></lucide-icon>
                         {{ upcomingAppointment.cabinet }}
                     </p>
                 </div>
             </div>
             <!-- Status badge -->
-            <span class="text-xs font-semibold text-[#159EEC] bg-blue-50 px-3 py-1 rounded-full shrink-0 self-start">
+            <span class="text-[11px] font-bold text-[#1F2B6C] bg-white border border-[#1F2B6C]/20 px-3 py-1 rounded-full shrink-0 self-start shadow-sm">
                 Scheduled
             </span>
         </div>
         } @else {
-        <div class="p-6 text-center text-gray-400 text-sm rounded-xl border border-dashed border-gray-200">
-            No upcoming appointments scheduled. Book one from Quick Actions below.
+        <div class="p-10 text-center text-gray-400 text-sm font-semibold italic rounded-xl border border-dashed border-gray-300">
+            No upcoming appointments scheduled. Book one from Quick Actions.
         </div>
         }
     </div>
 
     <!-- Quick Actions -->
-    <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
+    <div class="bg-white rounded-[20px] border border-gray-300 shadow-xs p-6 overflow-hidden">
         <h3 class="text-lg font-bold text-[#1F2B6C] mb-5">Quick Actions</h3>
         <div class="space-y-3">
             <a routerLink="/dashboard/appointments"
-                class="flex items-center gap-3 p-3.5 rounded-xl hover:bg-[#159EEC]/5 border border-gray-100 hover:border-[#159EEC]/20 transition-all group cursor-pointer">
+                class="flex items-center gap-3 p-3.5 rounded-xl hover:bg-blue-50/50 border border-gray-200 hover:border-[#1F2B6C]/30 transition-all group cursor-pointer shadow-[0_1px_2px_rgba(0,0,0,0.02)]">
                 <div
-                    class="w-10 h-10 bg-blue-50 rounded-xl flex items-center justify-center group-hover:bg-[#159EEC]/15 transition-colors shrink-0">
+                    class="w-10 h-10 bg-blue-50 rounded-xl flex items-center justify-center group-hover:bg-[#159EEC]/15 transition-colors shrink-0 border border-blue-100">
                     <lucide-icon [img]="CalendarDays" class="w-5 h-5 text-[#159EEC]"></lucide-icon>
                 </div>
                 <div>
-                    <p class="text-sm font-semibold text-[#1F2B6C] group-hover:text-[#159EEC] transition-colors">
+                    <p class="text-sm font-bold text-[#1F2B6C] group-hover:text-[#159EEC] transition-colors">
                         Book Appointment</p>
-                    <p class="text-xs text-gray-400">Schedule a visit with your doctor</p>
+                    <p class="text-xs font-semibold text-gray-400">Schedule a visit with your doctor</p>
                 </div>
             </a>
 
             <a routerLink="/dashboard/medical-records"
-                class="flex items-center gap-3 p-3.5 rounded-xl hover:bg-emerald-50/50 border border-gray-100 hover:border-emerald-200 transition-all group cursor-pointer">
+                class="flex items-center gap-3 p-3.5 rounded-xl hover:bg-emerald-50/50 border border-gray-200 hover:border-emerald-300 transition-all group cursor-pointer shadow-[0_1px_2px_rgba(0,0,0,0.02)]">
                 <div
-                    class="w-10 h-10 bg-emerald-50 rounded-xl flex items-center justify-center group-hover:bg-emerald-100 transition-colors shrink-0">
+                    class="w-10 h-10 bg-emerald-50 rounded-xl flex items-center justify-center group-hover:bg-emerald-100 transition-colors shrink-0 border border-emerald-100">
                     <lucide-icon [img]="FileText" class="w-5 h-5 text-emerald-500"></lucide-icon>
                 </div>
                 <div>
-                    <p class="text-sm font-semibold text-[#1F2B6C] group-hover:text-emerald-600 transition-colors">
+                    <p class="text-sm font-bold text-[#1F2B6C] group-hover:text-emerald-600 transition-colors">
                         Lab Results</p>
-                    <p class="text-xs text-gray-400">View your test results</p>
+                    <p class="text-xs font-semibold text-gray-400">View your test results</p>
                 </div>
             </a>
 
             <a routerLink="/dashboard/prescriptions"
-                class="flex items-center gap-3 p-3.5 rounded-xl hover:bg-indigo-50/50 border border-gray-100 hover:border-indigo-200 transition-all group cursor-pointer">
+                class="flex items-center gap-3 p-3.5 rounded-xl hover:bg-indigo-50/50 border border-gray-200 hover:border-indigo-300 transition-all group cursor-pointer shadow-[0_1px_2px_rgba(0,0,0,0.02)]">
                 <div
-                    class="w-10 h-10 bg-indigo-50 rounded-xl flex items-center justify-center group-hover:bg-indigo-100 transition-colors shrink-0">
+                    class="w-10 h-10 bg-indigo-50 rounded-xl flex items-center justify-center group-hover:bg-indigo-100 transition-colors shrink-0 border border-indigo-100">
                     <lucide-icon [img]="ClipboardList" class="w-5 h-5 text-indigo-500"></lucide-icon>
                 </div>
                 <div>
-                    <p class="text-sm font-semibold text-[#1F2B6C] group-hover:text-indigo-600 transition-colors">
+                    <p class="text-sm font-bold text-[#1F2B6C] group-hover:text-indigo-600 transition-colors">
                         Prescriptions</p>
-                    <p class="text-xs text-gray-400">Manage your medications</p>
+                    <p class="text-xs font-semibold text-gray-400">Manage your medications</p>
                 </div>
             </a>
         </div>
@@ -391,71 +391,71 @@
 </div>
 
 <!-- Bottom Row: Active Prescriptions + Health Summary -->
-<div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+<div class="grid grid-cols-1 lg:grid-cols-2 gap-6 pb-10">
     <!-- Active Prescriptions -->
-    <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
+    <div class="bg-white rounded-[20px] border border-gray-300 shadow-xs p-6 overflow-hidden">
         <div class="flex items-center justify-between mb-4">
             <h3 class="text-lg font-bold text-[#1F2B6C]">Active Prescriptions</h3>
             <a routerLink="/dashboard/prescriptions"
-                class="text-xs font-semibold text-[#159EEC] hover:text-[#1282C4] transition-colors">View All →</a>
+                class="text-xs font-bold text-[#159EEC] hover:text-[#1F2B6C] transition-colors border-b border-transparent hover:border-[#1F2B6C]">View All →</a>
         </div>
         <div class="space-y-3">
             @for (rx of activePrescriptions(); track rx.name) {
-            <div class="flex items-center gap-4 p-3 rounded-xl hover:bg-gray-50 transition-colors">
-                <div class="w-10 h-10 bg-indigo-50 rounded-xl flex items-center justify-center shrink-0">
+            <div class="flex items-center gap-4 p-3 rounded-xl hover:bg-blue-50/50 border border-transparent hover:border-[#1F2B6C]/10 transition-all cursor-pointer">
+                <div class="w-10 h-10 bg-indigo-50 rounded-xl flex items-center justify-center shrink-0 border border-indigo-100">
                     <lucide-icon [img]="Pill" class="w-5 h-5 text-indigo-500"></lucide-icon>
                 </div>
                 <div class="flex-1 min-w-0">
-                    <p class="text-sm font-medium text-[#1F2B6C] truncate">{{ rx.name }}</p>
-                    <p class="text-xs text-gray-400">{{ rx.dosage }} · {{ rx.doctor }}</p>
+                    <p class="text-sm font-bold text-[#1F2B6C] truncate">{{ rx.name }}</p>
+                    <p class="text-xs font-semibold text-gray-400">{{ rx.dosage }} · {{ rx.doctor }}</p>
                 </div>
                 <span
-                    class="text-xs font-semibold text-emerald-600 bg-emerald-50 px-2.5 py-1 rounded-full shrink-0">Active</span>
+                    class="text-[11px] font-bold text-emerald-600 bg-emerald-50 px-2.5 py-1 rounded-full shrink-0 border border-emerald-200">Active</span>
             </div>
             }
         </div>
     </div>
 
     <!-- Health Summary -->
-    <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
+    <div class="bg-white rounded-[20px] border border-gray-300 shadow-xs p-6 overflow-hidden">
         <h3 class="text-lg font-bold text-[#1F2B6C] mb-4">Health Summary</h3>
         <div class="space-y-4">
             <div class="flex items-center justify-between">
                 <div class="flex items-center gap-3">
-                    <div class="w-3 h-3 rounded-full bg-emerald-500"></div>
-                    <span class="text-sm text-gray-600">Blood Pressure</span>
+                    <div class="w-3 h-3 rounded-full bg-emerald-500 shadow-sm shadow-emerald-500/20"></div>
+                    <span class="text-sm font-semibold text-gray-600">Blood Pressure</span>
                 </div>
-                <span class="text-sm font-bold text-emerald-500">120/80 — Normal</span>
+                <span class="text-sm font-bold text-emerald-600">120/80 — Normal</span>
             </div>
 
             <div class="flex items-center justify-between">
                 <div class="flex items-center gap-3">
-                    <div class="w-3 h-3 rounded-full bg-[#159EEC]"></div>
-                    <span class="text-sm text-gray-600">Heart Rate</span>
+                    <div class="w-3 h-3 rounded-full bg-[#159EEC] shadow-sm shadow-[#159EEC]/20"></div>
+                    <span class="text-sm font-semibold text-gray-600">Heart Rate</span>
                 </div>
                 <span class="text-sm font-bold text-[#159EEC]">72 bpm — Normal</span>
             </div>
 
             <div class="flex items-center justify-between">
                 <div class="flex items-center gap-3">
-                    <div class="w-3 h-3 rounded-full bg-amber-500"></div>
-                    <span class="text-sm text-gray-600">Blood Sugar</span>
+                    <div class="w-3 h-3 rounded-full bg-amber-500 shadow-sm shadow-amber-500/20"></div>
+                    <span class="text-sm font-semibold text-gray-600">Blood Sugar</span>
                 </div>
                 <span class="text-sm font-bold text-amber-500">105 mg/dL — Borderline</span>
             </div>
 
             <div class="flex items-center justify-between">
                 <div class="flex items-center gap-3">
-                    <div class="w-3 h-3 rounded-full bg-indigo-500"></div>
-                    <span class="text-sm text-gray-600">BMI</span>
+                    <div class="w-3 h-3 rounded-full bg-indigo-500 shadow-sm shadow-indigo-500/20"></div>
+                    <span class="text-sm font-semibold text-gray-600">BMI</span>
                 </div>
-                <span class="text-sm font-bold text-emerald-500">22.4 — Healthy</span>
+                <span class="text-sm font-bold text-emerald-600">22.4 — Healthy</span>
             </div>
         </div>
 
-        <div class="mt-6 p-4 rounded-xl bg-emerald-50 border border-emerald-100">
-            <p class="text-sm text-emerald-700 font-medium">
-                ✅ Your overall health status is <strong>Excellent</strong>. Keep up the good work!
+        <div class="mt-6 p-4 rounded-xl bg-emerald-50 border border-emerald-200 shadow-[0_1px_2px_rgba(0,0,0,0.02)]">
+            <p class="text-sm text-emerald-700 font-bold">
+                ✅ Your overall health status is <span class="uppercase">Excellent</span>. Keep up the good work!
             </p>
         </div>
     </div>

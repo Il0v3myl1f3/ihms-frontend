@@ -1,17 +1,17 @@
 <div class="h-full flex flex-col max-w-[1200px] mx-auto w-full">
     <!-- Page Header -->
-    <div class="flex flex-col sm:flex-row sm:items-center justify-between mb-8 gap-4">
+    <div class="flex flex-col sm:flex-row sm:items-center justify-between mb-8 gap-4 -mt-2">
         <div>
-            <h2 class="text-2xl font-bold text-gray-900 mb-1">Settings</h2>
-            <p class="text-sm text-gray-500">Customize until match to your workflows.</p>
+            <h2 class="text-[36px] font-bold text-[#1F2B6C] tracking-tight mb-1">Settings</h2>
+            <p class="text-sm text-gray-500 font-semibold">Customize until match to your workflows.</p>
         </div>
         <div class="flex items-center gap-3">
             <button type="button" (click)="cancelSettings()"
-                class="px-4 py-2 bg-white border border-gray-200 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors cursor-pointer">
+                class="px-4 py-2 bg-white border border-gray-300 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors cursor-pointer shadow-[0_1px_2px_rgba(0,0,0,0.02)]">
                 Cancel
             </button>
             <button type="button" (click)="saveSettings()"
-                class="px-4 py-2 bg-blue-600 text-white rounded-lg text-sm font-medium hover:bg-blue-700 transition-colors shadow-sm cursor-pointer">
+                class="px-6 py-2 bg-[#1F2B6C] text-white rounded-lg text-sm font-bold hover:bg-[#151D4A] transition-all shadow-sm cursor-pointer active:scale-95">
                 Save
             </button>
         </div>
@@ -19,9 +19,9 @@
 
     <!-- Main Content Area -->
     <div
-        class="bg-white rounded-xl border border-gray-200 flex-1 flex flex-col md:flex-row overflow-hidden min-h-[600px]">
+        class="bg-white rounded-[20px] border border-gray-300 flex-1 flex flex-col md:flex-row overflow-hidden min-h-[600px] shadow-xs">
         <!-- Sidebar Navigation -->
-        <div class="w-full md:w-64 shrink-0 border-b md:border-b-0 md:border-r border-gray-200 p-4 bg-gray-50/30">
+        <div class="w-full md:w-64 shrink-0 border-b md:border-b-0 md:border-r border-gray-300 p-4 bg-gray-50/20">
             <app-settings-sidebar [activeTab]="activeTab" (tabChange)="onTabChange($event)"></app-settings-sidebar>
         </div>
 

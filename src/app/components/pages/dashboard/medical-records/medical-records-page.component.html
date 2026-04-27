@@ -1,17 +1,17 @@
 <div class="h-full flex flex-col w-full">
     <!-- Page Header -->
-    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
+    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6 -mt-2">
         <div>
-            <h2 class="text-dashboard-title text-[#1F2B6C] tracking-tight mb-1">Medical Records</h2>
-            <p class="text-sm text-gray-500">Your complete medical history and test results.</p>
+            <h2 class="text-[36px] font-bold text-[#1F2B6C] tracking-tight mb-1">Medical Records</h2>
+            <p class="text-sm text-gray-500 font-semibold">Your complete medical history and test results.</p>
         </div>
     </div>
 
     <!-- Table Container -->
-    <div class="bg-white rounded-[20px] border border-gray-100 flex flex-col">
+    <div class="bg-white rounded-[20px] border border-gray-300 flex flex-col shadow-xs overflow-hidden">
 
         <!-- Table Header Configuration Bar -->
-        <div class="px-5 py-5 border-b border-gray-100 flex flex-col xl:flex-row xl:items-center justify-between gap-4">
+        <div class="px-5 py-5 border-b border-gray-300 flex flex-col xl:flex-row xl:items-center justify-between gap-4">
             <div class="flex flex-wrap flex-1 items-center gap-3">
                 <!-- Search -->
                 <div class="relative w-full max-w-sm">
@@ -20,31 +20,29 @@
                     </div>
                     <input type="text" placeholder="Search records, doctor, type, etc"
                         (input)="searchQuery.set($any($event.target).value)"
-                        class="block w-full pl-9 pr-3 py-2 border border-gray-200 rounded-lg text-sm placeholder-gray-400 focus:outline-none focus:ring-1 focus:ring-[#159EEC] focus:border-[#159EEC] bg-gray-50/20 transition-all">
+                        class="block w-full pl-9 pr-3 py-2 border border-gray-300 rounded-lg text-sm placeholder-gray-400 focus:outline-none focus:border-[#1F2B6C] bg-gray-50/50 font-semibold text-gray-700 transition-all">
                 </div>
 
                 <!-- Record Type Filter -->
                 <div class="relative">
                     <button (click)="toggleFilterMenu('type', $event)"
-                        class="flex items-center gap-1.5 px-4 py-2 border border-gray-200 rounded-lg text-sm text-gray-500 hover:bg-gray-50 transition-colors bg-white shadow-[0_1px_2px_rgba(0,0,0,0.02)]"
-                        [class.ring-1]="activeFilterMenu() === 'type'"
-                        [class.ring-[#159EEC]]="activeFilterMenu() === 'type'">
+                        class="flex items-center gap-1.5 px-4 py-2 border border-gray-300 rounded-lg text-sm text-gray-500 hover:bg-gray-50 transition-colors bg-white shadow-[0_1px_2px_rgba(0,0,0,0.02)] focus:outline-none focus:border-[#1F2B6C]"
+                        [class.border-[#1F2B6C]]="activeFilterMenu() === 'type'">
                         <lucide-icon [img]="Filter" class="w-3.5 h-3.5 text-gray-400"></lucide-icon>
                         <span class="truncate max-w-[90px]">
                             {{ filterType() === 'All' ? 'Record Type' : filterType() }}
                         </span>
-                        <lucide-icon [img]="ChevronDown" class="w-3.5 h-3.5 text-gray-400 ml-1"
+                        <lucide-icon [img]="ChevronDown" class="w-3.5 h-3.5 text-gray-400 transition-transform duration-200 origin-center"
                             [class.rotate-180]="activeFilterMenu() === 'type'"></lucide-icon>
                     </button>
                     @if (activeFilterMenu() === 'type') {
                     <div
-                        class="absolute top-full mt-1 left-0 z-50 w-52 bg-white border border-gray-100 rounded-lg shadow-lg py-1 max-h-60 overflow-auto">
+                        class="absolute top-full mt-1 left-0 z-50 w-52 bg-white border border-gray-300 rounded-lg shadow-lg py-1 max-h-60 overflow-auto">
                         @for (t of availableTypes(); track t) {
                         <button (click)="setFilter('type', t)"
                             class="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
-                            [class.bg-emerald-50]="filterType() === t"
-                            [class.text-emerald-700]="filterType() === t"
-                            [class.hover:bg-emerald-100]="filterType() === t">
+                            [class.bg-blue-50]="filterType() === t"
+                            [class.text-[#1F2B6C]]="filterType() === t">
                             {{ t }}
                         </button>
                         }
@@ -55,25 +53,23 @@
                 <!-- Status Filter -->
                 <div class="relative">
                     <button (click)="toggleFilterMenu('status', $event)"
-                        class="flex items-center gap-1.5 px-4 py-2 border border-gray-200 rounded-lg text-sm text-gray-500 hover:bg-gray-50 transition-colors bg-white shadow-[0_1px_2px_rgba(0,0,0,0.02)]"
-                        [class.ring-1]="activeFilterMenu() === 'status'"
-                        [class.ring-[#159EEC]]="activeFilterMenu() === 'status'">
+                        class="flex items-center gap-1.5 px-4 py-2 border border-gray-300 rounded-lg text-sm text-gray-500 hover:bg-gray-50 transition-colors bg-white shadow-[0_1px_2px_rgba(0,0,0,0.02)] focus:outline-none focus:border-[#1F2B6C]"
+                        [class.border-[#1F2B6C]]="activeFilterMenu() === 'status'">
                         <lucide-icon [img]="Filter" class="w-3.5 h-3.5 text-gray-400"></lucide-icon>
                         <span class="truncate max-w-[80px]">
                             {{ filterStatus() === 'All' ? 'Status' : filterStatus() }}
                         </span>
-                        <lucide-icon [img]="ChevronDown" class="w-3.5 h-3.5 text-gray-400 ml-1"
+                        <lucide-icon [img]="ChevronDown" class="w-3.5 h-3.5 text-gray-400 transition-transform duration-200 origin-center"
                             [class.rotate-180]="activeFilterMenu() === 'status'"></lucide-icon>
                     </button>
                     @if (activeFilterMenu() === 'status') {
                     <div
-                        class="absolute top-full mt-1 left-0 z-50 w-40 bg-white border border-gray-100 rounded-lg shadow-lg py-1 max-h-60 overflow-auto">
+                        class="absolute top-full mt-1 left-0 z-50 w-40 bg-white border border-gray-300 rounded-lg shadow-lg py-1 max-h-60 overflow-auto">
                         @for (stat of availableStatuses(); track stat) {
                         <button (click)="setFilter('status', stat)"
                             class="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
-                            [class.bg-emerald-50]="filterStatus() === stat"
-                            [class.text-emerald-700]="filterStatus() === stat"
-                            [class.hover:bg-emerald-100]="filterStatus() === stat">
+                            [class.bg-blue-50]="filterStatus() === stat"
+                            [class.text-[#1F2B6C]]="filterStatus() === stat">
                             {{ stat }}
                         </button>
                         }
@@ -84,74 +80,70 @@
         </div>
 
         <!-- Table Body -->
-        <div class="flex-auto overflow-x-auto overflow-y-auto w-full">
+        <div class="flex-auto overflow-x-auto w-full">
             <table class="w-full text-left border-collapse table-auto">
-                <thead class="bg-gray-50/50 border-b border-gray-200 border-r border-b border-gray-200 max-lg:px-2 max-lg:text-[13px] max-lg:overflow-visible">
+                <thead class="bg-gray-50/50 border-b border-gray-300 max-lg:px-2 max-lg:text-[13px] max-lg:overflow-visible">
                     <tr>
-                        <th class="px-4 py-4 text-sm font-normal text-gray-600 whitespace-nowrap overflow-hidden w-[6%] min-w-16">No</th>
-                        <th class="px-4 py-4 text-sm font-normal text-gray-600 whitespace-nowrap overflow-hidden w-[15%] border-r border-b border-gray-200 max-lg:px-2 max-lg:text-[13px] max-lg:overflow-visible">
+                        <th class="px-4 py-4 text-sm font-normal text-gray-600 whitespace-nowrap overflow-hidden w-[6%] min-w-16 border-r border-gray-300">No</th>
+                        <th class="px-4 py-4 text-sm font-normal text-gray-600 whitespace-nowrap overflow-hidden w-[15%] border-r border-gray-300 max-lg:px-2 max-lg:text-[13px] max-lg:overflow-visible">
                             <div (click)="handleSort('recordType')"
-                                class="flex items-center gap-1 group/th cursor-pointer pl-1 select-none hover:text-[#1F2B6C] transition-colors"
-                                [class.text-[#1F2B6C]]="sortColumn() === 'recordType'"
-                                [class.font-semibold]="sortColumn() === 'recordType'">
+                                class="flex items-center gap-1 group/th cursor-pointer pl-1 select-none hover:text-gray-700 transition-colors"
+                                [class.text-[#1F2B6C]]="sortColumn() === 'recordType'">
                                 Record Type
                                 <lucide-icon *ngIf="sortColumn() !== 'recordType'" [img]="ChevronDown" class="w-3 h-3 text-gray-300"></lucide-icon>
                                 <lucide-icon *ngIf="sortColumn() === 'recordType' && sortDirection() === 'desc'" [img]="ChevronDown" class="w-3 h-3 text-[#1F2B6C]"></lucide-icon>
                                 <lucide-icon *ngIf="sortColumn() === 'recordType' && sortDirection() === 'asc'" [img]="ChevronUp" class="w-3 h-3 text-[#1F2B6C]"></lucide-icon>
                             </div>
                         </th>
-                        <th class="px-4 py-4 text-sm font-normal text-gray-600 whitespace-nowrap overflow-hidden w-[15%] border-r border-b border-gray-200 max-lg:px-2 max-lg:text-[13px] max-lg:overflow-visible">
+                        <th class="px-4 py-4 text-sm font-normal text-gray-600 whitespace-nowrap overflow-hidden w-[15%] border-r border-gray-300 max-lg:px-2 max-lg:text-[13px] max-lg:overflow-visible">
                             <div (click)="handleSort('date')"
-                                class="flex items-center gap-1 group/th cursor-pointer select-none hover:text-[#1F2B6C] transition-colors"
-                                [class.text-[#1F2B6C]]="sortColumn() === 'date'"
-                                [class.font-semibold]="sortColumn() === 'date'">
+                                class="flex items-center gap-1 group/th cursor-pointer select-none hover:text-gray-700 transition-colors"
+                                [class.text-[#1F2B6C]]="sortColumn() === 'date'">
                                 Date
                                 <lucide-icon *ngIf="sortColumn() !== 'date'" [img]="ChevronDown" class="w-3 h-3 text-gray-300"></lucide-icon>
                                 <lucide-icon *ngIf="sortColumn() === 'date' && sortDirection() === 'desc'" [img]="ChevronDown" class="w-3 h-3 text-[#1F2B6C]"></lucide-icon>
                                 <lucide-icon *ngIf="sortColumn() === 'date' && sortDirection() === 'asc'" [img]="ChevronUp" class="w-3 h-3 text-[#1F2B6C]"></lucide-icon>
                             </div>
                         </th>
-                        <th class="px-4 py-4 text-sm font-normal text-gray-600 whitespace-nowrap overflow-hidden w-[18%] border-r border-b border-gray-200 max-lg:px-2 max-lg:text-[13px] max-lg:overflow-visible">
+                        <th class="px-4 py-4 text-sm font-normal text-gray-600 whitespace-nowrap overflow-hidden w-[18%] border-r border-gray-300 max-lg:px-2 max-lg:text-[13px] max-lg:overflow-visible">
                             <div (click)="handleSort('doctorName')"
-                                class="flex items-center gap-1 group/th cursor-pointer select-none hover:text-[#1F2B6C] transition-colors"
-                                [class.text-[#1F2B6C]]="sortColumn() === 'doctorName'"
-                                [class.font-semibold]="sortColumn() === 'doctorName'">
+                                class="flex items-center gap-1 group/th cursor-pointer select-none hover:text-gray-700 transition-colors"
+                                [class.text-[#1F2B6C]]="sortColumn() === 'doctorName'">
                                 Doctor
                                 <lucide-icon *ngIf="sortColumn() !== 'doctorName'" [img]="ChevronDown" class="w-3 h-3 text-gray-300"></lucide-icon>
                                 <lucide-icon *ngIf="sortColumn() === 'doctorName' && sortDirection() === 'desc'" [img]="ChevronDown" class="w-3 h-3 text-[#1F2B6C]"></lucide-icon>
                                 <lucide-icon *ngIf="sortColumn() === 'doctorName' && sortDirection() === 'asc'" [img]="ChevronUp" class="w-3 h-3 text-[#1F2B6C]"></lucide-icon>
                             </div>
                         </th>
-                        <th class="px-4 py-4 text-sm font-normal text-gray-600 whitespace-nowrap overflow-hidden w-[26%] border-r border-b border-gray-200 max-lg:px-2 max-lg:text-[13px] max-lg:overflow-visible">Description</th>
-                        <th class="px-4 py-4 text-sm font-normal text-gray-600 whitespace-nowrap overflow-hidden w-[10%] border-r border-b border-gray-200 max-lg:px-2 max-lg:text-[13px] max-lg:overflow-visible">
+                        <th class="px-4 py-4 text-sm font-normal text-gray-600 whitespace-nowrap overflow-hidden w-[26%] border-r border-gray-300 max-lg:px-2 max-lg:text-[13px] max-lg:overflow-visible">Description</th>
+                        <th class="px-4 py-4 text-sm font-normal text-gray-600 whitespace-nowrap overflow-hidden w-[10%] border-r border-gray-300 max-lg:px-2 max-lg:text-[13px] max-lg:overflow-visible">
                             <div (click)="handleSort('status')"
-                                class="flex items-center gap-1 group/th cursor-pointer select-none hover:text-[#1F2B6C] transition-colors"
-                                [class.text-[#1F2B6C]]="sortColumn() === 'status'"
-                                [class.font-semibold]="sortColumn() === 'status'">
+                                class="flex items-center gap-1 group/th cursor-pointer select-none hover:text-gray-700 transition-colors"
+                                [class.text-[#1F2B6C]]="sortColumn() === 'status'">
                                 Status
                                 <lucide-icon *ngIf="sortColumn() !== 'status'" [img]="ChevronDown" class="w-3 h-3 text-gray-300"></lucide-icon>
                                 <lucide-icon *ngIf="sortColumn() === 'status' && sortDirection() === 'desc'" [img]="ChevronDown" class="w-3 h-3 text-[#1F2B6C]"></lucide-icon>
                                 <lucide-icon *ngIf="sortColumn() === 'status' && sortDirection() === 'asc'" [img]="ChevronUp" class="w-3 h-3 text-[#1F2B6C]"></lucide-icon>
                             </div>
                         </th>
-                        <th class="px-4 py-4 text-sm font-normal text-gray-600 text-center w-[6%] border-r border-b border-gray-200 max-lg:px-2 max-lg:text-[13px] max-lg:overflow-visible">Action</th>
+                        <th class="px-4 py-4 text-sm font-normal text-gray-600 text-center w-[6%] border-r border-gray-300 max-lg:px-2 max-lg:text-[13px] max-lg:overflow-visible">Action</th>
                     </tr>
                 </thead>
                 <tbody class="text-sm text-gray-900 font-normal bg-white">
                     @for (record of paginatedRecords(); track record.id) {
-                    <tr class="hover:bg-gray-50/30 group whitespace-nowrap transition-colors border-b border-gray-200 last:border-0 text-sm">
-                        <td class="px-4 py-4 border-r border-b border-gray-200 max-lg:px-2 max-lg:text-[13px]">{{ record.no }}</td>
-                        <td class="px-4 py-4 pl-5 border-r border-b border-gray-200 max-lg:px-2 max-lg:text-[13px] text-gray-900 font-medium tracking-tight">{{ record.recordType }}</td>
-                        <td class="px-4 py-4 text-gray-900 border-r border-b border-gray-200 max-lg:px-2 max-lg:text-[13px]">{{ record.date }}</td>
-                        <td class="px-4 py-4 border-r border-b border-gray-200 max-lg:px-2 max-lg:text-[13px]">
+                    <tr class="hover:bg-gray-50/30 group whitespace-nowrap transition-colors border-b border-gray-300 last:border-0 text-sm">
+                        <td class="px-4 py-4 border-r border-gray-300 max-lg:px-2 max-lg:text-[13px]">{{ record.no }}</td>
+                        <td class="px-4 py-4 pl-5 border-r border-gray-300 max-lg:px-2 max-lg:text-[13px] text-gray-900 font-medium tracking-tight">{{ record.recordType }}</td>
+                        <td class="px-4 py-4 text-gray-900 border-r border-gray-300 max-lg:px-2 max-lg:text-[13px]">{{ record.date }}</td>
+                        <td class="px-4 py-4 border-r border-gray-300 max-lg:px-2 max-lg:text-[13px]">
                             <div class="flex items-center gap-3">
                                 <img src="https://ui-avatars.com/api/?name={{ record.doctorName | avatarInitials }}&background=EAF6FD&color=1F2B6C&rounded=true"
-                                    alt="Avatar" class="w-7 h-7 rounded-full border border-gray-100">
+                                    alt="Avatar" class="w-7 h-7 rounded-full border border-gray-300">
                                 <span class="text-gray-900 font-normal tracking-tight">{{ record.doctorName }}</span>
                             </div>
                         </td>
-                        <td class="px-4 py-4 text-gray-900 border-r border-b border-gray-200 max-lg:px-2 max-lg:text-[13px] truncate max-w-[200px]">{{ record.description }}</td>
-                        <td class="px-4 py-4 border-r border-b border-gray-200 max-lg:px-2 max-lg:text-[13px]">
+                        <td class="px-4 py-4 text-gray-900 border-r border-gray-300 max-lg:px-2 max-lg:text-[13px] truncate max-w-[200px]">{{ record.description }}</td>
+                        <td class="px-4 py-4 border-r border-gray-300 max-lg:px-2 max-lg:text-[13px]">
                             <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium"
                                 [class.bg-emerald-50]="record.status === 'Reviewed'"
                                 [class.text-emerald-700]="record.status === 'Reviewed'"
@@ -162,7 +154,7 @@
                                 {{ record.status }}
                             </span>
                         </td>
-                        <td class="px-4 py-4 w-[6%] text-center text-gray-400 border-r border-b border-gray-200 max-lg:px-2 max-lg:text-[13px]">
+                        <td class="px-4 py-4 w-[6%] text-center text-gray-400 border-r border-gray-300 max-lg:px-2 max-lg:text-[13px]">
                             <div class="flex items-center justify-center">
                                 <button (click)="toggleDropdown(record, $event)"
                                     class="p-1.5 hover:text-gray-600 rounded-lg transition-colors cursor-pointer" title="More Actions">
@@ -184,36 +176,40 @@
 
         <!-- Action Dropdown -->
         @if (activeItem) {
-            <div class="fixed z-[9999] w-32 bg-white rounded-lg shadow-[0_4px_20px_rgba(0,0,0,0.08)] border border-gray-100 py-1"
+            <div class="fixed z-[9999] w-32 bg-white rounded-lg shadow-[0_4px_20px_rgba(0,0,0,0.08)] border border-gray-300 py-1"
                 [style.top.px]="dropdownPos.top" [style.right.px]="dropdownPos.right">
-                <button (click)="onViewRecord(activeItem)" class="w-full px-3 py-1.5 text-xs font-medium text-left text-gray-700 hover:bg-gray-50 flex items-center gap-2 transition-colors">
+                <button (click)="onViewRecord(activeItem)" class="w-full px-3 py-1.5 text-xs font-medium text-left text-gray-700 hover:bg-gray-50 flex items-center gap-2 transition-colors cursor-pointer">
                     <lucide-icon [img]="Eye" class="w-3.5 h-3.5"></lucide-icon> View
                 </button>
-                <button *ngIf="isDoctor()" (click)="onEditRecord(activeItem)" class="w-full px-3 py-1.5 text-xs font-medium text-left text-[#159EEC] hover:bg-blue-50 flex items-center gap-2 transition-colors">
+                <button *ngIf="isDoctor()" (click)="onEditRecord(activeItem)" class="w-full px-3 py-1.5 text-xs font-medium text-left text-[#159EEC] hover:bg-blue-50 flex items-center gap-2 transition-colors cursor-pointer">
                     <lucide-icon [img]="Edit2" class="w-3.5 h-3.5"></lucide-icon> Edit
                 </button>
-                <button *ngIf="isDoctor()" (click)="onDeleteRecord(activeItem)" class="w-full px-3 py-1.5 text-xs font-medium text-left text-red-600 hover:bg-red-50 flex items-center gap-2 transition-colors border-t border-gray-50">
+                <button *ngIf="isDoctor()" (click)="onDeleteRecord(activeItem)" class="w-full px-3 py-1.5 text-xs font-medium text-left text-red-600 hover:bg-red-50 flex items-center gap-2 transition-colors border-t border-gray-50 cursor-pointer">
                     <lucide-icon [img]="Trash2" class="w-3.5 h-3.5"></lucide-icon> Delete
                 </button>
             </div>
         }
 
         <!-- Pagination Footer -->
-        <div class="mt-auto px-4 lg:px-5 py-4 border-t border-gray-100 flex flex-col sm:flex-row items-center justify-center lg:justify-between text-gray-500">
+        <div class="mt-auto px-4 lg:px-5 py-4 border-t border-gray-300 flex flex-col sm:flex-row items-center justify-center lg:justify-between text-gray-500">
             <div class="pagination-info text-[13px] font-normal flex items-center gap-2 mb-4 sm:mb-0 max-lg:hidden">
                 <span>Showing</span>
                 <div class="relative">
                     <button (click)="togglePageSizeMenu($event)"
-                        class="appearance-none px-3 py-1.5 pr-8 border border-gray-200 rounded-lg bg-white text-gray-700 text-[13px] font-normal focus:outline-none focus:ring-1 focus:ring-[#159EEC] focus:border-[#159EEC] cursor-pointer hover:bg-gray-50 transition-colors shadow-[0_1px_2px_rgba(0,0,0,0.02)] min-w-16 text-left flex items-center">
+                        class="appearance-none px-3 py-1.5 pr-8 border border-gray-300 rounded-lg bg-white text-gray-700 text-[13px] font-normal focus:outline-none focus:border-[#1F2B6C] cursor-pointer hover:bg-gray-50 transition-colors shadow-[0_1px_2px_rgba(0,0,0,0.02)] min-w-16 text-left flex items-center">
                         {{ pageSize() }}
-                        <lucide-icon [img]="ChevronDown" class="w-3.5 h-3.5 text-gray-400 absolute right-2.5 top-1/2 -translate-y-1/2 pointer-events-none"></lucide-icon>
+                        <span class="absolute right-2.5 top-1/2 -translate-y-1/2 pointer-events-none flex items-center justify-center">
+                            <lucide-icon [img]="ChevronDown"
+                                class="w-3.5 h-3.5 text-gray-400 transition-transform duration-200 origin-center"
+                                [class.rotate-180]="isPageSizeMenuOpen"></lucide-icon>
+                        </span>
                     </button>
                     @if (isPageSizeMenuOpen) {
-                    <div class="absolute bottom-full mb-1 left-0 w-full min-w-16 bg-white border border-gray-200 rounded-lg shadow-lg overflow-hidden z-50 py-1">
+                    <div class="absolute bottom-full mb-1 left-0 w-full min-w-16 bg-white border border-gray-300 rounded-lg shadow-lg overflow-hidden z-50 py-1">
                         @for (size of [5, 7, 10, 20]; track size) {
                         <button (click)="changePageSize(size)"
                             class="w-full text-left px-3 py-1.5 text-[13px] font-normal transition-colors"
-                            [class.bg-[#159EEC]]="size === pageSize()" [class.text-white]="size === pageSize()"
+                            [class.bg-blue-50]="size === pageSize()" [class.text-[#1F2B6C]]="size === pageSize()"
                             [class.text-gray-700]="size !== pageSize()" [class.hover:bg-gray-50]="size !== pageSize()">
                             {{ size }}
                         </button>
@@ -225,7 +221,7 @@
             </div>
             <div class="flex items-center gap-1.5">
                 <button (click)="prevPage()" [disabled]="currentPage() === 1"
-                    class="w-8 h-8 flex items-center justify-center rounded-lg border border-gray-200 transition-colors bg-white shadow-[0_1px_2px_rgba(0,0,0,0.02)]"
+                    class="w-8 h-8 flex items-center justify-center rounded-lg border border-gray-300 transition-colors bg-white shadow-[0_1px_2px_rgba(0,0,0,0.02)]"
                     [class.text-gray-300]="currentPage() === 1" [class.cursor-not-allowed]="currentPage() === 1"
                     [class.text-gray-500]="currentPage() !== 1" [class.hover:bg-gray-50]="currentPage() !== 1"
                     [class.cursor-pointer]="currentPage() !== 1">
@@ -237,7 +233,7 @@
                     class="w-8 h-8 flex items-center justify-center rounded-lg text-[13px] font-normal transition-all cursor-pointer shadow-[0_1px_2px_rgba(0,0,0,0.02)]"
                     [class.bg-[#1F2B6C]]="page === currentPage()" [class.text-white]="page === currentPage()"
                     [class.border-transparent]="page === currentPage()" [class.bg-white]="page !== currentPage()"
-                    [class.border]="page !== currentPage()" [class.border-gray-200]="page !== currentPage()"
+                    [class.border]="page !== currentPage()" [class.border-gray-300]="page !== currentPage()"
                     [class.text-gray-600]="page !== currentPage()" [class.hover:bg-gray-50]="page !== currentPage()">
                     {{ page }}
                 </button>
@@ -246,7 +242,7 @@
                 }
                 }
                 <button (click)="nextPage()" [disabled]="currentPage() === totalPages()"
-                    class="w-8 h-8 flex items-center justify-center rounded-lg border border-gray-200 transition-colors bg-white shadow-[0_1px_2px_rgba(0,0,0,0.02)]"
+                    class="w-8 h-8 flex items-center justify-center rounded-lg border border-gray-300 transition-colors bg-white shadow-[0_1px_2px_rgba(0,0,0,0.02)]"
                     [class.text-gray-300]="currentPage() === totalPages()" [class.cursor-not-allowed]="currentPage() === totalPages()"
                     [class.text-gray-500]="currentPage() !== totalPages()" [class.hover:bg-gray-50]="currentPage() !== totalPages()"
                     [class.cursor-pointer]="currentPage() !== totalPages()">

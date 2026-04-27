@@ -54,7 +54,9 @@ export class MedicalService {
     public doctors = this.doctorsSignal.asReadonly();
 
     getDoctors(): Observable<Doctor[]> {
-        return this.http.get<any>(this.apiUrl).pipe(
+        return this.http.get<any>(this.apiUrl, {
+            params: new HttpParams().set('PageSize', '999').set('SortOrder', 'desc')
+        }).pipe(
             map(data => {
                 const items = Array.isArray(data) ? data : (data?.items || data?.Items || []);
                 return items.map((d: any, index: number) => this.mapDoctor(d, index + 1));

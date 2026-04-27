@@ -1,14 +1,14 @@
 <div class="h-full flex flex-col w-full">
     <!-- Page Header -->
-    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
+    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8 -mt-2">
         <div>
-            <h2 class="text-dashboard-title text-[#1F2B6C] tracking-tight mb-1">Laboratory Availability</h2>
-            <p class="text-sm text-gray-500">Real-time status of hospital laboratories and medical resources.</p>
+            <h2 class="text-[36px] font-bold text-[#1F2B6C] tracking-tight mb-1">Laboratory Availability</h2>
+            <p class="text-sm text-gray-500 font-semibold">Real-time status of hospital laboratories and medical resources.</p>
         </div>
 
         @if (isAdmin()) {
         <button (click)="onAddLab()"
-                class="flex items-center gap-2 px-5 py-2.5 bg-[#1F2B6C] text-white rounded-xl text-sm font-bold hover:bg-[#159EEC] transition-all shadow-md active:scale-95">
+                class="flex items-center gap-2 px-5 py-2.5 bg-[#1F2B6C] text-white rounded-lg text-sm font-bold hover:bg-[#151D4A] transition-all shadow-md active:scale-95 cursor-pointer">
             <lucide-icon [img]="Plus" class="w-4 h-4"></lucide-icon>
             Add Laboratory
         </button>
@@ -24,35 +24,33 @@
             <input type="text"
                    placeholder="Search lab name or location..."
                    (input)="searchQuery.set($any($event.target).value)"
-                   class="block w-full pl-10 pr-3 py-2.5 border border-gray-200 rounded-xl text-sm placeholder-gray-400 focus:outline-hidden focus:ring-2 focus:ring-[#159EEC]/20 focus:border-[#159EEC] bg-white transition-all">
+                   class="block w-full pl-10 pr-3 py-2.5 border border-gray-300 rounded-lg text-sm placeholder-gray-400 focus:outline-none focus:border-[#1F2B6C] bg-gray-50/50 transition-all font-semibold text-gray-700">
         </div>
 
         <div class="flex items-center gap-3">
             <div class="relative">
                 <button (click)="toggleFilterMenu($event)"
-                        class="flex items-center gap-2 px-4 py-2.5 border border-gray-200 rounded-xl text-sm text-gray-500 hover:bg-gray-50 transition-colors bg-white shadow-[0_1px_2px_rgba(0,0,0,0.02)] min-w-[140px]"
-                        [class.ring-2]="activeFilterMenu()"
-                        [class.ring-[#159EEC]/20]="activeFilterMenu()"
-                        [class.border-[#159EEC]]="activeFilterMenu()">
+                        class="flex items-center gap-2 px-4 py-2.5 border border-gray-300 rounded-lg text-sm text-gray-500 hover:bg-gray-50 transition-colors bg-white shadow-[0_1px_2px_rgba(0,0,0,0.02)] min-w-[140px] focus:outline-none focus:border-[#1F2B6C] cursor-pointer"
+                        [class.border-[#1F2B6C]]="activeFilterMenu()">
                     <lucide-icon [img]="Filter" class="w-3.5 h-3.5 text-gray-400"></lucide-icon>
                     <span class="flex-1 text-left">
                         {{ statusFilter() === 'All' ? 'All Statuses' : statusFilter() }}
                     </span>
-                    <lucide-icon [img]="ChevronDown" class="w-3.5 h-3.5 text-gray-400 ml-1 transition-transform duration-200"
-                                [class.rotate-180]="activeFilterMenu()"></lucide-icon>
+                    <lucide-icon [img]="ChevronDown" class="w-3.5 h-3.5 text-gray-400 transition-transform duration-200 origin-center"
+                                 [class.rotate-180]="activeFilterMenu()"></lucide-icon>
                 </button>
 
                 @if (activeFilterMenu()) {
-                <div class="absolute top-full mt-2 left-0 z-50 w-44 bg-white border border-gray-100 rounded-xl shadow-lg py-1 overflow-hidden animate-in fade-in slide-in-from-top-1 duration-200">
+                <div class="absolute top-full mt-2 left-0 z-50 w-44 bg-white border border-gray-300 rounded-lg shadow-lg py-1 overflow-hidden animate-in fade-in slide-in-from-top-1 duration-200">
                     <button (click)="setFilter('All')"
                             class="w-full text-left px-4 py-2.5 text-sm transition-colors hover:bg-gray-50 flex items-center justify-between"
-                            [class.bg-blue-50]="statusFilter() === 'All'" [class.text-blue-700]="statusFilter() === 'All'">
+                            [class.bg-blue-50]="statusFilter() === 'All'" [class.text-[#1F2B6C]]="statusFilter() === 'All'">
                         All Statuses
                     </button>
                     @for (status of ['Available', 'Occupied', 'Maintenance']; track status) {
                     <button (click)="setFilter(status)"
                             class="w-full text-left px-4 py-2.5 text-sm transition-colors hover:bg-gray-50 flex items-center justify-between"
-                            [class.bg-blue-50]="statusFilter() === status" [class.text-blue-700]="statusFilter() === status">
+                            [class.bg-blue-50]="statusFilter() === status" [class.text-[#1F2B6C]]="statusFilter() === status">
                         {{ status }}
                     </button>
                     }
@@ -65,7 +63,7 @@
     <!-- Labs Grid -->
     <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6 overflow-y-auto pr-1 slim-scroll pb-6">
         @for (lab of filteredLabs(); track lab.id) {
-        <div class="bg-white rounded-3xl border border-gray-100 p-6 shadow-sm hover:shadow-md transition-all group relative overflow-hidden">
+        <div class="bg-white rounded-[20px] border border-gray-300 p-6 shadow-xs hover:shadow-md transition-all group relative overflow-hidden">
             <div class="absolute top-0 right-0 p-4">
                 <span [class]="'px-3 py-1 rounded-full text-[11px] font-bold border ' + getStatusClass(lab.status)">
                     {{ lab.status }}
@@ -124,9 +122,9 @@
             </div>
         </div>
         } @empty {
-        <div class="col-span-full py-20 text-center bg-white rounded-3xl border border-dashed border-gray-200">
+        <div class="col-span-full py-20 text-center bg-white rounded-[20px] border border-dashed border-gray-300">
             <lucide-icon [img]="FlaskConical" class="w-12 h-12 text-gray-200 mx-auto mb-4"></lucide-icon>
-            <p class="text-gray-500 font-medium">No laboratories found matching your search.</p>
+            <p class="text-gray-500 font-bold">No laboratories found matching your search.</p>
         </div>
         }
     </div>

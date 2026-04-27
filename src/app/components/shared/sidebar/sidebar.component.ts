@@ -159,4 +159,8 @@ export class SidebarComponent implements OnInit, OnDestroy {
             (item) => !item.roles || item.roles.includes(role)
         );
     }
+
+    isMobileScreen(): boolean {
+        return window.innerWidth < 1024;
+    }
 }
