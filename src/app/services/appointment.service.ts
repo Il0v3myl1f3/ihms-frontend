@@ -186,7 +186,6 @@ export class AppointmentService {
             AppointmentDate: this.toIsoDate(data['appointmentDate'] || data['date']),
             Status: status,
             Reason: data['reason'] || data['notes'] || 'Consultation',
-            RoomNumber: data['roomNumber'] || '',
             Notes: data['notes'] || ''
         };
     }

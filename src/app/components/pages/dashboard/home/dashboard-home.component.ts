@@ -1,6 +1,7 @@
 import { Component, OnInit, inject, ChangeDetectionStrategy, DestroyRef, signal } from '@angular/core';
-import { Observable, timer } from 'rxjs';
+import { Observable, timer, of } from 'rxjs';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { catchError } from 'rxjs/operators';
 import { AuthService, User } from '../../../../services/auth.service';
 import { LucideAngularModule, Users, Stethoscope, CalendarDays, CreditCard, FileText, Activity, ClipboardList, Heart, DoorOpen, BedDouble, Clock, MapPin, Pill, LayoutDashboard, ShieldCheck, AlertCircle } from 'lucide-angular';
 import { RouterModule } from '@angular/router';
@@ -95,12 +96,20 @@ export class DashboardHomeComponent implements OnInit {
 
     private loadDashboardData(): void {
         // Load real-time stats
-        this.patientService.getPatients().pipe(takeUntilDestroyed(this.destroyRef)).subscribe(patients => {
-            this.stats.update(s => ({ ...s, totalPatients: patients.length }));
-        });
+        if (this.currentUser && (this.currentUser.role === 'admin' || this.currentUser.role === 'doctor')) {
+            this.patientService.getPatients().pipe(
+                takeUntilDestroyed(this.destroyRef),
+                catchError(() => of([]))
+            ).subscribe((patients: any[]) => {
+                this.stats.update(s => ({ ...s, totalPatients: patients.length }));
+            });
+        }
         this.stats.update(s => ({ ...s, scheduledAppointments: this.appointmentService.getTodayAppointmentCount() }));
 
-        this.medicalService.getDoctors().pipe(takeUntilDestroyed(this.destroyRef)).subscribe(docs => {
+        this.medicalService.getDoctors().pipe(
+            takeUntilDestroyed(this.destroyRef),
+            catchError(() => of([]))
+        ).subscribe((docs: any[]) => {
             this.stats.update(s => ({ ...s, totalDoctors: docs.length }));
         });
 
@@ -121,7 +130,7 @@ export class DashboardHomeComponent implements OnInit {
                     myPatients: new Set(myApps.map(a => a.patientName)).size,
                     todaySchedule: myApps.slice(0, 3).map(a => {
                         const date = new Date(a.appointmentDate);
-                        const timeStr = !isNaN(date.getTime()) 
+                        const timeStr = !isNaN(date.getTime())
                             ? date.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' }).split(' ')
                             : ['09:00', 'AM'];
                         return {
@@ -147,10 +156,10 @@ export class DashboardHomeComponent implements OnInit {
                     // Extract date and time from the record
                     const rawDate = next.appointmentDate; // e.g. "April 10, 2026" or ISO
                     const dateObj = new Date(rawDate);
-                    
+
                     const day = !isNaN(dateObj.getDate()) ? dateObj.getDate().toString() : '10';
                     const month = !isNaN(dateObj.getTime()) ? dateObj.toLocaleString('en-US', { month: 'short' }) : 'Jan';
-                    const timeStr = !isNaN(dateObj.getTime()) 
+                    const timeStr = !isNaN(dateObj.getTime())
                         ? dateObj.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })
                         : '10:00 AM';
 
