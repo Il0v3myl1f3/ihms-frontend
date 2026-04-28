@@ -1,3 +1,4 @@
+import { CustomAutocompleteComponent, AutocompleteOption } from '../../../../shared/custom-autocomplete/custom-autocomplete.component';
 import { CustomDatepickerComponent } from '../../../../shared/custom-datepicker/custom-datepicker.component';
 import { Component, input, output, inject, OnInit, OnChanges, SimpleChanges, ChangeDetectionStrategy, computed } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
@@ -11,7 +12,7 @@ import { AuthService } from '../../../../../services/auth.service';
 
 @Component({
     selector: 'app-appointment-create-modal',
-    imports: [ReactiveFormsModule, ModalComponent, CustomSelectComponent, CustomDatepickerComponent],
+    imports: [ReactiveFormsModule, ModalComponent, CustomSelectComponent, CustomDatepickerComponent, CustomAutocompleteComponent],
     templateUrl: './appointment-create-modal.component.html',
     changeDetection: ChangeDetectionStrategy.OnPush
 })
@@ -39,16 +40,16 @@ export class AppointmentCreateModalComponent implements OnInit, OnChanges {
         { value: 'Completed', label: 'Completed' }
     ];
 
-    patientOptions = computed(() => {
-        const opts: {value: string, label: string, disabled?: boolean}[] = [
+    patientOptions = computed<AutocompleteOption[]>(() => {
+        const opts: AutocompleteOption[] = [
             { value: '', label: 'Select Patient', disabled: true }
         ];
         this.patients().forEach(p => opts.push({ value: p.id, label: p.name }));
         return opts;
     });
 
-    doctorOptions = computed(() => {
-        const opts: {value: string, label: string, disabled?: boolean}[] = [
+    doctorOptions = computed<AutocompleteOption[]>(() => {
+        const opts: AutocompleteOption[] = [
             { value: '', label: 'Select Doctor', disabled: true }
         ];
         this.doctors().forEach(d => opts.push({ value: d.id, label: d.name }));

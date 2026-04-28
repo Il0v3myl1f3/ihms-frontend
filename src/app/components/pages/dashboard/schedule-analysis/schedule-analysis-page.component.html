@@ -295,104 +295,47 @@
 <app-modal [isOpen]="isAddModalOpen()" title="Schedule New Analysis" (close)="closeAddModal()">
   <div modal-body>
     @if (newAnalysis()) {
-      @let data = newAnalysis()!;
       <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
         @if (authService.getCurrentUser()?.role !== 'user') {
         <div class="md:col-span-2">
           <label class="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Select Patient</label>
-          <div class="relative">
-            <button (click)="toggleModalDropdown('addPatient', $event)"
-                    class="w-full flex items-center gap-3 px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:ring-2 focus:ring-[#159EEC]/20 focus:border-[#159EEC] outline-none transition-all text-left">
-              <lucide-icon [img]="User" class="w-4 h-4 text-[#159EEC]"></lucide-icon>
-              <span class="flex-1 truncate">{{ data.patientName || 'Select Patient' }}</span>
-              <lucide-icon [img]="ChevronDown" class="w-4 h-4 text-gray-400 transition-transform duration-200 origin-center"
-                          [class.rotate-180]="activeAddPatientDropdown()"></lucide-icon>
-            </button>
-            @if (activeAddPatientDropdown()) {
-              <div class="absolute z-[100] mt-1 w-full bg-white border border-gray-100 rounded-xl shadow-xl py-1 max-h-48 overflow-y-auto">
-                @for (p of availablePatients(); track p.id) {
-                  <button (click)="selectPatient(p, false)"
-                          class="w-full text-left px-4 py-2 text-sm hover:bg-gray-50 transition-colors"
-                          [class.bg-blue-50]="data.patientId === p.id" [class.text-blue-700]="data.patientId === p.id">
-                    {{ p.name }}
-                  </button>
-                }
-              </div>
-            }
-          </div>
+          <app-custom-autocomplete 
+            [ngModel]="newAnalysis().patientId" 
+            (ngModelChange)="selectPatientById($event, false)"
+            [options]="patientOptions()"
+            placeholder="Search Patient...">
+          </app-custom-autocomplete>
         </div>
         }
 
         <div class="md:col-span-2">
           <label class="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Analysis Type</label>
-          <div class="relative">
-            <button (click)="toggleModalDropdown('addType', $event)"
-                    class="w-full flex items-center gap-3 px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:ring-2 focus:ring-[#159EEC]/20 focus:border-[#159EEC] outline-none transition-all text-left">
-              <lucide-icon [img]="Microscope" class="w-4 h-4 text-[#1F2B6C]"></lucide-icon>
-              <span class="flex-1 truncate">{{ data.analysisType || 'Select Type' }}</span>
-              <lucide-icon [img]="ChevronDown" class="w-4 h-4 text-gray-400 transition-transform duration-200 origin-center"
-                          [class.rotate-180]="activeAddTypeDropdown()"></lucide-icon>
-            </button>
-            @if (activeAddTypeDropdown()) {
-              <div class="absolute z-[100] mt-1 w-full bg-white border border-gray-100 rounded-xl shadow-xl py-1 max-h-48 overflow-y-auto">
-                @for (type of analysisTypes; track type) {
-                  <button (click)="selectType(type, false)"
-                          class="w-full text-left px-4 py-2 text-sm hover:bg-gray-50 transition-colors"
-                          [class.bg-blue-50]="data.analysisType === type" [class.text-blue-700]="data.analysisType === type">
-                    {{ type }}
-                  </button>
-                }
-              </div>
-            }
-          </div>
+          <app-custom-autocomplete 
+            [ngModel]="newAnalysis().analysisType" 
+            (ngModelChange)="selectType($event, false)"
+            [options]="analysisTypeOptions()"
+            placeholder="Search Type...">
+          </app-custom-autocomplete>
         </div>
 
         <div>
           <label class="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Laboratory</label>
-          <div class="relative">
-            <button (click)="toggleModalDropdown('addLab', $event)"
-                    class="w-full flex items-center gap-3 px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:ring-2 focus:ring-[#159EEC]/20 focus:border-[#159EEC] outline-none transition-all text-left">
-              <lucide-icon [img]="MapPin" class="w-4 h-4 text-[#159EEC]"></lucide-icon>
-              <span class="flex-1 truncate">{{ data.labName || 'Select Lab' }}</span>
-              <lucide-icon [img]="ChevronDown" class="w-4 h-4 text-gray-400 transition-transform duration-200 origin-center"
-                          [class.rotate-180]="activeAddLabDropdown()"></lucide-icon>
-            </button>
-            @if (activeAddLabDropdown()) {
-              <div class="absolute z-[100] mt-1 w-full bg-white border border-gray-100 rounded-xl shadow-xl py-1 max-h-48 overflow-y-auto">
-                @for (lab of availableLabs(); track lab.id) {
-                  <button (click)="selectLab(lab, false)"
-                          class="w-full text-left px-4 py-2 text-sm hover:bg-gray-50 transition-colors"
-                          [class.bg-blue-50]="data.labId === lab.id" [class.text-blue-700]="data.labId === lab.id">
-                    {{ lab.name }}
-                  </button>
-                }
-              </div>
-            }
-          </div>
+          <app-custom-autocomplete 
+            [ngModel]="newAnalysis().labId" 
+            (ngModelChange)="selectLabById($event, false)"
+            [options]="labOptions()"
+            placeholder="Search Lab...">
+          </app-custom-autocomplete>
         </div>
 
         <div>
           <label class="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Select Doctor</label>
-          <div class="relative">
-            <button (click)="toggleModalDropdown('addDoctor', $event)"
-                    class="w-full flex items-center gap-3 px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:ring-2 focus:ring-[#159EEC]/20 focus:border-[#159EEC] outline-none transition-all text-left">
-              <lucide-icon [img]="User" class="w-4 h-4 text-[#1F2B6C]"></lucide-icon>
-              <span class="flex-1 truncate">{{ data.doctorName || 'Select Doctor' }}</span>
-              <lucide-icon [img]="ChevronDown" class="w-4 h-4 text-gray-400 transition-transform duration-200 origin-center"
-                          [class.rotate-180]="activeAddDoctorDropdown()"></lucide-icon>
-            </button>
-            @if (activeAddDoctorDropdown()) {
-              <div class="absolute z-[100] mt-1 w-full bg-white border border-gray-100 rounded-xl shadow-xl py-1 max-h-48 overflow-y-auto">
-                @for (doc of availableDoctors(); track doc.id) {
-                  <button (click)="selectDoctor(doc, false)"
-                          class="w-full text-left px-4 py-2 text-sm hover:bg-gray-50 transition-colors"
-                          [class.bg-blue-50]="data.doctorId === doc.id" [class.text-blue-700]="data.doctorId === doc.id">
-                    {{ doc.name }}
-                  </button>
-                }
-              </div>
-            }
-          </div>
+          <app-custom-autocomplete 
+            [ngModel]="newAnalysis().doctorId" 
+            (ngModelChange)="selectDoctorById($event, false)"
+            [options]="doctorOptions()"
+            placeholder="Search Doctor...">
+          </app-custom-autocomplete>
         </div>
 
         <div class="md:col-span-2 grid grid-cols-1 md:grid-cols-2 gap-5">
@@ -430,99 +373,43 @@
         @if (authService.getCurrentUser()?.role !== 'user') {
         <div class="md:col-span-2">
           <label class="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Patient</label>
-          <div class="relative">
-            <button (click)="toggleModalDropdown('editPatient', $event)"
-                    class="w-full flex items-center gap-3 px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:ring-2 focus:ring-[#159EEC]/20 focus:border-[#159EEC] outline-none transition-all text-left">
-              <lucide-icon [img]="User" class="w-4 h-4 text-[#159EEC]"></lucide-icon>
-              <span class="flex-1 truncate">{{ editItem.patientName }}</span>
-              <lucide-icon [img]="ChevronDown" class="w-4 h-4 text-gray-400 transition-transform duration-200 origin-center"
-                          [class.rotate-180]="activeEditPatientDropdown()"></lucide-icon>
-            </button>
-            @if (activeEditPatientDropdown()) {
-              <div class="absolute z-[100] mt-1 w-full bg-white border border-gray-100 rounded-xl shadow-xl py-1 max-h-48 overflow-y-auto">
-                @for (p of availablePatients(); track p.id) {
-                  <button (click)="selectPatient(p, true)"
-                          class="w-full text-left px-4 py-2 text-sm hover:bg-gray-50 transition-colors"
-                          [class.bg-blue-50]="editItem.patientId === p.id" [class.text-blue-700]="editItem.patientId === p.id">
-                    {{ p.name }}
-                  </button>
-                }
-              </div>
-            }
-          </div>
+          <app-custom-autocomplete 
+            [ngModel]="editItem.patientId" 
+            (ngModelChange)="selectPatientById($event, true)"
+            [options]="patientOptions()"
+            placeholder="Search Patient...">
+          </app-custom-autocomplete>
         </div>
         }
 
         <div>
           <label class="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Analysis Type</label>
-          <div class="relative">
-            <button (click)="toggleModalDropdown('editType', $event)"
-                    class="w-full flex items-center gap-3 px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:ring-2 focus:ring-[#159EEC]/20 focus:border-[#159EEC] outline-none transition-all text-left">
-              <lucide-icon [img]="Microscope" class="w-4 h-4 text-[#1F2B6C]"></lucide-icon>
-              <span class="flex-1 truncate">{{ editItem.analysisType }}</span>
-              <lucide-icon [img]="ChevronDown" class="w-4 h-4 text-gray-400 transition-transform duration-200 origin-center"
-                          [class.rotate-180]="activeEditTypeDropdown()"></lucide-icon>
-            </button>
-            @if (activeEditTypeDropdown()) {
-              <div class="absolute z-[100] mt-1 w-full bg-white border border-gray-100 rounded-xl shadow-xl py-1 max-h-48 overflow-y-auto">
-                @for (type of analysisTypes; track type) {
-                  <button (click)="selectType(type, true)"
-                          class="w-full text-left px-4 py-2 text-sm hover:bg-gray-50 transition-colors"
-                          [class.bg-blue-50]="editItem.analysisType === type" [class.text-blue-700]="editItem.analysisType === type">
-                    {{ type }}
-                  </button>
-                }
-              </div>
-            }
-          </div>
+          <app-custom-autocomplete 
+            [ngModel]="editItem.analysisType" 
+            (ngModelChange)="selectType($event, true)"
+            [options]="analysisTypeOptions()"
+            placeholder="Search Type...">
+          </app-custom-autocomplete>
         </div>
 
         <div>
           <label class="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Laboratory</label>
-          <div class="relative">
-            <button (click)="toggleModalDropdown('editLab', $event)"
-                    class="w-full flex items-center gap-3 px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:ring-2 focus:ring-[#159EEC]/20 focus:border-[#159EEC] outline-none transition-all text-left">
-              <lucide-icon [img]="MapPin" class="w-4 h-4 text-[#159EEC]"></lucide-icon>
-              <span class="flex-1 truncate">{{ editItem.labName }}</span>
-              <lucide-icon [img]="ChevronDown" class="w-4 h-4 text-gray-400 transition-transform duration-200 origin-center"
-                          [class.rotate-180]="activeEditLabDropdown()"></lucide-icon>
-            </button>
-            @if (activeEditLabDropdown()) {
-              <div class="absolute z-[100] mt-1 w-full bg-white border border-gray-100 rounded-xl shadow-xl py-1 max-h-48 overflow-y-auto">
-                @for (lab of availableLabs(); track lab.id) {
-                  <button (click)="selectLab(lab, true)"
-                          class="w-full text-left px-4 py-2 text-sm hover:bg-gray-50 transition-colors"
-                          [class.bg-blue-50]="editItem.labId === lab.id" [class.text-blue-700]="editItem.labId === lab.id">
-                    {{ lab.name }}
-                  </button>
-                }
-              </div>
-            }
-          </div>
+          <app-custom-autocomplete 
+            [ngModel]="editItem.labId" 
+            (ngModelChange)="selectLabById($event, true)"
+            [options]="labOptions()"
+            placeholder="Search Lab...">
+          </app-custom-autocomplete>
         </div>
 
         <div>
           <label class="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Doctor</label>
-          <div class="relative">
-            <button (click)="toggleModalDropdown('editDoctor', $event)"
-                    class="w-full flex items-center gap-3 px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:ring-2 focus:ring-[#159EEC]/20 focus:border-[#159EEC] outline-none transition-all text-left">
-              <lucide-icon [img]="User" class="w-4 h-4 text-[#1F2B6C]"></lucide-icon>
-              <span class="flex-1 truncate">{{ editItem.doctorName }}</span>
-              <lucide-icon [img]="ChevronDown" class="w-4 h-4 text-gray-400 transition-transform duration-200 origin-center"
-                          [class.rotate-180]="activeEditDoctorDropdown()"></lucide-icon>
-            </button>
-            @if (activeEditDoctorDropdown()) {
-              <div class="absolute z-[100] mt-1 w-full bg-white border border-gray-100 rounded-xl shadow-xl py-1 max-h-48 overflow-y-auto">
-                @for (doc of availableDoctors(); track doc.id) {
-                  <button (click)="selectDoctor(doc, true)"
-                          class="w-full text-left px-4 py-2 text-sm hover:bg-gray-50 transition-colors"
-                          [class.bg-blue-50]="editItem.doctorId === doc.id" [class.text-blue-700]="editItem.doctorId === doc.id">
-                    {{ doc.name }}
-                  </button>
-                }
-              </div>
-            }
-          </div>
+          <app-custom-autocomplete 
+            [ngModel]="editItem.doctorId" 
+            (ngModelChange)="selectDoctorById($event, true)"
+            [options]="doctorOptions()"
+            placeholder="Search Doctor...">
+          </app-custom-autocomplete>
         </div>
 
         <div>

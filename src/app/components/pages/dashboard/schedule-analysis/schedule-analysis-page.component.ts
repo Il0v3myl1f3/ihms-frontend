@@ -13,10 +13,11 @@ import { AnalysisViewModalComponent } from './analysis-view-modal/analysis-view-
 import { ModalComponent } from '../../../shared/modal/modal.component';
 import { CustomDatepickerComponent } from '../../../shared/custom-datepicker/custom-datepicker.component';
 import { CustomTimepickerComponent } from '../../../shared/custom-timepicker/custom-timepicker.component';
+import { CustomAutocompleteComponent, AutocompleteOption } from '../../../shared/custom-autocomplete/custom-autocomplete.component';
 
 @Component({
   selector: 'app-schedule-analysis-page',
-  imports: [CommonModule, LucideAngularModule, FormsModule, AnalysisViewModalComponent, ModalComponent, CustomDatepickerComponent, CustomTimepickerComponent],
+  imports: [CommonModule, LucideAngularModule, FormsModule, AnalysisViewModalComponent, ModalComponent, CustomDatepickerComponent, CustomTimepickerComponent, CustomAutocompleteComponent],
   templateUrl: './schedule-analysis-page.component.html',
   styleUrls: ['./schedule-analysis-page.component.css'],
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -71,6 +72,22 @@ export class ScheduleAnalysisPageComponent implements OnInit {
     'Renal Function Test',
     'Thyroid Profile'
   ];
+
+  analysisTypeOptions = computed<AutocompleteOption[]>(() => 
+    this.analysisTypes.map(t => ({ value: t, label: t }))
+  );
+  
+  patientOptions = computed<AutocompleteOption[]>(() => 
+    this.availablePatients().map(p => ({ value: p.id, label: p.name }))
+  );
+
+  doctorOptions = computed<AutocompleteOption[]>(() => 
+    this.availableDoctors().map(d => ({ value: d.id, label: d.name }))
+  );
+
+  labOptions = computed<AutocompleteOption[]>(() => 
+    this.availableLabs().map(l => ({ value: l.id, label: l.name }))
+  );
   
   isDoctor = computed(() => this.authService.getCurrentUser()?.role === 'doctor');
   readOnly = computed(() => !this.isDoctor());
@@ -86,14 +103,6 @@ export class ScheduleAnalysisPageComponent implements OnInit {
   selectedAnalysis = signal<MedicalAnalysis | null>(null);
 
   // Modal Dropdown signals
-  activeAddTypeDropdown = signal(false);
-  activeAddLabDropdown = signal(false);
-  activeAddDoctorDropdown = signal(false);
-  activeAddPatientDropdown = signal(false);
-  activeEditTypeDropdown = signal(false);
-  activeEditLabDropdown = signal(false);
-  activeEditDoctorDropdown = signal(false);
-  activeEditPatientDropdown = signal(false);
   activeEditStatusDropdown = signal(false);
 
   // Date/Time Split State
@@ -428,14 +437,6 @@ export class ScheduleAnalysisPageComponent implements OnInit {
   toggleModalDropdown(type: string, event: Event): void {
     event.stopPropagation();
     switch (type) {
-      case 'addType': this.activeAddTypeDropdown.set(!this.activeAddTypeDropdown()); break;
-      case 'addLab': this.activeAddLabDropdown.set(!this.activeAddLabDropdown()); break;
-      case 'addDoctor': this.activeAddDoctorDropdown.set(!this.activeAddDoctorDropdown()); break;
-      case 'addPatient': this.activeAddPatientDropdown.set(!this.activeAddPatientDropdown()); break;
-      case 'editType': this.activeEditTypeDropdown.set(!this.activeEditTypeDropdown()); break;
-      case 'editLab': this.activeEditLabDropdown.set(!this.activeEditLabDropdown()); break;
-      case 'editDoctor': this.activeEditDoctorDropdown.set(!this.activeEditDoctorDropdown()); break;
-      case 'editPatient': this.activeEditPatientDropdown.set(!this.activeEditPatientDropdown()); break;
       case 'editStatus': this.activeEditStatusDropdown.set(!this.activeEditStatusDropdown()); break;
     }
   }
@@ -444,10 +445,8 @@ export class ScheduleAnalysisPageComponent implements OnInit {
     if (isEdit) {
       const current = this.selectedAnalysis();
       if (current) this.selectedAnalysis.set({ ...current, analysisType: type });
-      this.activeEditTypeDropdown.set(false);
     } else {
       this.newAnalysis.update(prev => ({ ...prev, analysisType: type }));
-      this.activeAddTypeDropdown.set(false);
     }
   }
 
@@ -455,10 +454,8 @@ export class ScheduleAnalysisPageComponent implements OnInit {
     if (isEdit) {
       const current = this.selectedAnalysis();
       if (current) this.selectedAnalysis.set({ ...current, labId: lab.id, labName: lab.name });
-      this.activeEditLabDropdown.set(false);
     } else {
       this.newAnalysis.update(prev => ({ ...prev, labId: lab.id, labName: lab.name }));
-      this.activeAddLabDropdown.set(false);
     }
   }
 
@@ -466,10 +463,29 @@ export class ScheduleAnalysisPageComponent implements OnInit {
     if (isEdit) {
       const current = this.selectedAnalysis();
       if (current) this.selectedAnalysis.set({ ...current, doctorId: doctor.id, doctorName: doctor.name });
-      this.activeEditDoctorDropdown.set(false);
     } else {
       this.newAnalysis.update(prev => ({ ...prev, doctorId: doctor.id, doctorName: doctor.name }));
-      this.activeAddDoctorDropdown.set(false);
+    }
+  }
+
+  selectPatientById(id: string, isEdit: boolean): void {
+    const patient = this.availablePatients().find(p => p.id === id);
+    if (patient) {
+      this.selectPatient(patient, isEdit);
+    }
+  }
+
+  selectDoctorById(id: string, isEdit: boolean): void {
+    const doctor = this.availableDoctors().find(d => d.id === id);
+    if (doctor) {
+      this.selectDoctor(doctor, isEdit);
+    }
+  }
+
+  selectLabById(id: string, isEdit: boolean): void {
+    const lab = this.availableLabs().find(l => l.id === id);
+    if (lab) {
+      this.selectLab(lab, isEdit);
     }
   }
 
@@ -477,10 +493,8 @@ export class ScheduleAnalysisPageComponent implements OnInit {
     if (isEdit) {
       const current = this.selectedAnalysis();
       if (current) this.selectedAnalysis.set({ ...current, patientId: patient.id, patientName: patient.name });
-      this.activeEditPatientDropdown.set(false);
     } else {
       this.newAnalysis.update(prev => ({ ...prev, patientId: patient.id, patientName: patient.name }));
-      this.activeAddPatientDropdown.set(false);
     }
   }
 
@@ -503,12 +517,6 @@ export class ScheduleAnalysisPageComponent implements OnInit {
   closeDropdown(): void {
     this.activeItem = null;
     this.activeFilterMenu.set(false);
-    this.activeAddTypeDropdown.set(false);
-    this.activeAddLabDropdown.set(false);
-    this.activeAddDoctorDropdown.set(false);
-    this.activeEditTypeDropdown.set(false);
-    this.activeEditLabDropdown.set(false);
-    this.activeEditDoctorDropdown.set(false);
     this.activeEditStatusDropdown.set(false);
   }
 

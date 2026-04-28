@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, FormGroup, Validators, FormArray } from '@angular/forms';
 import { LucideAngularModule, Activity, ClipboardList, StickyNote, User, Stethoscope, Pill, Plus, Trash2 } from 'lucide-angular';
 import { ModalComponent } from '../../../../shared/modal/modal.component';
-import { CustomSelectComponent, SelectOption } from '../../../../shared/custom-select/custom-select.component';
+import { CustomAutocompleteComponent, AutocompleteOption } from '../../../../shared/custom-autocomplete/custom-autocomplete.component';
 import { MedicalRecord } from '../medical-records-page.component';
 import { Appointment } from '../../appointments/appointment-table/appointment-table.component';
 import { MedicalService, Doctor } from '../../../../../services/medical.service';
@@ -15,7 +15,7 @@ import { Patient } from '../../patient/patient-table/patient-table.component';
 @Component({
     selector: 'app-medical-record-create-modal',
     standalone: true,
-    imports: [CommonModule, ReactiveFormsModule, LucideAngularModule, ModalComponent, CustomSelectComponent],
+    imports: [CommonModule, ReactiveFormsModule, LucideAngularModule, ModalComponent, CustomAutocompleteComponent],
     templateUrl: './medical-record-create-modal.component.html',
     changeDetection: ChangeDetectionStrategy.OnPush
 })
@@ -51,11 +51,11 @@ export class MedicalRecordCreateModalComponent implements OnInit {
     doctors = signal<Doctor[]>([]);
     patients = signal<Patient[]>([]);
 
-    doctorOptions = computed<SelectOption[]>(() => 
+    doctorOptions = computed<AutocompleteOption[]>(() => 
         this.doctors().map(d => ({ value: d.id, label: d.name }))
     );
 
-    patientOptions = computed<SelectOption[]>(() => 
+    patientOptions = computed<AutocompleteOption[]>(() => 
         this.patients().map(p => ({ value: p.id, label: p.name }))
     );
 
