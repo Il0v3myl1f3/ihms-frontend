@@ -9,18 +9,18 @@
             @if (!isPatient()) {
                 <div>
                     <label class="block text-sm font-medium text-gray-700 mb-1.5">Patient Name *</label>
-                    <app-custom-select formControlName="patientId" placeholder="Select Patient"
+                    <app-custom-autocomplete formControlName="patientId" placeholder="Search Patient..."
                         [options]="patientOptions()">
-                    </app-custom-select>
+                    </app-custom-autocomplete>
                 </div>
             }
 
             <!-- Doctor Name -->
             <div>
                 <label class="block text-sm font-medium text-gray-700 mb-1.5">Doctor Name *</label>
-                <app-custom-select formControlName="doctorId" placeholder="Select Doctor"
+                <app-custom-autocomplete formControlName="doctorId" placeholder="Search Doctor..."
                     [options]="doctorOptions()">
-                </app-custom-select>
+                </app-custom-autocomplete>
             </div>
 
             <!-- Appointment Date -->

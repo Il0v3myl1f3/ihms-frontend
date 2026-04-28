@@ -3,7 +3,8 @@ import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, FormGroup, Validators, FormArray } from '@angular/forms';
 import { LucideAngularModule, Activity, ClipboardList, StickyNote, User, Stethoscope, Pill, Plus, Trash2 } from 'lucide-angular';
 import { ModalComponent } from '../../../../shared/modal/modal.component';
-import { CustomSelectComponent, SelectOption } from '../../../../shared/custom-select/custom-select.component';
+import { SelectOption } from '../../../../shared/custom-select/custom-select.component';
+import { CustomAutocompleteComponent } from '../../../../shared/custom-autocomplete/custom-autocomplete.component';
 import { MedicalRecord } from '../medical-records-page.component';
 import { Appointment } from '../../appointments/appointment-table/appointment-table.component';
 import { MedicalService, Doctor } from '../../../../../services/medical.service';
@@ -15,7 +16,7 @@ import { Patient } from '../../patient/patient-table/patient-table.component';
 @Component({
     selector: 'app-medical-record-create-modal',
     standalone: true,
-    imports: [CommonModule, ReactiveFormsModule, LucideAngularModule, ModalComponent, CustomSelectComponent],
+    imports: [CommonModule, ReactiveFormsModule, LucideAngularModule, ModalComponent, CustomAutocompleteComponent],
     templateUrl: './medical-record-create-modal.component.html',
     changeDetection: ChangeDetectionStrategy.OnPush
 })

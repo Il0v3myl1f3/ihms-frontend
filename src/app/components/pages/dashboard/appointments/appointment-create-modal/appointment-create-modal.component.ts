@@ -1,3 +1,4 @@
+import { CustomAutocompleteComponent } from '../../../../shared/custom-autocomplete/custom-autocomplete.component';
 import { CustomDatepickerComponent } from '../../../../shared/custom-datepicker/custom-datepicker.component';
 import { Component, input, output, inject, OnInit, OnChanges, SimpleChanges, ChangeDetectionStrategy, computed } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
@@ -11,7 +12,7 @@ import { AuthService } from '../../../../../services/auth.service';
 
 @Component({
     selector: 'app-appointment-create-modal',
-    imports: [ReactiveFormsModule, ModalComponent, CustomSelectComponent, CustomDatepickerComponent],
+    imports: [ReactiveFormsModule, ModalComponent, CustomSelectComponent, CustomDatepickerComponent, CustomAutocompleteComponent],
     templateUrl: './appointment-create-modal.component.html',
     changeDetection: ChangeDetectionStrategy.OnPush
 })

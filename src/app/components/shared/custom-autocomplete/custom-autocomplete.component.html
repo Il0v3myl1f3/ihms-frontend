@@ -1,0 +1,60 @@
+<div class="relative w-full block">
+    <!-- Search Input Trigger -->
+    <div class="relative flex items-center">
+        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+            <lucide-icon [img]="Search" class="h-4 w-4 text-gray-400"></lucide-icon>
+        </div>
+        <input type="text"
+            [value]="searchText()"
+            (input)="onInput($event)"
+            (focus)="isOpen.set(true); updateDropdownPosition()"
+            [placeholder]="placeholder()"
+            [disabled]="effectiveDisabled()"
+            class="block w-full pl-9 pr-10 py-2 border border-gray-200 rounded-lg bg-white text-sm text-gray-800 outline-none transition-all duration-200 min-h-[38px] focus:border-blue-500 focus:ring-1 focus:ring-blue-500 hover:border-gray-300 disabled:opacity-50 disabled:cursor-not-allowed disabled:bg-gray-50 disabled:hover:border-gray-200"
+            [class.border-blue-500]="isOpen()"
+            [class.ring-1]="isOpen()"
+            [class.ring-blue-500]="isOpen()">
+        
+        <!-- Clear / Dropdown icon -->
+        <div class="absolute inset-y-0 right-0 pr-3 flex items-center gap-1">
+            @if (searchText() && !effectiveDisabled()) {
+                <button type="button" (click)="clear($event)" class="p-1 hover:bg-gray-100 rounded-full transition-colors cursor-pointer">
+                    <lucide-icon [img]="X" class="w-3.5 h-3.5 text-gray-400"></lucide-icon>
+                </button>
+            }
+            <lucide-icon [img]="ChevronDown"
+                class="w-4 h-4 text-gray-500 transition-transform duration-200"
+                [class.rotate-180]="isOpen()">
+            </lucide-icon>
+        </div>
+    </div>
+
+    <!-- Dropdown -->
+    @if (isOpen()) {
+    <div class="z-[99999] bg-white border border-gray-200 rounded-lg shadow-[0_4px_20px_rgba(0,0,0,0.08)] max-h-[220px] overflow-y-auto py-1 slim-scroll"
+        [style.position]="'fixed'"
+        [style.top.px]="dropdownPos.top"
+        [style.left.px]="dropdownPos.left"
+        [style.width.px]="dropdownPos.width">
+        
+        @for (option of filteredOptions(); track option.value) {
+        <button type="button"
+            (click)="selectOption(option)"
+            [disabled]="option.disabled"
+            class="block w-full px-3 py-2 text-sm text-left bg-transparent border-none cursor-pointer transition-colors duration-150 disabled:text-gray-400 disabled:cursor-default disabled:hover:bg-transparent"
+            [class.bg-blue-50]="option.value === selectedValue()"
+            [class.text-blue-700]="option.value === selectedValue()"
+            [class.font-medium]="option.value === selectedValue()"
+            [class.hover:bg-blue-100]="option.value === selectedValue()"
+            [class.text-gray-700]="option.value !== selectedValue()"
+            [class.hover:bg-gray-100]="option.value !== selectedValue()">
+            {{ option.label }}
+        </button>
+        } @empty {
+            <div class="px-3 py-4 text-sm text-gray-400 text-center italic">
+                No results found
+            </div>
+        }
+    </div>
+    }
+</div>
