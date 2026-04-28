@@ -68,6 +68,7 @@ export class AppointmentTableComponent implements OnInit, OnDestroy {
     private authService = inject(AuthService);
 
     canManage = computed(() => this.authService.getCurrentUser()?.role === 'doctor');
+    isAdmin = computed(() => this.authService.getCurrentUser()?.role === 'admin');
 
     selectAll = false;
     currentPage = signal(1);
