@@ -9,6 +9,9 @@ import { PatientService } from '../../../../services/patient.service';
 import { MedicalRecordCreateModalComponent } from '../medical-records/medical-record-create-modal/medical-record-create-modal.component';
 import { MedicalRecordService } from '../../../../services/medical-record.service';
 import { Patient } from '../patient/patient-table/patient-table.component';
+import { AuthService } from '../../../../services/auth.service';
+import { of } from 'rxjs';
+import { catchError } from 'rxjs/operators';
 
 @Component({
     selector: 'app-appointments-page',
@@ -18,11 +21,12 @@ import { Patient } from '../patient/patient-table/patient-table.component';
 })
 export class AppointmentsPageComponent implements OnInit {
     @ViewChild(AppointmentTableComponent) appointmentTable!: AppointmentTableComponent;
- 
+
     private medicalService = inject(MedicalService);
     private appointmentService = inject(AppointmentService);
     private patientService = inject(PatientService);
     private medicalRecordService = inject(MedicalRecordService);
+    private authService = inject(AuthService);
     private cdr = inject(ChangeDetectorRef);
     private destroyRef = inject(DestroyRef);
 
@@ -41,12 +45,24 @@ export class AppointmentsPageComponent implements OnInit {
     constructor() {}
 
     ngOnInit(): void {
-        this.medicalService.getDoctors().pipe(takeUntilDestroyed(this.destroyRef)).subscribe((docs: Doctor[]) => {
+        const user = this.authService.getCurrentUser();
+
+        this.medicalService.getDoctors().pipe(
+            takeUntilDestroyed(this.destroyRef),
+            catchError(() => of([]))
+        ).subscribe((docs: Doctor[]) => {
             this.doctors.set(docs);
         });
-        this.patientService.getPatients().pipe(takeUntilDestroyed(this.destroyRef)).subscribe((pats: Patient[]) => {
-            this.patients.set(pats);
-        });
+
+        // Only fetch all patients if the user is an admin or doctor
+        if (user && (user.role === 'admin' || user.role === 'doctor')) {
+            this.patientService.getPatients().pipe(
+                takeUntilDestroyed(this.destroyRef),
+                catchError(() => of([]))
+            ).subscribe((pats: Patient[]) => {
+                this.patients.set(pats);
+            });
+        }
 
         // Polling: Refresh from backend every 10 seconds
         timer(0, 10000).pipe(takeUntilDestroyed(this.destroyRef)).subscribe(() => {
@@ -142,3 +158,5 @@ export class AppointmentsPageComponent implements OnInit {
         });
     }
 }
+
+

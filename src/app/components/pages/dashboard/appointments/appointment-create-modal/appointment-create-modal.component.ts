@@ -6,6 +6,7 @@ import { CustomSelectComponent } from '../../../../shared/custom-select/custom-s
 import { Appointment } from '../appointment-table/appointment-table.component';
 import { Doctor } from '../../../../../services/medical.service';
 import { Patient } from '../../patient/patient-table/patient-table.component';
+import { PatientService } from '../../../../../services/patient.service';
 import { AuthService } from '../../../../../services/auth.service';
 
 @Component({
@@ -27,6 +28,7 @@ export class AppointmentCreateModalComponent implements OnInit, OnChanges {
 
     private fb = inject(FormBuilder);
     private authService = inject(AuthService);
+    private patientService = inject(PatientService);
 
     currentUser() { return this.authService.getCurrentUser(); }
     isPatient() { return this.currentUser()?.role === 'user'; } // In this frontend 'user' = PATIENT
@@ -70,6 +72,18 @@ export class AppointmentCreateModalComponent implements OnInit, OnChanges {
 
         if (this.isOpen()) {
             this.syncFormWithInputs();
+            this.loadMyPatientIdIfNeeded();
+        }
+    }
+
+    private loadMyPatientIdIfNeeded(): void {
+        if (this.isPatient() && !this.appointmentToEdit()) {
+            this.patientService.getMyPatientId().subscribe({
+                next: (id) => {
+                    this.appointmentForm.patchValue({ patientId: id });
+                },
+                error: (err) => console.error('[AppointmentModal] Could not fetch my PatientId:', err)
+            });
         }
     }
 
@@ -77,6 +91,7 @@ export class AppointmentCreateModalComponent implements OnInit, OnChanges {
         if (this.appointmentForm && (changes['isOpen'] || changes['appointmentToEdit'] || changes['readOnly'])) {
             if (this.isOpen()) {
                 this.syncFormWithInputs();
+                this.loadMyPatientIdIfNeeded();
             }
         }
     }

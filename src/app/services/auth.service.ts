@@ -1,5 +1,6 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
+import { Router } from '@angular/router';
 import { BehaviorSubject, Observable, throwError, of } from 'rxjs';
 import { map, catchError, tap } from 'rxjs/operators';
 
@@ -26,6 +27,7 @@ export class AuthService {
   private readonly AUTH_URL = 'http://localhost:5275/api/Auth';
 
   private http = inject(HttpClient);
+  private router = inject(Router);
   private currentUserSubject = new BehaviorSubject<User | null>(this.getUserFromStorage());
   private isAuthenticatedSubject = new BehaviorSubject<boolean>(this.isStoredAuthValid());
 
@@ -40,7 +42,7 @@ export class AuthService {
     const token = localStorage.getItem(this.TOKEN_KEY);
     const user = this.getUserFromStorage();
 
-    if (token && user) {
+    if (token && user && !this.isTokenExpired(token)) {
       this.currentUserSubject.next(user);
       this.isAuthenticatedSubject.next(true);
     } else {
@@ -98,6 +100,7 @@ export class AuthService {
     localStorage.removeItem(this.USER_KEY);
     this.currentUserSubject.next(null);
     this.isAuthenticatedSubject.next(false);
+    this.router.navigate(['/login']);
   }
 
   public getCurrentUser(): User | null {
@@ -122,7 +125,21 @@ export class AuthService {
   }
 
   private isStoredAuthValid(): boolean {
-    return !!(localStorage.getItem(this.TOKEN_KEY) && this.getUserFromStorage());
+    const token = localStorage.getItem(this.TOKEN_KEY);
+    const user = this.getUserFromStorage();
+    return !!(token && user && !this.isTokenExpired(token));
+  }
+
+  private isTokenExpired(token: string): boolean {
+    if (!token) return true;
+    try {
+      const payload = JSON.parse(atob(token.split('.')[1]));
+      if (!payload.exp) return false;
+      const expiry = payload.exp * 1000;
+      return Date.now() >= expiry;
+    } catch {
+      return true;
+    }
   }
 
   public register(name: string, email: string, password: string): Observable<AuthResponse> {

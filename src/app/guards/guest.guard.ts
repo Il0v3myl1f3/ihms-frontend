@@ -3,16 +3,16 @@ import { CanActivateFn, Router } from '@angular/router';
 import { AuthService } from '../services/auth.service';
 
 /**
- * Functional route guard that protects the dashboard.
- * Redirects unauthenticated users to the login page.
+ * Functional route guard that redirects authenticated users
+ * away from guest pages (login, register, etc.) to the dashboard.
  */
-export const authGuard: CanActivateFn = () => {
+export const guestGuard: CanActivateFn = () => {
   const authService = inject(AuthService);
   const router = inject(Router);
 
   if (authService.isAuthenticated()) {
-    return true;
+    return router.createUrlTree(['/dashboard']);
   }
 
-  return router.createUrlTree(['/login']);
+  return true;
 };

@@ -31,70 +31,20 @@
           <lucide-icon [img]="Settings" class="w-5 h-5"></lucide-icon>
         </button>
 
-        <!-- Notification Bell -->
-        <div class="relative">
-          <button (click)="toggleNotifications($event)"
-            class="relative p-2.5 text-gray-500 hover:text-[#1F2B6C] bg-white rounded-full hover:bg-gray-50 transition-colors cursor-pointer border border-gray-200"
-            [class.ring-2]="isNotificationOpen()" [class.ring-[#159EEC]]="isNotificationOpen()">
-            <lucide-icon [img]="Bell" class="w-5 h-5"></lucide-icon>
-            @if (unreadCount() > 0) {
-            <span class="absolute top-2 right-2.5 w-2 h-2 bg-red-500 rounded-full border-2 border-white"></span>
-            }
-          </button>
-
-          @if (isNotificationOpen()) {
-          <div (click)="$event.stopPropagation()"
-            class="absolute top-full right-0 mt-3 w-80 bg-white border border-gray-300 rounded-xl shadow-[0_10px_40px_-10px_rgba(0,0,0,0.1)] py-2 z-[9999] overflow-hidden">
-            <div class="px-5 py-3 border-b border-gray-300 flex items-center justify-between bg-gray-50/30">
-              <h3 class="font-bold text-gray-800 flex items-center gap-2">
-                Notifications
-                @if (unreadCount() > 0) {
-                <span class="bg-[#159EEC] text-white text-[10px] font-bold px-2 py-0.5 rounded-full">{{ unreadCount()
-                  }}</span>
-                }
-              </h3>
-              @if (unreadCount() > 0) {
-              <button (click)="markAllAsRead($event)"
-                class="text-[11px] text-[#159EEC] hover:text-[#1F2B6C] font-semibold transition-colors cursor-pointer">Mark
-                all as read</button>
-              }
-            </div>
-
-            <div class="max-h-[320px] overflow-y-auto">
-              @if (notifications().length === 0) {
-              <div class="p-6 text-center text-gray-500 text-sm">
-                No notifications present.
-              </div>
-              } @else {
-              @for (notif of notifications(); track notif.id) {
-              <div (click)="markAsRead(notif.id, $event)"
-                class="px-5 py-3.5 hover:bg-gray-50 transition-colors flex gap-3 border-b border-gray-300 last:border-0 cursor-pointer group relative"
-                [class.bg-blue-50/10]="!notif.read">
-                <div class="w-2 h-2 rounded-full mt-1.5 shrink-0" [class.bg-[#159EEC]]="!notif.read"
-                  [class.bg-gray-300]="notif.read"></div>
-                <div class="flex-1">
-                  <p class="text-[13px] text-gray-800 font-medium leading-snug group-hover:text-[#1F2B6C] transition-colors"
-                    [class.text-gray-600]="notif.read">{{ notif.text }}</p>
-                  <p class="text-[11px] text-gray-400 mt-1 flex items-center gap-1">{{ notif.time }}</p>
-                </div>
-              </div>
-              }
-              }
-            </div>
-          </div>
-          }
-        </div>
 
         <!-- User Profile -->
         <div
           class="hidden sm:flex items-center gap-3 cursor-pointer group bg-white px-3 py-1.5 rounded-full border border-gray-200 hover:bg-gray-50 transition-colors">
           <img
-            src="https://ui-avatars.com/api/?name={{ currentUser?.name | avatarInitials }}&background=EAF6FD&color=1F2B6C&rounded=true"
+            src="https://ui-avatars.com/api/?name={{ displayName() | avatarInitials }}&background=EAF6FD&color=1F2B6C&rounded=true"
             alt="User avatar" class="w-9 h-9 rounded-full object-cover">
-          <div class="hidden md:flex items-center gap-2 pr-1">
+          <div class="hidden md:flex flex-col items-start gap-0.5 pr-1">
             <span
-              class="text-sm font-semibold text-[#1F2B6C] group-hover:text-[#159EEC] transition-colors leading-tight">
-              {{ currentUser?.name || 'Alfredo Westervelt' }}
+              class="text-sm font-bold text-[#1F2B6C] group-hover:text-[#159EEC] transition-colors leading-tight">
+              {{ displayName() }}
+            </span>
+            <span class="text-[10px] text-gray-400 font-medium uppercase tracking-wider">
+              {{ currentUser?.role || 'Guest' }}
             </span>
           </div>
         </div>

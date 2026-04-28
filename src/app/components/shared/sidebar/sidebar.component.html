@@ -25,8 +25,7 @@
         <button (click)="onToggle.emit()"
             [class.hidden]="mobileOpen()"
             class="p-2 rounded-xl border border-gray-100 bg-white text-gray-400 hover:text-gray-600 transition-all active:scale-95 shadow-xs">
-            <lucide-icon [img]="ChevronLeft" class="w-5 h-5 transition-transform duration-300"
-                [class.rotate-180]="collapsed()"></lucide-icon>
+            <lucide-icon [img]="collapsed() ? ChevronRight : ChevronLeft" class="w-5 h-5 transition-transform duration-300"></lucide-icon>
         </button>
     </div>
 
@@ -69,7 +68,6 @@
 
     <!-- Bottom Section -->
     <div class="px-3 py-4 space-y-1 mb-2">
-        <!-- Help Center & Other Bottom Items -->
         @for (item of filteredBottomItems; track item.label) {
         <button [routerLink]="item.route" routerLinkActive="bg-blue-50 text-blue-600" [routerLinkActiveOptions]="{exact: true}"
             (click)="item.action ? item.action() : null; onMenuClick.emit()"

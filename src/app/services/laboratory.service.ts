@@ -117,14 +117,24 @@ export class LaboratoryService {
     }
 
     getAnalyses(): Observable<MedicalAnalysis[]> {
-        return this.http.get<MedicalAnalysis[]>(`${this.apiUrl}/analyses`).pipe(
-            map(items => items.map((item: any, index: number) => ({
-                ...item,
-                no: index + 1,
-                labId: item.labId || item.LabId,
-                doctorId: item.doctorId || item.DoctorId,
-                patientId: item.patientId || item.PatientId
-            }))),
+        return this.http.get<any[]>(`${this.apiUrl}/analyses`).pipe(
+            map(items => {
+                const data = Array.isArray(items) ? items : ((items as any).items || (items as any).Items || []);
+                return data.map((item: any, index: number) => ({
+                    ...item,
+                    id: item.id || item.Id,
+                    no: index + 1,
+                    patientName: item.patientName || item.PatientName || 'Unknown Patient',
+                    patientId: item.patientId || item.PatientId,
+                    doctorName: item.doctorName || item.DoctorName || 'Unknown Doctor',
+                    doctorId: item.doctorId || item.DoctorId,
+                    labName: item.labName || item.LabName || '',
+                    labId: item.labId || item.LabId,
+                    analysisType: item.analysisType || item.AnalysisType || 'Standard Analysis',
+                    scheduledDate: item.scheduledDate || item.ScheduledDate || new Date().toISOString(),
+                    status: item.status || item.Status || 'Scheduled'
+                }));
+            }),
             catchError((error: any) => this.handleError(error))
         );
     }

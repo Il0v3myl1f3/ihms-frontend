@@ -34,7 +34,7 @@ export class LaboratoryViewModalComponent {
   analyses = computed(() => {
     const currentLab = this.lab();
     if (!currentLab) return [] as MedicalAnalysis[];
-    return this.allAnalyses().filter(a => a.labName === currentLab.name);
+    return this.allAnalyses().filter(a => a.labId === currentLab.id);
   });
 
   onClose() {
