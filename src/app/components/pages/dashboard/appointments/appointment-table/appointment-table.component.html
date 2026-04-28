@@ -12,6 +12,7 @@
                 class="block w-full pl-9 pr-3 py-2 border border-gray-300 rounded-lg text-sm placeholder-gray-400 focus:outline-none focus:border-[#1F2B6C] bg-gray-50/50 transition-all font-semibold text-gray-700">
         </div>
         <!-- Doctor Filter -->
+        @if (!canManage()) {
         <div class="relative">
             <button (click)="toggleFilterMenu('doctor', $event)"
                 class="flex items-center gap-1.5 px-4 py-2 border border-gray-300 rounded-lg text-sm text-gray-500 hover:bg-gray-50 transition-colors bg-white shadow-[0_1px_2px_rgba(0,0,0,0.02)] focus:outline-none focus:border-[#1F2B6C]"
@@ -39,6 +40,7 @@
             </div>
             }
         </div>
+        }
 
         <!-- Status Filter -->
         <div class="relative">
