@@ -2,8 +2,14 @@ import { Component, OnInit, inject, signal, computed, ChangeDetectionStrategy, e
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { fromEvent } from 'rxjs';
 import { CommonModule } from '@angular/common';
-import { LaboratoryService, AnalysisResult } from '../../../../services/laboratory.service';
-import { LucideAngularModule, Search, ChevronDown, ChevronUp, Clock, User, Microscope, MoreHorizontal, Download, Filter, ChevronLeft, ChevronRight, Eye, FileText, CheckCircle2, AlertCircle, AlertTriangle, Activity, Stethoscope, Calendar, ClipboardCheck, FlaskConical } from 'lucide-angular';
+import { AnalysisResultService, AnalysisResult } from '../../../../services/analysis-result.service';
+import {
+  LucideAngularModule,
+  Search, ChevronDown, ChevronUp, Clock, User, Microscope, MoreHorizontal,
+  Download, Filter, ChevronLeft, ChevronRight, Eye, FileText,
+  CheckCircle2, AlertCircle, AlertTriangle, Activity, Stethoscope,
+  Calendar, ClipboardCheck, FlaskConical, Building2
+} from 'lucide-angular';
 import { FormsModule } from '@angular/forms';
 import { ModalComponent } from '../../../shared/modal/modal.component';
 
@@ -21,6 +27,7 @@ export class AnalysisResultsPageComponent implements OnInit {
   closePageSizeMenu(): void {
     this.isPageSizeMenuOpen = false;
   }
+
   // Icons
   readonly Search = Search;
   readonly ChevronDown = ChevronDown;
@@ -43,8 +50,9 @@ export class AnalysisResultsPageComponent implements OnInit {
   readonly Calendar = Calendar;
   readonly ClipboardCheck = ClipboardCheck;
   readonly FlaskConical = FlaskConical;
+  readonly Building2 = Building2;
 
-  private labService = inject(LaboratoryService);
+  private analysisResultService = inject(AnalysisResultService);
   private destroyRef = inject(DestroyRef);
   private ngZone = inject(NgZone);
 
@@ -55,7 +63,7 @@ export class AnalysisResultsPageComponent implements OnInit {
 
   // Table State
   searchQuery = signal('');
-  statusFilter = signal<string>('All');
+  interpretationFilter = signal<string>('All');
   currentPage = signal(1);
   pageSize = signal(7);
   sortColumn = signal<keyof AnalysisResult | null>(null);
@@ -71,7 +79,7 @@ export class AnalysisResultsPageComponent implements OnInit {
   }
 
   setFilter(value: string): void {
-    this.statusFilter.set(value);
+    this.interpretationFilter.set(value);
     this.activeFilterMenu.set(false);
     this.currentPage.set(1);
   }
@@ -108,19 +116,20 @@ export class AnalysisResultsPageComponent implements OnInit {
   // Computed Table Data
   filteredItems = computed(() => {
     const query = this.searchQuery().toLowerCase().trim();
-    const status = this.statusFilter();
+    const interp = this.interpretationFilter();
     let result = this.items();
 
     if (query) {
       result = result.filter(item =>
-        item.patientName.toLowerCase().includes(query) ||
-        item.analysisType.toLowerCase().includes(query) ||
-        item.doctorName.toLowerCase().includes(query)
+        (item.patientName || '').toLowerCase().includes(query) ||
+        (item.analysisType || '').toLowerCase().includes(query) ||
+        (item.doctorName || '').toLowerCase().includes(query) ||
+        (item.labName || '').toLowerCase().includes(query)
       );
     }
 
-    if (status !== 'All') {
-      result = result.filter(item => item.status === status);
+    if (interp !== 'All') {
+      result = result.filter(item => item.interpretation === interp);
     }
 
     const col = this.sortColumn();
@@ -147,7 +156,6 @@ export class AnalysisResultsPageComponent implements OnInit {
     const total = this.totalPages();
     const current = this.currentPage();
     if (total <= 5) return Array.from({ length: total }, (_, i) => i + 1);
-
     if (current <= 3) return [1, 2, 3, 4, '...', total];
     if (current >= total - 2) return [1, '...', total - 3, total - 2, total - 1, total];
     return [1, '...', current - 1, current, current + 1, '...', total];
@@ -156,15 +164,17 @@ export class AnalysisResultsPageComponent implements OnInit {
   constructor() {
     effect(() => {
       this.searchQuery();
-      this.statusFilter();
+      this.interpretationFilter();
       untracked(() => this.currentPage.set(1));
     });
   }
 
   ngOnInit(): void {
-    this.labService.getResults().pipe(takeUntilDestroyed(this.destroyRef)).subscribe((data: AnalysisResult[]) => {
-      this.items.set(data.map((item: AnalysisResult) => ({ ...item, selected: false })));
-    });
+    this.analysisResultService.getResults()
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe((data: AnalysisResult[]) => {
+        this.items.set(data);
+      });
 
     this.ngZone.runOutsideAngular(() => {
       fromEvent(window, 'scroll', { passive: true })
@@ -218,14 +228,29 @@ export class AnalysisResultsPageComponent implements OnInit {
     this.activeFilterMenu.set(false);
   }
 
+  /** Format an ISO date string to dd.MM.yyyy */
+  formatDate(value: string | null | undefined): string {
+    if (!value) return '—';
+    const date = new Date(value);
+    if (isNaN(date.getTime())) return value;
+    const dd = String(date.getDate()).padStart(2, '0');
+    const mm = String(date.getMonth() + 1).padStart(2, '0');
+    const yyyy = date.getFullYear();
+    return `${dd}.${mm}.${yyyy}`;
+  }
 
+  /** Build the display string for the result value + unit */
+  formatResultValue(item: AnalysisResult): string {
+    if (!item.resultValue) return '—';
+    return item.unit ? `${item.resultValue} ${item.unit}` : item.resultValue;
+  }
 
-  getStatusBadgeClass(status: string): string {
-    switch (status) {
-      case 'Normal': return 'bg-emerald-50 text-emerald-700 border-emerald-100';
-      case 'Abnormal': return 'bg-amber-50 text-amber-700 border-amber-100';
-      case 'Critical': return 'bg-red-50 text-red-700 border-red-100';
-      default: return 'bg-gray-50 text-gray-700 border-gray-100';
+  getInterpretationClass(interpretation: string | null): string {
+    switch (interpretation) {
+      case 'Normal':   return 'badge-normal';
+      case 'Abnormal': return 'badge-abnormal';
+      case 'Critical': return 'badge-critical';
+      default:         return 'badge-default';
     }
   }
 }
