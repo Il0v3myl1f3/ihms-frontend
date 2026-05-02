@@ -1,4 +1,4 @@
-import { Component, input, signal, computed, HostListener, ChangeDetectionStrategy, forwardRef, ElementRef, inject, OnDestroy, OnInit, NgZone, DestroyRef } from '@angular/core';
+import { Component, input, signal, computed, HostListener, ChangeDetectionStrategy, forwardRef, ElementRef, inject, OnDestroy, OnInit, NgZone, DestroyRef, ViewChild, effect } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { fromEvent } from 'rxjs';
 import { NG_VALUE_ACCESSOR, ControlValueAccessor } from '@angular/forms';
@@ -33,6 +33,34 @@ export class CustomTimepickerComponent implements ControlValueAccessor, OnInit, 
 
     selectedHour = computed(() => this.selectedValue().split(':')[0] || '00');
     selectedMinute = computed(() => this.selectedValue().split(':')[1] || '00');
+
+    @ViewChild('hoursCol') hoursCol?: ElementRef;
+    @ViewChild('minutesCol') minutesCol?: ElementRef;
+
+    constructor() {
+        effect(() => {
+            if (this.isOpen()) {
+                setTimeout(() => {
+                    this.scrollToSelected();
+                }, 0);
+            }
+        });
+    }
+
+    private scrollToSelected(): void {
+        if (this.hoursCol) {
+            const activeHour = this.hoursCol.nativeElement.querySelector('.bg-\\[\\#1F2B6C\\]');
+            if (activeHour) {
+                activeHour.scrollIntoView({ block: 'center', behavior: 'smooth' });
+            }
+        }
+        if (this.minutesCol) {
+            const activeMinute = this.minutesCol.nativeElement.querySelector('.bg-\\[\\#1F2B6C\\]');
+            if (activeMinute) {
+                activeMinute.scrollIntoView({ block: 'center', behavior: 'smooth' });
+            }
+        }
+    }
 
     private el = inject(ElementRef);
     private ngZone = inject(NgZone);
@@ -83,8 +111,16 @@ export class CustomTimepickerComponent implements ControlValueAccessor, OnInit, 
         
         if (!this.isOpen()) {
             const btn = (event.currentTarget as HTMLElement).getBoundingClientRect();
+            const dropdownHeight = 260;
+            const windowHeight = window.innerHeight;
+            
+            let top = btn.bottom + 4;
+            if (top + dropdownHeight > windowHeight) {
+                top = btn.top - dropdownHeight + 34;
+            }
+
             this.dropdownPos = {
-                top: btn.bottom + 4,
+                top: top,
                 left: btn.left,
                 width: 200 // Fixed width for the 2-column dropdown
             };

@@ -38,7 +38,7 @@ export class CustomDatepickerComponent implements ControlValueAccessor, OnInit {
     displayDate = signal<Date>(new Date());
 
     readonly months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-    
+
     years = computed(() => {
         const currentYear = new Date().getFullYear();
         const startYear = 1920;
@@ -84,8 +84,8 @@ export class CustomDatepickerComponent implements ControlValueAccessor, OnInit {
     private el = inject(ElementRef);
     private ngZone = inject(NgZone);
     private destroyRef = inject(DestroyRef);
-    private onChange: (value: string) => void = () => {};
-    private onTouched: () => void = () => {};
+    private onChange: (value: string) => void = () => { };
+    private onTouched: () => void = () => { };
 
     days = computed<DayItem[]>(() => {
         const date = this.displayDate();
@@ -116,7 +116,7 @@ export class CustomDatepickerComponent implements ControlValueAccessor, OnInit {
 
         // Next month padding
         const totalDaysNeeded = firstDayIndex + daysInMonth > 35 ? 42 : 35;
-        const remaining = totalDaysNeeded - calendarDays.length; 
+        const remaining = totalDaysNeeded - calendarDays.length;
         for (let i = 1; i <= remaining; i++) {
             const fullDate = this.formatIso(year, month + 1, i);
             calendarDays.push({ num: i, isCurrentMonth: false, dateString: fullDate });
@@ -134,7 +134,7 @@ export class CustomDatepickerComponent implements ControlValueAccessor, OnInit {
         if (!val) return '';
         const parts = val.split('-');
         if (parts.length === 3) {
-            const d = new Date(parseInt(parts[0]), parseInt(parts[1])-1, parseInt(parts[2]));
+            const d = new Date(parseInt(parts[0]), parseInt(parts[1]) - 1, parseInt(parts[2]));
             return d.toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' });
         }
         return val;
@@ -142,7 +142,7 @@ export class CustomDatepickerComponent implements ControlValueAccessor, OnInit {
 
     private formatIso(y: number, m: number, d: number): string {
         const dateObj = new Date(y, m, d);
-        return `${dateObj.getFullYear()}-${String(dateObj.getMonth()+1).padStart(2, '0')}-${String(dateObj.getDate()).padStart(2, '0')}`;
+        return `${dateObj.getFullYear()}-${String(dateObj.getMonth() + 1).padStart(2, '0')}-${String(dateObj.getDate()).padStart(2, '0')}`;
     }
 
     prevMonth(e: Event): void {
@@ -194,7 +194,6 @@ export class CustomDatepickerComponent implements ControlValueAccessor, OnInit {
         this.selectedValue.set(day.dateString);
         this.onChange(day.dateString);
         this.onTouched();
-        this.isOpen.set(false);
     }
 
     ngOnInit(): void {
@@ -226,24 +225,32 @@ export class CustomDatepickerComponent implements ControlValueAccessor, OnInit {
 
     toggle(event: Event): void {
         if (this.isDisabled()) return;
-        
+
         if (!this.isOpen()) {
             const val = this.selectedValue();
             if (val) {
                 const p = val.split('-');
-                if(p.length === 3) this.displayDate.set(new Date(parseInt(p[0]), parseInt(p[1])-1, parseInt(p[2])));
+                if (p.length === 3) this.displayDate.set(new Date(parseInt(p[0]), parseInt(p[1]) - 1, parseInt(p[2])));
             } else {
                 this.displayDate.set(new Date());
             }
 
             const btn = (event.currentTarget as HTMLElement).getBoundingClientRect();
+            const dropdownHeight = 320;
+            const windowHeight = window.innerHeight;
+
+            let top = btn.bottom + 4;
+            if (top + dropdownHeight > windowHeight) {
+                top = btn.top - dropdownHeight + 34;
+            }
+
             this.dropdownPos = {
-                top: btn.bottom + 4,
+                top: top,
                 left: btn.left,
                 width: Math.max(btn.width, 280)
             };
         }
-        
+
         const nextState = !this.isOpen();
         this.isOpen.set(nextState);
         if (!nextState) {
