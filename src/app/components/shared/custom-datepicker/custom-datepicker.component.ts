@@ -1,4 +1,4 @@
-import { Component, input, signal, computed, HostListener, ChangeDetectionStrategy, forwardRef, ElementRef, inject, OnInit, NgZone, DestroyRef } from '@angular/core';
+import { Component, input, signal, computed, HostListener, ChangeDetectionStrategy, forwardRef, ElementRef, inject, OnInit, NgZone, DestroyRef, ViewChild, effect } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { fromEvent } from 'rxjs';
 import { NG_VALUE_ACCESSOR, ControlValueAccessor } from '@angular/forms';
@@ -31,10 +31,55 @@ export class CustomDatepickerComponent implements ControlValueAccessor, OnInit {
     placeholder = input<string>('dd/mm/yyyy');
 
     isOpen = signal<boolean>(false);
+    viewMode = signal<'days' | 'months-years'>('days');
     selectedValue = signal<string>(''); // ISO date
     isDisabled = signal<boolean>(false);
 
     displayDate = signal<Date>(new Date());
+
+    readonly months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+    
+    years = computed(() => {
+        const currentYear = new Date().getFullYear();
+        const startYear = 1920;
+        const endYear = currentYear + 30;
+        const yearsArr = [];
+        for (let y = endYear; y >= startYear; y--) {
+            yearsArr.push(y);
+        }
+        return yearsArr;
+    });
+
+    @ViewChild('monthsCol') monthsCol?: ElementRef;
+    @ViewChild('yearsCol') yearsCol?: ElementRef;
+
+    todayIso = this.formatIso(new Date().getFullYear(), new Date().getMonth(), new Date().getDate());
+
+    constructor() {
+        effect(() => {
+            if (this.viewMode() === 'months-years') {
+                // Wait for DOM to be ready
+                setTimeout(() => {
+                    this.scrollToSelected();
+                }, 0);
+            }
+        });
+    }
+
+    private scrollToSelected(): void {
+        if (this.monthsCol) {
+            const activeMonth = this.monthsCol.nativeElement.querySelector('.bg-blue-50');
+            if (activeMonth) {
+                activeMonth.scrollIntoView({ block: 'center', behavior: 'smooth' });
+            }
+        }
+        if (this.yearsCol) {
+            const activeYear = this.yearsCol.nativeElement.querySelector('.bg-blue-50');
+            if (activeYear) {
+                activeYear.scrollIntoView({ block: 'center', behavior: 'smooth' });
+            }
+        }
+    }
 
     private el = inject(ElementRef);
     private ngZone = inject(NgZone);
@@ -70,7 +115,8 @@ export class CustomDatepickerComponent implements ControlValueAccessor, OnInit {
         }
 
         // Next month padding
-        const remaining = 42 - calendarDays.length; 
+        const totalDaysNeeded = firstDayIndex + daysInMonth > 35 ? 42 : 35;
+        const remaining = totalDaysNeeded - calendarDays.length; 
         for (let i = 1; i <= remaining; i++) {
             const fullDate = this.formatIso(year, month + 1, i);
             calendarDays.push({ num: i, isCurrentMonth: false, dateString: fullDate });
@@ -113,6 +159,36 @@ export class CustomDatepickerComponent implements ControlValueAccessor, OnInit {
         this.displayDate.set(new Date(cur.getFullYear(), cur.getMonth() + 1, 1));
     }
 
+    toggleViewMode(e: Event): void {
+        e.preventDefault();
+        e.stopPropagation();
+        this.viewMode.update(v => v === 'days' ? 'months-years' : 'days');
+    }
+
+    selectMonth(monthIndex: number, e: Event): void {
+        e.preventDefault();
+        e.stopPropagation();
+        const cur = this.displayDate();
+        this.displayDate.set(new Date(cur.getFullYear(), monthIndex, 1));
+        // If we select a month, we might want to stay in selection mode to select a year, 
+        // but usually, if the user sees both, they might select one then the other.
+        // Let's keep it in the same view until they click 'days' or we can auto-switch if both are selected?
+        // Actually, let's just update the display date.
+    }
+
+    selectYear(year: number, e: Event): void {
+        e.preventDefault();
+        e.stopPropagation();
+        const cur = this.displayDate();
+        this.displayDate.set(new Date(year, cur.getMonth(), 1));
+    }
+
+    confirmSelection(e: Event): void {
+        e.preventDefault();
+        e.stopPropagation();
+        this.viewMode.set('days');
+    }
+
     selectDate(day: DayItem, e: Event): void {
         if (this.isDisabled()) return;
         this.selectedValue.set(day.dateString);
@@ -128,7 +204,10 @@ export class CustomDatepickerComponent implements ControlValueAccessor, OnInit {
                 .pipe(takeUntilDestroyed(this.destroyRef))
                 .subscribe((event) => {
                     if (this.isOpen() && !this.el.nativeElement.contains(event.target)) {
-                        this.ngZone.run(() => this.isOpen.set(false));
+                        this.ngZone.run(() => {
+                            this.isOpen.set(false);
+                            this.viewMode.set('days');
+                        });
                     }
                 });
 
@@ -165,7 +244,11 @@ export class CustomDatepickerComponent implements ControlValueAccessor, OnInit {
             };
         }
         
-        this.isOpen.update(v => !v);
+        const nextState = !this.isOpen();
+        this.isOpen.set(nextState);
+        if (!nextState) {
+            this.viewMode.set('days');
+        }
     }
 
 
