@@ -215,10 +215,9 @@
                     <div class="flex items-center justify-center">
                         @if (isAdmin()) {
                             <button (click)="onView(appt)"
-                                class="flex items-center justify-center gap-1.5 text-[#159EEC] hover:text-[#1F2B6C] text-[13px] font-bold transition-colors cursor-pointer group"
+                                class="flex items-center justify-center text-gray-400 hover:text-[#1F2B6C] transition-colors cursor-pointer group"
                                 title="View Details">
                                 <lucide-icon [img]="Eye" class="w-4 h-4"></lucide-icon>
-                                <span>View</span>
                             </button>
                         } @else {
                             <button (click)="toggleDropdown(appt, $event)"
