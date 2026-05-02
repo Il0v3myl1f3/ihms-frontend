@@ -16,6 +16,8 @@ import { AuthService } from '../../../../../services/auth.service';
 import { MedicalRecord } from '../../medical-records/medical-records-page.component';
 import { MedicalRecordCreateModalComponent } from '../../medical-records/medical-record-create-modal/medical-record-create-modal.component';
 import { MedicalRecordTableComponent } from '../../medical-records/medical-record-table/medical-record-table.component';
+import { Prescription } from '../../prescriptions/prescriptions-page.component';
+import { PrescriptionTableComponent } from '../../prescriptions/prescription-table/prescription-table.component';
 
 export interface PatientPrescription {
     id: number;
@@ -32,7 +34,7 @@ export interface PatientPrescription {
 @Component({
     selector: 'app-patient-details-page',
     standalone: true,
-    imports: [CommonModule, LucideAngularModule, AppointmentTableComponent, AppointmentCreateModalComponent, MedicalRecordCreateModalComponent, MedicalRecordTableComponent],
+    imports: [CommonModule, LucideAngularModule, AppointmentTableComponent, AppointmentCreateModalComponent, MedicalRecordCreateModalComponent, MedicalRecordTableComponent, PrescriptionTableComponent],
     templateUrl: './patient-details-page.component.html',
     changeDetection: ChangeDetectionStrategy.OnPush
 })
@@ -71,7 +73,7 @@ export class PatientDetailsPageComponent implements OnInit {
 
     // Patient data loaded from services
     patientAppointments = signal<Appointment[]>([]);
-    patientPrescriptions = signal<PatientPrescription[]>([]);
+    patientPrescriptions = signal<Prescription[]>([]);
     patientMedicalRecords = signal<MedicalRecord[]>([]);
     doctors: Doctor[] = [];
 
@@ -135,18 +137,7 @@ export class PatientDetailsPageComponent implements OnInit {
 
             // 3. Load prescriptions using the patient GUID (id)
             this.prescriptionService.getPrescriptions(p.id).pipe(takeUntilDestroyed(this.destroyRef)).subscribe(items => {
-                const mapped: PatientPrescription[] = items.map(item => ({
-                    id: item.id,
-                    medication: item.medication,
-                    dosage: item.dosage,
-                    frequency: item.frequency,
-                    status: item.status,
-                    refills: 0, 
-                    instructions: 'Follow prescription plan',
-                    startDate: item.startDate,
-                    endDate: item.endDate
-                }));
-                this.patientPrescriptions.set(mapped);
+                this.patientPrescriptions.set(items);
             });
         });
     }

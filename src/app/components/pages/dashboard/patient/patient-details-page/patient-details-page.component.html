@@ -238,45 +238,13 @@
             <!-- Prescriptions Tab -->
             @if (activeTab() === 'Prescriptions') {
             <div class="h-full flex flex-col">
-                <div class="border-b border-[#DADCE0] pb-4 mb-6">
-                    <h4 class="text-lg font-bold text-[#202124]">Prescriptions</h4>
-                    <p class="text-[13px] text-gray-500 mt-0.5 font-medium">Medication history for {{ patient()?.name }}</p>
-                </div>
-                <div class="bg-white border border-gray-200 rounded-lg overflow-hidden shrink-0">
-                    <table class="w-full text-left border-collapse">
-                        <thead class="bg-gray-50 border-b border-gray-100">
-                            <tr>
-                                <th class="px-4 py-3 text-xs font-bold text-gray-500 uppercase tracking-wider">Medication</th>
-                                <th class="px-4 py-3 text-xs font-bold text-gray-500 uppercase tracking-wider">Dosage</th>
-                                <th class="px-4 py-3 text-xs font-bold text-gray-500 uppercase tracking-wider">Frequency</th>
-                                <th class="px-4 py-3 text-xs font-bold text-gray-500 uppercase tracking-wider">Status</th>
-                                <th class="px-4 py-3 text-xs font-bold text-gray-500 uppercase tracking-wider">Duration</th>
-                            </tr>
-                        </thead>
-                        <tbody class="divide-y divide-gray-100">
-                            @for (pr of patientPrescriptions(); track pr.id) {
-                            <tr>
-                                <td class="px-4 py-3 text-sm font-medium text-gray-900">{{ pr.medication }}</td>
-                                <td class="px-4 py-3 text-sm text-gray-500">{{ pr.dosage }}</td>
-                                <td class="px-4 py-3 text-sm text-gray-500">{{ pr.frequency }}</td>
-                                <td class="px-4 py-3 text-sm">
-                                    <span class="px-2 py-0.5 rounded text-[11px] font-bold"
-                                        [ngClass]="pr.status === 'Active' ? 'bg-emerald-50 text-emerald-700' : 'bg-gray-100 text-gray-500'">
-                                        {{ pr.status }}
-                                    </span>
-                                </td>
-                                <td class="px-4 py-3 text-sm text-gray-500">{{ pr.startDate }} - {{ pr.endDate }}</td>
-                            </tr>
-                            } @empty {
-                            <tr>
-                                <td colspan="5" class="px-4 py-10 text-center text-gray-400 italic">No prescriptions found.</td>
-                            </tr>
-                            }
-                        </tbody>
-                    </table>
-                </div>
+                <app-prescription-table
+                    [prescriptions]="patientPrescriptions()"
+                    [compactMode]="true">
+                </app-prescription-table>
             </div>
             }
+
         </div>
     </div>
 
