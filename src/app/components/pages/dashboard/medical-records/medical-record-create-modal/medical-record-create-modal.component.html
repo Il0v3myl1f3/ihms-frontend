@@ -6,10 +6,9 @@
         <div class="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-5">
             
             <!-- Patient Selection -->
-            @if (!preselectedPatientId()) {
+            @if (!preselectedPatientId() && !appointment()) {
                 <div class="md:col-span-2">
                     <label class="block text-sm font-bold text-[#1F2B6C] mb-1.5 flex items-center gap-2">
-                        <lucide-icon [img]="User" class="w-4 h-4"></lucide-icon>
                         Patient *
                     </label>
                     <app-custom-autocomplete formControlName="patientId" placeholder="Select Patient"
@@ -22,7 +21,6 @@
             @if (!isUserDoctor() || readOnly() || recordToEdit()) {
                 <div class="md:col-span-2">
                     <label class="block text-sm font-bold text-[#1F2B6C] mb-1.5 flex items-center gap-2">
-                        <lucide-icon [img]="Stethoscope" class="w-4 h-4"></lucide-icon>
                         Doctor *
                     </label>
                     <app-custom-autocomplete formControlName="doctorId" placeholder="Select Doctor"
@@ -34,11 +32,10 @@
             <!-- Diagnosis / Type -->
             <div class="md:col-span-2">
                 <label class="block text-sm font-bold text-[#1F2B6C] mb-1.5 flex items-center gap-2">
-                    <lucide-icon [img]="Activity" class="w-4 h-4"></lucide-icon>
-                    Diagnosis / Record Type *
+                    Diagnosis *
                 </label>
                 <input type="text" formControlName="diagnosis" placeholder="e.g. Hypertension Checkup, Flu symptoms"
-                    class="block w-full px-4 py-2.5 border border-gray-300 rounded-lg text-sm focus:outline-none focus:border-[#1F2B6C] transition-all bg-gray-50/50 disabled:bg-gray-100 disabled:text-gray-500">
+                    class="block w-full px-4 py-2.5 border border-gray-300 rounded-lg text-sm font-semibold focus:outline-none focus:border-[#1F2B6C] transition-all bg-gray-50 disabled:bg-gray-100 disabled:text-gray-500">
                 @if (recordForm.get('diagnosis')?.invalid && recordForm.get('diagnosis')?.touched && !readOnly()) {
                     <p class="text-xs text-red-500 mt-1 pl-1">Diagnosis is required (min 3 chars)</p>
                 }
@@ -47,11 +44,10 @@
             <!-- Treatment -->
             <div class="md:col-span-2">
                 <label class="block text-sm font-bold text-[#1F2B6C] mb-1.5 flex items-center gap-2">
-                    <lucide-icon [img]="ClipboardList" class="w-4 h-4"></lucide-icon>
-                    Treatment / Recommendations *
+                    Treatment *
                 </label>
                 <textarea formControlName="treatment" placeholder="Prescribed treatment or recommendations..." rows="3"
-                    class="block w-full px-4 py-2.5 border border-gray-300 rounded-lg text-sm focus:outline-none focus:border-[#1F2B6C] transition-all bg-gray-50/50 resize-none disabled:bg-gray-100 disabled:text-gray-500"></textarea>
+                    class="block w-full px-4 py-2.5 border border-gray-300 rounded-lg text-sm font-semibold focus:outline-none focus:border-[#1F2B6C] transition-all bg-gray-50 resize-none disabled:bg-gray-100 disabled:text-gray-500"></textarea>
                 @if (recordForm.get('treatment')?.invalid && recordForm.get('treatment')?.touched && !readOnly()) {
                     <p class="text-xs text-red-500 mt-1 pl-1">Treatment details are required</p>
                 }
@@ -60,18 +56,16 @@
             <!-- Notes -->
             <div class="md:col-span-2">
                 <label class="block text-sm font-bold text-[#1F2B6C] mb-1.5 flex items-center gap-2">
-                    <lucide-icon [img]="StickyNote" class="w-4 h-4"></lucide-icon>
                     Internal Clinical Notes
                 </label>
                 <textarea formControlName="notes" placeholder="Additional observations..." rows="2"
-                    class="block w-full px-4 py-2.5 border border-gray-300 rounded-lg text-sm focus:outline-none focus:border-[#1F2B6C] transition-all bg-gray-50/50 resize-none disabled:bg-gray-100 disabled:text-gray-500"></textarea>
+                    class="block w-full px-4 py-2.5 border border-gray-300 rounded-lg text-sm font-semibold focus:outline-none focus:border-[#1F2B6C] transition-all bg-gray-50 resize-none disabled:bg-gray-100 disabled:text-gray-500"></textarea>
             </div>
 
             <!-- Prescriptions Section -->
-            <div class="md:col-span-2 border-t border-gray-300 pt-5 mt-2">
+            <div class="md:col-span-2 mt-4">
                 <div class="flex items-center justify-between mb-4">
                     <h3 class="text-sm font-bold text-[#1F2B6C] flex items-center gap-2">
-                        <lucide-icon [img]="Pill" class="w-4 h-4 text-emerald-600"></lucide-icon>
                         Prescriptions (Optional)
                     </h3>
                     <button *ngIf="!readOnly()" type="button" (click)="addPrescription()"
@@ -87,17 +81,25 @@
                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
                             <div class="sm:col-span-2">
                                 <input type="text" formControlName="medication" placeholder="Medication Name (e.g. Paracetamol 500mg)"
-                                    class="w-full px-3 py-2 border border-gray-300 rounded-lg text-xs focus:outline-none focus:border-[#1F2B6C] bg-white">
+                                    class="w-full px-3 py-2 border border-gray-300 rounded-lg text-xs font-semibold focus:outline-none focus:border-[#1F2B6C] bg-white">
+                            </div>
+                            <div>
+                                <label class="block text-[10px] uppercase tracking-wider text-gray-400 font-bold mb-1">Dosage</label>
+                                <input type="text" formControlName="dosage" placeholder="e.g. 500mg"
+                                    class="w-full px-3 py-2 border border-gray-300 rounded-lg text-xs font-semibold focus:outline-none focus:border-[#1F2B6C] bg-white">
+                            </div>
+                            <div>
+                                <label class="block text-[10px] uppercase tracking-wider text-gray-400 font-bold mb-1">Frequency</label>
+                                <input type="text" formControlName="frequency" placeholder="e.g. 2 times / day"
+                                    class="w-full px-3 py-2 border border-gray-300 rounded-lg text-xs font-semibold focus:outline-none focus:border-[#1F2B6C] bg-white">
                             </div>
                             <div>
                                 <label class="block text-[10px] uppercase tracking-wider text-gray-400 font-bold mb-1">Start Date</label>
-                                <input type="date" formControlName="startDate"
-                                    class="w-full px-3 py-2 border border-gray-300 rounded-lg text-xs focus:outline-none focus:border-[#1F2B6C] bg-white">
+                                <app-custom-datepicker formControlName="startDate"></app-custom-datepicker>
                             </div>
                             <div>
                                 <label class="block text-[10px] uppercase tracking-wider text-gray-400 font-bold mb-1">End Date (Optional)</label>
-                                <input type="date" formControlName="endDate"
-                                    class="w-full px-3 py-2 border border-gray-300 rounded-lg text-xs focus:outline-none focus:border-[#1F2B6C] bg-white">
+                                <app-custom-datepicker formControlName="endDate"></app-custom-datepicker>
                             </div>
                         </div>
                         <button *ngIf="!readOnly()" type="button" (click)="removePrescription($index)"
@@ -107,9 +109,12 @@
                     </div>
                     }
                     @if (prescriptions.length === 0) {
-                    <p class="text-xs text-gray-400 text-center py-4 border-2 border-dashed border-gray-300 rounded-lg">
-                        No prescriptions added yet.
-                    </p>
+                    <div class="text-center py-8 bg-gray-50/50 rounded-xl border border-dashed border-gray-300">
+                        <div class="w-10 h-10 bg-white border border-gray-200 rounded-full flex items-center justify-center mx-auto mb-2 shadow-sm">
+                            <lucide-icon [img]="Pill" class="w-4 h-4 text-gray-300"></lucide-icon>
+                        </div>
+                        <p class="text-[13px] text-gray-400 font-medium">No prescriptions added yet.</p>
+                    </div>
                     }
                 </div>
             </div>
@@ -119,7 +124,7 @@
 
     <div modal-footer class="w-full flex items-center justify-end gap-3 pb-2 pt-4">
         <button type="button" (click)="onCancel()"
-            class="px-6 py-2.5 bg-gray-100 text-gray-700 rounded-lg text-[13px] font-bold hover:bg-gray-200 transition-all active:scale-95 cursor-pointer">
+            class="px-6 py-2.5 bg-white border border-gray-300 text-gray-500 rounded-lg text-[13px] font-bold hover:text-[#1F2B6C] hover:bg-gray-50 transition-all active:scale-95 cursor-pointer shadow-xs">
             {{ readOnly() ? 'Close' : 'Cancel' }}
         </button>
         <button *ngIf="!readOnly()" type="button" (click)="onSubmit()" [disabled]="recordForm.invalid"

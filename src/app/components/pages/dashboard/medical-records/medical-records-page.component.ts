@@ -13,6 +13,8 @@ import { MedicalRecordCreateModalComponent } from './medical-record-create-modal
 export interface Prescription {
     id: string;
     medication: string;
+    dosage: string;
+    frequency: string;
     startDate: string;
     endDate?: string;
 }
