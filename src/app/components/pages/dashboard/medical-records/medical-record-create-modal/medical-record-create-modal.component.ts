@@ -96,9 +96,9 @@ export class MedicalRecordCreateModalComponent implements OnInit {
             // Note: We need the IDs for the form, but MedicalRecord interface has names.
             // When editing, we'll try to find the IDs by name if they aren't provided in the record object.
             this.recordForm.patchValue({
-                diagnosis: record.recordType,
-                treatment: record.description.split(' - ')[0] || record.description,
-                notes: record.description.split(' - ')[1] || ''
+                diagnosis: record.diagnosis,
+                treatment: record.treatment,
+                notes: record.notes
             });
 
             if (record.prescriptions) {

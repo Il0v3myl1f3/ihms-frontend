@@ -7,7 +7,6 @@ import { LucideAngularModule, Search, Filter, ChevronLeft, ChevronRight, Chevron
 import { PrescriptionService } from '../../../../services/prescription.service';
 import { PatientService } from '../../../../services/patient.service';
 import { AuthService } from '../../../../services/auth.service';
-import { AvatarInitialsPipe } from '../../../../core/pipes/avatar-initials.pipe';
 
 export interface Prescription {
     id: number;
@@ -23,7 +22,7 @@ export interface Prescription {
 
 @Component({
     selector: 'app-prescriptions-page',
-    imports: [CommonModule, FormsModule, LucideAngularModule, AvatarInitialsPipe],
+    imports: [CommonModule, FormsModule, LucideAngularModule],
     templateUrl: './prescriptions-page.component.html',
     changeDetection: ChangeDetectionStrategy.OnPush,
     host: {

@@ -8,7 +8,6 @@ import { MedicalRecordService } from '../../../../services/medical-record.servic
 import { AuthService } from '../../../../services/auth.service';
 import { PatientService } from '../../../../services/patient.service';
 import { MedicalRecordCreateModalComponent } from './medical-record-create-modal/medical-record-create-modal.component';
-import { AvatarInitialsPipe } from '../../../../core/pipes/avatar-initials.pipe';
 
 
 export interface Prescription {
@@ -21,11 +20,12 @@ export interface Prescription {
 export interface MedicalRecord {
     id: string;
     no: number;
-    recordType: string;
+    diagnosis: string;
+    treatment: string;
+    notes: string;
     date: string;
     doctorName: string;
     patientName: string;
-    description: string;
     status: 'Reviewed' | 'Pending' | 'Archived';
     appointmentId?: string;
     prescriptions?: Prescription[];
@@ -33,7 +33,7 @@ export interface MedicalRecord {
 
 @Component({
     selector: 'app-medical-records-page',
-    imports: [CommonModule, FormsModule, LucideAngularModule, MedicalRecordCreateModalComponent, AvatarInitialsPipe],
+    imports: [CommonModule, FormsModule, LucideAngularModule, MedicalRecordCreateModalComponent],
     templateUrl: './medical-records-page.component.html',
     changeDetection: ChangeDetectionStrategy.OnPush,
     host: {
@@ -141,7 +141,7 @@ export class MedicalRecordsPageComponent implements OnInit {
     });
 
     availableTypes = computed(() => {
-        const types = this.records().map(r => r.recordType).filter(s => !!s);
+        const types = this.records().map(r => r.diagnosis).filter(s => !!s);
         return ['All', ...Array.from(new Set(types)).sort()];
     });
 
@@ -151,10 +151,11 @@ export class MedicalRecordsPageComponent implements OnInit {
 
         if (query) {
             result = result.filter(r =>
-                r.recordType.toLowerCase().includes(query) ||
+                r.diagnosis.toLowerCase().includes(query) ||
                 r.doctorName.toLowerCase().includes(query) ||
                 r.patientName.toLowerCase().includes(query) ||
-                r.description.toLowerCase().includes(query) ||
+                r.treatment.toLowerCase().includes(query) ||
+                r.notes.toLowerCase().includes(query) ||
                 r.date.toLowerCase().includes(query) ||
                 r.status.toLowerCase().includes(query)
             );
@@ -167,7 +168,7 @@ export class MedicalRecordsPageComponent implements OnInit {
 
         const typeFilter = this.filterType();
         if (typeFilter !== 'All') {
-            result = result.filter(r => r.recordType === typeFilter);
+            result = result.filter(r => r.diagnosis === typeFilter);
         }
 
         const col = this.sortColumn();

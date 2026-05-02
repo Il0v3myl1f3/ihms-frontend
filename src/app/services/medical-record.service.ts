@@ -85,7 +85,6 @@ export class MedicalRecordService {
         const diagnosis = data.diagnosis || data.Diagnosis || 'General Record';
         const treatment = data.treatment || data.Treatment || '';
         const notes = data.notes || data.Notes || '';
-        const combined = [treatment, notes].filter(Boolean).join(' - ') || 'No additional notes';
         const prescriptionsRaw = data.prescriptions || data.Prescriptions || [];
         
         const prescriptions = prescriptionsRaw.map((p: any) => ({
@@ -98,11 +97,12 @@ export class MedicalRecordService {
         return {
             id: data.id || data.Id,
             no,
-            recordType: diagnosis,
+            diagnosis: diagnosis,
+            treatment: treatment,
+            notes: notes,
             date: this.formatDate(data.createdAt || data.CreatedAt),
             doctorName: data.doctorName || data.DoctorName || 'Unknown Doctor',
             patientName: data.patientName || data.PatientName || 'Unknown Patient',
-            description: combined,
             status: 'Reviewed',
             appointmentId: data.appointmentId || data.AppointmentId,
             prescriptions: prescriptions
