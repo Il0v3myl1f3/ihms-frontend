@@ -13,11 +13,12 @@ import { MedicalRecordService } from '../../../../../services/medical-record.ser
 import { AuthService } from '../../../../../services/auth.service';
 import { MedicalRecord } from '../../medical-records/medical-records-page.component';
 import { MedicalRecordCreateModalComponent } from '../../medical-records/medical-record-create-modal/medical-record-create-modal.component';
+import { MedicalRecordTableComponent } from '../../medical-records/medical-record-table/medical-record-table.component';
 
 @Component({
     selector: 'app-doctor-details-page',
     standalone: true,
-    imports: [CommonModule, LucideAngularModule, AppointmentTableComponent, PatientTableComponent, AppointmentCreateModalComponent, MedicalRecordCreateModalComponent],
+    imports: [CommonModule, LucideAngularModule, AppointmentTableComponent, PatientTableComponent, AppointmentCreateModalComponent, MedicalRecordCreateModalComponent, MedicalRecordTableComponent],
     templateUrl: './doctor-details-page.component.html',
     changeDetection: ChangeDetectionStrategy.OnPush
 })
