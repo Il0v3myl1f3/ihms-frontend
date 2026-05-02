@@ -12,7 +12,7 @@
                         <lucide-icon [img]="User" class="w-4 h-4"></lucide-icon>
                         Patient *
                     </label>
-                    <app-custom-autocomplete formControlName="patientId" placeholder="Search Patient..."
+                    <app-custom-autocomplete formControlName="patientId" placeholder="Select Patient"
                         [options]="patientOptions()" [disabled]="readOnly()">
                     </app-custom-autocomplete>
                 </div>
@@ -25,7 +25,7 @@
                         <lucide-icon [img]="Stethoscope" class="w-4 h-4"></lucide-icon>
                         Doctor *
                     </label>
-                    <app-custom-autocomplete formControlName="doctorId" placeholder="Search Doctor..."
+                    <app-custom-autocomplete formControlName="doctorId" placeholder="Select Doctor"
                         [options]="doctorOptions()" [disabled]="readOnly()">
                     </app-custom-autocomplete>
                 </div>
