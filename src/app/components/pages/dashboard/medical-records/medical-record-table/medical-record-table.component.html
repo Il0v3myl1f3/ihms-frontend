@@ -1,0 +1,162 @@
+<!-- Table container — full or embedded -->
+<div class="bg-white border border-gray-300 flex flex-col shadow-xs overflow-hidden"
+    [class.rounded-[20px]]="!compactMode()" [class.rounded-lg]="compactMode()" [class.shadow-none]="compactMode()">
+
+    <!-- Search bar (only when not compact) -->
+    @if (!compactMode()) {
+    <div class="px-5 py-4 border-b border-gray-300 flex items-center gap-3">
+        <div class="relative w-full max-w-sm">
+            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                <lucide-icon [img]="Search" class="h-4 w-4 text-gray-400"></lucide-icon>
+            </div>
+            <input type="text" placeholder="Search diagnosis, doctor, date..."
+                (input)="searchQuery.set($any($event.target).value)"
+                class="block w-full pl-9 pr-3 py-2 border border-gray-300 rounded-lg text-sm placeholder-gray-400 focus:outline-none focus:border-[#1F2B6C] bg-gray-50 font-semibold text-gray-700 transition-all">
+        </div>
+    </div>
+    }
+
+    <!-- Table -->
+    <div class="flex-auto overflow-x-auto w-full">
+        <table class="w-full text-left border-collapse table-auto">
+            <thead class="bg-gray-50/50 border-b border-gray-300">
+                <tr>
+                    <th class="px-4 py-4 text-sm font-normal text-gray-600 w-[6%] min-w-12 border-r border-gray-300">No</th>
+                    <th class="px-4 py-4 text-sm font-normal text-gray-600 border-r border-gray-300 w-[22%]">
+                        <div (click)="handleSort('diagnosis')"
+                            class="flex items-center gap-1 cursor-pointer select-none hover:text-gray-700 transition-colors"
+                            [class.text-[#1F2B6C]]="sortColumn() === 'diagnosis'">
+                            Diagnosis
+                            <lucide-icon *ngIf="sortColumn() !== 'diagnosis'" [img]="ChevronDown" class="w-3 h-3 text-gray-300"></lucide-icon>
+                            <lucide-icon *ngIf="sortColumn() === 'diagnosis' && sortDirection() === 'desc'" [img]="ChevronDown" class="w-3 h-3 text-[#1F2B6C]"></lucide-icon>
+                            <lucide-icon *ngIf="sortColumn() === 'diagnosis' && sortDirection() === 'asc'" [img]="ChevronUp" class="w-3 h-3 text-[#1F2B6C]"></lucide-icon>
+                        </div>
+                    </th>
+                    <th class="px-4 py-4 text-sm font-normal text-gray-600 border-r border-gray-300 w-[16%]">
+                        <div (click)="handleSort('date')"
+                            class="flex items-center gap-1 cursor-pointer select-none hover:text-gray-700 transition-colors"
+                            [class.text-[#1F2B6C]]="sortColumn() === 'date'">
+                            Date
+                            <lucide-icon *ngIf="sortColumn() !== 'date'" [img]="ChevronDown" class="w-3 h-3 text-gray-300"></lucide-icon>
+                            <lucide-icon *ngIf="sortColumn() === 'date' && sortDirection() === 'desc'" [img]="ChevronDown" class="w-3 h-3 text-[#1F2B6C]"></lucide-icon>
+                            <lucide-icon *ngIf="sortColumn() === 'date' && sortDirection() === 'asc'" [img]="ChevronUp" class="w-3 h-3 text-[#1F2B6C]"></lucide-icon>
+                        </div>
+                    </th>
+                    <th class="px-4 py-4 text-sm font-normal text-gray-600 border-r border-gray-300 w-[20%]">
+                        <div (click)="handleSort('doctorName')"
+                            class="flex items-center gap-1 cursor-pointer select-none hover:text-gray-700 transition-colors"
+                            [class.text-[#1F2B6C]]="sortColumn() === 'doctorName'">
+                            Doctor
+                            <lucide-icon *ngIf="sortColumn() !== 'doctorName'" [img]="ChevronDown" class="w-3 h-3 text-gray-300"></lucide-icon>
+                            <lucide-icon *ngIf="sortColumn() === 'doctorName' && sortDirection() === 'desc'" [img]="ChevronDown" class="w-3 h-3 text-[#1F2B6C]"></lucide-icon>
+                            <lucide-icon *ngIf="sortColumn() === 'doctorName' && sortDirection() === 'asc'" [img]="ChevronUp" class="w-3 h-3 text-[#1F2B6C]"></lucide-icon>
+                        </div>
+                    </th>
+                    <th class="px-4 py-4 text-sm font-normal text-gray-600 border-r border-gray-300 w-[6%] text-center">Action</th>
+                </tr>
+            </thead>
+            <tbody class="text-sm text-gray-900 font-normal bg-white">
+                @for (record of paginatedRecords(); track record.id) {
+                <tr class="hover:bg-gray-50/30 group whitespace-nowrap transition-colors border-b border-gray-300 last:border-0">
+                    <td class="px-4 py-4 border-r border-gray-300 text-gray-500">{{ record.no }}</td>
+                    <td class="px-4 py-4 border-r border-gray-300 font-medium tracking-tight truncate max-w-[200px]">{{ record.diagnosis }}</td>
+                    <td class="px-4 py-4 border-r border-gray-300 text-gray-500">{{ record.date }}</td>
+                    <td class="px-4 py-4 border-r border-gray-300 text-gray-700">{{ record.doctorName }}</td>
+                    <td class="px-4 py-4 border-r border-gray-300 w-[6%] text-center text-gray-400">
+                        <div class="flex items-center justify-center">
+                            <button (click)="toggleDropdown(record, $event)"
+                                class="p-1.5 hover:text-gray-600 rounded-lg transition-colors cursor-pointer" title="More Actions">
+                                <lucide-icon [img]="MoreHorizontal" class="w-4 h-4"></lucide-icon>
+                            </button>
+                        </div>
+                    </td>
+                </tr>
+                }
+                @if (paginatedRecords().length === 0) {
+                <tr>
+                    <td colspan="5" class="py-12 text-center text-gray-400 text-sm">No medical records found.</td>
+                </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Action Dropdown -->
+    @if (activeItem) {
+    <div class="fixed z-[9999] w-32 bg-white rounded-lg shadow-[0_4px_20px_rgba(0,0,0,0.08)] border border-gray-300 py-1"
+        [style.top.px]="dropdownPos.top" [style.right.px]="dropdownPos.right">
+        <button (click)="onView(activeItem)" class="w-full px-3 py-1.5 text-xs font-medium text-left text-gray-700 hover:bg-gray-50 flex items-center gap-2 transition-colors cursor-pointer">
+            <lucide-icon [img]="Eye" class="w-3.5 h-3.5"></lucide-icon> View
+        </button>
+        @if (isDoctor()) {
+        <button (click)="onEdit(activeItem)" class="w-full px-3 py-1.5 text-xs font-medium text-left text-[#159EEC] hover:bg-blue-50 flex items-center gap-2 transition-colors cursor-pointer">
+            <lucide-icon [img]="Edit2" class="w-3.5 h-3.5"></lucide-icon> Edit
+        </button>
+        <button (click)="onDelete(activeItem)" class="w-full px-3 py-1.5 text-xs font-medium text-left text-red-600 hover:bg-red-50 flex items-center gap-2 transition-colors border-t border-gray-100 cursor-pointer">
+            <lucide-icon [img]="Trash2" class="w-3.5 h-3.5"></lucide-icon> Delete
+        </button>
+        }
+    </div>
+    }
+
+    <!-- Pagination Footer -->
+    <div class="mt-auto px-4 lg:px-5 py-4 border-t border-gray-300 flex flex-col sm:flex-row items-center justify-center lg:justify-between text-gray-500">
+        <div class="pagination-info text-[13px] font-normal flex items-center gap-2 mb-4 sm:mb-0 max-lg:hidden">
+            <span>Showing</span>
+            <div class="relative">
+                <button (click)="togglePageSizeMenu($event)"
+                    class="appearance-none px-3 py-1.5 pr-8 border border-gray-300 rounded-lg bg-white text-gray-700 text-[13px] font-normal focus:outline-none focus:border-[#1F2B6C] cursor-pointer hover:bg-gray-50 transition-colors shadow-[0_1px_2px_rgba(0,0,0,0.02)] min-w-16 text-left flex items-center">
+                    {{ pageSize() }}
+                    <span class="absolute right-2.5 top-1/2 -translate-y-1/2 pointer-events-none flex items-center justify-center">
+                        <lucide-icon [img]="ChevronDown"
+                            class="w-3.5 h-3.5 text-gray-400 transition-transform duration-200 origin-center"
+                            [class.rotate-180]="isPageSizeMenuOpen"></lucide-icon>
+                    </span>
+                </button>
+                @if (isPageSizeMenuOpen) {
+                <div class="absolute bottom-full mb-1 left-0 w-full min-w-16 bg-white border border-gray-300 rounded-lg shadow-lg overflow-hidden z-50 py-1">
+                    @for (size of [5, 7, 10, 20]; track size) {
+                    <button (click)="changePageSize(size)"
+                        class="w-full text-left px-3 py-1.5 text-[13px] font-normal transition-colors"
+                        [class.bg-blue-50]="size === pageSize()" [class.text-[#1F2B6C]]="size === pageSize()"
+                        [class.text-gray-700]="size !== pageSize()" [class.hover:bg-gray-50]="size !== pageSize()">
+                        {{ size }}
+                    </button>
+                    }
+                </div>
+                }
+            </div>
+            <span>out of {{ filteredRecords().length }}</span>
+        </div>
+        <div class="flex items-center gap-1.5">
+            <button (click)="prevPage()" [disabled]="currentPage() === 1"
+                class="w-8 h-8 flex items-center justify-center rounded-lg border border-gray-300 transition-colors bg-white shadow-[0_1px_2px_rgba(0,0,0,0.02)]"
+                [class.text-gray-300]="currentPage() === 1" [class.cursor-not-allowed]="currentPage() === 1"
+                [class.text-gray-500]="currentPage() !== 1" [class.hover:bg-gray-50]="currentPage() !== 1"
+                [class.cursor-pointer]="currentPage() !== 1">
+                <lucide-icon [img]="ChevronLeft" class="w-4 h-4"></lucide-icon>
+            </button>
+            @for (page of visiblePages(); track $index) {
+            @if (page !== '...') {
+            <button (click)="goToPage(page)"
+                class="w-8 h-8 flex items-center justify-center rounded-lg text-[13px] font-normal transition-all cursor-pointer shadow-[0_1px_2px_rgba(0,0,0,0.02)]"
+                [class.bg-[#1F2B6C]]="page === currentPage()" [class.text-white]="page === currentPage()"
+                [class.border-transparent]="page === currentPage()" [class.bg-white]="page !== currentPage()"
+                [class.border]="page !== currentPage()" [class.border-gray-300]="page !== currentPage()"
+                [class.text-gray-600]="page !== currentPage()" [class.hover:bg-gray-50]="page !== currentPage()">
+                {{ page }}
+            </button>
+            } @else {
+            <div class="w-8 h-8 flex items-center justify-center text-gray-400 text-[13px]">...</div>
+            }
+            }
+            <button (click)="nextPage()" [disabled]="currentPage() === totalPages()"
+                class="w-8 h-8 flex items-center justify-center rounded-lg border border-gray-300 transition-colors bg-white shadow-[0_1px_2px_rgba(0,0,0,0.02)]"
+                [class.text-gray-300]="currentPage() === totalPages()" [class.cursor-not-allowed]="currentPage() === totalPages()"
+                [class.text-gray-500]="currentPage() !== totalPages()" [class.hover:bg-gray-50]="currentPage() !== totalPages()"
+                [class.cursor-pointer]="currentPage() !== totalPages()">
+                <lucide-icon [img]="ChevronRight" class="w-4 h-4"></lucide-icon>
+            </button>
+        </div>
+    </div>
+</div>

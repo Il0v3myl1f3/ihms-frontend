@@ -15,6 +15,7 @@ import { MedicalRecordService } from '../../../../../services/medical-record.ser
 import { AuthService } from '../../../../../services/auth.service';
 import { MedicalRecord } from '../../medical-records/medical-records-page.component';
 import { MedicalRecordCreateModalComponent } from '../../medical-records/medical-record-create-modal/medical-record-create-modal.component';
+import { MedicalRecordTableComponent } from '../../medical-records/medical-record-table/medical-record-table.component';
 
 export interface PatientPrescription {
     id: number;
@@ -31,7 +32,7 @@ export interface PatientPrescription {
 @Component({
     selector: 'app-patient-details-page',
     standalone: true,
-    imports: [CommonModule, LucideAngularModule, AppointmentTableComponent, AppointmentCreateModalComponent, MedicalRecordCreateModalComponent],
+    imports: [CommonModule, LucideAngularModule, AppointmentTableComponent, AppointmentCreateModalComponent, MedicalRecordCreateModalComponent, MedicalRecordTableComponent],
     templateUrl: './patient-details-page.component.html',
     changeDetection: ChangeDetectionStrategy.OnPush
 })
