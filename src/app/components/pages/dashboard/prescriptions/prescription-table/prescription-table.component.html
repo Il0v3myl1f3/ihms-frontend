@@ -77,11 +77,11 @@
             <tbody class="text-sm text-gray-900 font-normal bg-white">
                 @for (rx of paginatedPrescriptions(); track rx.id) {
                 <tr class="hover:bg-gray-50/30 whitespace-nowrap transition-colors border-b border-gray-300 last:border-0">
-                    <td class="px-4 py-4 border-r border-gray-300 text-gray-500">{{ rx.no }}</td>
-                    <td class="px-4 py-4 border-r border-gray-300 font-medium tracking-tight">{{ rx.medication }}</td>
-                    <td class="px-4 py-4 border-r border-gray-300 text-gray-500">{{ rx.dosage }}</td>
-                    <td class="px-4 py-4 border-r border-gray-300 text-gray-500">{{ rx.frequency }}</td>
-                    <td class="px-4 py-4 border-r border-gray-300">
+                    <td class="px-4 py-4 border-r border-gray-300 max-lg:px-2 max-lg:text-[13px] text-gray-900">{{ rx.no }}</td>
+                    <td class="px-4 py-4 pl-5 border-r border-gray-300 max-lg:px-2 max-lg:text-[13px] text-gray-900 font-medium tracking-tight">{{ rx.medication }}</td>
+                    <td class="px-4 py-4 text-gray-900 border-r border-gray-300 max-lg:px-2 max-lg:text-[13px]">{{ rx.dosage }}</td>
+                    <td class="px-4 py-4 text-gray-900 border-r border-gray-300 max-lg:px-2 max-lg:text-[13px]">{{ rx.frequency }}</td>
+                    <td class="px-4 py-4 border-r border-gray-300 max-lg:px-2 max-lg:text-[13px]">
                         <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium"
                             [class.bg-emerald-50]="rx.status === 'Active'"
                             [class.text-emerald-700]="rx.status === 'Active'"
@@ -92,8 +92,8 @@
                             {{ rx.status }}
                         </span>
                     </td>
-                    <td class="px-4 py-4 border-r border-gray-300 text-gray-500">{{ rx.startDate }}</td>
-                    <td class="px-4 py-4 border-r border-gray-300 text-gray-500">{{ rx.endDate }}</td>
+                    <td class="px-4 py-4 text-gray-900 border-r border-gray-300 max-lg:px-2 max-lg:text-[13px]">{{ rx.startDate }}</td>
+                    <td class="px-4 py-4 text-gray-900 border-r border-gray-300 max-lg:px-2 max-lg:text-[13px]">{{ rx.endDate }}</td>
                     <td class="px-4 py-4 border-r border-gray-300 w-[6%] text-center text-gray-400">
                         <div class="flex items-center justify-center">
                             <button (click)="toggleDropdown(rx, $event)"

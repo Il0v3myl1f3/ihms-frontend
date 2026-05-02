@@ -58,10 +58,11 @@
             <tbody class="text-sm text-gray-900 font-normal bg-white">
                 @for (record of paginatedRecords(); track record.id) {
                 <tr class="hover:bg-gray-50/30 group whitespace-nowrap transition-colors border-b border-gray-300 last:border-0">
-                    <td class="px-4 py-4 border-r border-gray-300 text-gray-500">{{ record.no }}</td>
-                    <td class="px-4 py-4 border-r border-gray-300 font-medium tracking-tight truncate max-w-[200px]">{{ record.diagnosis }}</td>
-                    <td class="px-4 py-4 border-r border-gray-300 text-gray-500">{{ record.date }}</td>
-                    <td class="px-4 py-4 border-r border-gray-300 text-gray-700">{{ record.doctorName }}</td>
+                    <td class="px-4 py-4 border-r border-gray-300 max-lg:px-2 max-lg:text-[13px] text-gray-900">{{ record.no }}</td>
+                    <td class="px-4 py-4 pl-5 border-r border-gray-300 max-lg:px-2 max-lg:text-[13px] text-gray-900 font-medium tracking-tight truncate max-w-[200px]">{{ record.diagnosis }}</td>
+                    <td class="px-4 py-4 text-gray-900 border-r border-gray-300 max-lg:px-2 max-lg:text-[13px]">{{ record.date }}</td>
+                    <td class="px-4 py-4 text-gray-900 border-r border-gray-300 max-lg:px-2 max-lg:text-[13px]">{{ record.doctorName }}</td>
+
                     <td class="px-4 py-4 border-r border-gray-300 w-[6%] text-center text-gray-400">
                         <div class="flex items-center justify-center">
                             <button (click)="toggleDropdown(record, $event)"
