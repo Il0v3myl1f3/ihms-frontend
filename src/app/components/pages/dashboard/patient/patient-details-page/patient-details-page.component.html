@@ -206,13 +206,6 @@
             <!-- Appointments Tab -->
             @if (activeTab() === 'Appointments') {
             <div class="h-full flex flex-col">
-                <div class="border-b border-[#DADCE0] pb-4 mb-6 flex justify-between items-center shrink-0">
-                    <div>
-                        <h4 class="text-lg font-bold text-[#202124]">Appointments</h4>
-                        <p class="text-[13px] text-gray-500 mt-0.5 font-medium">Recent and upcoming appointments for
-                            this patient</p>
-                    </div>
-                </div>
 
                 <div class="rounded-lg border border-gray-200 overflow-hidden bg-white flex-1">
                     <app-appointment-table 
@@ -232,97 +225,26 @@
             <!-- Medical Records Tab -->
             @if (activeTab() === 'Medical Records') {
             <div class="h-full flex flex-col">
-                <div class="border-b border-[#DADCE0] pb-4 mb-6 flex justify-between items-center">
-                    <div>
-                        <h4 class="text-lg font-bold text-[#202124]">Medical Records History</h4>
-                        <p class="text-[13px] text-gray-500 mt-0.5 font-medium">Full clinical history for this patient</p>
-                    </div>
-                </div>
-                <div class="bg-white border border-gray-200 rounded-lg overflow-hidden shrink-0 shadow-sm mt-4">
-                    <table class="w-full text-left border-collapse">
-                        <thead class="bg-gray-50 border-b border-gray-100">
-                            <tr>
-                                <th class="px-4 py-3 text-xs font-bold text-gray-500 uppercase tracking-wider">No</th>
-                                <th class="px-4 py-3 text-xs font-bold text-gray-500 uppercase tracking-wider">Type</th>
-                                <th class="px-4 py-3 text-xs font-bold text-gray-500 uppercase tracking-wider">Date</th>
-                                <th class="px-4 py-3 text-xs font-bold text-gray-500 uppercase tracking-wider">Doctor</th>
-                                <th class="px-4 py-4 text-sm font-normal text-gray-600 center w-[10%]">Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody class="divide-y divide-gray-100">
-                            @for (mr of patientMedicalRecords(); track mr.id) {
-                            <tr class="hover:bg-gray-50/50 transition-colors">
-                                <td class="px-4 py-3 text-sm text-gray-900">{{ mr.no }}</td>
-                                <td class="px-4 py-3 text-sm text-gray-900 font-medium tracking-tight">{{ mr.recordType }}</td>
-                                <td class="px-4 py-3 text-sm text-gray-500">{{ mr.date }}</td>
-                                <td class="px-4 py-3 text-sm text-gray-900 font-medium">{{ mr.doctorName }}</td>
-                                <td class="px-4 py-3 text-center">
-                                    <div class="flex items-center justify-center gap-2">
-                                        <button (click)="onViewMedicalRecord(mr)" 
-                                            class="p-1.5 text-gray-400 hover:text-[#159EEC] transition-colors cursor-pointer" title="View Details">
-                                            <lucide-icon [img]="Eye" class="w-4 h-4"></lucide-icon>
-                                        </button>
-                                        <button *ngIf="isDoctor()" (click)="onEditMedicalRecord(mr)" 
-                                            class="p-1.5 text-gray-400 hover:text-[#1F2B6C] transition-colors cursor-pointer" title="Edit Record">
-                                            <lucide-icon [img]="Edit2" class="w-4 h-4"></lucide-icon>
-                                        </button>
-                                    </div>
-                                </td>
-                            </tr>
-                            }
-                            @if (patientMedicalRecords().length === 0) {
-                            <tr>
-                                <td colspan="5" class="py-12 text-center text-gray-400 text-sm">No medical records available for this patient.</td>
-                            </tr>
-                            }
-                        </tbody>
-                    </table>
-                </div>
+                <app-medical-record-table
+                    [records]="patientMedicalRecords()"
+                    [isDoctor]="isDoctor()"
+                    [compactMode]="true"
+                    (viewRecord)="onViewMedicalRecord($event)"
+                    (editRecord)="onEditMedicalRecord($event)">
+                </app-medical-record-table>
             </div>
             }
 
             <!-- Prescriptions Tab -->
             @if (activeTab() === 'Prescriptions') {
             <div class="h-full flex flex-col">
-                <div class="border-b border-[#DADCE0] pb-4 mb-6">
-                    <h4 class="text-lg font-bold text-[#202124]">Prescriptions</h4>
-                    <p class="text-[13px] text-gray-500 mt-0.5 font-medium">Medication history for {{ patient()?.name }}</p>
-                </div>
-                <div class="bg-white border border-gray-200 rounded-lg overflow-hidden shrink-0">
-                    <table class="w-full text-left border-collapse">
-                        <thead class="bg-gray-50 border-b border-gray-100">
-                            <tr>
-                                <th class="px-4 py-3 text-xs font-bold text-gray-500 uppercase tracking-wider">Medication</th>
-                                <th class="px-4 py-3 text-xs font-bold text-gray-500 uppercase tracking-wider">Dosage</th>
-                                <th class="px-4 py-3 text-xs font-bold text-gray-500 uppercase tracking-wider">Frequency</th>
-                                <th class="px-4 py-3 text-xs font-bold text-gray-500 uppercase tracking-wider">Status</th>
-                                <th class="px-4 py-3 text-xs font-bold text-gray-500 uppercase tracking-wider">Duration</th>
-                            </tr>
-                        </thead>
-                        <tbody class="divide-y divide-gray-100">
-                            @for (pr of patientPrescriptions(); track pr.id) {
-                            <tr>
-                                <td class="px-4 py-3 text-sm font-medium text-gray-900">{{ pr.medication }}</td>
-                                <td class="px-4 py-3 text-sm text-gray-500">{{ pr.dosage }}</td>
-                                <td class="px-4 py-3 text-sm text-gray-500">{{ pr.frequency }}</td>
-                                <td class="px-4 py-3 text-sm">
-                                    <span class="px-2 py-0.5 rounded text-[11px] font-bold"
-                                        [ngClass]="pr.status === 'Active' ? 'bg-emerald-50 text-emerald-700' : 'bg-gray-100 text-gray-500'">
-                                        {{ pr.status }}
-                                    </span>
-                                </td>
-                                <td class="px-4 py-3 text-sm text-gray-500">{{ pr.startDate }} - {{ pr.endDate }}</td>
-                            </tr>
-                            } @empty {
-                            <tr>
-                                <td colspan="5" class="px-4 py-10 text-center text-gray-400 italic">No prescriptions found.</td>
-                            </tr>
-                            }
-                        </tbody>
-                    </table>
-                </div>
+                <app-prescription-table
+                    [prescriptions]="patientPrescriptions()"
+                    [compactMode]="true">
+                </app-prescription-table>
             </div>
             }
+
         </div>
     </div>
 

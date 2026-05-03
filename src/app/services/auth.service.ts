@@ -8,7 +8,10 @@ export interface User {
   id: string;
   email: string;
   name: string;
+  firstName?: string;
+  lastName?: string;
   role: 'user' | 'doctor' | 'admin';
+  dateOfBirth?: string;
 }
 
 export interface AuthResponse {
@@ -67,7 +70,10 @@ export class AuthService {
           id: response.user.id,
           email: response.user.email,
           name: fullName,
-          role: frontendRole
+          firstName: response.user.firstName,
+          lastName: response.user.lastName,
+          role: frontendRole,
+          dateOfBirth: response.user.dateOfBirth
         };
 
         return { success: true, user, token: response.token };

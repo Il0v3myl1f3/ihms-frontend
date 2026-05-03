@@ -26,6 +26,7 @@ export interface DoctorRequest {
     phone?: string;
     department?: string;
     password?: string;
+    dateOfBirth?: string | null;
 }
 
 export interface ResponseDoctorDto {
@@ -102,6 +103,12 @@ export class MedicalService {
             phone: doctorData['phone'],
             department: doctorData['specialty'] || doctorData['department']
         };
+
+        const dob = doctorData['dob'];
+        if (dob && typeof dob === 'string' && dob.trim() !== '' && dob.includes('-')) {
+            dto.dateOfBirth = dob;
+        }
+
 
         if (!doctorData['id'] || doctorData['password']) {
             dto.password = doctorData['password'] || 'Password123!';

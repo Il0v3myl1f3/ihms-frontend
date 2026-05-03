@@ -77,9 +77,6 @@ export class PatientCreateModalComponent implements OnInit {
     onSubmit(): void {
         if (this.patientForm.valid) {
             const formValue = { ...this.patientForm.value };
-            if (formValue['dob']) {
-                formValue['dob'] = this.toDisplayDate(formValue['dob']);
-            }
             this.savePatient.emit(formValue);
             this.patientForm.reset();
         } else {

@@ -40,21 +40,13 @@ export class AppointmentCreateModalComponent implements OnInit, OnChanges {
         { value: 'Completed', label: 'Completed' }
     ];
 
-    patientOptions = computed<AutocompleteOption[]>(() => {
-        const opts: AutocompleteOption[] = [
-            { value: '', label: 'Select Patient', disabled: true }
-        ];
-        this.patients().forEach(p => opts.push({ value: p.id, label: p.name }));
-        return opts;
-    });
+    patientOptions = computed<AutocompleteOption[]>(() => 
+        this.patients().map(p => ({ value: p.id, label: p.name }))
+    );
 
-    doctorOptions = computed<AutocompleteOption[]>(() => {
-        const opts: AutocompleteOption[] = [
-            { value: '', label: 'Select Doctor', disabled: true }
-        ];
-        this.doctors().forEach(d => opts.push({ value: d.id, label: d.name }));
-        return opts;
-    });
+    doctorOptions = computed<AutocompleteOption[]>(() => 
+        this.doctors().map(d => ({ value: d.id, label: d.name }))
+    );
 
      ngOnInit(): void {
         this.appointmentForm = this.fb.group({
