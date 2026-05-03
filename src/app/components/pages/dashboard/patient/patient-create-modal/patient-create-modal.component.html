@@ -5,37 +5,37 @@
 
             <!-- First Name -->
             <div>
-                <label class="block text-sm font-medium text-gray-700 mb-1.5">First Name *</label>
+                <label class="block text-sm font-bold text-[#1F2B6C] mb-1.5">First Name *</label>
                 <input type="text" formControlName="firstName" placeholder="First Name"
-                    class="block w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 transition-colors" />
+                    class="block w-full px-3 py-2 border border-gray-300 rounded-lg text-sm font-semibold focus:outline-none focus:border-[#1F2B6C] bg-gray-50 transition-all" />
             </div>
 
             <!-- Last Name -->
             <div>
-                <label class="block text-sm font-medium text-gray-700 mb-1.5">Last Name *</label>
+                <label class="block text-sm font-bold text-[#1F2B6C] mb-1.5">Last Name *</label>
                 <input type="text" formControlName="lastName" placeholder="Last Name"
-                    class="block w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 transition-colors" />
+                    class="block w-full px-3 py-2 border border-gray-300 rounded-lg text-sm font-semibold focus:outline-none focus:border-[#1F2B6C] bg-gray-50 transition-all" />
             </div>
 
             <!-- Email -->
             <div>
-                <label class="block text-sm font-medium text-gray-700 mb-1.5">Email Address *</label>
+                <label class="block text-sm font-bold text-[#1F2B6C] mb-1.5">Email Address *</label>
                 <input type="email" formControlName="email" placeholder="email@example.com"
-                    class="block w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 transition-colors" />
+                    class="block w-full px-3 py-2 border border-gray-300 rounded-lg text-sm font-semibold focus:outline-none focus:border-[#1F2B6C] bg-gray-50 transition-all" />
             </div>
 
             <!-- Password -->
             <div>
-                <label class="block text-sm font-medium text-gray-700 mb-1.5">
+                <label class="block text-sm font-bold text-[#1F2B6C] mb-1.5">
                     Password {{ patientToEdit() ? '(Optional)' : '*' }}
                 </label>
                 <input type="password" formControlName="password" placeholder="••••••••"
-                    class="block w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 transition-colors" />
+                    class="block w-full px-3 py-2 border border-gray-300 rounded-lg text-sm font-semibold focus:outline-none focus:border-[#1F2B6C] bg-gray-50 transition-all" />
             </div>
 
             <!-- Gender -->
             <div>
-                <label class="block text-sm font-medium text-gray-700 mb-1.5">Gender *</label>
+                <label class="block text-sm font-bold text-[#1F2B6C] mb-1.5">Gender *</label>
                 <app-custom-select formControlName="gender" placeholder="Select"
                     [options]="genderOptions">
                 </app-custom-select>
@@ -43,13 +43,13 @@
 
             <!-- Date of Birth -->
             <div>
-                <label class="block text-sm font-medium text-gray-700 mb-1.5">Date of Birth *</label>
+                <label class="block text-sm font-bold text-[#1F2B6C] mb-1.5">Date of Birth *</label>
                 <app-custom-datepicker formControlName="dob"></app-custom-datepicker>
             </div>
 
             <!-- Blood Type -->
             <div>
-                <label class="block text-sm font-medium text-gray-700 mb-1.5">Blood Type *</label>
+                <label class="block text-sm font-bold text-[#1F2B6C] mb-1.5">Blood Type *</label>
                 <app-custom-select formControlName="bloodType" placeholder="Select"
                     [options]="bloodTypeOptions">
                 </app-custom-select>
@@ -57,10 +57,10 @@
 
             <!-- Phone Number -->
             <div>
-                <label class="block text-sm font-medium text-gray-700 mb-1.5">Phone Number *</label>
+                <label class="block text-sm font-bold text-[#1F2B6C] mb-1.5">Phone Number *</label>
                 <div class="relative">
                     <span
-                        class="absolute inset-y-0 left-0 flex items-center pl-3 text-gray-500 z-10 w-8 h-8 pointer-events-none self-center">
+                        class="absolute inset-y-0 left-0 flex items-center pl-3 text-gray-400 z-10 w-8 h-8 pointer-events-none self-center">
                         <svg class="w-4 h-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
                             stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                             <rect x="5" y="2" width="14" height="20" rx="2" ry="2"></rect>
@@ -68,17 +68,15 @@
                         </svg>
                     </span>
                     <input type="text" formControlName="phone" placeholder="(123) 456-7890"
-                        class="block w-full pl-10 pr-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 transition-colors" />
+                        class="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-lg text-sm font-semibold focus:outline-none focus:border-[#1F2B6C] bg-gray-50 transition-all" />
                 </div>
             </div>
 
-
-
             <!-- Address -->
             <div class="md:col-span-2">
-                <label class="block text-sm font-medium text-gray-700 mb-1.5">Address *</label>
+                <label class="block text-sm font-bold text-[#1F2B6C] mb-1.5">Address *</label>
                 <input type="text" formControlName="address" placeholder="Address"
-                    class="block w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 transition-colors" />
+                    class="block w-full px-3 py-2 border border-gray-300 rounded-lg text-sm font-semibold focus:outline-none focus:border-[#1F2B6C] bg-gray-50 transition-all" />
             </div>
 
         </div>
@@ -86,11 +84,11 @@
 
     <div modal-footer class="w-full flex items-center justify-end gap-3">
         <button type="button" (click)="onCancel()"
-            class="px-5 py-2.5 bg-white border border-gray-200 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors">
+            class="px-5 py-2.5 bg-white border border-gray-300 rounded-lg text-sm font-bold text-gray-500 hover:text-[#1F2B6C] hover:bg-gray-50 transition-all active:scale-95 shadow-xs cursor-pointer">
             Cancel
         </button>
         <button type="button" (click)="onSubmit()" [disabled]="patientForm.invalid"
-            class="px-5 py-2.5 bg-[#1F2B6C] disabled:bg-gray-400 disabled:cursor-not-allowed text-white rounded-lg text-sm font-medium hover:bg-[#151D4A] transition-colors shadow-sm">
+            class="px-5 py-2.5 bg-[#1F2B6C] disabled:bg-gray-400 disabled:cursor-not-allowed text-white rounded-lg text-sm font-medium hover:bg-[#151D4A] transition-colors shadow-sm active:scale-95 cursor-pointer">
             {{ patientToEdit() ? 'Save Changes' : 'Add Patient' }}
         </button>
     </div>

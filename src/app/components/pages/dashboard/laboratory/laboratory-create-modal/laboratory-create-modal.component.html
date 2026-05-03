@@ -1,62 +1,62 @@
 <app-modal [isOpen]="isOpen()" [title]="lab() ? 'Edit Laboratory' : 'Add New Laboratory'" (close)="onCancel()">
     <form [formGroup]="labForm" modal-body (ngSubmit)="onSubmit()" class="space-y-6">
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-5">
             <!-- Lab Name -->
-            <div class="space-y-2">
-                <label class="text-sm font-semibold text-gray-700 ml-1">Laboratory Name</label>
+            <div>
+                <label class="block text-sm font-bold text-[#1F2B6C] mb-1.5">Laboratory Name *</label>
                 <input type="text" formControlName="name" placeholder="e.g. Hematology Lab"
-                       class="w-full px-4 py-3 rounded-xl border border-gray-200 focus:outline-hidden focus:ring-2 focus:ring-[#159EEC]/20 focus:border-[#159EEC] transition-all">
+                    class="block w-full px-3 py-2 border border-gray-300 rounded-lg text-sm font-semibold focus:outline-none focus:border-[#1F2B6C] bg-gray-50 transition-all">
                 @if (labForm.get('name')?.touched && labForm.get('name')?.errors?.['required']) {
-                    <p class="text-xs text-red-500 ml-1">Name is required</p>
+                    <p class="text-xs text-red-500 mt-1 pl-1">Name is required</p>
                 }
             </div>
 
             <!-- Location -->
-            <div class="space-y-2">
-                <label class="text-sm font-semibold text-gray-700 ml-1">Location</label>
+            <div>
+                <label class="block text-sm font-bold text-[#1F2B6C] mb-1.5">Location *</label>
                 <input type="text" formControlName="location" placeholder="e.g. Floor 1, Wing A"
-                       class="w-full px-4 py-3 rounded-xl border border-gray-200 focus:outline-hidden focus:ring-2 focus:ring-[#159EEC]/20 focus:border-[#159EEC] transition-all">
+                    class="block w-full px-3 py-2 border border-gray-300 rounded-lg text-sm font-semibold focus:outline-none focus:border-[#1F2B6C] bg-gray-50 transition-all">
                 @if (labForm.get('location')?.touched && labForm.get('location')?.errors?.['required']) {
-                    <p class="text-xs text-red-500 ml-1">Location is required</p>
+                    <p class="text-xs text-red-500 mt-1 pl-1">Location is required</p>
                 }
             </div>
 
             <!-- Head of Lab -->
-            <div class="space-y-2">
-                <label class="text-sm font-semibold text-gray-700 ml-1">Head of Laboratory</label>
+            <div>
+                <label class="block text-sm font-bold text-[#1F2B6C] mb-1.5">Head of Laboratory</label>
                 <input type="text" formControlName="headOfLab" placeholder="e.g. Dr. John Smith"
-                       class="w-full px-4 py-3 rounded-xl border border-gray-200 focus:outline-hidden focus:ring-2 focus:ring-[#159EEC]/20 focus:border-[#159EEC] transition-all">
+                    class="block w-full px-3 py-2 border border-gray-300 rounded-lg text-sm font-semibold focus:outline-none focus:border-[#1F2B6C] bg-gray-50 transition-all">
             </div>
 
             <!-- Status -->
-            <div class="space-y-2">
-                <label class="text-sm font-semibold text-gray-700 ml-1">Current Status</label>
-                <app-custom-select [options]="statusOptions" formControlName="status"></app-custom-select>
+            <div>
+                <label class="block text-sm font-bold text-[#1F2B6C] mb-1.5">Current Status *</label>
+                <app-custom-select [options]="statusOptions" formControlName="status" placeholder="Select"></app-custom-select>
             </div>
 
             <!-- Laboratory Type -->
-            <div class="space-y-2">
-                <label class="text-sm font-semibold text-gray-700 ml-1">Laboratory Type</label>
-                <app-custom-select [options]="laboratoryTypeOptions" formControlName="type"></app-custom-select>
+            <div>
+                <label class="block text-sm font-bold text-[#1F2B6C] mb-1.5">Laboratory Type *</label>
+                <app-custom-select [options]="laboratoryTypeOptions" formControlName="type" placeholder="Select"></app-custom-select>
             </div>
 
             <!-- Phone -->
-            <div class="space-y-2">
-                <label class="text-sm font-semibold text-gray-700 ml-1">Contact Phone</label>
+            <div>
+                <label class="block text-sm font-bold text-[#1F2B6C] mb-1.5">Contact Phone</label>
                 <input type="text" formControlName="phone" placeholder="+1 (555) 000-0000"
-                       class="w-full px-4 py-3 rounded-xl border border-gray-200 focus:outline-hidden focus:ring-2 focus:ring-[#159EEC]/20 focus:border-[#159EEC] transition-all">
+                    class="block w-full px-3 py-2 border border-gray-300 rounded-lg text-sm font-semibold focus:outline-none focus:border-[#1F2B6C] bg-gray-50 transition-all">
             </div>
 
             <!-- Operating Hours -->
-            <div class="space-y-2 md:col-span-2">
-                <label class="text-sm font-semibold text-gray-700 ml-1">Working Hours (From - To)</label>
+            <div class="md:col-span-2">
+                <label class="block text-sm font-bold text-[#1F2B6C] mb-1.5">Working Hours (From - To)</label>
                 <div class="grid grid-cols-2 gap-4">
-                    <div class="space-y-1">
-                        <span class="text-[10px] text-gray-400 uppercase font-bold ml-1">Start Time</span>
+                    <div>
+                        <span class="block text-[10px] text-gray-400 uppercase font-bold mb-1 ml-1">Start Time</span>
                         <app-custom-timepicker formControlName="startTime"></app-custom-timepicker>
                     </div>
-                    <div class="space-y-1">
-                        <span class="text-[10px] text-gray-400 uppercase font-bold ml-1">End Time</span>
+                    <div>
+                        <span class="block text-[10px] text-gray-400 uppercase font-bold mb-1 ml-1">End Time</span>
                         <app-custom-timepicker formControlName="endTime"></app-custom-timepicker>
                     </div>
                 </div>
@@ -64,14 +64,13 @@
         </div>
     </form>
 
-    <div modal-footer class="flex items-center justify-end gap-3 w-full">
+    <div modal-footer class="w-full flex items-center justify-end gap-3">
         <button type="button" (click)="onCancel()"
-                class="px-6 py-2.5 rounded-xl text-sm font-bold text-gray-500 hover:bg-gray-50 transition-all">
+            class="px-5 py-2.5 bg-white border border-gray-300 rounded-lg text-sm font-bold text-gray-500 hover:text-[#1F2B6C] hover:bg-gray-50 transition-all active:scale-95 shadow-xs cursor-pointer">
             Cancel
         </button>
-        <button type="button" (click)="onSubmit()"
-                class="px-8 py-2.5 rounded-xl text-sm font-bold text-white bg-[#1F2B6C] hover:bg-[#159EEC] transition-all shadow-md active:scale-95 disabled:opacity-50 disabled:pointer-events-none"
-                [disabled]="labForm.invalid">
+        <button type="button" (click)="onSubmit()" [disabled]="labForm.invalid"
+            class="px-8 py-2.5 bg-[#1F2B6C] disabled:bg-gray-400 disabled:cursor-not-allowed text-white rounded-lg text-sm font-medium hover:bg-[#151D4A] transition-colors shadow-sm active:scale-95 cursor-pointer">
             {{ lab() ? 'Update Laboratory' : 'Create Laboratory' }}
         </button>
     </div>
