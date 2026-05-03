@@ -8,7 +8,7 @@
             <!-- Patient Name -->
             @if (!isPatient()) {
                 <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1.5">Patient Name *</label>
+                    <label class="block text-sm font-bold text-[#1F2B6C] mb-1.5">Patient Name *</label>
                     <app-custom-autocomplete formControlName="patientId" placeholder="Select Patient"
                         [options]="patientOptions()">
                     </app-custom-autocomplete>
@@ -17,7 +17,7 @@
 
             <!-- Doctor Name -->
             <div>
-                <label class="block text-sm font-medium text-gray-700 mb-1.5">Doctor Name *</label>
+                <label class="block text-sm font-bold text-[#1F2B6C] mb-1.5">Doctor Name *</label>
                 <app-custom-autocomplete formControlName="doctorId" placeholder="Select Doctor"
                     [options]="doctorOptions()">
                 </app-custom-autocomplete>
@@ -25,7 +25,7 @@
 
             <!-- Appointment Date -->
             <div>
-                <label class="block text-sm font-medium text-gray-700 mb-1.5">Appointment Date {{ appointmentToEdit() ?
+                <label class="block text-sm font-bold text-[#1F2B6C] mb-1.5">Appointment Date {{ appointmentToEdit() ?
                     '' : '*' }}</label>
                 <app-custom-datepicker formControlName="date"></app-custom-datepicker>
             </div>
@@ -33,7 +33,7 @@
             <!-- Status (only visible when editing) -->
             @if (appointmentToEdit()) {
                 <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1.5">Status *</label>
+                    <label class="block text-sm font-bold text-[#1F2B6C] mb-1.5">Status *</label>
                     <app-custom-select formControlName="status" placeholder="Select"
                         [options]="statusOptions">
                     </app-custom-select>
@@ -42,17 +42,17 @@
 
             <!-- Reason -->
             <div class="md:col-span-2">
-                <label class="block text-sm font-medium text-gray-700 mb-1.5">Reason *</label>
+                <label class="block text-sm font-bold text-[#1F2B6C] mb-1.5">Reason *</label>
                 <input type="text" formControlName="reason" placeholder="Reason for appointment"
-                    class="block w-full px-3 py-2 border border-gray-300 rounded-lg text-sm font-semibold focus:outline-none focus:border-[#1F2B6C] bg-gray-50 transition-all">
+                    class="block w-full px-3 py-2 border border-gray-300 rounded-lg text-sm font-semibold focus:outline-none focus:border-[#1F2B6C] bg-gray-50 transition-all disabled:bg-gray-100 disabled:text-gray-500">
             </div>
 
             <!-- Notes (full width) -->
             <div class="md:col-span-2">
-                <label class="block text-sm font-medium text-gray-700 mb-1.5">Notes</label>
+                <label class="block text-sm font-bold text-[#1F2B6C] mb-1.5">Notes</label>
                 <textarea formControlName="notes" placeholder="Additional notes about the appointment" rows="4"
                     maxlength="200"
-                    class="block w-full px-3 py-2 border border-gray-300 rounded-lg text-sm font-semibold focus:outline-none focus:border-[#1F2B6C] bg-gray-50 transition-all resize-none"></textarea>
+                    class="block w-full px-3 py-2 border border-gray-300 rounded-lg text-sm font-semibold focus:outline-none focus:border-[#1F2B6C] bg-gray-50 transition-all resize-none disabled:bg-gray-100 disabled:text-gray-500"></textarea>
                 <p class="text-xs text-gray-400 mt-1">{{ notesLength }}/200</p>
             </div>
 

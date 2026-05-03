@@ -3,9 +3,9 @@
     <button type="button"
         (click)="toggle($event)"
         [disabled]="isDisabled()"
-        class="flex items-center justify-between w-full px-3 py-2 border border-gray-300 rounded-lg bg-gray-50 text-sm font-semibold text-gray-800 cursor-pointer transition-all duration-200 outline-none text-left min-h-[38px] focus:border-[#1F2B6C] hover:border-gray-400 disabled:opacity-50 disabled:cursor-not-allowed disabled:bg-gray-50 disabled:hover:border-gray-200"
+        class="flex items-center justify-between w-full px-3 py-2 border border-gray-300 rounded-lg bg-gray-50 text-sm font-semibold text-gray-900 cursor-pointer transition-all duration-200 outline-none text-left min-h-[38px] focus:border-[#1F2B6C] hover:border-gray-400 disabled:cursor-not-allowed disabled:bg-gray-50 disabled:hover:border-gray-200"
         [class.border-[#1F2B6C]]="isOpen()">
-        <span [class.text-gray-400]="!selectedValue()">
+        <span [class.text-gray-900]="!selectedValue() && isDisabled()" [class.text-gray-400]="!selectedValue() && !isDisabled()">
             {{ selectedLabel() || placeholder() }}
         </span>
         <lucide-icon [img]="CalendarDays" class="w-4 h-4 text-gray-500 shrink-0 transition-colors duration-200" [class.text-blue-500]="isOpen()"></lucide-icon>

@@ -65,10 +65,17 @@
 
                     <td class="px-4 py-4 border-r border-gray-300 w-[6%] text-center text-gray-400">
                         <div class="flex items-center justify-center">
-                            <button (click)="toggleDropdown(record, $event)"
-                                class="p-1.5 hover:text-gray-600 rounded-lg transition-colors cursor-pointer" title="More Actions">
-                                <lucide-icon [img]="MoreHorizontal" class="w-4 h-4"></lucide-icon>
-                            </button>
+                            @if (isDoctor()) {
+                                <button (click)="toggleDropdown(record, $event)"
+                                    class="p-1.5 hover:text-gray-600 rounded-lg transition-colors cursor-pointer" title="More Actions">
+                                    <lucide-icon [img]="MoreHorizontal" class="w-4 h-4"></lucide-icon>
+                                </button>
+                            } @else {
+                                <button (click)="onView(record)"
+                                    class="p-1.5 text-gray-400 hover:text-[#1F2B6C] rounded-lg transition-colors cursor-pointer" title="View Record">
+                                    <lucide-icon [img]="Eye" class="w-4.5 h-4.5"></lucide-icon>
+                                </button>
+                            }
                         </div>
                     </td>
                 </tr>

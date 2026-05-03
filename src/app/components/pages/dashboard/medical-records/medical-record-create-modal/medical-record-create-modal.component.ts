@@ -1,4 +1,5 @@
 import { Component, input, output, signal, inject, OnInit, ChangeDetectionStrategy, computed } from '@angular/core';
+import { toSignal } from '@angular/core/rxjs-interop';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, FormGroup, Validators, FormArray } from '@angular/forms';
 import { LucideAngularModule, Activity, ClipboardList, StickyNote, User, Stethoscope, Pill, Plus, Trash2 } from 'lucide-angular';
@@ -28,6 +29,8 @@ export class MedicalRecordCreateModalComponent implements OnInit {
     private authService = inject(AuthService);
 
     isOpen = input(true);
+    currentUser = toSignal(this.authService.currentUser$);
+    isPatient = computed(() => this.currentUser()?.role === 'user');
     recordToEdit = input<MedicalRecord | null>(null);
     appointment = input<Appointment | null>(null);
     preselectedPatientId = input<string | null>(null);
