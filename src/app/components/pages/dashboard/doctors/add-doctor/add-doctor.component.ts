@@ -4,9 +4,11 @@ import { ModalComponent } from '../../../../shared/modal/modal.component';
 import { CustomSelectComponent } from '../../../../shared/custom-select/custom-select.component';
 import { Doctor } from '../../../../../services/medical.service';
 
+import { CustomDatepickerComponent } from '../../../../shared/custom-datepicker/custom-datepicker.component';
+
 @Component({
     selector: 'app-doctor-create-modal',
-    imports: [ReactiveFormsModule, ModalComponent, CustomSelectComponent],
+    imports: [ReactiveFormsModule, ModalComponent, CustomSelectComponent, CustomDatepickerComponent],
     templateUrl: './add-doctor.component.html',
     changeDetection: ChangeDetectionStrategy.OnPush
 })
@@ -51,6 +53,7 @@ export class AddDoctorComponent implements OnChanges {
             password: [''],
             specialty: ['', Validators.required],
             phone: ['', [Validators.required, Validators.pattern(/^[0-9+\s-]+$/)]],
+            dob: ['', Validators.required],
             availability: ['']   // Not required — backend doesn't support this field
         });
     }

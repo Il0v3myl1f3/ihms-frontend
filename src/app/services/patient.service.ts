@@ -78,7 +78,7 @@ export class PatientService {
             lastName: lName,
             email: p.email || '',
             gender: this.mapGender(p.gender),
-            dob: 'N/A', // Keeping as requested
+            dob: p.dateOfBirth || 'N/A', 
             address: p.address || 'N/A',
             phone: p.phone || 'N/A',
             bloodType: p.bloodType || 'N/A',
@@ -121,6 +121,7 @@ export class PatientService {
     }
 
     savePatient(patientData: Record<string, any>): Observable<any> {
+        const dob = patientData['dob'];
         const dto: any = {
             firstName: patientData['firstName'],
             lastName: patientData['lastName'],
@@ -128,13 +129,15 @@ export class PatientService {
             gender: patientData['gender']?.toUpperCase() || 'OTHER',
             phone: patientData['phone'],
             address: patientData['address'],
-            bloodType: patientData['bloodType']
+            bloodType: patientData['bloodType'],
+            Password: patientData['password'] || 'Password123!'
         };
 
-        // On creation, we MUST provide a password
-        if (!patientData['id'] || patientData['password']) {
-            dto.Password = patientData['password'] || 'Password123!';
+        // Only include DateOfBirth if it's a valid non-empty string (YYYY-MM-DD)
+        if (dob && typeof dob === 'string' && dob.trim() !== '' && dob.includes('-')) {
+            dto.dateOfBirth = dob;
         }
+
 
         if (patientData['id']) {
             return this.http.put(`${this.apiUrl}/${patientData['id']}`, dto).pipe(
